@@ -40,7 +40,7 @@
     <OutDir>$(ProjectDir)\Build\$(Configuration)\Binaries\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IntDir>$(ProjectDir)\Build\$(Configuration)\Intermediate</IntDir>
+    <IntDir>$(ProjectDir)\Build\$(Configuration)\Intermediate\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(ProjectDir)\Build\$(Configuration)\Binaries\</OutDir>
@@ -52,9 +52,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.\..\Libraries\GXBase\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>.\..\Libraries\GXBase\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>gxbasemd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -71,7 +76,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="float4.cpp" />
+    <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="OBJFile.cpp" />
+    <ClCompile Include="PerfTimer.cpp" />
+    <ClCompile Include="SeasonalWindow.cpp" />
+    <ClCompile Include="SphericalCamera.cpp" />
+    <ClCompile Include="TimeInfo.cpp" />
+    <ClCompile Include="util.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ctypes.h" />
+    <ClInclude Include="float4.h" />
+    <ClInclude Include="Log.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="OBJFile.h" />
+    <ClInclude Include="PerfTimer.h" />
+    <ClInclude Include="SeasonalWindow.h" />
+    <ClInclude Include="SphericalCamera.h" />
+    <ClInclude Include="TimeInfo.h" />
+    <ClInclude Include="util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
