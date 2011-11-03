@@ -103,7 +103,7 @@ bool OBJFile::ParseOBJFile(std::vector<c8*> objFile)
 	while(*objFile[pos] != 'f' && *objFile[pos]+1 != ' ' && (u32)pos<objFile.size()) ++pos;
 
 	cp = pos;
-	while(pos<objFile.size() && (*objFile[pos] == 'f' && *(objFile[pos]+1) == ' '))
+	while((u32)pos<objFile.size() && (*objFile[pos] == 'f' && *(objFile[pos]+1) == ' '))
 	{
 		++activeModel->triCount;
 		++pos;
@@ -123,7 +123,7 @@ bool OBJFile::ParseOBJFile(std::vector<c8*> objFile)
 		{
 			int indices[6]; // Indices 0,2 and 4 are vertex indices. Indices 1,3 and 5 are normal indices
 
-			stringstream str(objFile[cp]); char junk;
+			stringstream str(objFile[cp]);// char junk;
 			//str >> junk >>
 			//	indices[0] >> junk >> junk >> indices[1] >>
 			//	indices[2] >> junk >> junk >> indices[3] >>

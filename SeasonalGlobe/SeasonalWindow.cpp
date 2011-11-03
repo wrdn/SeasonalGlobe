@@ -7,6 +7,18 @@ SeasonalWindow::SeasonalWindow()
 {
 	windowRes[0] = DEFAULT_WIDTH;
 	windowRes[1] = DEFAULT_HEIGHT;
+
+	clearColor = Color::BLACK;
+};
+
+const Color4f& SeasonalWindow::GetClearColor() const
+{
+	return clearColor;
+};
+
+void SeasonalWindow::SetClearColor(const Color4f c)
+{
+	clearColor = c;
 };
 
 const int* const SeasonalWindow::GetWindowRes() const
@@ -32,6 +44,9 @@ const bool SeasonalWindow::IsFullScreen() const
 
 void SeasonalWindow::OnDisplay()
 {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+	
 	SwapBuffers();
 };
 
