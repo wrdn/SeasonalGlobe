@@ -32,4 +32,5 @@ _ReSharper*/
 *.opensdf
 ipch/
 *.bin
-build/
+[Bb]uild/
+.parasoft.dat/
