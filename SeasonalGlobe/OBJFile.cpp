@@ -10,15 +10,18 @@ OBJFile::OBJFile()
 
 OBJFile::~OBJFile()
 {
-	for(u32 i=0;i<models.capacity();++i)
+	try
 	{
-		//SAFE_DELETE(models[i]);
-		if(models[i])
+		for(std::vector<Model*>::iterator i = models.begin(); i != models.end(); ++i)
 		{
-			delete models[i];
-			models[i] = NULL;
+			if(*i)
+			{
+				delete *i;
+				*i = NULL;
+			}
 		}
 	}
+	catch(...) { }
 };
 
 bool OBJFile::ParseOBJFile(const c8* filename)
@@ -35,248 +38,149 @@ bool OBJFile::ParseOBJFile(const c8* filename)
 		std::vector<c8*> objData = read_src_to_vec(filename, false, basicSz);
 		bool ret = ParseOBJFile(objData);
 
-		// Cleanup the vector we made before leaving
-		for(u32 i=0;i<objData.size();++i)
-			SAFE_DELETE(objData[i]);
+		for(std::vector<c8*>::iterator i = objData.begin(); i != objData.end(); ++i)
+		{
+			delete [] *i;
+			*i = NULL;
+		}
 
 		return ret;
 	}
 	return false;
 };
 
-// ParseOBJFile(...) starts by removing whitespace from lines, and removing comments.
-// This will not effect the data, as we are simply moving or removing COPIES of pointers
-// The vector is passed by value, so the stuff in it will be copied - hence we can mess with the vector
-// and remove stuff, without effecting the original vector (passed as a function parameter)
-bool OBJFile::ParseOBJFile(std::vector<c8*> objFile)
+bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 {
-	if(!objFile.size()) { return false; } // No file contents
-	// Remove leading whitespace
-	for(u32 i=0;i<objFile.size();++i)
-	{
-		c8* d = objFile[i];
-		while(*d == ' ') d++;
-		objFile[i] = d;
-
-		if(*d == '#') { objFile.erase(objFile.begin()+i); --i; } // remove comments
-	}
-	if(!objFile.size()) { return false; } // The only file contents were comments
+	if(!objFile.size()) return false;
 
 	Model *activeModel = new Model();
 	models.push_back(activeModel);
 
-	/* READ VERTICES */
-	i32 pos=0;
-	while(*objFile[pos] != 'v' && (*objFile[pos]+1) != ' ' && (u32)pos<objFile.size()) { ++pos; }
-	i32 cp=pos;
-	while(*objFile[pos] == 'v' && *(objFile[pos]+1) == ' ') ++activeModel->vertexCount, ++pos;
+	/*****************************************************/
+	/**************** READ VERTICES **********************/
+	/*****************************************************/
+	u32 pos=0;
 
-	activeModel->vertex_data = new f32[activeModel->vertexCount * 3];
-
-	i32 insertionPos = 0;
-	while(cp < pos)
+	// Locate and count the vertices
+	string tmp;
+	while( (stringstream(objFile[pos]) >> tmp) && tmp != "v" ) ++pos; // find vertices
+	u32 cp=pos, commentCount=0;
+	while( (stringstream(objFile[pos]) >> tmp) && (tmp == "v" || tmp[0] == '#') ) // count vertices
 	{
-		stringstream str(objFile[cp]); char cr[4];
-		str >> cr >> activeModel->vertex_data[insertionPos] >> activeModel->vertex_data[insertionPos+1] >> activeModel->vertex_data[insertionPos+2];
-		++cp;
-		insertionPos+=3;
-	}
-
-	/* READ NORMALS */
-	bool foundNormals = false, foundFaces=false;
-	while((*objFile[pos] != 'v' && *(objFile[pos]+1) != 'n' && *(objFile[pos]+2) != ' ') && (u32)pos < objFile.size())
-	{
-		if(*objFile[pos] == 'f' && *(objFile[pos]+1) == ' ') { foundFaces = true; break; }
+		if(tmp[0] == '#') { ++commentCount; }
 		++pos;
 	}
-	foundNormals = !foundFaces;
+	activeModel->SetVertexCount(pos - cp - commentCount);
+	u32 insertionPos = 0;
 
-	cp = pos;
-	while((*objFile[pos] == 'v' && *(objFile[pos]+1) == 'n' && *(objFile[pos]+2) == ' '))
-		++activeModel->normalCount, ++pos;
-
-	activeModel->normal_data = new f32[activeModel->normalCount * 3];
-
-	insertionPos = 0;
+	// Read vertices
+	f32* vertex_data = new f32[activeModel->GetVertexCount() * Model::FLOATS_PER_VERTEX_POS];
 	while(cp < pos)
 	{
-		stringstream str(objFile[cp]); char cr[4];
-		str >> cr >> activeModel->normal_data[insertionPos] >> activeModel->normal_data[insertionPos+1] >> activeModel->normal_data[insertionPos+2];
+		stringstream str(objFile[cp]);
+		str >> tmp; // ignore any comments
+		if(tmp[0] != '#')
+		{
+			str >> vertex_data[insertionPos] >> vertex_data[insertionPos+1] >> vertex_data[insertionPos+2];
+			insertionPos += 3;
+		}
 		++cp;
-		insertionPos+=3;
 	}
+	activeModel->SetVertexArray(vertex_data);
 
-	/* READ FACES (assumes contiguous, not interspersed with vt's etc ) */
-	while(*objFile[pos] != 'f' && *objFile[pos]+1 != ' ' && (u32)pos<objFile.size()) ++pos;
 
-	cp = pos;
-	while((u32)pos<objFile.size() && (*objFile[pos] == 'f' && *(objFile[pos]+1) == ' '))
+	/*****************************************************/
+	/**************** READ NORMALS ***********************/
+	/*****************************************************/
+
+	// Locate and count normals
+	while((stringstream(objFile[pos]) >> tmp) && tmp != "vn") ++pos; // find normals
+	cp=pos, commentCount=0;
+	while( (stringstream(objFile[pos]) >> tmp) && (tmp == "vn" || tmp[0] == '#') ) // count normals
 	{
-		++activeModel->triCount;
+		if(tmp[0] == '#') { ++commentCount; }
 		++pos;
 	}
+	activeModel->SetNormalCount(pos - cp - commentCount);
 	insertionPos = 0;
 
-	// For the purpose of testing, just read vertices at the moment, but assume that
-	// vertices and normals exist e.g. 1//2 3//4 5//6 (v//vn format)
-	// For now, ignore UV coordinates, so ALL triangles have 6 data members (3 vertices and 3 normals)
-	if(activeModel->vertexCount && activeModel->normalCount &&
-		!activeModel->uvCount) // vertices and uvs available
+	// Read normals
+	f32* normal_data = new f32[activeModel->GetVertexCount() * Model::FLOATS_PER_VERTEX_NORMAL];
+	while(cp < pos)
+	{
+		stringstream str(objFile[cp]);
+		str >> tmp;
+		if(tmp[0] != '#') // ignore any comments
+		{
+			str >> normal_data[insertionPos] >> normal_data[insertionPos+1] >> normal_data[insertionPos+2];
+			insertionPos += 3;
+		}
+		++cp;
+	}
+	activeModel->SetNormalArray(normal_data);
+
+	/*****************************************************/
+	/****************** READ UVs *************************/
+	/*****************************************************/
+
+	// . . .
+
+	/*****************************************************/
+	/***************** READ FACES ************************/
+	/*****************************************************/
+
+	// Locate and count faces
+	while((stringstream(objFile[pos]) >> tmp) && tmp != "f") ++pos; // find faces
+	cp=pos, commentCount=0;
+	while( pos < objFile.size() && (stringstream(objFile[pos]) >> tmp) && (tmp == "f" || tmp[0] == '#') ) // count faces
+	{
+		if(tmp[0] == '#') { ++commentCount; }
+		++pos;
+	}
+	activeModel->SetTriCount(pos - cp - commentCount);
+	insertionPos = 0;
+
+	// Read faces
+	if( (activeModel->GetVertexArray() && activeModel->GetNormalArray()) && (!activeModel->GetUVArray()) ) // verts and normals, format: v//vn
 	{
 		activeModel->SetIndicesPerTriangle(6);
-		activeModel->triSet = new u32[activeModel->triCount * activeModel->GetIndicesPerTriangle()];
-
-		while(cp < pos) // read in data
+		u32* triSet = new u32[activeModel->GetTriCount() * 6];
+		
+		int iter=0;
+		while(cp < pos)
 		{
-			int indices[6]; // Indices 0,2 and 4 are vertex indices. Indices 1,3 and 5 are normal indices
+			++iter;
 
-			stringstream str(objFile[cp]);// char junk;
-			//str >> junk >>
-			//	indices[0] >> junk >> junk >> indices[1] >>
-			//	indices[2] >> junk >> junk >> indices[3] >>
-			//	indices[4] >> junk >> junk >> indices[5];
-			//sscanf(inp, "%d//%d %d//%d %d//%d", &vi1, &ni1, &vi2, &ni2, &vi3, &ni3);
-			char *inp = objFile[cp]+2;
-			sscanf(inp,"%d//%d %d//%d %d//%d", &indices[0], &indices[1], &indices[2], &indices[3], &indices[4],
-				&indices[5]);
+			u32 indices[6];
+			stringstream str(objFile[cp++]);
+			char tmpc; // holds double slash between v and vn
 
-			activeModel->triSet[insertionPos]   = (indices[0]-1)*3; //v1
-			activeModel->triSet[insertionPos+1] = (indices[1]-1)*3; //n1
-			activeModel->triSet[insertionPos+2] = (indices[2]-1)*3; //v2
-			activeModel->triSet[insertionPos+3] = (indices[3]-1)*3; //n2
-			activeModel->triSet[insertionPos+4] = (indices[4]-1)*3; //v3
-			activeModel->triSet[insertionPos+5] = (indices[5]-1)*3; //n3
+			str >> tmp;
+			if(tmp[0] == '#') { continue; } // ignore comments
 
-			++cp, insertionPos += 6;
+			str >>
+				indices[0] >> tmpc >> tmpc >> indices[1] >> // First vertex/normal
+				indices[2] >> tmpc >> tmpc >> indices[3] >> // Second vertex/normal
+				indices[4] >> tmpc >> tmpc >> indices[5];   // Third vertex/normal
+
+			// Clamp indices to 1 < INDEX <= VertexCount | NormalCount
+			clamp(indices[0], 1, activeModel->GetVertexCount());
+			clamp(indices[1], 1, activeModel->GetNormalCount());
+			clamp(indices[2], 1, activeModel->GetVertexCount());
+			clamp(indices[3], 1, activeModel->GetNormalCount());
+			clamp(indices[4], 1, activeModel->GetVertexCount());
+			clamp(indices[5], 1, activeModel->GetNormalCount());
+
+			triSet[insertionPos++] = (indices[0] - 1) * 3; //v0
+			triSet[insertionPos++] = (indices[1] - 1) * 3; //n0
+			triSet[insertionPos++] = (indices[2] - 1) * 3; //v1
+			triSet[insertionPos++] = (indices[3] - 1) * 3; //n1
+			triSet[insertionPos++] = (indices[4] - 1) * 3; //v2
+			triSet[insertionPos++] = (indices[5] - 1) * 3; //n2
 		}
+		activeModel->SetTriSet(triSet);
 	}
-	else
-	{
-		return false;
-	}
+	else { return false; } // False if anything other than Vertices and Normals (dont currently support UVs)
 
 	return true;
 };
-
-/* OLD FACE READING CODE:
-
-// We now need to read the faces. Though we should not make assumptions when parsing, the format of the faces should be predictable.
-// (A) If there were no normals and no uvs, the format would be "50 40 70"
-// (B) If there were vertices and normals (or vertices and uvs), the format would be "50//34 40//76 70//59"
-// (C) If there were vertices, normals and uvs, the format would be "50/39/34 40/72/76 70/45/59"
-
-// The triangle index data format is: VertexNormalUV - VertexNormalUV - VertexNormalUV. We can live without UVs, but if Normals dont exist, we still
-// add the space for them, then calculate them at runtime
-
-if(activeModel->vertexCount && (!activeModel->normalCount && !activeModel->uvCount)) // read verts
-{
-activeModel->SetIndicesPerTriangle(6);
-activeModel->triSet = new u32[activeModel->triCount * 6];
-
-while(cp < pos)
-{
-char *inp = objFile[cp]+2;
-
-int vi1=0, vi2=0, vi3=0;
-
-// Leave out every odd element - these will contain the normal references (interleaved)
-sscanf(inp, "%d %d %d", vi1, vi2, vi3);
-
-activeModel->triSet[insertionPos] = vi1*3;
-activeModel->triSet[insertionPos+2] = vi2*3;
-activeModel->triSet[insertionPos+4] = vi3*3;
-
-// Zero out spaces for the normals (which should be calculated)
-activeModel->triSet[insertionPos+1] = 0;
-activeModel->triSet[insertionPos+3] = 0;
-activeModel->triSet[insertionPos+5] = 0;
-
-++cp;
-insertionPos += 6;
-}
-}
-else if(activeModel->vertexCount && activeModel->normalCount && !activeModel->uvCount) // read verts and normals
-{
-activeModel->SetIndicesPerTriangle(6);
-activeModel->triSet = new u32[activeModel->triCount * 6];
-
-while(cp < pos)
-{
-int vi1=0, vi2=0, vi3=0, ni1=0, ni2=0, ni3=0;
-
-char *inp = objFile[cp]+2;
-sscanf(inp, "%d//%d %d//%d %d//%d", &vi1, &ni1, &vi2, &ni2, &vi3, &ni3);
-
-activeModel->triSet[insertionPos]   = vi1*3; //v1
-activeModel->triSet[insertionPos+1] = ni1*3; //n1
-activeModel->triSet[insertionPos+2] = vi2*3; //v2
-activeModel->triSet[insertionPos+3] = ni2*3; //n2
-activeModel->triSet[insertionPos+4] = vi3*3; //v3
-activeModel->triSet[insertionPos+5] = ni3*3; //n3
-
-++cp;
-insertionPos += 6;
-}
-
-}
-else if(activeModel->vertexCount && activeModel->uvCount && !activeModel->normalCount) // read verts and uvs
-{
-activeModel->SetIndicesPerTriangle(9); // 9 indices per triangle (3 for vertices, 3 for normals, and 3 for tex coords)
-activeModel->triSet = new u32[activeModel->triCount * 9];
-
-while(cp < pos)
-{
-char *inp = objFile[cp]+2;
-int v1i,uv1, v2i, uv2, v3i,uv3;
-
-sscanf(inp,"%d//%d %d//%d %d//%d",&v1i, &uv1, &v2i, &uv2, &v3i, &uv3);
-
-activeModel->triSet[insertionPos]   = v1i*3;
-activeModel->triSet[insertionPos+2] = uv1*2; // texture coords are 2D, so every indice refers to N*2 position in array
-activeModel->triSet[insertionPos+3] = v2i*3;
-activeModel->triSet[insertionPos+5] = uv2*2;
-activeModel->triSet[insertionPos+6] = v3i*3;
-activeModel->triSet[insertionPos+7] = uv3*2;
-
-// Zero out space for the normals
-activeModel->triSet[insertionPos+1] = 0;
-activeModel->triSet[insertionPos+4] = 0;
-activeModel->triSet[insertionPos+7] = 0;
-
-++cp;
-insertionPos += 9;
-}
-
-printf("Attempting to read vertices and UV coordinates\n");
-}
-else if(activeModel->vertexCount && activeModel->normalCount && activeModel->uvCount) // read verts, normals and uvs
-{
-activeModel->SetIndicesPerTriangle(9); // 9 indices per triangle (3 for vertices, 3 for normals, and 3 for tex coords)
-activeModel->triSet = new u32[activeModel->triCount * 9];
-
-while(cp < pos)
-{
-// Format: v/vt/vn
-char *inp = objFile[cp]+2;
-
-int v1i, v2i, v3i, vn1, vn2, vn3, uv1, uv2, uv3;
-
-sscanf(inp,"%d/%d/%d %d/%d/%d %d/%d/%d", &v1i,&uv1,&vn1,&v2i,&uv2,&vn2,&v3i,&uv3,&vn3);
-
-activeModel->triSet[insertionPos]   = v1i*3;
-activeModel->triSet[insertionPos+1] = vn1*3;
-activeModel->triSet[insertionPos+2] = uv1*2;
-
-activeModel->triSet[insertionPos+3] = v2i*3;
-activeModel->triSet[insertionPos+4] = vn2*3;
-activeModel->triSet[insertionPos+5] = uv2*2;
-
-activeModel->triSet[insertionPos+6] = v3i*3;
-activeModel->triSet[insertionPos+7] = vn3*3;
-activeModel->triSet[insertionPos+8] = uv3*2;
-
-++cp;
-insertionPos += 9;
-}
-}
-*/

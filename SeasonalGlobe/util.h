@@ -60,4 +60,7 @@ const char* bstr(const bool b);
 bool fast_strcmp(char *a, char *b);
 bool fast_strcmp(char *a, char *b, u32 len);
 
+void clamp(u32 &v, u32 lower, u32 upper);
+void clamp(i32 &v, i32 lower, i32 upper);
+
 #endif

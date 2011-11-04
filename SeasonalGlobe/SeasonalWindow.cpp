@@ -1,5 +1,5 @@
 #include "SeasonalWindow.h"
-
+#include "OBJFile.h"
 const int DEFAULT_WIDTH = 800;
 const int DEFAULT_HEIGHT = 600;
 
@@ -61,6 +61,9 @@ void SeasonalWindow::OnKeyboard(int key, bool down)
 
 void SeasonalWindow::OnCreate()
 {
+	OBJFile f;
+	f.ParseOBJFile("Data/cube.obj");
+
 	GLWindowEx::OnCreate();
 	SetWindowResolution(windowRes[0], windowRes[1]);
 };

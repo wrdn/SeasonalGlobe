@@ -2,7 +2,15 @@
 using namespace std;
 
 #include "SeasonalWindow.h"
-class MyApp : public App { private: SeasonalWindow w; }; // boot GXBase
+class MyApp : public App
+{
+private:
+	SeasonalWindow w;
+
+public:
+	MyApp() { };
+};
+
 static MyApp seasonalGlobe;
 
 /*

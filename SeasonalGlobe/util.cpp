@@ -301,3 +301,15 @@ bool fast_strcmp(char *a, char *b, u32 len)
 
 	return false;
 };
+
+void clamp(u32 &v, u32 lower, u32 upper)
+{
+	if(v < lower) { v = lower; }
+	else if(v > upper) { v = upper; }
+};
+
+void clamp(i32 &v, i32 lower, i32 upper)
+{
+	if(v < lower) { v = lower; }
+	else if(v > upper) { v = upper; }
+};

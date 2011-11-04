@@ -32,46 +32,52 @@ public:
 class Model
 {
 private:
-	i32 INDICES_PER_TRIANGLE; // should be a minimum of 6, rebuild normals if they don't exist (UVs not always required though)
+	u32 INDICES_PER_TRIANGLE; // should be a minimum of 6, rebuild normals if they don't exist (UVs not always required though)
+
+	u32 vertexCount, normalCount, uvCount, texCount, triCount;
+	u32 *textures, *triSet;
+	f32 *vertex_data, *normal_data, *uv_data;
 
 public:
+	static const char FLOATS_PER_VERTEX_POS = 3; // x,y,z vertex pos
+	static const char FLOATS_PER_VERTEX_NORMAL = 3; // x,y,z vertex normal
+
 	Model(void);
 	~Model(void);
-
-	// Vertices
-	i32 vertexCount;
-	//f32 *vx, *vy, *vz;
-	f32 *vertex_data;
-
-	// Normals
-	i32 normalCount;
-	//f32 *nx, *ny, *nz;
-	f32 *normal_data;
-
-	// UVs
-	i32 uvCount;
-	//f32 *tu, *tv;
-	f32 *uv_data;
-
-	// generated texture ids (the texture info is not required,
-	// only the ID the texture is bound to)
-	u32 texCount;
-	u32 *textures;
-
-	// size of triSet array is INDICES_PER_TRIANGLE * triCount.
-	// To get to triangle N: triSet[INDICES_PER_TRIANGLE * N]
-	// triSet has format Vertex-Normal-TexCoord -- Vertex-Normal-TexCoord...
-	// Therefore, for full data (vertex,normal,texcoord), indices per triangle is 9
-	u32 triCount;
-	u32 *triSet;
 
 	void RecalculateNormals();
 
 	// OpenGL specific
 	ModelVBO BuildVBO(); // creates a vbo, sets the data then returns its id. If an ID cannot be generated, it returns 0
 
-	i32 GetIndicesPerTriangle();
+
+	/* ACCESSORS AND MUTATORS */
+
+	u32 GetIndicesPerTriangle() const;
 	bool SetIndicesPerTriangle(c8 indicesPerTri); // min=6, max=9
+
+	void SetVertexCount(const u32 v) { vertexCount = v; };
+	void SetNormalCount(const u32 v) { normalCount = v; };
+	void SetUVCount(const u32 v) { uvCount = v; };
+	void SetTextureCount(const u32 v) { texCount = v; };
+	void SetTriCount(const u32 v) { triCount = v; };
+
+	const u32 GetVertexCount() const { return vertexCount; };
+	const u32 GetNormalCount() const { return normalCount; };
+	const u32 GetUVCount() const { return uvCount; };
+	const u32 GetTextureCount() const { return texCount; };
+	const u32 GetTriCount() const { return triCount; };
+
+	void SetVertexArray(f32 * const v) { vertex_data = v; };
+	void SetNormalArray(f32 * const v) { normal_data = v; };
+	void SetUVArray(f32 * const v) { uv_data = v; };
+
+	f32* GetVertexArray() const { return vertex_data; };
+	f32* GetNormalArray() const { return normal_data; };
+	f32* GetUVArray() const { return uv_data; };
+
+	void SetTriSet(u32 * const v) { triSet = v; };
+	u32* GetTriSet() const { return triSet; };
 };
 
 #endif
