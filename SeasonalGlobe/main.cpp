@@ -1,15 +1,7 @@
 #include <iostream>
 using namespace std;
 
-#include "SeasonalWindow.h"
-class MyApp : public App
-{
-private:
-	SeasonalWindow w;
-
-public:
-	MyApp() { };
-};
+#include "MyApp.h"
 
 static MyApp seasonalGlobe;
 

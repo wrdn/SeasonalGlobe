@@ -1,14 +1,13 @@
 #include "SeasonalWindow.h"
 #include "OBJFile.h"
+
 const int DEFAULT_WIDTH = 800;
 const int DEFAULT_HEIGHT = 600;
 
-SeasonalWindow::SeasonalWindow()
+SeasonalWindow::SeasonalWindow() : clearColor(Color::BLACK)
 {
 	windowRes[0] = DEFAULT_WIDTH;
 	windowRes[1] = DEFAULT_HEIGHT;
-
-	clearColor = Color::BLACK;
 };
 
 const Color4f& SeasonalWindow::GetClearColor() const
@@ -16,14 +15,14 @@ const Color4f& SeasonalWindow::GetClearColor() const
 	return clearColor;
 };
 
-void SeasonalWindow::SetClearColor(const Color4f c)
+void SeasonalWindow::SetClearColor(const Color4f &c)
 {
 	clearColor = c;
 };
 
 const int* const SeasonalWindow::GetWindowRes() const
 {
-	return windowRes;
+	return (const int* const)windowRes;
 };
 void SeasonalWindow::SetWindowResolution(const int width, const int height)
 {
@@ -61,8 +60,8 @@ void SeasonalWindow::OnKeyboard(int key, bool down)
 
 void SeasonalWindow::OnCreate()
 {
-	OBJFile f;
-	f.ParseOBJFile("Data/cube.obj");
+	//OBJFile f;
+	//f.ParseOBJFile("Data/cube.obj");
 
 	GLWindowEx::OnCreate();
 	SetWindowResolution(windowRes[0], windowRes[1]);

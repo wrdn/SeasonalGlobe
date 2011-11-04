@@ -8,6 +8,9 @@ using gxbase::GLWindowEx;
 
 class SeasonalWindow : public GLWindowEx
 {
+private:
+	int windowRes[2]; //index 0=width, 1=height
+	Color4f clearColor; // opengl window clear color
 public:
 	void OnDisplay();
 	void OnIdle();
@@ -20,12 +23,11 @@ public:
 	void SwitchFullscreen();
 	const bool IsFullScreen() const;
 
+	// Parasoft warns that you shouldn't return a member variable by reference. However, in this case, it is more efficient.
+	// Further, if it is altered to return by value, Parasoft throws a different warning that that may be inefficient.
 	const Color4f& GetClearColor() const;
-	void SetClearColor(const Color4f c);
+
+	void SetClearColor(const Color4f &c);
 
 	SeasonalWindow();
-
-private:
-	int windowRes[2]; //index 0=width, 1=height
-	Color4f clearColor; // opengl window clear color
 };

@@ -5,6 +5,9 @@
 #include <string.h>
 using namespace std;
 
+void SAFE_DELETE(const void *p) { if(p) { delete p; p = NULL; } };
+void SAFE_DELETE_ARRAY(const void *p) { if(p) { delete [] p; p = NULL; } };
+
 c8* copystr(const c8 *src)
 {
 	if(!src) return 0;
@@ -99,20 +102,17 @@ void split(const string &s, c8 delim, vector<string> &v)
 void printf_array(f32 *arr, u32 sz)
 {
 	for(u32 i=0;i<sz;++i)
-		printf("%d: %f\n",i,arr[i]);
-}
-
-
-void print_array(f32 *arr, c8* pftype, u32 sz)
-{
-	for(u32 i=0;i<sz;++i)
-		printf(pftype, arr[i]);
+	{
+		cout << i << ": " << arr[i] << endl;
+	}
 }
 
 void printi_array(u32 *arr, u32 sz)
 {
 	for(u32 i=0;i<sz;++i)
-		printf("%d: %d\n",i,arr[i]);
+	{
+		cout << i << ": " << arr[i] << endl;
+	}
 }
 
 const bool file_exists(const c8 *filename)
@@ -131,7 +131,7 @@ std::vector<c8*> read_src_to_vec(const c8* file, bool incBlankLines)
 	return read_src_to_vec(file, incBlankLines,100);
 };
 
-inline std::vector<c8*> read_src_to_vec(const c8* file, bool incBlankLines, const u32 originalVecSize)
+std::vector<c8*> read_src_to_vec(const c8* file, bool incBlankLines, const u32 originalVecSize)
 {
 	vector<c8*> vec;
 	vec.reserve(originalVecSize);
@@ -150,8 +150,7 @@ inline std::vector<c8*> read_src_to_vec(const c8* file, bool incBlankLines, cons
 			int len = tmp.length();
 			if(tmp.length() > 0)
 			{
-				c8* v = copystr_unsafe(tmp.c_str(),len);
-				vec.push_back(v);
+				vec.push_back(copystr_unsafe(tmp.c_str(),len));
 			}
 		}
 	}
@@ -161,8 +160,7 @@ inline std::vector<c8*> read_src_to_vec(const c8* file, bool incBlankLines, cons
 		{
 			std::string tmp;
 			getline(infile,tmp);
-			c8* v = copystr(tmp.c_str());
-			vec.push_back(v);
+			vec.push_back(copystr(tmp.c_str()));
 		}
 	}
 	infile.close();
@@ -235,34 +233,37 @@ c8 *read_src_fast(const c8 *file)
 	return buff;
 }
 
-void set_bit(i32 &opt, u32 bit)
+void set_bit(i32 &opt, const u32 bit)
 {
 	opt |= bit;
 };
 
-i32 bit_set(i32 &opt, u32 bit)
+i32 bit_set(const i32 &opt, const u32 bit)
 {
 	return (opt & bit);
 };
 
-void clear_bit(i32 &opt, u32 bit)
+void clear_bit(i32 &opt, const u32 bit)
 {
 	opt &= (~bit);
 };
 
-void toggle_bit(i32 &opt, u32 bit)
+void toggle_bit(i32 &opt, const u32 bit)
 {
 	opt ^= bit;
 };
 
 // Source: http://www.cse.yorku.ca/~oz/hash.html
-u32 hash(u32 *str)
+u32 hash(const u32 *str)
 {
 	u32 hash = 5381;
 	u32 c=0;
 
-	while ((c = *str++))
+	while(str)
+	{
+		c = *str++;
 		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+	}
 
 	return hash;
 };
@@ -281,9 +282,9 @@ const char* bstr(const bool b)
 
 bool fast_strcmp(char *a, char *b)
 {
-	int len;
+	u32 len = strlen(a);
 	// First check string lengths are equal
-	if(len=strlen(a) != strlen(b)) return false;
+	if(len != strlen(b)) return false;
 
 	if(!memcmp(a,b,len))
 		return true;

@@ -15,7 +15,7 @@ SphericalCamera::SphericalCamera(f32 r, f32 theta, f32 azimuth)
 	spherical_coords[AZIMUTH] = azimuth;
 };
 
-void SphericalCamera::SphericalToCartesian(f32* output_vec)
+void SphericalCamera::SphericalToCartesian(f32* output_vec) const
 {
 	if(output_vec)
 	{

@@ -5,26 +5,28 @@ ModelVBO::ModelVBO() : modeldata_vboid(0), indices_vboid(0) { };
 ModelVBO::~ModelVBO() { };
 
 Model::Model(void)
-	: vertexCount(0), vertex_data(0), normalCount(0), normal_data(0), 
-	uvCount(0), uv_data(0), texCount(0), textures(0), triCount(0), triSet(0),
-	INDICES_PER_TRIANGLE(6)
-{
-}
+	: vertex_data(0), normal_data(0), uv_data(0), textures(0), triSet(0), 
+	INDICES_PER_TRIANGLE(6), vertexCount(0), normalCount(0), uvCount(0), texCount(0), triCount(0)
+{ };
 
 Model::~Model(void)
 {
-	SAFE_DELETE_ARRAY(vertex_data);
-	SAFE_DELETE_ARRAY(normal_data);
-	SAFE_DELETE_ARRAY(uv_data);
-	SAFE_DELETE_ARRAY(triSet);
+	try
+	{
+		SAFE_DELETE_ARRAY(vertex_data);
+		SAFE_DELETE_ARRAY(normal_data);
+		SAFE_DELETE_ARRAY(uv_data);
+		SAFE_DELETE_ARRAY(triSet);
+	} catch(...) { };
+
 	triCount = 0;
 };
 
-void Model::RecalculateNormals()
+void Model::RecalculateNormals() const
 {
 };
 
-ModelVBO Model::BuildVBO()
+ModelVBO Model::BuildVBO() const
 {
 	ModelVBO mvbo;
 	return mvbo;

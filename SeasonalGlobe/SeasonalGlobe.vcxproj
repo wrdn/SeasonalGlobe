@@ -54,6 +54,8 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.\..\Libraries\GXBase\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>
+      </MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -82,6 +84,7 @@
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="MyApp.cpp" />
     <ClCompile Include="OBJFile.cpp" />
     <ClCompile Include="PerfTimer.cpp" />
     <ClCompile Include="SeasonalWindow.cpp" />
@@ -96,6 +99,7 @@
     <ClInclude Include="float4.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="MyApp.h" />
     <ClInclude Include="OBJFile.h" />
     <ClInclude Include="PerfTimer.h" />
     <ClInclude Include="SeasonalWindow.h" />

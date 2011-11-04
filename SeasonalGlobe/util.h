@@ -7,8 +7,11 @@ using namespace std;
 
 #include "ctypes.h"
 
-#define SAFE_DELETE(m) if(m) { delete m; m = 0; }
-#define SAFE_DELETE_ARRAY(m) if(m) { delete [] m; m = 0; }
+//#define SAFE_DELETE(m) if(m) { delete m; m = 0; }
+//#define SAFE_DELETE_ARRAY(m) if(m) { delete [] m; m = 0; }
+
+void SAFE_DELETE(const void *p);
+void SAFE_DELETE_ARRAY(const void *p);
 
 // pass source and a null char pointer (memory allocated in func)
 // The _unsafe versions of the copystr() functions do no checks (i.e. dont check src != NULL and dont check strlen(src)>0, or
@@ -27,7 +30,6 @@ bool compare_str_lim(const c8 *src, const c8 *targ, u32 src_start, u32 src_end,
 
 void split(const string &s, c8 delim, vector<string> &v);
 void printf_array(f32 *arr, u32 sz);
-void print_array(f32 *arr, c8* pftype, u32 sz);
 void printi_array(u32 *arr, u32 sz);
 
 const bool file_exists(const c8 *filename);
@@ -47,13 +49,13 @@ std::vector<c8*> read_src_to_vec(const c8* file, bool incBlankLines, const u32 o
 // Removes all the strings in the vector then clears it.
 void cleanup_str_vec(std::vector<c8*> &v);
 
-void set_bit(i32 &opt, u32 bit);
-i32 bit_set(i32 &opt, u32 bit);
-void clear_bit(i32 &opt, u32 bit);
-void toggle_bit(i32 &opt, u32 bit);
+void set_bit(i32 &opt, const u32 bit);
+i32 bit_set(const i32 &opt, const u32 bit);
+void clear_bit(i32 &opt, const u32 bit);
+void toggle_bit(i32 &opt, const u32 bit);
 
 // djb2 string hashing
-u32 hash(u32 *str);
+u32 hash(const u32 *str);
 
 const char* bstr(const bool b);
 

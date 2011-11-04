@@ -72,7 +72,7 @@ public:
 
 // These global functions only exist to allow for cleaner code. I.e. one can write
 // log(...) rather than Log.log(...)
-static void log(const LOG_LEVEL logLevel, const c8* logmsg)
+static inline void log(const LOG_LEVEL logLevel, const c8* logmsg)
 {
 	Log::log(logLevel,logmsg);
 }

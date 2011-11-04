@@ -32,11 +32,11 @@ public:
 class Model
 {
 private:
-	u32 INDICES_PER_TRIANGLE; // should be a minimum of 6, rebuild normals if they don't exist (UVs not always required though)
-
-	u32 vertexCount, normalCount, uvCount, texCount, triCount;
-	u32 *textures, *triSet;
 	f32 *vertex_data, *normal_data, *uv_data;
+	u32 *textures, *triSet;
+
+	u32 INDICES_PER_TRIANGLE; // should be a minimum of 6, rebuild normals if they don't exist (UVs not always required though)
+	u32 vertexCount, normalCount, uvCount, texCount, triCount;
 
 public:
 	static const char FLOATS_PER_VERTEX_POS = 3; // x,y,z vertex pos
@@ -45,10 +45,10 @@ public:
 	Model(void);
 	~Model(void);
 
-	void RecalculateNormals();
+	void RecalculateNormals() const;
 
 	// OpenGL specific
-	ModelVBO BuildVBO(); // creates a vbo, sets the data then returns its id. If an ID cannot be generated, it returns 0
+	ModelVBO BuildVBO() const; // creates a vbo, sets the data then returns its id. If an ID cannot be generated, it returns 0
 
 
 	/* ACCESSORS AND MUTATORS */
@@ -72,12 +72,12 @@ public:
 	void SetNormalArray(f32 * const v) { normal_data = v; };
 	void SetUVArray(f32 * const v) { uv_data = v; };
 
-	f32* GetVertexArray() const { return vertex_data; };
-	f32* GetNormalArray() const { return normal_data; };
-	f32* GetUVArray() const { return uv_data; };
+	const f32* GetVertexArray() const { return vertex_data; };
+	const f32* GetNormalArray() const { return normal_data; };
+	const f32* GetUVArray() const { return uv_data; };
 
 	void SetTriSet(u32 * const v) { triSet = v; };
-	u32* GetTriSet() const { return triSet; };
+	const u32* GetTriSet() const { return triSet; };
 };
 
 #endif

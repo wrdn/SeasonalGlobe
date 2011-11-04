@@ -16,18 +16,13 @@ void Log::log( const LOG_LEVEL logLevel, const c8* logmsg )
 {
 	if(!LOGGING_ENABLED) return;
 
-	c8 *loglvl = 0; u32 arrlen=0;
-	if(logLevel == TINFO) { loglvl = (c8*)"[INFO]"; arrlen=6; }
-	else if(logLevel == TWARN) { loglvl = (c8*)"[WARN]";arrlen=6; }
-	else { loglvl = (c8*)"[ERROR]";arrlen=7; }
+	string st = 
+		logLevel == TINFO ? "[INFO] " :
+		(logLevel == TWARN ? "[WARN] " : "[ERROR] ");
+	st += logmsg;
 
-	arrlen += strlen(logmsg)+4;
-	c8 *logbuff = new c8[arrlen];
-	sprintf(logbuff, "%s  %s\n", loglvl, logmsg);
-
-	printf("%s",logbuff);
-
-	logMsg.push_back(logbuff);
+	cout << st << endl;
+	logMsg.push_back(st.c_str());
 
 	tryflush();
 }
@@ -40,7 +35,7 @@ void Log::log( const c8* logmsg )
 void Log::clear_log_buff()
 {
 	for(u32 i=0;i<logMsg.size();++i)
-		SAFE_DELETE_ARRAY(logMsg[i]);
+		SAFE_DELETE_ARRAY(&logMsg[i]);
 
 	logMsg.clear();
 }
@@ -155,7 +150,8 @@ bool Log::write_log_header( const c8* filename, const bool append )
 	if(fl.is_open())
 	{
 		TimeInfo tinfo;
-		char *dt = tinfo.tostr(tinfo.get_local_time(tinfo.get_raw_time()));
+		const time_t t = tinfo.get_raw_time();
+		char *dt = tinfo.tostr(tinfo.get_local_time(&t));
 		fl << "***************  LOGGING STARTED  " << dt << "  ***************\n"; // write header on log
 	}
 	else { return false; }
@@ -177,7 +173,8 @@ bool Log::write_log_footer( const c8* filename )
 	if(fl.is_open())
 	{
 		TimeInfo tinfo;
-		char *dt = tinfo.tostr(tinfo.get_local_time(tinfo.get_raw_time()));
+		const time_t t = tinfo.get_raw_time();
+		char *dt = tinfo.tostr(tinfo.get_local_time(&t));
 		fl << "***************  LOGGING ENDED  " << dt << "  ***************\n\n"; // write header on log
 	}
 	else { return false; }
