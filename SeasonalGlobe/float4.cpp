@@ -32,47 +32,47 @@ void fzero(float4 &t)
 	t = _mm_setzero_ps();
 };
 
-float4 fadd(const float4 a, const float4 b)
+float4 fadd(const float4 &a, const float4 &b)
 {
 	return _mm_add_ps(a,b);
 };
 
-void fadd(const float4 a, const float4 b, float4 &out)
+void fadd(const float4 &a, const float4 &b, float4 &out)
 {
 	out = _mm_add_ps(a,b);
 };
 
-float4 fsub(const float4 a, const float4 b)
+float4 fsub(const float4 &a, const float4 &b)
 {
 	return _mm_sub_ps(a,b);
 };
 
-void fsub(const float4 a, const float4 b, float4 &out)
+void fsub(const float4 &a, const float4 &b, float4 &out)
 {
 	out = _mm_sub_ps(a,b);
 };
 
-float4 fmul(const float4 a, const float4 b)
+float4 fmul(const float4 &a, const float4 &b)
 {
 	return _mm_mul_ps(a,b);
 };
 
-void fmul(const float4 a, const float4 b, float4 &out)
+void fmul(const float4 &a, const float4 &b, float4 &out)
 {
 	out = _mm_mul_ps(a,b);
 };
 
-float4 fdiv(const float4 a, const float4 b)
+float4 fdiv(const float4 &a, const float4 &b)
 {
 	return _mm_div_ps(a,b);
 };
 
-void fdiv(const float4 a, const float4 b, float4 &out)
+void fdiv(const float4 &a, const float4 &b, float4 &out)
 {
 	out = _mm_div_ps(a,b);
 };
 
-f32 fdot(const float4 a, const float4 b)
+f32 fdot(const float4 &a, const float4 &b)
 {
 	// http://software.intel.com/en-us/articles/implement-a-horizontal-addsubtract-with-sse3-instructions/
 	float4 mres = _mm_mul_ps(a,b);
@@ -82,28 +82,28 @@ f32 fdot(const float4 a, const float4 b)
 	return ret;
 };
 
-float4 fcross(const float4 a, const float4 b)
+float4 fcross(const float4 &a, const float4 &b)
 {
 	float4 ares = _mm_mul_ps(_mm_shuffle_ps(a,a,0xD8), _mm_shuffle_ps(b,b,0xE1));
 	float4 bres = _mm_mul_ps(_mm_shuffle_ps(a,a,0xE1), _mm_shuffle_ps(b,b,0xD8));
 	return _mm_mul_ps(ares,bres);
 };
 
-float4 fnormalize(const float4 a)
+float4 fnormalize(const float4 &a)
 {
 	__m128 l = _mm_mul_ps(a, a);
 	l = _mm_add_ps(l, _mm_shuffle_ps(l, l, 0x4E));
 	return _mm_div_ps(a, _mm_sqrt_ps(_mm_add_ps(l, _mm_shuffle_ps(l, l, 0x11))));
 };
 
-void fcross(const float4 a, const float4 b, float4 &out)
+void fcross(const float4 &a, const float4 &b, float4 &out)
 {
 	float4 ares = _mm_mul_ps(_mm_shuffle_ps(a,a,0xD8), _mm_shuffle_ps(b,b,0xE1));
 	float4 bres = _mm_mul_ps(_mm_shuffle_ps(a,a,0xE1), _mm_shuffle_ps(b,b,0xD8));
 	out = _mm_mul_ps(ares,bres);
 };
 
-void fnormalize(const float4 a, float4 &out)
+void fnormalize(const float4 &a, float4 &out)
 {
 	__m128 l = _mm_mul_ps(a, a);
 	l = _mm_add_ps(l, _mm_shuffle_ps(l, l, 0x4E));
@@ -127,7 +127,7 @@ float4 fabsolute(const float4 &v)
 	return _mm_andnot_ps(SIGNMASK, v);
 };
 
-float4 operator-(float4 &v) { return negate(v); };
+float4 operator-(const float4 &v) { return negate(v); };
 
 float4 operator+(const float4 &a, const float4 &b) { return fadd(a,b); };
 float4 operator-(const float4 &a, const float4 &b) { return fsub(a,b); };

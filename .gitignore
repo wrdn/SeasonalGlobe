@@ -34,3 +34,5 @@ ipch/
 *.bin
 [Bb]uild/
 .parasoft.dat/
+.parasoft
+.cpptest/

@@ -16,24 +16,24 @@ float4 finitu(const f32 *v);
 float4 fzero();
 void fzero(float4 &t);
 
-float4 fadd(const float4 a, const float4 b);
-void fadd(const float4 a, const float4 b, float4 &out);
+float4 fadd(const float4 &a, const float4 &b);
+void fadd(const float4 &a, const float4 &b, float4 &out);
 
-float4 fsub(const float4 a, const float4 b);
-void fsub(const float4 a, const float4 b, float4 &out);
+float4 fsub(const float4 &a, const float4 &b);
+void fsub(const float4 &a, const float4 &b, float4 &out);
 
-float4 fmul(const float4 a, const float4 b);
-void fmul(const float4 a, const float4 b, float4 &out);
+float4 fmul(const float4 &a, const float4 &b);
+void fmul(const float4 &a, const float4 &b, float4 &out);
 
-float4 fdiv(const float4 a, const float4 b);
-void fdiv(const float4 a, const float4 b, float4 &out);
+float4 fdiv(const float4 &a, const float4 &b);
+void fdiv(const float4 &a, const float4 &b, float4 &out);
 
-f32 fdot(const float4 a, const float4 b);
-float4 fcross(const float4 a, const float4 b);
-float4 fnormalize(const float4 a);
+f32 fdot(const float4 &a, const float4 &b);
+float4 fcross(const float4 &a, const float4 &b);
+float4 fnormalize(const float4 &a);
 
-void fcross(const float4 a, const float4 b, float4 &out);
-void fnormalize(const float4 a, float4 &out);
+void fcross(const float4 &a, const float4 &b, float4 &out);
+void fnormalize(const float4 &a, float4 &out);
 void fnormalize(float4 *a);
 
 float4 negate(const float4 &v);

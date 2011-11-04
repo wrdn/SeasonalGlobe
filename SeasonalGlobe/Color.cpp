@@ -1,16 +1,12 @@
 #include "Color.h"
 
-/*const float4 Color::BLACK = fzero();
-const float4 Color::WHITE   = finit(1.0f);
-const float4 Color::GREY    = finit(0.5f);
-const float4 Color::RED     = finit(1.0f,0,0,0);
-const float4 Color::GREEN   = finit(0,1.0f,0,0);
-const float4 Color::BLUE    = finit(0,0,1.0f,0);
-const float4 Color::YELLOW  = finit(1.0f,1.0f,0,0);
-const float4 Color::PINK    = finit(1.0f,0.75f,0.79f,0);
-*/
+Color4f::Color4f() : r(0), g(0), b(0), a(0) { };
+Color4f::Color4f(float _r, float _g, float _b, float _a) : r(_r), g(_g), b(_b), a(_a) { };
+Color4f::Color4f(float v) : r(v), g(v), b(v), a(v) { };
 
-const Color4f Color::BLACK;
+Color::Color() { };
+
+const Color4f Color::BLACK  = Color4f();
 const Color4f Color::WHITE  = Color4f(1.0f);
 const Color4f Color::GREY   = Color4f(0.5f);
 const Color4f Color::RED    = Color4f(1.0f,0,0,0);

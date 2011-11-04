@@ -10,8 +10,15 @@ OBJFile::OBJFile()
 
 OBJFile::~OBJFile()
 {
-	for(u32 i=0;i<models.size();++i)
-		SAFE_DELETE(models[i]);
+	for(u32 i=0;i<models.capacity();++i)
+	{
+		//SAFE_DELETE(models[i]);
+		if(models[i])
+		{
+			delete models[i];
+			models[i] = NULL;
+		}
+	}
 };
 
 bool OBJFile::ParseOBJFile(const c8* filename)

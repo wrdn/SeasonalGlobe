@@ -2,7 +2,9 @@
 #include <string.h>
 
 TimeInfo::TimeInfo(void)
-{ };
+{
+	time(&raw_time);
+};
 
 TimeInfo::~TimeInfo(void)
 { };
