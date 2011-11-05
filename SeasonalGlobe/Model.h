@@ -33,14 +33,17 @@ class Model
 {
 private:
 	f32 *vertex_data, *normal_data, *uv_data;
-	u32 *textures, *triSet;
+	u32 *textures, *triSet; // triSet format is v/vt/vn
 
-	u32 INDICES_PER_TRIANGLE; // should be a minimum of 6, rebuild normals if they don't exist (UVs not always required though)
+	// minimum if 6 (vertex pos and normal), maximum if 9 (vertex pos, normal, and vertex uv)
+	u32 INDICES_PER_TRIANGLE;
+
 	u32 vertexCount, normalCount, uvCount, texCount, triCount;
 
 public:
 	static const char FLOATS_PER_VERTEX_POS = 3; // x,y,z vertex pos
 	static const char FLOATS_PER_VERTEX_NORMAL = 3; // x,y,z vertex normal
+	static const char FLOATS_PER_VERTEX_UV = 2; // u,v (no 3D texture coordinates)
 
 	Model(void);
 	~Model(void);

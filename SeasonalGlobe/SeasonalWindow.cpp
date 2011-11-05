@@ -65,8 +65,8 @@ void SeasonalWindow::OnKeyboard(int key, bool down)
 
 void SeasonalWindow::OnCreate()
 {
-	//OBJFile f;
-	//f.ParseOBJFile("Data/cube.obj");
+	OBJFile f;
+	f.ParseOBJFile("Data/cube.obj");
 
 	GLWindowEx::OnCreate();
 	SetWindowResolution(windowRes[0], windowRes[1]);
