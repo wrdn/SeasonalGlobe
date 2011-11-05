@@ -4,6 +4,8 @@
 const int DEFAULT_WIDTH = 800;
 const int DEFAULT_HEIGHT = 600;
 
+const int ESC_KEY = 27;
+
 SeasonalWindow::SeasonalWindow() : clearColor(Color::BLACK)
 {
 	windowRes[0] = DEFAULT_WIDTH;
@@ -56,6 +58,10 @@ void SeasonalWindow::OnIdle()
 
 void SeasonalWindow::OnKeyboard(int key, bool down)
 {
+	if(key == ESC_KEY && down)
+	{
+		Close();
+	}
 };
 
 void SeasonalWindow::OnCreate()
