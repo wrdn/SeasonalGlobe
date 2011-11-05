@@ -1,10 +1,9 @@
 #include "SeasonalWindow.h"
 #include "OBJFile.h"
+#include <WinUser.h>
 
 const int DEFAULT_WIDTH = 800;
 const int DEFAULT_HEIGHT = 600;
-
-const int ESC_KEY = 27;
 
 SeasonalWindow::SeasonalWindow() : clearColor(Color::BLACK)
 {
@@ -58,7 +57,7 @@ void SeasonalWindow::OnIdle()
 
 void SeasonalWindow::OnKeyboard(int key, bool down)
 {
-	if(key == ESC_KEY && down)
+	if(key == VK_ESCAPE && down)
 	{
 		Close();
 	}
