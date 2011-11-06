@@ -31,7 +31,7 @@ bool Model::RecalculatePerVertexNormals()
 	if(normal_data)
 	{
 		delete [] normal_data;
-		normal_data = NULL;
+		normal_data = 0;
 		normalCount = 0;
 	}
 	

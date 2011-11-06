@@ -1,11 +1,6 @@
 #include "float4.h"
+#include "util.h"
 #include <math.h>
-
-
-bool NearZero(const f32 v)
-{
-	return fabs(v) < 0.000001f; // rough epsilon
-};
 
 const float4 float4::ZERO = float4((f32)0.0f);
 const float4 float4::ONE  = float4((f32)1.0f);
@@ -234,6 +229,11 @@ void operator/=(float4 &a, const f32 &b) { a = a.div(b); };
 float4 operator^(const float4 &a, const float4 &b) { return a.cross(b); };
 void operator^=(float4 &a, const float4 &b) { a = a.cross(b); };
 
+std::ostream& operator<<(std::ostream &out, float4 &m)
+{
+	std::cout << "{" << m.vec[0] << "," << m.vec[1] << "," << m.vec[2] << "," << m.vec[3] << "}";
+	return out;
+};
 
 /*
 static const float4 SIGNMASK = _mm_castsi128_ps(_mm_set1_epi32(0x80000000));

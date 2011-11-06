@@ -1,13 +1,12 @@
 #pragma once
 
 #include "ctypes.h"
-
-bool NearZero(const f32 v);
+#include <iostream>
 
 class float4
 {
 public:
-	f32 vec[4];
+	ALIGN(16) f32 vec[4];
 
 	static const float4 ZERO;
 	static const float4 ONE;
@@ -78,6 +77,8 @@ void operator/=(float4 &a, const f32 &b);
 
 float4 operator^(const float4 &a, const float4 &b);
 void operator^=(float4 &a, const float4 &b);
+
+std::ostream& operator<<(std::ostream &out, float4 &m);
 
 /*
 #include <emmintrin.h> // SSE2    http://softpixel.com/~cwright/programming/simd/sse2.php

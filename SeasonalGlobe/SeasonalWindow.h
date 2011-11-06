@@ -5,21 +5,25 @@ using gxbase::App;
 using gxbase::GLWindowEx;
 
 #include "Color.h"
+#include "ctypes.h"
 
 class SeasonalWindow : public GLWindowEx
 {
 private:
-	int windowRes[2]; //index 0=width, 1=height
+	static const u32 DEFAULT_WIDTH = 800;
+	static const u32 DEFAULT_HEIGHT = 600;
+
+	u32 windowRes[2]; //index 0=width, 1=height
 	Color4f clearColor; // opengl window clear color
 public:
 	void OnDisplay();
 	void OnIdle();
-	void OnKeyboard(int key, bool down);
+	void OnKeyboard(i32 key, bool down);
 	void OnCreate();
 	void OnDestroy();
 
-	const int* const GetWindowRes() const;
-	void SetWindowResolution(const int width, const int height);
+	const u32* const GetWindowRes() const;
+	void SetWindowResolution(const u32 width, const u32 height);
 	void SwitchFullscreen();
 	const bool IsFullScreen() const;
 

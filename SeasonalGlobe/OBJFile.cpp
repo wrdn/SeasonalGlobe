@@ -1,8 +1,9 @@
 #include "OBJFile.h"
-#include <sstream>
+#include "strutils.h"
 
-#include <sys/types.h>
+#include <sstream>
 #include <sys/stat.h>
+using namespace std;
 
 OBJFile::OBJFile()
 {

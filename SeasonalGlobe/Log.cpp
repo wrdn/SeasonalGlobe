@@ -1,10 +1,8 @@
 #include "Log.h"
-#include "util.h"
+#include "strutils.h"
 
-#include <iostream>
 #include <fstream>
-#include <string.h>
-
+#include <iostream>
 
 bool Log::LOGGING_ENABLED = true;
 TIME_FORMAT Log::logTimeFormat = LOCAL; // ignored currently
@@ -16,12 +14,12 @@ void Log::log( const LOG_LEVEL logLevel, const c8* logmsg )
 {
 	if(!LOGGING_ENABLED) return;
 
-	string st = 
-		logLevel == TINFO ? "[INFO] " :
-		(logLevel == TWARN ? "[WARN] " : "[ERROR] ");
+	std::string st = 
+		logLevel == INFO ? "[INFO] " :
+		(logLevel == WARN ? "[WARN] " : "[ERROR] ");
 	st += logmsg;
 
-	cout << st << endl;
+	std::cout << st << std::endl;
 	logMsg.push_back(st.c_str());
 
 	tryflush();
@@ -29,7 +27,7 @@ void Log::log( const LOG_LEVEL logLevel, const c8* logmsg )
 
 void Log::log( const c8* logmsg )
 {
-	log(TINFO, logmsg);
+	log(INFO, logmsg);
 }
 
 void Log::clear_log_buff()

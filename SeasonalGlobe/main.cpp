@@ -1,6 +1,3 @@
-#include <iostream>
-using namespace std;
-
 #include "MyApp.h"
 
 static MyApp seasonalGlobe;

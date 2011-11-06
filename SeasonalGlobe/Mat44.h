@@ -1,0 +1,68 @@
+#pragma once
+
+#include "ctypes.h"
+#include <iostream>
+
+class float4;
+
+// Note: Calculations are performed in SSE registers. Data is assumed to be aligned to a 16 byte boundary.
+// If the memory is on the stack, this is guaranteed by the compiler (due to ALIGN(16) within the classes Mat44 and float4)
+// If it is on the heap, you cannot rely on alignment by default, so you may want to use _aligned_malloc() and _aligned_free
+// Consider also overriding new so that *malloc* functions can be used, and the constructors will be called automatically
+class Mat44
+{
+private:
+	static const c8 MATRIX_ELEMENT_COUNT = 16;
+	ALIGN(16) f32 mat[Mat44::MATRIX_ELEMENT_COUNT];
+
+	/*
+	[ 0  1  2  3]
+	[ 4  5  6  7]
+	[ 8  9 10 11]
+	[12 13 14 15]
+
+	[m11 m12 m13 m14]
+	[m21 m22 m23 m24]
+	[m31 m32 m33 m34]
+	[m41 m42 m43 m44]
+	*/
+public:
+	Mat44(void);
+	Mat44(const f32* _mat); // use existing FP array to initialise the matrix
+	Mat44(
+		const f32 m11, const f32 m12, const f32 m13, const f32 m14,
+		const f32 m21, const f32 m22, const f32 m23, const f32 m24,
+		const f32 m31, const f32 m32, const f32 m33, const f32 m34,
+		const f32 m41, const f32 m42, const f32 m43, const f32 m44);
+	~Mat44(void);
+
+	static const Mat44 IDENTITY;
+
+	const f32* const GetMatrix() const;
+	void SetMatrix(const f32* _mat);
+	void Identity(); // sets this matrix back to the identity matrix (Mat44::IDENTITY)
+
+	Mat44 Add(const Mat44 &m) const; // standard matrix addition
+	Mat44 Add(const f32 v) const; // adds v to each matrix element
+	Mat44 Sub(const Mat44 &m) const; // standard matrix subtraction
+	Mat44 Sub(const f32 v) const; // subtracts v from each matrix element
+
+	Mat44 Mult(const f32 scale) const; // matrix scaling
+	Mat44 Mult_ComponentWise(const Mat44 &m) const; // component-wise multiplication
+	Mat44 Mult(const Mat44 &m) const; // standard matrix multiplication
+	float4 Mult(const float4 &m) const; // matrix-vector multiplication
+
+	// Used to multiply a batch of vectors by the same matrix
+	void BatchMult(const float4 * const in, float4 *out, u32 len) const;
+
+	// Add the implementation for these as required
+	Mat44 Inverse() const;
+	f32 Determinant() const;
+
+	Mat44 Transpose() const;
+
+	void write(std::ostream &out);
+};
+
+std::ostream& operator<<(std::ostream &out, Mat44 &m);
+

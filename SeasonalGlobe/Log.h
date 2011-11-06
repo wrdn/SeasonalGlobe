@@ -2,14 +2,13 @@
 #define __LOG_H__
 
 #include <vector>
-#include "ctypes.h"
 #include "TimeInfo.h"
 
 enum LOG_LEVEL
 {
-	TINFO,
-	TWARN,
-	TERROR
+	INFO,
+	WARN,
+	ERROR
 };
 
 // Global logging class (NOT thread safe)
