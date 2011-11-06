@@ -63,6 +63,9 @@
     <ClCompile Include="strutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="float3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ctypes.h">
@@ -108,6 +111,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="strutils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="float3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

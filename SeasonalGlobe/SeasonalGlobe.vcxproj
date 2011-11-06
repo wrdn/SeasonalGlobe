@@ -85,6 +85,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="float3.cpp" />
     <ClCompile Include="float4.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
@@ -103,6 +104,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="ctypes.h" />
+    <ClInclude Include="float3.h" />
     <ClInclude Include="float4.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Mat44.h" />

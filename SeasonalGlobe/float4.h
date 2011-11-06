@@ -3,6 +3,7 @@
 #include "ctypes.h"
 #include <iostream>
 
+class float3;
 class float4
 {
 public:
@@ -12,14 +13,19 @@ public:
 	static const float4 ONE;
 
 	float4(); // sets all to 0
+	float4(const float3 &f);
+	float4(const float3 &f, const f32 w);
 	float4(const f32 v);
 	float4(const f32 _x, f32 _y, f32 _z);
 	float4(const f32 _x, f32 _y, f32 _z, f32 _w);
 	float4(const f32 * v); // copy from 4 element array
 
+	float3 ToFloat3() const;
+
 	static float4 FromXYZ(const f32 * v); 
 
 	void zero(); // zero's the current vector
+	void setall(const f32 v);
 
 	float4 add(const float4 &v) const;
 	float4 sub(const float4 &v) const;

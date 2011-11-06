@@ -18,4 +18,6 @@ void clamp(i32 &v, i32 lower, i32 upper);
 
 bool NearZero(const f32 v);
 
+f32 InvSqrt(f32 x);
+
 #endif

@@ -1,18 +1,41 @@
 #include "float4.h"
+#include "float3.h"
+
 #include "util.h"
 #include <math.h>
 
 const float4 float4::ZERO = float4((f32)0.0f);
 const float4 float4::ONE  = float4((f32)1.0f);
 
+float3 float4::ToFloat3() const
+{
+	return float3(vec);
+};
+
 float4::float4()
 {
-	vec[0] = vec[1] = vec[2] = vec[3] = 0;
+	zero();
+};
+
+float4::float4(const float3 &f)
+{
+	vec[0] = f.vec[0];
+	vec[1] = f.vec[1];
+	vec[2] = f.vec[2];
+	vec[3] = 0;
+};
+
+float4::float4(const float3 &f, const f32 w)
+{
+	vec[0] = f.vec[0];
+	vec[1] = f.vec[1];
+	vec[2] = f.vec[2];
+	vec[3] = w;
 };
 
 float4::float4(const f32 v)
 {
-	vec[0] = vec[1] = vec[2] = vec[3] = v;
+	setall(v);
 };
 
 float4::float4(const f32 _x, f32 _y, f32 _z, f32 _w)
@@ -44,7 +67,12 @@ float4 float4::FromXYZ(const f32 * v)
 	return float4(v[0], v[1], v[2]);
 };
 
-void float4::zero() { vec[0]=vec[1]=vec[2]=vec[3]=0; };
+void float4::setall(const f32 v)
+{
+	vec[0] = vec[1] = vec[2] = vec[3] = v;
+};
+
+void float4::zero() { setall(0); };
 
 float4 float4::add(const float4 &v) const
 {
@@ -128,7 +156,8 @@ float4 float4::cross(const float4 &v) const
 	return float4(
 		(vec[1] * v.vec[2]) - (vec[2] * v.vec[1]),
 		(vec[2] * v.vec[0]) - (vec[0] * v.vec[2]),
-		(vec[0] * v.vec[1]) - (vec[1] * v.vec[0]));
+		(vec[0] * v.vec[1]) - (vec[1] * v.vec[0]),
+		0);
 };
 
 void float4::cross(const float4 &v, f32 * const output3d) const
@@ -140,7 +169,7 @@ void float4::cross(const float4 &v, f32 * const output3d) const
 
 f32 float4::magnitude() const
 {
-	return sqrtf( (vec[0]*vec[0]) + (vec[1]*vec[1]) + (vec[2]*vec[2]) + (vec[3]*vec[3]) );
+	return sqrtf( LengthSquared() );
 };
 f32 float4::LengthSquared() const
 {
@@ -156,14 +185,6 @@ f32 float4::DistanceSquared(const float4 &v) const
 {
 	return this->sub(v).LengthSquared();
 };
-
-// Fast inverse square root, from http://pizer.wordpress.com/2008/10/12/fast-inverse-square-root/
-f32 InvSqrt(f32 x)
-{
-   u32 i = 0x5F1F1412 - (*(u32*)&x >> 1);
-   float tmp = *(float*)&i;
-   return tmp * (1.69000231f - 0.714158168f * x * tmp * tmp);
-}
 
 float4 float4::normalize() const
 {
@@ -188,10 +209,10 @@ void float4::normalize()
 float4 float4::negate() const
 {
 	return float4(
-		vec[0],
-		vec[1],
-		vec[2],
-		vec[3]);
+		-vec[0],
+		-vec[1],
+		-vec[2],
+		-vec[3]);
 };
 
 float4 float4::absolute() const
