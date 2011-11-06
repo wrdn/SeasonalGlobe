@@ -24,10 +24,10 @@ Mat44::Mat44(const f32* _mat) // use existing FP array to initialise the matrix
 };
 
 Mat44::Mat44(
-		const f32 m11, const f32 m12, const f32 m13, const f32 m14,
-		const f32 m21, const f32 m22, const f32 m23, const f32 m24,
-		const f32 m31, const f32 m32, const f32 m33, const f32 m34,
-		const f32 m41, const f32 m42, const f32 m43, const f32 m44)
+	const f32 m11, const f32 m12, const f32 m13, const f32 m14,
+	const f32 m21, const f32 m22, const f32 m23, const f32 m24,
+	const f32 m31, const f32 m32, const f32 m33, const f32 m34,
+	const f32 m41, const f32 m42, const f32 m43, const f32 m44)
 {
 	// set each value individually
 	mat[0]  = m11;  mat[1]  = m12;  mat[2]  = m13;  mat[3]  = m14;
@@ -59,7 +59,7 @@ Mat44 Mat44::Add(const Mat44 &m) const
 {
 	__m128 mat1rows[] = { _mm_load_ps(mat), _mm_load_ps(mat+4), _mm_load_ps(mat+8), _mm_load_ps(mat+12) };
 	__m128 mat2rows[] = { _mm_load_ps(m.mat), _mm_load_ps(m.mat+4), _mm_load_ps(m.mat+8), _mm_load_ps(m.mat+12) };
-	
+
 	Mat44 res;
 	_mm_store_ps(res.mat   , _mm_add_ps(mat1rows[0], mat2rows[0]));
 	_mm_store_ps(res.mat+4 , _mm_add_ps(mat1rows[1], mat2rows[1]));
@@ -85,7 +85,7 @@ Mat44 Mat44::Sub(const Mat44 &m) const
 {
 	__m128 mat1rows[] = { _mm_load_ps(mat), _mm_load_ps(mat+4), _mm_load_ps(mat+8), _mm_load_ps(mat+12) };
 	__m128 mat2rows[] = { _mm_load_ps(m.mat), _mm_load_ps(m.mat+4), _mm_load_ps(m.mat+8), _mm_load_ps(m.mat+12) };
-	
+
 	Mat44 res;
 	_mm_store_ps(res.mat   , _mm_sub_ps(mat1rows[0], mat2rows[0]));
 	_mm_store_ps(res.mat+4 , _mm_sub_ps(mat1rows[1], mat2rows[1]));
@@ -124,7 +124,7 @@ Mat44 Mat44::Mult_ComponentWise(const Mat44 &m) const
 {
 	__m128 mat1rows[] = { _mm_load_ps(mat), _mm_load_ps(mat+4), _mm_load_ps(mat+8), _mm_load_ps(mat+12) };
 	__m128 mat2rows[] = { _mm_load_ps(m.mat), _mm_load_ps(m.mat+4), _mm_load_ps(m.mat+8), _mm_load_ps(m.mat+12) };
-	
+
 	Mat44 res;
 	_mm_store_ps(res.mat   , _mm_mul_ps(mat1rows[0], mat2rows[0]));
 	_mm_store_ps(res.mat+4 , _mm_mul_ps(mat1rows[1], mat2rows[1]));
@@ -180,7 +180,7 @@ float4 Mat44::Mult(const float4 &m) const
 	};
 
 	__m128 v = _mm_load_ps(m.vec);
-	
+
 	// Broadcast vector into SSE registers
 	__m128 xb = _mm_shuffle_ps(v,v,0x00);
 	__m128 yb = _mm_shuffle_ps(v,v,0x55);
@@ -235,6 +235,220 @@ void Mat44::BatchMult(const float4 * const in, float4 *out, u32 len) const
 		_mm_prefetch((const char*)&out[len+1], _MM_HINT_T0);
 		_mm_store_ps(out[len].vec, r);
 	}
+};
+
+void Mat44::Cramers_Inverse(Mat44 *out, f32 &det) const
+{
+	float    tmp[12]; /* temp array for pairs                      */
+
+	f32 *src = Transpose().mat, *dst;
+	Mat44 outp;
+
+	if(out)
+		dst = out->mat;
+	else
+		dst = outp.mat;
+
+	/* calculate pairs for first 8 elements (cofactors) */
+	tmp[0]  = src[10] * src[15];
+	tmp[1]  = src[11] * src[14];
+	tmp[2]  = src[9]  * src[15];
+	tmp[3]  = src[11] * src[13];
+	tmp[4]  = src[9]  * src[14];
+	tmp[5]  = src[10] * src[13];
+	tmp[6]  = src[8]  * src[15];
+	tmp[7]  = src[11] * src[12];
+	tmp[8]  = src[8]  * src[14];
+	tmp[9]  = src[10] * src[12];
+	tmp[10] = src[8]  * src[13];
+	tmp[11] = src[9]  * src[12];
+
+	/* calculate first 8 elements (cofactors) */
+	dst[0]  = tmp[0]*src[5] + tmp[3]*src[6] + tmp[4]*src[7];
+	dst[0] -= tmp[1]*src[5] + tmp[2]*src[6] + tmp[5]*src[7];
+	dst[1]  = tmp[1]*src[4] + tmp[6]*src[6] + tmp[9]*src[7];
+	dst[1] -= tmp[0]*src[4] + tmp[7]*src[6] + tmp[8]*src[7];
+	dst[2]  = tmp[2]*src[4] + tmp[7]*src[5] + tmp[10]*src[7];
+	dst[2] -= tmp[3]*src[4] + tmp[6]*src[5] + tmp[11]*src[7];
+	dst[3]  = tmp[5]*src[4] + tmp[8]*src[5] + tmp[11]*src[6];
+	dst[3] -= tmp[4]*src[4] + tmp[9]*src[5] + tmp[10]*src[6];
+	dst[4]  = tmp[1]*src[1] + tmp[2]*src[2] + tmp[5]*src[3];
+	dst[4] -= tmp[0]*src[1] + tmp[3]*src[2] + tmp[4]*src[3];
+	dst[5]  = tmp[0]*src[0] + tmp[7]*src[2] + tmp[8]*src[3];
+	dst[5] -= tmp[1]*src[0] + tmp[6]*src[2] + tmp[9]*src[3];
+	dst[6]  = tmp[3]*src[0] + tmp[6]*src[1] + tmp[11]*src[3];
+	dst[6] -= tmp[2]*src[0] + tmp[7]*src[1] + tmp[10]*src[3];
+	dst[7]  = tmp[4]*src[0] + tmp[9]*src[1] + tmp[10]*src[2];
+	dst[7] -= tmp[5]*src[0] + tmp[8]*src[1] + tmp[11]*src[2];
+
+	// We don't need the variables below to get the determinant, so calculate and get out here, iff we don't want the inverse matrix
+	if(!out)
+	{
+		det=src[0]*dst[0]+src[1]*dst[1]+src[2]*dst[2]+src[3]*dst[3];
+		det = 1/det;
+		return;
+	}
+
+	/* calculate pairs for second 8 elements (cofactors) */
+	tmp[0]  = src[2]*src[7];
+	tmp[1]  = src[3]*src[6];
+	tmp[2]  = src[1]*src[7];
+	tmp[3]  = src[3]*src[5];
+	tmp[4]  = src[1]*src[6];
+	tmp[5]  = src[2]*src[5];
+	tmp[6]  = src[0]*src[7];
+	tmp[7]  = src[3]*src[4];
+	tmp[8]  = src[0]*src[6];
+	tmp[9]  = src[2]*src[4];
+	tmp[10] = src[0]*src[5];
+	tmp[11] = src[1]*src[4];
+
+	/* calculate second 8 elements (cofactors) */
+	dst[8]  = tmp[0]*src[13] + tmp[3]*src[14] + tmp[4]*src[15];
+	dst[8] -= tmp[1]*src[13] + tmp[2]*src[14] + tmp[5]*src[15];
+	dst[9]  = tmp[1]*src[12] + tmp[6]*src[14] + tmp[9]*src[15];
+	dst[9] -= tmp[0]*src[12] + tmp[7]*src[14] + tmp[8]*src[15];
+	dst[10] = tmp[2]*src[12] + tmp[7]*src[13] + tmp[10]*src[15];
+	dst[10]-= tmp[3]*src[12] + tmp[6]*src[13] + tmp[11]*src[15];
+	dst[11] = tmp[5]*src[12] + tmp[8]*src[13] + tmp[11]*src[14];
+	dst[11]-= tmp[4]*src[12] + tmp[9]*src[13] + tmp[10]*src[14];
+	dst[12] = tmp[2]*src[10] + tmp[5]*src[11] + tmp[1]*src[9];
+	dst[12]-= tmp[4]*src[11] + tmp[0]*src[9] + tmp[3]*src[10];
+	dst[13] = tmp[8]*src[11] + tmp[0]*src[8] + tmp[7]*src[10];
+	dst[13]-= tmp[6]*src[10] + tmp[9]*src[11] + tmp[1]*src[8];
+	dst[14] = tmp[6]*src[9] + tmp[11]*src[11] + tmp[3]*src[8];
+	dst[14]-= tmp[10]*src[11] + tmp[2]*src[8] + tmp[7]*src[9];
+	dst[15] = tmp[10]*src[10] + tmp[4]*src[8] + tmp[9]*src[9];
+	dst[15]-= tmp[8]*src[9] + tmp[11]*src[10] + tmp[5]*src[8];
+
+	/* calculate determinant */
+	det=src[0]*dst[0]+src[1]*dst[1]+src[2]*dst[2]+src[3]*dst[3];
+
+	/* calculate matrix inverse */
+	det = 1/det;
+	for (int j = 0; j < 16; j++)
+		dst[j] *= det;
+};
+
+void Mat44::Cramers_Inverse_SSE(Mat44 *out, f32 &detv) const
+{
+	f32 *src = (f32*)&mat;
+
+	__m128 minor0=_mm_setzero_ps(), minor1=_mm_setzero_ps(), minor2=_mm_setzero_ps(), minor3=_mm_setzero_ps();
+	__m128 row0=_mm_setzero_ps(),   row1=_mm_setzero_ps(),   row2=_mm_setzero_ps(),   row3=_mm_setzero_ps();
+	__m128 det=_mm_setzero_ps(),    tmp1=_mm_setzero_ps();
+
+	tmp1 = _mm_loadh_pi(_mm_loadl_pi(tmp1, (__m64*)(src)), (__m64*)(src+ 4));
+	row1 = _mm_loadh_pi(_mm_loadl_pi(row1, (__m64*)(src+8)), (__m64*)(src+12));
+	row0 = _mm_shuffle_ps(tmp1, row1, 0x88);
+	row1 = _mm_shuffle_ps(row1, tmp1, 0xDD);
+	tmp1 = _mm_loadh_pi(_mm_loadl_pi(tmp1, (__m64*)(src+ 2)), (__m64*)(src+ 6));
+	row3 = _mm_loadh_pi(_mm_loadl_pi(row3, (__m64*)(src+10)), (__m64*)(src+14));
+	row2 = _mm_shuffle_ps(tmp1, row3, 0x88);
+	row3 = _mm_shuffle_ps(row3, tmp1, 0xDD);
+	
+	tmp1 = _mm_mul_ps(row2, row3);
+	tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0xB1);
+	minor0 = _mm_mul_ps(row1, tmp1);
+	minor1 = _mm_mul_ps(row0, tmp1);
+	tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0x4E);
+	minor0 = _mm_sub_ps(_mm_mul_ps(row1, tmp1), minor0);
+	minor1 = _mm_sub_ps(_mm_mul_ps(row0, tmp1), minor1);
+	minor1 = _mm_shuffle_ps(minor1, minor1, 0x4E);
+	
+	tmp1 = _mm_mul_ps(row1, row2);
+	tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0xB1);
+	minor0 = _mm_add_ps(_mm_mul_ps(row3, tmp1), minor0);
+	minor3 = _mm_mul_ps(row0, tmp1);
+	tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0x4E);
+	minor0 = _mm_sub_ps(minor0, _mm_mul_ps(row3, tmp1));
+	minor3 = _mm_sub_ps(_mm_mul_ps(row0, tmp1), minor3);
+	minor3 = _mm_shuffle_ps(minor3, minor3, 0x4E);
+	
+	tmp1 = _mm_mul_ps(_mm_shuffle_ps(row1, row1, 0x4E), row3);
+	tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0xB1);
+	row2 = _mm_shuffle_ps(row2, row2, 0x4E);
+	minor0 = _mm_add_ps(_mm_mul_ps(row2, tmp1), minor0);
+	minor2 = _mm_mul_ps(row0, tmp1);
+	tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0x4E);
+	minor0 = _mm_sub_ps(minor0, _mm_mul_ps(row2, tmp1));
+	minor2 = _mm_sub_ps(_mm_mul_ps(row0, tmp1), minor2);
+	minor2 = _mm_shuffle_ps(minor2, minor2, 0x4E);
+	
+	tmp1 = _mm_mul_ps(row0, row1);
+	tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0xB1);
+	minor2 = _mm_add_ps(_mm_mul_ps(row3, tmp1), minor2);
+	minor3 = _mm_sub_ps(_mm_mul_ps(row2, tmp1), minor3);
+	tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0x4E);
+	minor2 = _mm_sub_ps(_mm_mul_ps(row3, tmp1), minor2);
+	minor3 = _mm_sub_ps(minor3, _mm_mul_ps(row2, tmp1));
+	
+	tmp1 = _mm_mul_ps(row0, row3);
+	tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0xB1);
+	minor1 = _mm_sub_ps(minor1, _mm_mul_ps(row2, tmp1));
+	minor2 = _mm_add_ps(_mm_mul_ps(row1, tmp1), minor2);
+	tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0x4E);
+	minor1 = _mm_add_ps(_mm_mul_ps(row2, tmp1), minor1);
+	minor2 = _mm_sub_ps(minor2, _mm_mul_ps(row1, tmp1));
+	
+	tmp1 = _mm_mul_ps(row0, row2);
+	tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0xB1);
+	minor1 = _mm_add_ps(_mm_mul_ps(row3, tmp1), minor1);
+	minor3 = _mm_sub_ps(minor3, _mm_mul_ps(row1, tmp1));
+	tmp1 = _mm_shuffle_ps(tmp1, tmp1, 0x4E);
+	minor1 = _mm_sub_ps(minor1, _mm_mul_ps(row3, tmp1));
+	minor3 = _mm_add_ps(_mm_mul_ps(row1, tmp1), minor3);
+	
+	det = _mm_mul_ps(row0, minor0);
+	det = _mm_add_ps(_mm_shuffle_ps(det, det, 0x4E), det);
+	det = _mm_add_ss(_mm_shuffle_ps(det, det, 0xB1), det);
+	tmp1 = _mm_rcp_ss(det);
+	det = _mm_sub_ss(_mm_add_ss(tmp1, tmp1), _mm_mul_ss(det, _mm_mul_ss(tmp1, tmp1)));
+	det = _mm_shuffle_ps(det, det, 0x00);
+	
+	_mm_store_ss(&detv, det);
+
+	Mat44 t;
+	if(out)
+	{
+		src = out->mat;
+	}
+	else
+	{
+		src = t.mat;
+	}
+
+	minor0 = _mm_mul_ps(det, minor0);
+	_mm_storel_pi((__m64*)(src), minor0);
+	_mm_storeh_pi((__m64*)(src+2), minor0);
+	
+	minor1 = _mm_mul_ps(det, minor1);
+	_mm_storel_pi((__m64*)(src+4), minor1);
+	_mm_storeh_pi((__m64*)(src+6), minor1);
+	
+	minor2 = _mm_mul_ps(det, minor2);
+	_mm_storel_pi((__m64*)(src+ 8), minor2);
+	_mm_storeh_pi((__m64*)(src+10), minor2);
+	
+	minor3 = _mm_mul_ps(det, minor3);
+	_mm_storel_pi((__m64*)(src+12), minor3);
+	_mm_storeh_pi((__m64*)(src+14), minor3);
+};
+
+Mat44 Mat44::Inverse() const
+{
+	Mat44 ret; f32 det;
+	//Cramers_Inverse(&ret,det);
+	Cramers_Inverse_SSE(&ret, det);
+	return ret;
+};
+
+f32 Mat44::Determinant() const
+{
+	f32 det;
+	//Cramers_Inverse(0,det);
+	Cramers_Inverse_SSE(0,det);
+	return det;
 };
 
 Mat44 Mat44::Transpose() const

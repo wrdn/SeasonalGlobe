@@ -67,35 +67,17 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 
 void SeasonalWindow::OnCreate()
 {
+	/*f32 matData[] = { 1,0,5,0, 0,2,0,3, 0,2,1,0, 7,0,0,4 };
+	Mat44 ma(matData);
+	Mat44 invma = ma.Inverse();
+	f32 mdet = ma.Determinant();
+
 	f32 matData[] = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 };
 	Mat44 ma(matData);
-
-	Mat44 mulSelf = ma.Mult(ma);
-
-	float4 vIn[] = 
-	{
-		float4(5, 12, 1.8, 20.7),
-		float4(2, 4.5, 34.5, 0.9)
-	};
-	float4 mulVM = ma.Mult(*vIn);
-	cout << "Original Matrix:\n" << ma << "\nOriginal Vector: " << vIn[0] << "\n\nMatrix-Vector Multiplication Result: "
-		<< mulVM << endl;
-
-	float4 vout[2];
-	ma.BatchMult(vIn, vout, sizeof(vIn)/sizeof(float4));
-
-	Mat44 mb(matData);
-	mb.Identity();
-	Mat44 r1 = ma.Add(mb);
-	Mat44 r2 = ma.Add(1);
-	Mat44 r3 = ma.Sub(mb);
-	Mat44 r4 = ma.Sub(1);
-	Mat44 r5 = ma.Mult(2);
-	Mat44 r6 = ma.Mult_ComponentWise(mb);
-	Mat44 r7 = ma.Mult_ComponentWise(Mat44::IDENTITY);
-	Mat44 r8 = ma.Transpose();
-	cout << ma << endl << r8 << endl;
-
+	Mat44 mb, r8 = ma.Transpose();
+	Mat44 r1 = ma.Add(mb), r2 = ma.Add(1), r3=ma.Sub(mb), r4=ma.Sub(1), r5=ma.Mult(2);
+	Mat44 r6 = ma.Mult_ComponentWise(mb), r7 = ma.Mult_ComponentWise(Mat44::IDENTITY);*/
+	
 	OBJFile f;
 	f.ParseOBJFile("Data/cube.obj");
 	f.GetModels()[0]->RecalculatePerVertexNormals();

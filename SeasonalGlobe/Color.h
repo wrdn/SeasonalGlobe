@@ -1,13 +1,15 @@
 #pragma once
 
+#include "ctypes.h"
+
 struct Color4f
 {
 public:
-	float r,g,b,a;
+	f32 r,g,b,a;
 
 	Color4f();
-	Color4f(float _r, float _g, float _b, float _a);
-	Color4f(float v);
+	Color4f(f32 _r, f32 _g, f32 _b, f32 _a);
+	Color4f(f32 v);
 };
 
 class Color

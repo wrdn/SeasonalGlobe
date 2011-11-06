@@ -1,8 +1,8 @@
 #include "Color.h"
 
 Color4f::Color4f() : r(0), g(0), b(0), a(0) { };
-Color4f::Color4f(float _r, float _g, float _b, float _a) : r(_r), g(_g), b(_b), a(_a) { };
-Color4f::Color4f(float v) : r(v), g(v), b(v), a(v) { };
+Color4f::Color4f(f32 _r, f32 _g, f32 _b, f32 _a) : r(_r), g(_g), b(_b), a(_a) { };
+Color4f::Color4f(f32 v) : r(v), g(v), b(v), a(v) { };
 
 Color::Color() { };
 

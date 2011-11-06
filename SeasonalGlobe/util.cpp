@@ -45,6 +45,6 @@ bool NearZero(const f32 v)
 f32 InvSqrt(f32 x)
 {
    u32 i = 0x5F1F1412 - (*(u32*)&x >> 1);
-   float tmp = *(float*)&i;
+   f32 tmp = *(f32*)&i;
    return tmp * (1.69000231f - 0.714158168f * x * tmp * tmp);
 };

@@ -15,6 +15,9 @@ private:
 	static const c8 MATRIX_ELEMENT_COUNT = 16;
 	ALIGN(16) f32 mat[Mat44::MATRIX_ELEMENT_COUNT];
 
+	void Cramers_Inverse(Mat44 *out, f32 &det) const;
+	void Cramers_Inverse_SSE(Mat44 *out, f32 &det) const;
+
 	/*
 	[ 0  1  2  3]
 	[ 4  5  6  7]
@@ -55,7 +58,8 @@ public:
 	// Used to multiply a batch of vectors by the same matrix
 	void BatchMult(const float4 * const in, float4 *out, u32 len) const;
 
-	// Add the implementation for these as required
+	// Does inverse according to Cramers Rule
+	// See ftp://download.intel.com/design/PentiumIII/sml/24504301.pdf
 	Mat44 Inverse() const;
 	f32 Determinant() const;
 
