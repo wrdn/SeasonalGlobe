@@ -1,10 +1,12 @@
 #ifndef __C_TYPES_H__
 #define __C_TYPES_H__
 
-#include <pmmintrin.h> // SSE3 header
+//#include <pmmintrin.h> // SSE3 header
+
+#define ALIGN(N) __declspec(align(N))
 
 typedef float f32; // float
-typedef __m128 float4; // SIMD type
+//typedef __m128 float4; // SIMD type
 
 typedef char c8;
 typedef unsigned char uc8;

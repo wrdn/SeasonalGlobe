@@ -18,6 +18,8 @@ public:
 
 	bool ParseOBJFile(const c8* filename);
 	bool ParseOBJFile(const std::vector<c8*> &objFile);
+
+	const std::vector<Model*>& GetModels() { return models; }
 };
 
 #endif

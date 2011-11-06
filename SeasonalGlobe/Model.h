@@ -48,7 +48,10 @@ public:
 	Model(void);
 	~Model(void);
 
-	void RecalculateNormals() const;
+	// The current implementation is naiive and does not account for
+	// shared vertices. For smooth shading, we need to normalize the sum
+	// of the normalised normals of each shared vertex
+	bool RecalculatePerVertexNormals();
 
 	// OpenGL specific
 	ModelVBO BuildVBO() const; // creates a vbo, sets the data then returns its id. If an ID cannot be generated, it returns 0

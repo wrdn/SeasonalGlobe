@@ -56,7 +56,7 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 	Model *activeModel = new Model();
 	models.push_back(activeModel);
 
-#pragma region Read Vertices
+	#pragma region Read Vertices
 	/*****************************************************/
 	/**************** READ VERTICES **********************/
 	/*****************************************************/
@@ -88,9 +88,9 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 		++cp;
 	}
 	activeModel->SetVertexArray(vertex_data);
-#pragma endregion
+	#pragma endregion
 
-#pragma region Read Normals
+	#pragma region Read Normals
 	/*****************************************************/
 	/**************** READ NORMALS ***********************/
 	/*****************************************************/
@@ -130,9 +130,9 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 		}
 		activeModel->SetNormalArray(normal_data);
 	} // end if(normals)
-#pragma endregion
+	#pragma endregion
 
-#pragma region Read UVs
+	#pragma region Read UVs
 	/*****************************************************/
 	/****************** READ UVs *************************/
 	/*****************************************************/
@@ -171,7 +171,7 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 		}
 		activeModel->SetUVArray(uv_data);
 	}
-#pragma endregion
+	#pragma endregion
 
 
 	/*****************************************************/
@@ -202,7 +202,7 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 	// Read faces
 	if(activeModel->GetVertexArray()) // Vertices exist
 	{
-#pragma region Vertices and Normals
+		#pragma region Vertices and Normals
 
 		// Normals, no UVs, format: v//vn v//vn v//vn
 		if(activeModel->GetNormalArray() && !activeModel->GetUVArray())
@@ -244,9 +244,9 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 			}
 			activeModel->SetTriSet(triSet);
 		}
-#pragma endregion
+		#pragma endregion
 
-#pragma region Vertices, Normals and UVs
+		#pragma region Vertices, Normals and UVs
 		// Normals and UVs, format: v/vt/vn v/vt/vn v/vt/vn
 		else if(activeModel->GetNormalArray() && activeModel->GetUVArray())
 		{
@@ -293,9 +293,9 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 			}
 			activeModel->SetTriSet(triSet);
 		}
-#pragma endregion
+		#pragma endregion
 
-#pragma region Vertices and UVs (TODO: RECALC NORMALS)
+		#pragma region Vertices and UVs (TODO: RECALC NORMALS)
 		// UVs and no Normals, format: v/vt v/vt v/vt
 		else if(activeModel->GetUVArray() && !activeModel->GetNormalArray())
 		{
@@ -339,9 +339,9 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 
 			activeModel->SetTriSet(triSet);
 		}
-#pragma endregion
+		#pragma endregion
 
-#pragma region Vertices only (TODO: RECALC NORMALS)
+		#pragma region Vertices only (TODO: RECALC NORMALS)
 		// No UVs and no Normals (vertices only), set vertices, and recalc normals (6 indices)
 		// It is unlikely we'll ever be in this code, but we should cover the possibility
 		// Format: v v v
@@ -368,13 +368,14 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 				triSet[insertionPos]   = (indices[0]-1) * 3;
 				triSet[insertionPos+2] = (indices[1]-1) * 3;
 				triSet[insertionPos+4] = (indices[2]-1) * 3;
+
+				insertionPos += 6;
+				++cp;
 			}
-
-			/* TODO: RECALCULATE NORMALS HERE */
-
 			activeModel->SetTriSet(triSet);
+			activeModel->RecalculatePerVertexNormals();
 		}
-#pragma endregion
+		#pragma endregion
 
 		return true;
 	}
