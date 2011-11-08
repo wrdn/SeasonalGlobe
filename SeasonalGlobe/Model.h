@@ -2,6 +2,9 @@
 #define __MODEL_H__
 
 #include "ctypes.h"
+#include <GXBase.h>
+
+#define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 //! Constructor will ensure both vboids are set to 0 originally
 struct ModelVBO // 8 bytes
@@ -12,6 +15,22 @@ public:
 
 	ModelVBO();
 	~ModelVBO();
+};
+
+// A vertex should be duplicated as many times as normal (etc) changes
+// 32 bytes
+struct VERTEX
+{
+public:
+	f32 pos[3]; // 12
+	f32 norm[3]; // 12
+	f32 uvs[2]; // 8
+	
+	// NOTE: Remember to change these if you change the size/order of this structure
+	// Values are in bytes and are used during VBO creation
+	static const u32 POS_BUFFER_OFFSET = 0;
+	static const u32 NORMAL_BUFFER_OFFSET = 12;
+	static const u32 UV_BUFFER_OFFSET = 24;
 };
 
 // Required model data:
@@ -29,18 +48,26 @@ public:
 // Generic Model class supporting vertices, normals and texture coordinates (UVs). Any model file loaders (e.g. obj loader)
 // should load the data into a Model, so there is a single point of maintenance for data. Feel free to add model loading classes
 // (e.g. OBJLoader) to contain specifics to that format. The Model object may be embedded within the format (composition)
-class Model
+class Model : public glex
 {
 private:
 	f32 *vertex_data, *normal_data, *uv_data;
 	u32 *textures, *triSet; // triSet format is v/vt/vn
 
-	// minimum if 6 (vertex pos and normal), maximum if 9 (vertex pos, normal, and vertex uv)
-	u32 INDICES_PER_TRIANGLE;
+
+	u32 *indices_array;
+
+	static const u32 INDICES_PER_TRIANGLE; // 3
 
 	u32 vertexCount, normalCount, uvCount, texCount, triCount;
 
+	VERTEX *VertexData;
+
+	ModelVBO mvb;
+
 public:
+	int realVertexDataSz;
+
 	static const char FLOATS_PER_VERTEX_POS = 3; // x,y,z vertex pos
 	static const char FLOATS_PER_VERTEX_NORMAL = 3; // x,y,z vertex normal
 	static const char FLOATS_PER_VERTEX_UV = 2; // u,v (no 3D texture coordinates)
@@ -54,13 +81,17 @@ public:
 	bool RecalculatePerVertexNormals();
 
 	// OpenGL specific
-	ModelVBO BuildVBO() const; // creates a vbo, sets the data then returns its id. If an ID cannot be generated, it returns 0
+	bool BuildVBO(); // creates a vbo, sets the data then returns its id. If an ID cannot be generated, it returns 0
 
 
 	/* ACCESSORS AND MUTATORS */
 
-	u32 GetIndicesPerTriangle() const;
-	bool SetIndicesPerTriangle(c8 indicesPerTri); // min=6, max=9
+	const ModelVBO& GetModelVBO() const { return mvb; };
+
+	static const u32 GetIndicesPerTriangle();
+	
+	const VERTEX * const GetVertexData() const { return VertexData; };
+	void SetVertexData(VERTEX * const v) { VertexData = v; };
 
 	void SetVertexCount(const u32 v) { vertexCount = v; };
 	void SetNormalCount(const u32 v) { normalCount = v; };
@@ -82,8 +113,13 @@ public:
 	const f32* GetNormalArray() const { return normal_data; };
 	const f32* GetUVArray() const { return uv_data; };
 
+	void SetIndicesArray(u32 * const v) { indices_array = v; };
+	const u32* GetIndicesArray() const { return indices_array; };
+
 	void SetTriSet(u32 * const v) { triSet = v; };
 	const u32* GetTriSet() const { return triSet; };
+
+	void Draw();
 };
 
 #endif

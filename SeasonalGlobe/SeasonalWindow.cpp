@@ -32,6 +32,13 @@ void SeasonalWindow::SetWindowResolution(const u32 width, const u32 height)
 	windowRes[0] = width;
 	windowRes[1] = height;
 	SetSize(windowRes[0], windowRes[1]);
+
+	glViewport(0,0,800,600);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(60, (double)windowRes[0] / (double)windowRes[1],
+		1,50.0);
+	glMatrixMode(GL_MODELVIEW);
 };
 
 void SeasonalWindow::SwitchFullscreen()
@@ -46,8 +53,11 @@ const bool SeasonalWindow::IsFullScreen() const
 
 void SeasonalWindow::OnDisplay()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	gameTime.Update();
+
 	glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+
+	scn.Draw(gameTime);
 	
 	SwapBuffers();
 };
@@ -67,23 +77,16 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 
 void SeasonalWindow::OnCreate()
 {
-	/*f32 matData[] = { 1,0,5,0, 0,2,0,3, 0,2,1,0, 7,0,0,4 };
-	Mat44 ma(matData);
-	Mat44 invma = ma.Inverse();
-	f32 mdet = ma.Determinant();
-
-	f32 matData[] = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 };
-	Mat44 ma(matData);
-	Mat44 mb, r8 = ma.Transpose();
-	Mat44 r1 = ma.Add(mb), r2 = ma.Add(1), r3=ma.Sub(mb), r4=ma.Sub(1), r5=ma.Mult(2);
-	Mat44 r6 = ma.Mult_ComponentWise(mb), r7 = ma.Mult_ComponentWise(Mat44::IDENTITY);*/
-	
-	OBJFile f;
-	f.ParseOBJFile("Data/cube.obj");
-	f.GetModels()[0]->RecalculatePerVertexNormals();
-
 	GLWindowEx::OnCreate();
 	SetWindowResolution(windowRes[0], windowRes[1]);
+
+	scn.Load();
+
+	gameTime.Init();
+
+	glEnable(GL_LIGHTING);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 };
 
 void SeasonalWindow::OnDestroy()

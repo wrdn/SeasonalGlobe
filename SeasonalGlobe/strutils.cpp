@@ -232,21 +232,6 @@ c8 *read_src_fast(const c8 *file)
 	return buff;
 }
 
-// Source: http://www.cse.yorku.ca/~oz/hash.html
-u32 hash(const u32 *str)
-{
-	u32 hash = 5381;
-	u32 c=0;
-
-	while(str)
-	{
-		c = *str++;
-		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-	}
-
-	return hash;
-};
-
 void cleanup_str_vec(std::vector<c8*> &v)
 {
 	for(size_t i=0;i<v.size();++i)

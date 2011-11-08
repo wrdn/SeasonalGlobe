@@ -7,7 +7,7 @@ class float4;
 class float3
 {
 public:
-	ALIGN(16) f32 vec[4];
+	ALIGN(16) f32 vec[3];
 
 	static const float3 ZERO;
 	static const float3 ONE;

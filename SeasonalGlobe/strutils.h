@@ -40,9 +40,6 @@ std::vector<c8*> read_src_to_vec(const c8* file, bool incBlankLines, const u32 o
 // Removes all the strings in the vector then clears it.
 void cleanup_str_vec(std::vector<c8*> &v);
 
-// djb2 string hashing
-u32 hash(const u32 *str);
-
 const char* bstr(const bool b);
 
 bool fast_strcmp(char *a, char *b);

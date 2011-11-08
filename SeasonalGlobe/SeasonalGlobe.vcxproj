@@ -87,6 +87,7 @@
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="float3.cpp" />
     <ClCompile Include="float4.cpp" />
+    <ClCompile Include="GameTime.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mat44.cpp" />
@@ -99,6 +100,7 @@
     <ClCompile Include="strutils.cpp" />
     <ClCompile Include="TimeInfo.cpp" />
     <ClCompile Include="util.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -106,6 +108,7 @@
     <ClInclude Include="ctypes.h" />
     <ClInclude Include="float3.h" />
     <ClInclude Include="float4.h" />
+    <ClInclude Include="GameTime.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Mat44.h" />
     <ClInclude Include="Model.h" />
@@ -117,9 +120,13 @@
     <ClInclude Include="strutils.h" />
     <ClInclude Include="TimeInfo.h" />
     <ClInclude Include="util.h" />
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Data\cube.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="Data\untitled.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </Object>
   </ItemGroup>

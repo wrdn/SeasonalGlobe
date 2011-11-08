@@ -6,6 +6,8 @@ using gxbase::GLWindowEx;
 
 #include "Color.h"
 #include "ctypes.h"
+#include "World.h"
+#include "GameTime.h"
 
 class SeasonalWindow : public GLWindowEx
 {
@@ -15,6 +17,10 @@ private:
 
 	u32 windowRes[2]; //index 0=width, 1=height
 	Color4f clearColor; // opengl window clear color
+
+	World scn;
+
+	GameTime gameTime;
 public:
 	void OnDisplay();
 	void OnIdle();

@@ -196,6 +196,6 @@ void operator^=(float3 &a, const float3 &b) { a = a.cross(b); };
 
 std::ostream& operator<<(std::ostream &out, float3 &m)
 {
-	std::cout << "{" << m.vec[0] << "," << m.vec[1] << "," << m.vec[2] << "," << m.vec[3] << "}";
+	std::cout << "{" << m.vec[0] << "," << m.vec[1] << "," << m.vec[2] << "}";
 	return out;
 };

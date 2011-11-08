@@ -20,4 +20,7 @@ bool NearZero(const f32 v);
 
 f32 InvSqrt(f32 x);
 
+// djb2 string hashing
+unsigned long hash_djb2(unsigned char *str);
+
 #endif

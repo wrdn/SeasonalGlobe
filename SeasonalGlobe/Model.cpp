@@ -2,13 +2,23 @@
 #include "util.h"
 #include "float4.h"
 
+#include "float3.h"
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+const u32 Model::INDICES_PER_TRIANGLE = 3;
+
 ModelVBO::ModelVBO() : modeldata_vboid(0), indices_vboid(0) { };
 ModelVBO::~ModelVBO() { };
 
 Model::Model(void)
 	: vertex_data(0), normal_data(0), uv_data(0), textures(0), triSet(0), 
-	INDICES_PER_TRIANGLE(6), vertexCount(0), normalCount(0), uvCount(0), texCount(0), triCount(0)
-{ };
+	vertexCount(0), normalCount(0), uvCount(0), texCount(0), triCount(0)
+{
+	glex::Load();
+};
 
 Model::~Model(void)
 {
@@ -25,6 +35,8 @@ Model::~Model(void)
 
 bool Model::RecalculatePerVertexNormals()
 {
+	return false; // TODO: REIMPLEMENT
+
 	if(!GetTriSet() || !GetTriCount()) return false; // no faces
 
 	// Delete old normal data (if any)
@@ -87,22 +99,43 @@ bool Model::RecalculatePerVertexNormals()
 	return false;
 };
 
-ModelVBO Model::BuildVBO() const
-{
-	//ModelVBO mvbo;
-	//return mvbo;
-	return ModelVBO();
-};
-
-u32 Model::GetIndicesPerTriangle() const
+const u32 Model::GetIndicesPerTriangle()
 {
 	return INDICES_PER_TRIANGLE;
 };
 
-bool Model::SetIndicesPerTriangle(c8 indicesPerTri)
+bool Model::BuildVBO()
 {
-	if(indicesPerTri < 6 || indicesPerTri > 9) return false;
+	glGenBuffers(1, &mvb.modeldata_vboid);
+	glBindBuffer(GL_ARRAY_BUFFER, mvb.modeldata_vboid);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(VERTEX) * realVertexDataSz, VertexData, GL_STATIC_DRAW);
 
-	INDICES_PER_TRIANGLE = indicesPerTri;
+	glVertexPointer(3, GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX::POS_BUFFER_OFFSET));
+	glNormalPointer(GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX::NORMAL_BUFFER_OFFSET));
+
+	glGenBuffers(1, &mvb.indices_vboid);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mvb.indices_vboid);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GetTriCount()*3)*sizeof(u32), indices_array, GL_STATIC_DRAW);
+
 	return true;
+};
+
+void Model::Draw()
+{
+	glBindBuffer(GL_ARRAY_BUFFER, mvb.modeldata_vboid);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mvb.indices_vboid);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+
+	glVertexPointer(3, GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX::POS_BUFFER_OFFSET));
+	glNormalPointer(GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX::NORMAL_BUFFER_OFFSET));
+
+	glDrawElements(GL_TRIANGLES, triCount*3, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 };

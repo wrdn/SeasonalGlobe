@@ -1,0 +1,45 @@
+When reading in the faces, we need to ensure that we do not duplicate the data.
+Data is only duplicated when the properties of the vertex (such as the normal) change.
+
+string hash the face index set eg 1//1
+
+> Read v's in
+> Read vn's in
+
+When at the faces:
+
+> Read the face, hash the index set (e.g. 1//1, 3//2 etc.)
+> Search backwards thru the list of faces and try and find the hash
+> If it exists, insert the old index here
+> If it wasn't found, create a new Vertex with the properties and add it
+  to the end of the list
+
+For efficiency, it may be better to read all of the faces into an array first,
+which we can then work on
+
+As a possibility, when the face is created, search FORWARDS thru the set of faces
+and where the current face is repeated, replace it with the index
+It may be worth finding where the duplicated vertices are first. That way, an array can
+be created (containing the vertex data), which can then be used directly in the VBO.
+
+Consider:
+
+f 1//1 2//1 3//1
+f 1//1 3//1 4//1
+
+Here, 1//1 and 3//1 is repeated, so it is only stored once.
+2//1 and 4//1 are unique. Thus, we store 4 vertices (pos+normal), rather
+than 6, saving 20%
+
+Depending on the model, it may be faster to simply use a flat list and duplicate
+all the data. This could be more efficient with a smaller model, but for a very
+high polygon model, it would be very omeffocomet
+
+For rendering wireframe etc, see gl_PolyFrontMode and gl_PolyBackMode
+
+Each vertex (in vertex_data) will have a list of indices to VERTEXs that share that vertex
+This list will NOT be stored in the VERTEX itself, but externally
+With these lists, we can then calculate new normals properly (if required), to allow for smooth shading
+Each vertex should have a list - but we may only use it if "s on" is specified in the OBJ file?
+Or use a config override?
+Given an indice N, we can find the first index of the triangle it belongs to by calculating N-(N%3) // 3 indices per triangle

@@ -48,3 +48,15 @@ f32 InvSqrt(f32 x)
    f32 tmp = *(f32*)&i;
    return tmp * (1.69000231f - 0.714158168f * x * tmp * tmp);
 };
+
+// Source: http://www.cse.yorku.ca/~oz/hash.html
+unsigned long hash_djb2(unsigned char *str)
+{
+	unsigned long hash = 5381;
+	int c;
+
+	while (c = *str++)
+		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+
+	return hash;
+}
