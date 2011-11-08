@@ -23,6 +23,8 @@ public:
 	const std::vector<Model*>& GetModels() { return models; }
 
 	void Draw();
+
+	void BuildModelVBOs();
 };
 
 #endif

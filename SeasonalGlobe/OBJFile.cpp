@@ -34,6 +34,14 @@ void OBJFile::Draw()
 	}
 };
 
+void OBJFile::BuildModelVBOs()
+{
+	for(std::vector<Model*>::iterator i=models.begin();i<models.end();++i)
+	{
+		(*i)->BuildVBO();
+	}
+};
+
 bool OBJFile::ParseOBJFile(const c8* filename)
 {
 	if(file_exists(filename))

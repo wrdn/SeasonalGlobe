@@ -133,13 +133,5 @@
     <Object Include="Data\cube.obj">
       <Filter>Resource Files\Data</Filter>
     </Object>
-    <Object Include="Data\untitled.obj">
-      <Filter>Resource Files\Data</Filter>
-    </Object>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Data\cube.obj2">
-      <Filter>Resource Files\Data</Filter>
-    </None>
   </ItemGroup>
 </Project>

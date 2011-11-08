@@ -11,12 +11,12 @@ World::~World(void)
 
 bool World::Load()
 {
-	cubeModel.ParseOBJFile("Data/untitled.obj");
-	cubeModel.GetModels()[0]->BuildVBO();
+	cubeModel.ParseOBJFile("Data/cube.obj");
+	cubeModel.BuildModelVBOs();
 	return true;
 };
 
-float angle=0; const float rotationSpeed = 10.0f;
+float angle=0; const float rotationSpeed = 50.0f;
 void World::Draw(const GameTime &gameTime)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -37,7 +37,7 @@ void World::Draw(const GameTime &gameTime)
 
 	gluLookAt(0,0,0,0,0,-1,0,1,0);
 
-	glTranslatef(0,0,-3);
+	glTranslatef(0,0,-5);
 	glRotatef(angle,0,1,0);
 
 	cubeModel.Draw();
