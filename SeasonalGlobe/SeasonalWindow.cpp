@@ -80,13 +80,16 @@ void SeasonalWindow::OnCreate()
 	GLWindowEx::OnCreate();
 	SetWindowResolution(windowRes[0], windowRes[1]);
 
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
 	scn.Load();
 
 	gameTime.Init();
 
-	glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHTING);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
 };
 
 void SeasonalWindow::OnDestroy()

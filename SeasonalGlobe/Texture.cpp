@@ -7,6 +7,12 @@ Texture::Texture(void)
 {
 }
 
+Texture::Texture(const u32 _id)
+	: id(_id), minFilter(GL_LINEAR_MIPMAP_LINEAR), magFilter(GL_LINEAR_MIPMAP_LINEAR),
+	wrapS(GL_REPEAT), wrapT(GL_REPEAT)
+{
+};
+
 Texture::~Texture(void)
 {
 }
@@ -71,4 +77,24 @@ const u32 Texture::GetWrapT() const
 void Texture::SetParameteri(u32 param, u32 v) const
 {
 	glTexParameteri(GL_TEXTURE_2D, param, v);
+};
+
+void Texture::SetWidth(const u32 _width)
+{
+	width = _width;
+};
+
+void Texture::SetHeight(const u32 _height)
+{
+	height = _height;
+};
+
+const u32 Texture::GetWidth() const
+{
+	return width;
+};
+
+const u32 Texture::GetHeight() const
+{
+	return height;
 };

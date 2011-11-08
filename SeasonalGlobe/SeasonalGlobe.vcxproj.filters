@@ -72,6 +72,12 @@
     <ClCompile Include="GameTime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ctypes.h">
@@ -128,10 +134,21 @@
     <ClInclude Include="GameTime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Object Include="Data\cube.obj">
       <Filter>Resource Files\Data</Filter>
     </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\tiles.bmp">
+      <Filter>Resource Files\Data</Filter>
+    </None>
   </ItemGroup>
 </Project>

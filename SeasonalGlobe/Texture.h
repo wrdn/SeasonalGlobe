@@ -8,9 +8,11 @@ class Texture
 private:
 	u32 id;
 	u32 minFilter, magFilter, wrapS, wrapT; // automatically set on activation
+	u32 width, height;
 
 public:
 	Texture(void);
+	Texture(const u32 _id);
 	~Texture(void);
 
 	const u32 GetID() const;
@@ -31,6 +33,11 @@ public:
 	const u32 GetWrapT() const;
 
 	void SetParameteri(u32 param, u32 v) const;
+
+	void SetWidth(const u32 _width);
+	void SetHeight(const u32 _height);
+	const u32 GetWidth() const;
+	const u32 GetHeight() const;
 };
 
 /*

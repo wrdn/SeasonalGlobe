@@ -98,6 +98,8 @@
     <ClCompile Include="SeasonalWindow.cpp" />
     <ClCompile Include="SphericalCamera.cpp" />
     <ClCompile Include="strutils.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="TimeInfo.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="World.cpp" />
@@ -118,6 +120,8 @@
     <ClInclude Include="SeasonalWindow.h" />
     <ClInclude Include="SphericalCamera.h" />
     <ClInclude Include="strutils.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureManager.h" />
     <ClInclude Include="TimeInfo.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="World.h" />
@@ -125,7 +129,11 @@
   <ItemGroup>
     <Object Include="Data\cube.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\tiles.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
