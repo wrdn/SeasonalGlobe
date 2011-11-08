@@ -2,9 +2,8 @@
 
 #include "Texture.h"
 #include <map>
-#include <GXBase.h>
 
-class TextureManager : public glex
+class TextureManager
 {
 private:
 	std::map<u32, Texture> textures;

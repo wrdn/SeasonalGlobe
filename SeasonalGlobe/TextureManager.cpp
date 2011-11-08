@@ -4,11 +4,17 @@ using namespace gxbase;
 
 TextureManager::TextureManager(void)
 {
-	glex::Load();
 }
 
 TextureManager::~TextureManager(void)
 {
+	// Generally the texture manager will be a singleton, and will exist throughout the entire application
+	// The texture manager will ensure that any textures are cleaned up (if not done elsewhere)
+	for (std::map<u32,Texture>::iterator it=textures.begin() ; it != textures.end(); it++ )
+	{
+		glDeleteTextures(1, &it->first);
+	}
+	textures.clear();
 }
 
 const Texture* TextureManager::LoadTextureFromFile(const c8* const _filename)

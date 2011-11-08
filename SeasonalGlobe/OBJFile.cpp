@@ -125,7 +125,7 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 		}
 		activeModel->SetNormalCount(pos - cp - commentCount);
 
-		normal_data = new f32[activeModel->GetVertexCount() * Model::FLOATS_PER_VERTEX_NORMAL];
+		normal_data = new f32[activeModel->GetNormalCount() * Model::FLOATS_PER_VERTEX_NORMAL];
 		while(cp < pos) // read normals
 		{
 			stringstream str(objFile[cp]);
@@ -140,7 +140,7 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 	/*****************************************************/
 	/****************** READ UVs *************************/
 	/*****************************************************/
-	oldPos = pos; bool uvs=true; commentCount = 0, insertionPos = 0;
+	bool uvs=true; commentCount = 0, insertionPos = 0; pos = oldPos;
 	while((stringstream(objFile[pos]) >> tmp) && tmp != "vt") // find uvs
 	{
 		if(tmp == "f") { uvs=false; pos=oldPos; break; }
@@ -164,8 +164,8 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 			stringstream str(objFile[cp]);
 			str >> tmp;
 			if(tmp[0] == '#') { ++cp; continue; }
-			str >> uv_data[insertionPos] >> uv_data[insertionPos+1] >> uv_data[insertionPos+2];
-			insertionPos += 3, ++cp;
+			str >> uv_data[insertionPos] >> uv_data[insertionPos+1];
+			insertionPos += 2, ++cp;
 		}
 		activeModel->SetUVArray(uv_data);
 	}
@@ -280,7 +280,7 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 					// Parse the set to get the indices of the vertex/normal/texture coordinate
 					// v/vt/vn
 					stringstream indexParser(iset); u32 indices[3];
-					indexParser >> indices[0] >> tmpc >> indices[1] >> indices[2];
+					indexParser >> indices[0] >> tmpc >> indices[1] >> tmpc >> indices[2];
 
 					clamp(indices[0], 1, activeModel->GetVertexCount());
 					clamp(indices[1], 1, activeModel->GetUVCount());

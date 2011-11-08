@@ -37,7 +37,7 @@ void SeasonalWindow::SetWindowResolution(const u32 width, const u32 height)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(60, (double)windowRes[0] / (double)windowRes[1],
-		1,50.0);
+		0.3f,50.0);
 	glMatrixMode(GL_MODELVIEW);
 };
 
@@ -72,6 +72,35 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 	if(key == VK_ESCAPE && down)
 	{
 		Close();
+	}
+	else if(key == VK_RETURN && !down)
+	{
+		if(glIsEnabled(GL_CULL_FACE))
+		{
+			glDisable(GL_CULL_FACE);
+		}
+		else
+		{
+			glEnable(GL_CULL_FACE);
+		}
+	}
+	else if(key == VK_LEFT && !down)
+	{
+		int params[2];
+		glGetIntegerv(GL_POLYGON_MODE, params);
+
+		if(params[0] == GL_LINE)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+		}
+		else if(params[0] == GL_POINT)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+		else
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
 	}
 };
 

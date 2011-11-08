@@ -145,6 +145,12 @@
     <Object Include="Data\cube.obj">
       <Filter>Resource Files\Data</Filter>
     </Object>
+    <Object Include="Data\bunny.obj">
+      <Filter>Resource Files\Data</Filter>
+    </Object>
+    <Object Include="Data\TexturedCube.obj">
+      <Filter>Resource Files\Data</Filter>
+    </Object>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\tiles.bmp">
