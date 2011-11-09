@@ -13,6 +13,8 @@ World::~World(void)
 bool World::Load()
 {
 	cubeModel.ParseOBJFile("Data/TexturedCube.obj");
+	cubeModel.GetModels()[0]->BinarySerialize("cube.bin");
+	cubeModel.GetModels()[0]->BinaryDeserialize("cube.bin");
 	cubeModel.BuildModelVBOs();
 
 	if(const Texture* t=texMan.LoadTextureFromFile("Data/tiles.jpg"))

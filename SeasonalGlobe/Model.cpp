@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <vector>
+#include <fstream>
 using namespace std;
 
 const u32 Model::INDICES_PER_TRIANGLE = 3;
@@ -142,4 +143,46 @@ void Model::Draw()
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+};
+
+void Model::BinarySerialize(const c8* const filename) const
+{
+	u16 CURRENT_FILE_FORMAT_VERSION = 1;
+
+	ofstream out(filename, ios::out | ios::binary);
+	if(out.is_open())
+	{
+		out.write((const char*)CURRENT_FILE_FORMAT_VERSION, sizeof(u16));
+		out.write((const char*)GetTriCount(), sizeof(u32));
+		out.write((const char*)realVertexDataSz, sizeof(u32));
+		out.write((const char*)VertexData, realVertexDataSz * sizeof(VERTEX));
+		out.write((const char*)indices_array, (GetTriCount() * Model::GetIndicesPerTriangle()) * sizeof(u32));
+	}
+	out.close();
+};
+
+void Model::BinaryDeserialize(const c8* const filename)
+{
+	// Reset any variables before we read the new file in
+	SAFE_DELETE_ARRAY(VertexData);
+	SAFE_DELETE_ARRAY(indices_array);
+	realVertexDataSz = 0;
+	triCount = 0;
+
+	ifstream in(filename, ios::in | ios::binary);
+	if(in.good())
+	{
+		u32 tmpipt;
+		u16 file_format=0;
+		in >> file_format;
+		if(file_format == CURRENT_FILE_FORMAT_VERSION)
+		{
+			in >> triCount >> realVertexDataSz;
+			
+			VertexData = new VERTEX[realVertexDataSz];
+			in.read((char*)VertexData, realVertexDataSz * sizeof(VERTEX));
+			in.read((char*)indices_array, (triCount * Model::GetIndicesPerTriangle())*sizeof(u32));
+		}
+	}
+	in.close();
 };

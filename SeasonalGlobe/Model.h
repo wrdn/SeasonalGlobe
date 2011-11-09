@@ -72,6 +72,8 @@ public:
 	static const char FLOATS_PER_VERTEX_NORMAL = 3; // x,y,z vertex normal
 	static const char FLOATS_PER_VERTEX_UV = 2; // u,v (no 3D texture coordinates)
 
+	static const u16 CURRENT_FILE_FORMAT_VERSION = 1;
+
 	Model(void);
 	~Model(void);
 
@@ -120,6 +122,9 @@ public:
 	const u32* GetTriSet() const { return triSet; };
 
 	void Draw();
+
+	void BinarySerialize(const c8* const filename) const;
+	void BinaryDeserialize(const c8* const filename);
 };
 
 #endif

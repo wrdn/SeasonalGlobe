@@ -91,6 +91,7 @@
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mat44.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MyApp.cpp" />
     <ClCompile Include="OBJFile.cpp" />
@@ -113,6 +114,7 @@
     <ClInclude Include="GameTime.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Mat44.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MyApp.h" />
     <ClInclude Include="OBJFile.h" />
