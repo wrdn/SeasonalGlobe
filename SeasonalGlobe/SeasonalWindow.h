@@ -14,6 +14,7 @@ class SeasonalWindow : public GLWindowEx
 private:
 	static const u32 DEFAULT_WIDTH = 800;
 	static const u32 DEFAULT_HEIGHT = 600;
+	static const c8* DEFAULT_WINDOW_TITLE;
 
 	u32 windowRes[2]; //index 0=width, 1=height
 	Color4f clearColor; // opengl window clear color
@@ -30,6 +31,7 @@ public:
 
 	const u32* const GetWindowRes() const;
 	void SetWindowResolution(const u32 width, const u32 height);
+	void ResetPerspective() const;
 	void SwitchFullscreen();
 	const bool IsFullScreen() const;
 

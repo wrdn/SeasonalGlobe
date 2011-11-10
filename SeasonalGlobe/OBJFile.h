@@ -11,7 +11,8 @@
 class OBJFile
 {
 private:
-	std::vector<Model*> models;
+	Model **models;
+	u32 modelCount;
 public:
 	OBJFile();
 	~OBJFile();
@@ -20,7 +21,7 @@ public:
 	
 	bool ParseOBJFile(const std::vector<c8*> &objFile);
 
-	const std::vector<Model*>& GetModels() { return models; }
+	const Model* GetModels() { return *models; }
 
 	void Draw();
 

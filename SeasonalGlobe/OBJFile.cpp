@@ -6,15 +6,15 @@
 #include <sys/stat.h>
 using namespace std;
 
-OBJFile::OBJFile()
+OBJFile::OBJFile() : models(0), modelCount(0)
 {
 };
 
 OBJFile::~OBJFile()
 {
-	try
+	/*try
 	{
-		for(std::vector<Model*>::iterator i = models.begin(); i != models.end(); ++i)
+		for(std::vector<Model*>::iterator i = models->begin(); i != models->end(); ++i)
 		{
 			if(*i)
 			{
@@ -23,23 +23,28 @@ OBJFile::~OBJFile()
 			}
 		}
 	}
-	catch(...) { }
+	catch(...) { }*/
+	SAFE_DELETE_ARRAY(models);
 };
 
 void OBJFile::Draw()
 {
-	for(std::vector<Model*>::iterator i=models.begin(); i < models.end(); ++i)
+	/*for(std::vector<Model*>::iterator i=models->begin(); i < models->end(); ++i)
 	{
 		(*i)->Draw();
-	}
+	}*/
+	for(u32 i=0;i<modelCount;++i)
+		models[i]->Draw();
 };
 
 void OBJFile::BuildModelVBOs()
 {
-	for(std::vector<Model*>::iterator i=models.begin();i<models.end();++i)
+	/*for(std::vector<Model*>::iterator i=models->begin();i<models->end();++i)
 	{
 		(*i)->BuildVBO();
-	}
+	}*/
+	for(u32 i=0;i<modelCount;++i)
+		models[i]->BuildVBO();
 };
 
 bool OBJFile::ParseOBJFile(const c8* filename)
@@ -314,7 +319,23 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 		throw; // to implement
 	}
 
-	models.push_back(activeModel); // only add the model if everything succeeds
+	//models->push_back(activeModel); // only add the model if everything succeeds
+
+	if(!models)
+	{
+		modelCount = 1;
+		models = new Model*[modelCount];
+		models[0] = activeModel;
+	}
+	else
+	{
+		Model **newModelSet =  new Model*[modelCount+1];
+		memcpy(newModelSet, models, modelCount);
+		SAFE_DELETE_ARRAY(models);
+		newModelSet[modelCount] = activeModel;
+		modelCount += 1;
+	}
+
 	return true;
 };
 

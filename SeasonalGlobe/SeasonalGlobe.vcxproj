@@ -87,6 +87,7 @@
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="float3.cpp" />
     <ClCompile Include="float4.cpp" />
+    <ClCompile Include="Floor.cpp" />
     <ClCompile Include="GameTime.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
@@ -111,6 +112,7 @@
     <ClInclude Include="ctypes.h" />
     <ClInclude Include="float3.h" />
     <ClInclude Include="float4.h" />
+    <ClInclude Include="Floor.h" />
     <ClInclude Include="GameTime.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Mat44.h" />
@@ -131,6 +133,7 @@
   <ItemGroup>
     <Object Include="Data\bunny.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </Object>
     <Object Include="Data\cube.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -138,10 +141,13 @@
     </Object>
     <Object Include="Data\TexturedCube.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </Object>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Data\tiles.bmp" />
+    <None Include="Data\tiles.bmp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

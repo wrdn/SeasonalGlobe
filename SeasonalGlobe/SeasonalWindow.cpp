@@ -7,6 +7,8 @@
 #include <iostream>
 using namespace std;
 
+const c8* SeasonalWindow::DEFAULT_WINDOW_TITLE = "Seasonal Globe";
+
 SeasonalWindow::SeasonalWindow() : clearColor(Color::BLACK)
 {
 	windowRes[0] = DEFAULT_WIDTH;
@@ -33,11 +35,15 @@ void SeasonalWindow::SetWindowResolution(const u32 width, const u32 height)
 	windowRes[1] = height;
 	SetSize(windowRes[0], windowRes[1]);
 
-	glViewport(0,0,800,600);
+	ResetPerspective();
+};
+
+void SeasonalWindow::ResetPerspective() const
+{
+	glViewport(0,0,windowRes[0],windowRes[1]);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(60, (double)windowRes[0] / (double)windowRes[1],
-		0.3f,50.0);
+	gluPerspective(60, (double)windowRes[0] / (double)windowRes[1],0.3f,50.0);
 	glMatrixMode(GL_MODELVIEW);
 };
 
@@ -106,14 +112,15 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 
 void SeasonalWindow::OnCreate()
 {
-	GLWindowEx::OnCreate();
-	SetWindowResolution(windowRes[0], windowRes[1]);
-
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 	scn.Load();
 
 	gameTime.Init();
+
+	GLWindowEx::OnCreate();
+	SetTitle(DEFAULT_WINDOW_TITLE);
+	SetWindowResolution(windowRes[0], windowRes[1]);
 
 	//glEnable(GL_LIGHTING);
 	glEnable(GL_CULL_FACE);

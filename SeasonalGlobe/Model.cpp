@@ -11,7 +11,10 @@ using namespace std;
 
 const u32 Model::INDICES_PER_TRIANGLE = 3;
 
-ModelVBO::ModelVBO() : modeldata_vboid(0), indices_vboid(0) { };
+ModelVBO::ModelVBO() : modeldata_vboid(0), indices_vboid(0)
+{
+};
+
 ModelVBO::~ModelVBO() { };
 
 Model::Model(void)

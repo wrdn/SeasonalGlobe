@@ -4,6 +4,7 @@
 #include "ctypes.h"
 
 #define EPSILON 0.000001f // rough epsilon
+#define PI 3.1415926f
 
 void SAFE_DELETE(const void *p);
 void SAFE_DELETE_ARRAY(const void *p);

@@ -4,6 +4,7 @@
 #include "OBJFile.h"
 #include "GameTime.h"
 #include "TextureManager.h"
+#include "Floor.h"
 
 class World
 {
@@ -14,7 +15,8 @@ private:
 	TextureManager texMan;
 	int testTextureID;
 
-	OBJFile cubeModel;
+	OBJFile *cubeModel;
+	Floor *floor;
 public:
 	World(void);
 	~World(void);
