@@ -16,13 +16,20 @@ bool World::Load()
 	cubeModel->ParseOBJFile("Data/TexturedCube.obj");
 	cubeModel->BuildModelVBOs();
 
-	if(const Texture* t=texMan.LoadTextureFromFile("Data/tiles.jpg"))
-	{
+	Texture *t;
+
+	if(t=texMan.LoadTextureFromFile("Data/Textures/Grass.jpg"))
 		testTextureID = t->GetID();
-	}
 
 	floor = new Floor();
-	floor->CreateFloor(40,4.5f);
+	floor->CreateFloor(40,11);
+
+	houseModel = new OBJFile();
+	houseModel->ParseOBJFile("Data/House/Haus20.obj");
+	houseModel->BuildModelVBOs();
+
+	if(t=texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg"))
+		houseTextureID = t->GetID();
 
 	return true;
 };
@@ -51,15 +58,27 @@ void World::Draw(const GameTime &gameTime)
 	glMaterialfv(GL_FRONT, GL_AMBIENT, matAmbient);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, matDiffuse);
 
-	gluLookAt(0,0.5f,8,0,0,-1,0,1,0);
-	glRotatef(angle,1,0,0);
+	gluLookAt(0,10,20,0,-5,-1,0,1,0);
+	//glRotatef(angle,1,0,0);
 	
 	glDisable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, testTextureID);
 
-	//cubeModel->Draw();
 	floor->Draw();
+	
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, houseTextureID);
+	glTranslatef(-5.5,0,0.5);
+	glScalef(.05f,.05f,.05f);
+	houseModel->Draw();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(0,2,0);
+	glRotatef(angle,1,1,0);
+	cubeModel->Draw();
+	glPopMatrix();
 
 	angle += rotationSpeed * gameTime.GetDeltaTime();
 	if(angle >= 360) { angle-=360; }

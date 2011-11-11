@@ -43,7 +43,7 @@ void SeasonalWindow::ResetPerspective() const
 	glViewport(0,0,windowRes[0],windowRes[1]);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(60, (double)windowRes[0] / (double)windowRes[1],0.3f,50.0);
+	gluPerspective(60, (double)windowRes[0] / (double)windowRes[1],0.3f,200.0);
 	glMatrixMode(GL_MODELVIEW);
 };
 

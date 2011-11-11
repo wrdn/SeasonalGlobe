@@ -180,9 +180,9 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 	/*****************************************************/
 	while((stringstream(objFile[pos]) >> tmp) && tmp != "f") ++pos; // find faces
 	cp=pos, commentCount=0;
-	while( pos < objFile.size() && (stringstream(objFile[pos]) >> tmp) && (tmp == "f" || tmp[0] == '#') ) // count faces
+	while( pos < objFile.size() && (stringstream(objFile[pos]) >> tmp) && (tmp == "f" || tmp[0] == '#' || tmp[0] == 's') ) // count faces
 	{
-		if(tmp[0] == '#') { ++commentCount; }
+		if(tmp[0] == '#' || tmp[0] == 's') { ++commentCount; } // ignore comments and smoothing groups
 		++pos;
 	}
 	activeModel->SetTriCount(pos - cp - commentCount);
@@ -215,7 +215,7 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 		{
 			stringstream str(objFile[cp]); char tmpc;
 			str >> tmp;
-			if(tmp[0] == '#') { ++cp; continue; }
+			if(tmp[0] == '#' || tmp[0] == 's') { ++cp; continue; }
 			++cp;
 
 			for(char ti=0;ti<3;++ti)
@@ -265,7 +265,7 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 		{
 			stringstream str(objFile[cp]); char tmpc;
 			str >> tmp;
-			if(tmp[0] == '#') { ++cp; continue; }
+			if(tmp[0] == '#' || tmp[0] == 's') { ++cp; continue; }
 			++cp;
 
 			for(char ti=0;ti<3;++ti)

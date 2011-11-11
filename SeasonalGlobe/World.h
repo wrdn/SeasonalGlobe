@@ -14,9 +14,12 @@ private:
 
 	TextureManager texMan;
 	int testTextureID;
+	int houseTextureID;
 
 	OBJFile *cubeModel;
 	Floor *floor;
+	OBJFile *houseModel;
+
 public:
 	World(void);
 	~World(void);

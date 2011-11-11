@@ -17,7 +17,7 @@ TextureManager::~TextureManager(void)
 	textures.clear();
 }
 
-const Texture* TextureManager::LoadTextureFromFile(const c8* const _filename)
+Texture* TextureManager::LoadTextureFromFile(const c8* const _filename)
 {
 	Image tex;
 	bool loaded = tex.Load(_filename);
@@ -45,7 +45,7 @@ const Texture* TextureManager::LoadTextureFromFile(const c8* const _filename)
 	return NULL;
 };
 
-const Texture* TextureManager::LoadTextureFromMemory(const u32* const _mem, const u32 _width,
+Texture* TextureManager::LoadTextureFromMemory(const u32* const _mem, const u32 _width,
 	const u32 _height, const u32 format)
 {
 	if(_mem)
