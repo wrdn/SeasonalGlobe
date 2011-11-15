@@ -5,6 +5,7 @@
 #include "GameTime.h"
 #include "TextureManager.h"
 #include "Floor.h"
+#include "Sphere.h"
 
 class World
 {
@@ -19,6 +20,7 @@ private:
 	OBJFile *cubeModel;
 	Floor *floor;
 	OBJFile *houseModel;
+	Sphere *sphere;
 
 public:
 	World(void);

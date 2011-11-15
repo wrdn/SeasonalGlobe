@@ -31,6 +31,9 @@ bool World::Load()
 	if(t=texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg"))
 		houseTextureID = t->GetID();
 
+	sphere = new Sphere();
+	sphere->CreateSphere(11,40,40);
+
 	return true;
 };
 
@@ -58,7 +61,7 @@ void World::Draw(const GameTime &gameTime)
 	glMaterialfv(GL_FRONT, GL_AMBIENT, matAmbient);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, matDiffuse);
 
-	gluLookAt(0,10,20,0,-5,-1,0,1,0);
+	gluLookAt(0,15,25,0,0,-1,0,1,0);
 	//glRotatef(angle,1,0,0);
 	
 	glDisable(GL_LIGHTING);
@@ -79,6 +82,21 @@ void World::Draw(const GameTime &gameTime)
 	glRotatef(angle,1,1,0);
 	cubeModel->Draw();
 	glPopMatrix();
+
+	glEnable(GL_CLIP_PLANE0); // use clip plane to cut bottom half
+	GLdouble eq[] = { 0, 1, 0, 0 };
+	glClipPlane(GL_CLIP_PLANE0, eq);
+
+	glPushMatrix();
+	glDisable(GL_TEXTURE_2D);
+	glEnable (GL_BLEND);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1,1,1,.1);
+	sphere->GetModel()->Draw();
+	glDisable(GL_BLEND);
+	glPopMatrix();
+
+	glDisable(GL_CLIP_PLANE0);
 
 	angle += rotationSpeed * gameTime.GetDeltaTime();
 	if(angle >= 360) { angle-=360; }

@@ -99,6 +99,7 @@
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PerfTimer.cpp" />
     <ClCompile Include="SeasonalWindow.cpp" />
+    <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="SphericalCamera.cpp" />
     <ClCompile Include="strutils.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -124,6 +125,7 @@
     <ClInclude Include="Particle.h" />
     <ClInclude Include="PerfTimer.h" />
     <ClInclude Include="SeasonalWindow.h" />
+    <ClInclude Include="Sphere.h" />
     <ClInclude Include="SphericalCamera.h" />
     <ClInclude Include="strutils.h" />
     <ClInclude Include="Texture.h" />
