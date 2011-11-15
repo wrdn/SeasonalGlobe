@@ -96,6 +96,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MyApp.cpp" />
     <ClCompile Include="OBJFile.cpp" />
+    <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PerfTimer.cpp" />
     <ClCompile Include="SeasonalWindow.cpp" />
     <ClCompile Include="SphericalCamera.cpp" />
@@ -120,6 +121,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="MyApp.h" />
     <ClInclude Include="OBJFile.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="PerfTimer.h" />
     <ClInclude Include="SeasonalWindow.h" />
     <ClInclude Include="SphericalCamera.h" />

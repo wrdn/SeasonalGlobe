@@ -35,3 +35,18 @@ u32 Color::ToInt(const Color4f &c)
 {
 	return ( (char)c.r << 24 | (char)c.g << 16 | (char)c.b << 8 | (char)c.a );
 };
+
+
+ColorU32::ColorU32() : color(0) { };
+
+void ColorU32::SetColor(const u32 i) { color = i; };
+
+void ColorU32::SetColor(const f32 r, const f32 g, const f32 b, const f32 a)
+{
+	color = Color::ToInt(r,g,b,a);
+};
+
+const u32 ColorU32::GetColor() const
+{
+	return color;
+};
