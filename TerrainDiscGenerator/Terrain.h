@@ -9,6 +9,10 @@ struct Vec3f
 {
 public:
 	float x,y,z;
+	
+	float r,g,b; // colour of point
+
+	int vecid;
 };
 
 struct Vec2f
@@ -92,6 +96,8 @@ public:
 	void OnCreate();
 
 	void draw(bool texon) const;
+	void DrawPoints() const;
+	void DrawFaces() const;
 
 	void normal(bool normon) const;
 

@@ -32,6 +32,8 @@ _ReSharper*/
 ipch/
 *.bin
 [Bb]uild/
+TerrainDiscGenerator/[Dd]ebug/
+TerrainDiscGenerator/[Rr]elease/
 .parasoft.dat/
 .parasoft
 .cpptest/
