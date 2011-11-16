@@ -20,6 +20,15 @@ public:
 	float4(const f32 _x, f32 _y, f32 _z, f32 _w);
 	float4(const f32 * v); // copy from 4 element array
 
+	f32 x() const { return vec[0]; };
+	f32 y() const { return vec[1]; };
+	f32 z() const { return vec[2]; };
+	f32 w() const { return vec[3]; };
+	void x(const f32 v) { vec[0]=v; };
+	void y(const f32 v) { vec[1]=v; };
+	void z(const f32 v) { vec[2]=v; };
+	void w(const f32 v) { vec[3]=v; };
+
 	float3 ToFloat3() const;
 
 	static float4 FromXYZ(const f32 * v); 

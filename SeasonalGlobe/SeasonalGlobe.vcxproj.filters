@@ -90,6 +90,15 @@
     <ClCompile Include="Sphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TerrainDisk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="float2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ctypes.h">
@@ -167,20 +176,38 @@
     <ClInclude Include="CustomModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TerrainDisk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="float2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Circle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Line.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Object Include="Data\cube.obj">
-      <Filter>Resource Files\Data</Filter>
-    </Object>
-    <Object Include="Data\bunny.obj">
-      <Filter>Resource Files\Data</Filter>
-    </Object>
     <Object Include="Data\TexturedCube.obj">
       <Filter>Resource Files\Data</Filter>
     </Object>
+    <Object Include="Data\House\Haus20.obj">
+      <Filter>Resource Files\Data</Filter>
+    </Object>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Data\tiles.bmp">
+    <None Include="Data\Textures\Grass.jpg">
+      <Filter>Resource Files\Data</Filter>
+    </None>
+    <None Include="Data\Textures\ground_heightmap.bmp">
+      <Filter>Resource Files\Data</Filter>
+    </None>
+    <None Include="Data\House\Haus_020_unwrap.jpg">
       <Filter>Resource Files\Data</Filter>
     </None>
   </ItemGroup>

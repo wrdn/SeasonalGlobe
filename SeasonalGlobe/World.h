@@ -6,6 +6,7 @@
 #include "TextureManager.h"
 #include "Floor.h"
 #include "Sphere.h"
+#include "TerrainDisk.h"
 
 class World
 {
@@ -21,8 +22,16 @@ private:
 	Floor *floor;
 	OBJFile *houseModel;
 	Sphere *sphere;
+	TerrainDisk *terrain;
 
 public:
+
+	// Temporary Camera Variables (Code from RealTime Graphics module tutorials)
+	f32 _cameraAngle;
+	f32 _cameraPosition;
+	f32 _cameraRotation;
+
+
 	World(void);
 	~World(void);
 

@@ -63,6 +63,8 @@ public:
 	const u32 GetIndicesArraySize() const { return indicesArraySize; };
 	void SetIndicesArray(u32 * const _indicesArray, const u32 _indicesArraySize)
 	{
+		SAFE_DELETE_ARRAY(indicesArray);
+
 		indicesArray = _indicesArray;
 		indicesArraySize = _indicesArraySize;
 		triangleDrawCount = indicesArraySize / 3;

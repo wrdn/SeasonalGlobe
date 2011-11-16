@@ -22,12 +22,19 @@ private:
 	World scn;
 
 	GameTime gameTime;
+
+	bool _leftDown, _rightDown;
+
 public:
-	void OnDisplay();
-	void OnIdle();
-	void OnKeyboard(i32 key, bool down);
 	void OnCreate();
 	void OnDestroy();
+
+	void OnDisplay();
+	void OnIdle();
+
+	void OnKeyboard(i32 key, bool down);
+	void OnMouseButton(MouseButton button, bool down);
+	void OnMouseMove(int x, int y);
 
 	const u32* const GetWindowRes() const;
 	void SetWindowResolution(const u32 width, const u32 height);

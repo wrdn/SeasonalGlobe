@@ -62,11 +62,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/tutorial8.exe"
+				OutputFile="$(OutDir)/TerrainDiscGenerator.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\lib"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/tutorial8.pdb"
+				ProgramDatabaseFile="$(OutDir)/TerrainDiscGenerator.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -138,7 +138,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/tutorial8.exe"
+				OutputFile="$(OutDir)/TerrainDiscGenerator.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../../lib"
 				GenerateDebugInformation="true"

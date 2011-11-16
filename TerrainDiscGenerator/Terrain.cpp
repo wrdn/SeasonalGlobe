@@ -319,9 +319,13 @@ void terrain::DrawPoints() const
 void terrain::DrawFaces() const
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glBegin(GL_TRIANGLES);
+
+	glDisable(GL_CULL_FACE);
+
 	for(int i=0;i<faces.size();++i)
 	{
-		glBegin(GL_TRIANGLES);
+		
 
 		Face f = faces[i];
 
@@ -335,9 +339,8 @@ void terrain::DrawFaces() const
 
 		glTexCoord2f(_tex[f.pos3.vecid].x, _tex[f.pos3.vecid].y);
 		glVertex3f(f.pos3.x, f.pos3.y, f.pos3.z);
-
-		glEnd();
 	}
+	glEnd();
 };
 
 void terrain::draw(bool texon) const {

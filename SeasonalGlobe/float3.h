@@ -7,10 +7,17 @@ class float4;
 class float3
 {
 public:
-	ALIGN(16) f32 vec[3];
+	f32 vec[3];
 
 	static const float3 ZERO;
 	static const float3 ONE;
+
+	f32 x() const { return vec[0]; };
+	f32 y() const { return vec[1]; };
+	f32 z() const { return vec[2]; };
+	void x(const f32 v) { vec[0]=v; };
+	void y(const f32 v) { vec[1]=v; };
+	void z(const f32 v) { vec[2]=v; };
 
 	~float3();
 	float3(); // sets all to 0

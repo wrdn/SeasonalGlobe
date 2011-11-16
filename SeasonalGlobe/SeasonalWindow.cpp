@@ -108,6 +108,56 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
 	}
+
+	switch(tolower(key))
+	{
+		case 'a': 
+			scn._cameraAngle += 5.0;
+			break;
+		case 'z':
+			scn._cameraAngle -= 5.0;
+			break;
+	}
+};
+
+void SeasonalWindow::OnMouseButton(MouseButton button, bool down)
+{
+	if (down) {
+		switch(button) {
+		case MBLeft: 
+			_leftDown = true;
+			break;
+		case MBRight:
+			_rightDown = true;
+			break;
+		default:
+			break;
+		}
+	} else {
+		switch(button) {
+		case MBLeft: 
+			_leftDown = false;
+			break;
+		case MBRight:
+			_rightDown = false;
+			break;
+		default:
+			break;
+		}
+	}
+};
+
+void SeasonalWindow::OnMouseMove(int x, int y)
+{
+	static int temp_x, temp_y;
+	if(_leftDown) {
+		scn._cameraPosition += (y-temp_y)*0.05f;
+	}
+	if(_rightDown) {
+		scn._cameraRotation += (x-temp_x)*0.5f;
+	}
+	temp_x = x;
+	temp_y = y;
 };
 
 void SeasonalWindow::OnCreate()
