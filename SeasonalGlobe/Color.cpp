@@ -19,23 +19,22 @@ Color4f Color::FromInt(const u32 i)
 {
 	return Color4f
 		(
-		(i >> 24) & 255,
-		(i >> 16) & 255,
-		(i >> 8) & 255,
-		(i >> 32) & 255
+		(f32)(((u32)i >> 24) & 255),
+		(f32)(((u32)i >> 16) & 255),
+		(f32)(((u32)i >> 8) & 255),
+		(f32)(((u32)i & 255))
 		);
 };
 
-u32 Color::ToInt(const f32 _r, const f32 _g, const f32 _b, const f32 _a)
+u32 Color::ToInt(f32 _r, const f32 _g, const f32 _b, const f32 _a)
 {
-	return ( (char)_r << 24 | (char)_g << 16 | (char)_b << 8 | (char)_a );
+	return ((u32)_r << 24 | (u32)_g << 16 | (u32)_b << 8 | (u32)_a);
 };
 
 u32 Color::ToInt(const Color4f &c)
 {
-	return ( (char)c.r << 24 | (char)c.g << 16 | (char)c.b << 8 | (char)c.a );
+	return ToInt(c.r, c.g, c.b, c.a);
 };
-
 
 ColorU32::ColorU32() : color(0) { };
 

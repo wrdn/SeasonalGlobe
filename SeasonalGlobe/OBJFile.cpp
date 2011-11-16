@@ -90,14 +90,15 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 		if(tmp[0] == '#') { ++commentCount; }
 		++pos;
 	}
-	activeModel->SetVertexCount(pos - cp - commentCount);
-	if(!activeModel->GetVertexCount())
+	
+	const u32 VERTEX_COUNT = pos-cp-commentCount;
+	if(!VERTEX_COUNT)
 	{
 		SAFE_DELETE(activeModel);
 		return false; // no verts
 	}
 
-	f32* vertex_data = new f32[activeModel->GetVertexCount() * Model::FLOATS_PER_VERTEX_POS];
+	f32* vertex_data = new f32[VERTEX_COUNT * 3];
 	while(cp < pos) // Read vertices
 	{
 		stringstream str(objFile[cp]);
@@ -106,7 +107,6 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 		str >> vertex_data[insertionPos] >> vertex_data[insertionPos+1] >> vertex_data[insertionPos+2];
 		insertionPos += 3, ++cp;
 	}
-	activeModel->SetVertexArray(vertex_data);
 
 	/*****************************************************/
 	/**************** READ NORMALS ***********************/
@@ -120,7 +120,7 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 	}
 	cp=pos;
 
-	f32 *normal_data=0;
+	f32 *normal_data=0; u32 NORMAL_COUNT=0;
 	if(normals) // found normals (existance optional)
 	{
 		while( (stringstream(objFile[pos]) >> tmp) && (tmp == "vn" || tmp[0] == '#') ) // count normals
@@ -128,18 +128,20 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 			if(tmp[0] == '#') { ++commentCount; }
 			++pos;
 		}
-		activeModel->SetNormalCount(pos - cp - commentCount);
+		NORMAL_COUNT = pos - cp - commentCount; // normals optional
 
-		normal_data = new f32[activeModel->GetNormalCount() * Model::FLOATS_PER_VERTEX_NORMAL];
-		while(cp < pos) // read normals
+		if(NORMAL_COUNT)
 		{
-			stringstream str(objFile[cp]);
-			str >> tmp;
-			if(tmp[0] == '#') { ++cp; continue; }
-			str >> normal_data[insertionPos] >> normal_data[insertionPos+1] >> normal_data[insertionPos+2];
-			insertionPos += 3, ++cp;
+			normal_data = new f32[NORMAL_COUNT * 3];
+			while(cp < pos) // read normals
+			{
+				stringstream str(objFile[cp]);
+				str >> tmp;
+				if(tmp[0] == '#') { ++cp; continue; }
+				str >> normal_data[insertionPos] >> normal_data[insertionPos+1] >> normal_data[insertionPos+2];
+				insertionPos += 3, ++cp;
+			}
 		}
-		activeModel->SetNormalArray(normal_data);
 	}
 
 	/*****************************************************/
@@ -153,7 +155,7 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 	}
 	cp=pos;
 
-	f32 *uv_data=0;
+	f32 *uv_data=0; u32 UV_COUNT=0;
 	if(uvs) // found UVs (existance optional)
 	{
 		while( (stringstream(objFile[pos]) >> tmp) && (tmp == "vt" || tmp[0] == '#') ) // count uvs
@@ -161,18 +163,20 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 			if(tmp[0] == '#') { ++commentCount; }
 			++pos;
 		}
-		activeModel->SetUVCount(pos - cp - commentCount);
+		UV_COUNT = pos - cp - commentCount;
 
-		uv_data = new f32[activeModel->GetUVCount() * Model::FLOATS_PER_VERTEX_UV];
-		while(cp < pos) // read uvs
+		if(UV_COUNT) // UVs optional
 		{
-			stringstream str(objFile[cp]);
-			str >> tmp;
-			if(tmp[0] == '#') { ++cp; continue; }
-			str >> uv_data[insertionPos] >> uv_data[insertionPos+1];
-			insertionPos += 2, ++cp;
+			uv_data = new f32[UV_COUNT * 2];
+			while(cp < pos) // read uvs
+			{
+				stringstream str(objFile[cp]);
+				str >> tmp;
+				if(tmp[0] == '#') { ++cp; continue; }
+				str >> uv_data[insertionPos] >> uv_data[insertionPos+1];
+				insertionPos += 2, ++cp;
+			}
 		}
-		activeModel->SetUVArray(uv_data);
 	}
 
 	/*****************************************************/
@@ -185,10 +189,13 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 		if(tmp[0] == '#' || tmp[0] == 's') { ++commentCount; } // ignore comments and smoothing groups
 		++pos;
 	}
-	activeModel->SetTriCount(pos - cp - commentCount);
-	if(!activeModel->GetTriCount()) // faces required
+	const u32 TRIANGLE_COUNT = pos - cp - commentCount;
+	if(!TRIANGLE_COUNT) // faces required
 	{
-		delete activeModel;
+		SAFE_DELETE_ARRAY(vertex_data);
+		SAFE_DELETE_ARRAY(normal_data);
+		SAFE_DELETE_ARRAY(uv_data);
+		SAFE_DELETE(activeModel);
 		return false;
 	}
 
@@ -197,19 +204,16 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 	
 	// Index array of constant size (regardless of file format)
 	std::map<unsigned long,u32> hashMap;
-	const u32 array_sz = activeModel->GetTriCount() * Model::GetIndicesPerTriangle();
+	const u32 array_sz = TRIANGLE_COUNT * 3;
 	u32* indexArray = new u32[array_sz];
-	//memset(indexArray,0, sizeof(u32) * array_sz);
 	insertionPos = 0;
 
-	// Size of VERTEX array also constant, created then may be made smaller (better to allocate
-	// memory once, than use a vector and allocate many VERTEXes
 	VERTEX *vertexArray = new VERTEX[array_sz];
 	memset(vertexArray,0,sizeof(VERTEX) * array_sz);
 	u32 vertexArrayInsertionPos = 0;
 
 #pragma region Vertices and Normals
-	if(activeModel->GetNormalArray() && !activeModel->GetUVArray()) // v+vn
+	if(normal_data && !uv_data) // v+vn
 	{
 		while(cp < pos)
 		{
@@ -235,8 +239,8 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 					// Parse the set to get the indices of the vertex/normal
 					stringstream indexParser(iset); u32 indices[2];
 					indexParser >> indices[0] >> tmpc >> tmpc >> indices[1];
-					clamp(indices[0], 1, activeModel->GetVertexCount());
-					clamp(indices[1], 1, activeModel->GetNormalCount());
+					clamp(indices[0], 1, VERTEX_COUNT);
+					clamp(indices[1], 1, NORMAL_COUNT);
 					
 					indices[0] -= 1; indices[1] -= 1;
 
@@ -250,14 +254,13 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 				}
 			} // end of index and vertex parsing loop
 		}
-		activeModel->SetIndicesArray(indexArray);
-		activeModel->SetVertexData(vertexArray);
-		activeModel->realVertexDataSz = vertexArrayInsertionPos;
+		activeModel->SetVertexArray(vertexArray, vertexArrayInsertionPos);
+		activeModel->SetIndicesArray(indexArray, array_sz);
 	}
 #pragma endregion
 
 #pragma region Vertices, Normals and UVs
-	else if(activeModel->GetNormalArray() && activeModel->GetUVArray()) // v+vn+vt, v/vt/vn
+	else if(normal_data && uv_data) // v+vn+vt, v/vt/vn
 	{
 		// This code is largely identical to the code for Vertices and Normals, except the
 		// texture coordinates are also read and set
@@ -282,14 +285,13 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 				}
 				else // Couldn't find index
 				{
-					// Parse the set to get the indices of the vertex/normal/texture coordinate
-					// v/vt/vn
+					// Parse the set to get the indices of the vertex/normal/texture coordinate, v/vt/vn
 					stringstream indexParser(iset); u32 indices[3];
 					indexParser >> indices[0] >> tmpc >> indices[1] >> tmpc >> indices[2];
 
-					clamp(indices[0], 1, activeModel->GetVertexCount());
-					clamp(indices[1], 1, activeModel->GetUVCount());
-					clamp(indices[2], 1, activeModel->GetNormalCount());
+					clamp(indices[0], 1, VERTEX_COUNT);
+					clamp(indices[1], 1, UV_COUNT);
+					clamp(indices[2], 1, NORMAL_COUNT);
 					indices[0] -= 1; indices[1] -= 1; indices[2] -= 1;
 
 					// Copy data
@@ -303,24 +305,21 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 				}
 			} // end of index and vertex parsing loop
 		}
-		activeModel->SetIndicesArray(indexArray);
-		activeModel->SetVertexData(vertexArray);
-		activeModel->realVertexDataSz = vertexArrayInsertionPos;
+		activeModel->SetIndicesArray(indexArray, array_sz);
+		activeModel->SetVertexArray(vertexArray, vertexArrayInsertionPos);
 	}
 #pragma endregion
 
-	else if(activeModel->GetUVArray() && !activeModel->GetNormalArray()) // v+vt
+	else if(uv_data && !normal_data) // v+vt
 	{
 		throw; // to implement
 	}
-
 	else // v
 	{
 		throw; // to implement
 	}
 
-	//models->push_back(activeModel); // only add the model if everything succeeds
-
+	// Add the model
 	if(!models)
 	{
 		modelCount = 1;
@@ -335,6 +334,11 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 		newModelSet[modelCount] = activeModel;
 		modelCount += 1;
 	}
+
+	// Cleanup
+	SAFE_DELETE_ARRAY(vertex_data);
+	SAFE_DELETE_ARRAY(normal_data);
+	SAFE_DELETE_ARRAY(uv_data);
 
 	return true;
 };

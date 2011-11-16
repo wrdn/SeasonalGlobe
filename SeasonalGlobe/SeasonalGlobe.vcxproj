@@ -112,6 +112,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="ctypes.h" />
+    <ClInclude Include="CustomModel.h" />
     <ClInclude Include="float3.h" />
     <ClInclude Include="float4.h" />
     <ClInclude Include="Floor.h" />

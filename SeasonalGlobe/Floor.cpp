@@ -46,12 +46,9 @@ void Floor::CreateFloor(u32 _slices, f32 _radius)
 	indexArray[indexipos] = i;
 	indexArray[indexipos+1] = 1;
 
-	floorModel.realVertexDataSz = vertexCount;
-	floorModel.SetVertexData(floorVerts);
-
-	floorModel.SetTriCount(slices);
-
-	floorModel.SetIndicesArray(indexArray);
+	Model &floorModel = GetModel();
+	floorModel.SetVertexArray(floorVerts, vertexCount);
+	floorModel.SetIndicesArray(indexArray, slices*3);
 
 	floorModel.BuildVBO();
 };

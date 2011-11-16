@@ -104,6 +104,9 @@ void ParticleEmitter::SetActive(bool _isActive) { isActive = _isActive; };
 
 void ParticleEmitter::Update(f32 dt)
 {
+	// get rid of unreferenced formal parameter warning
+	// (remove when Update(f32 dt) implemented)
+	if(dt) { }
 };
 
 void ParticleEmitter::Render()

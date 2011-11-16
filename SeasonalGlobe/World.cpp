@@ -16,10 +16,9 @@ bool World::Load()
 	cubeModel->ParseOBJFile("Data/TexturedCube.obj");
 	cubeModel->BuildModelVBOs();
 
-	Texture *t;
+	Texture *t = texMan.LoadTextureFromFile("Data/Textures/Grass.jpg");
 
-	if(t=texMan.LoadTextureFromFile("Data/Textures/Grass.jpg"))
-		testTextureID = t->GetID();
+	if(t) { testTextureID = t->GetID(); }
 
 	floor = new Floor();
 	floor->CreateFloor(40,11);
@@ -28,8 +27,8 @@ bool World::Load()
 	houseModel->ParseOBJFile("Data/House/Haus20.obj");
 	houseModel->BuildModelVBOs();
 
-	if(t=texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg"))
-		houseTextureID = t->GetID();
+	t = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg");
+	if(t) { houseTextureID = t->GetID(); }
 
 	sphere = new Sphere();
 	sphere->CreateSphere(11,40,40);
@@ -91,8 +90,8 @@ void World::Draw(const GameTime &gameTime)
 	glDisable(GL_TEXTURE_2D);
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(1,1,1,.1);
-	sphere->GetModel()->Draw();
+	glColor4f(1.0f,1.0f,1.0f,0.1f);
+	sphere->Draw();
 	glDisable(GL_BLEND);
 	glPopMatrix();
 

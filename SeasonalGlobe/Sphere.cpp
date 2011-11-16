@@ -58,7 +58,6 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 			v.norm[2] = temp_radius * z;
 			v.uvs[0] = (float)j / (float)slices;
 			v.uvs[1] = temp_tex;
-			//verts.push_back(v);
 			verts[vertexCount] = v;
 			++vertexCount;
 		}
@@ -66,12 +65,10 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 		lv.uvs[1] = temp_tex;
 		verts[vertexCount] = lv;
 		++vertexCount;
-		//verts.push_back(lv);
 	}
 
-	sphereModel.realVertexDataSz = vertexCount;
-
-	sphereModel.SetVertexData(verts);
+	Model &sphereModel = GetModel();
+	sphereModel.SetVertexArray(verts, vertexCount);
 	
 	indexCount = 0;
 	vertexCount = 2;
@@ -79,7 +76,7 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 	vector<int> indicesArray;
 
 	// Top
-	for(int j=0; j <= slices; ++j)
+	for(u32 j=0; j <= slices; ++j)
 	{
 		indicesArray.push_back(0);
 		indicesArray.push_back(vertexCount);
@@ -89,9 +86,9 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 	vertexCount -= (slices+1);
 
 	// Middle (stacks)
-	for(int i=0;i<(stacks-2); ++i)
+	for(u32 i=0;i<(stacks-2); ++i)
 	{
-		for(int j=0;j<=slices;++j)
+		for(u32 j=0;j<=slices;++j)
 		{
 			indicesArray.push_back(vertexCount);
 			indicesArray.push_back(slices+vertexCount);
@@ -106,16 +103,14 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 	}
 
 	// Bottom
-	for(int j=0; j <= slices; ++j)
+	for(u32 j=0; j <= slices; ++j)
 	{
 		indicesArray.push_back(1);
 		indicesArray.push_back(vertexCount+slices-j);
 		indicesArray.push_back(vertexCount+slices-j-1);
 	}
 
-	sphereModel.SetIndicesArray((u32*)&indicesArray[0]);
-	sphereModel.SetTriCount(indicesArray.size()/3);
-
+	sphereModel.SetIndicesArray((u32*)&indicesArray[0], indicesArray.size());
 	sphereModel.BuildVBO();
 
 	return false;

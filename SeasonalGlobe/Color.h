@@ -28,7 +28,7 @@ public:
 	static const Color4f PINK;
 
 	static Color4f FromInt(const u32 i);
-	static u32 ToInt(const f32 _r, const f32 _g, const f32 _b, const f32 _a);
+	static u32 ToInt(f32 _r, const f32 _g, const f32 _b, const f32 _a);
 	static u32 ToInt(const Color4f &c);
 };
 
