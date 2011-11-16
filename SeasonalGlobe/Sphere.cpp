@@ -1,8 +1,7 @@
 #include "Sphere.h"
 #include "util.h"
+#include <math.h>
 
-#include <vector>
-using namespace std;
 Sphere::Sphere() : radius(0), slices(0), stacks(0) { };
 
 bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
@@ -73,14 +72,16 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 	indexCount = 0;
 	vertexCount = 2;
 	
-	vector<int> indicesArray;
+	u32 indicesArraySz = ((2+(stacks-1)*(slices+1)*2) * 3) - 6;
+	u32 *indicesArray = new u32[indicesArraySz];
+	int index=0;
 
 	// Top
 	for(u32 j=0; j <= slices; ++j)
 	{
-		indicesArray.push_back(0);
-		indicesArray.push_back(vertexCount);
-		indicesArray.push_back(vertexCount+1);
+		indicesArray[index++] = 0;
+		indicesArray[index++] = vertexCount;
+		indicesArray[index++] = vertexCount+1;
 		++vertexCount;
 	}
 	vertexCount -= (slices+1);
@@ -90,13 +91,13 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 	{
 		for(u32 j=0;j<=slices;++j)
 		{
-			indicesArray.push_back(vertexCount);
-			indicesArray.push_back(slices+vertexCount);
-			indicesArray.push_back(slices+vertexCount+1);
+			indicesArray[index++] = vertexCount;
+			indicesArray[index++] = slices+vertexCount;
+			indicesArray[index++] = slices+vertexCount+1;
 
-			indicesArray.push_back(vertexCount);
-			indicesArray.push_back(slices+vertexCount+1);
-			indicesArray.push_back(vertexCount+1);
+			indicesArray[index++] = vertexCount;
+			indicesArray[index++] = slices+vertexCount+1;
+			indicesArray[index++] = vertexCount+1;
 
 			++vertexCount;
 		}
@@ -105,12 +106,12 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 	// Bottom
 	for(u32 j=0; j <= slices; ++j)
 	{
-		indicesArray.push_back(1);
-		indicesArray.push_back(vertexCount+slices-j);
-		indicesArray.push_back(vertexCount+slices-j-1);
+		indicesArray[index++] = 1;
+		indicesArray[index++] = vertexCount+slices-j;
+		indicesArray[index++] = vertexCount+slices-j-1;
 	}
 
-	sphereModel.SetIndicesArray((u32*)&indicesArray[0], indicesArray.size());
+	sphereModel.SetIndicesArray(indicesArray, indicesArraySz);
 	sphereModel.BuildVBO();
 
 	return false;
