@@ -66,14 +66,15 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 	int index=0;
 
 	// Top
-	for(u32 j=0; j <= slices; ++j)
+	for(u32 j=0; j < slices; ++j)
 	{
 		indicesArray[index++] = 0;
 		indicesArray[index++] = vertexCount;
 		indicesArray[index++] = vertexCount+1;
 		++vertexCount;
 	}
-	vertexCount -= (slices+1);
+
+	vertexCount -= (slices);
 
 	// Middle (stacks)
 	for(u32 i=0;i<(stacks-2); ++i)

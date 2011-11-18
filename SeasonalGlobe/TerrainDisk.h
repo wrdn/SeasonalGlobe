@@ -5,7 +5,12 @@
 #include "float2.h"
 #include "CustomModel.h"
  
-struct Face;
+struct Face
+{
+public:
+	VERTEX pos1, pos2, pos3;
+};
+
 class TerrainDisk : public CustomModel
 {
 private:
@@ -21,4 +26,5 @@ public:
 	void Draw(const bool drawPoints);
 
 	std::vector<VERTEX> &GetVertices() { return _vertices; };
+	std::vector<Face> &GetFaces() { return _faces; };
 };

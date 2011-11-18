@@ -22,6 +22,7 @@ private:
 	Floor *floor;
 	OBJFile *houseModel;
 	Sphere *sphere;
+
 	TerrainDisk *terrain;
 
 	Texture *grasstexture;
@@ -33,6 +34,7 @@ public:
 	f32 _cameraPosition;
 	f32 _cameraRotation;
 
+	GLenum terrainPolyMode;
 
 	World(void);
 	~World(void);

@@ -117,6 +117,21 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		case 'z':
 			scn._cameraAngle -= 5.0;
 			break;
+		case 't':
+			{
+				if(!down)
+				{
+					if(scn.terrainPolyMode == GL_LINE)
+					{
+						scn.terrainPolyMode = GL_FILL;
+					}
+					else
+					{
+						scn.terrainPolyMode = GL_LINE;
+					}
+				}
+				
+			} break;
 	}
 };
 

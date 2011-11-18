@@ -7,6 +7,8 @@ World::World(void)
 	_cameraAngle = 30.0f;
 	_cameraPosition = -15.0f;
 	_cameraRotation = 0.0f;
+
+	terrainPolyMode = GL_FILL;
 }
 
 World::~World(void)
@@ -19,7 +21,7 @@ bool World::Load()
 	cubeModel->ParseOBJFile("Data/TexturedCube.obj");
 	cubeModel->BuildModelVBOs();
 
-	grasstexture = texMan.LoadTextureFromFile("Data/Textures/Grass.jpg");
+	grasstexture = texMan.LoadTextureFromFile("Data/Textures/Grass2.jpg");
 	grasstexture->SetWrapS(GL_REPEAT);
 	grasstexture->SetWrapT(GL_REPEAT);
 	if(grasstexture) { testTextureID = grasstexture->GetID(); }
@@ -38,12 +40,6 @@ bool World::Load()
 
 	terrain = new TerrainDisk();
 	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
-	std::vector<VERTEX> &verts = terrain->GetVertices();
-
-	for(int i=0;i<verts.size();++i)
-	{
-		verts[i].uvs = verts[i].uvs.mul(15);
-	}
 
 	return true;
 };
@@ -77,9 +73,9 @@ void World::Draw(const GameTime &gameTime)
 	//glBindTexture(GL_TEXTURE_2D, testTextureID);
 	glRotatef(90, 1,0,0);
 	glScalef(5.48f,5.48f,5.48f);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, terrainPolyMode);
 	terrain->Draw(false);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	grasstexture->Deactivate();
 
@@ -98,6 +94,13 @@ void World::Draw(const GameTime &gameTime)
 	cubeModel->Draw();
 	glPopMatrix();
 
+	//sphere->GetModel().SetDrawMode(terrainPolyMode);
+	//glDisable(GL_TEXTURE_2D);
+	//glDisable(GL_CULL_FACE);
+	//glPushMatrix();
+	//sphere->Draw();
+	//glPopMatrix();
+
 	glPushMatrix();
 	glEnable(GL_CLIP_PLANE0); // use clip plane to cut bottom half
 	GLdouble eq[] = { 0, 1, 0, 0 };
@@ -105,7 +108,8 @@ void World::Draw(const GameTime &gameTime)
 	glDisable(GL_TEXTURE_2D);
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(1.0f,1.0f,1.0f,0.1f);
+	glColor4f(1.0f,1.0f,1.0f,0.25f);
+	sphere->GetModel().SetDrawMode(terrainPolyMode);
 	sphere->Draw();
 	glDisable(GL_BLEND);
 	glDisable(GL_CLIP_PLANE0);
