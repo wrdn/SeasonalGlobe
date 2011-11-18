@@ -19,13 +19,15 @@ bool World::Load()
 	cubeModel->ParseOBJFile("Data/TexturedCube.obj");
 	cubeModel->BuildModelVBOs();
 
-	Texture *t = texMan.LoadTextureFromFile("Data/Textures/Grass.jpg");
-	if(t) { testTextureID = t->GetID(); }
+	grasstexture = texMan.LoadTextureFromFile("Data/Textures/Grass.jpg");
+	grasstexture->SetWrapS(GL_REPEAT);
+	grasstexture->SetWrapT(GL_REPEAT);
+	if(grasstexture) { testTextureID = grasstexture->GetID(); }
 	
 	houseModel = new OBJFile();
 	houseModel->ParseOBJFile("Data/House/Haus20.obj");
 	houseModel->BuildModelVBOs();
-	t = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg");
+	Texture *t = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg");
 	if(t) { houseTextureID = t->GetID(); }
 
 	floor = new Floor();
@@ -36,6 +38,12 @@ bool World::Load()
 
 	terrain = new TerrainDisk();
 	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
+	std::vector<VERTEX> &verts = terrain->GetVertices();
+
+	for(int i=0;i<verts.size();++i)
+	{
+		verts[i].uvs = verts[i].uvs.mul(15);
+	}
 
 	return true;
 };
@@ -54,19 +62,6 @@ void World::Draw(const GameTime &gameTime)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
-	/*f32 ambLight[] = { 1,1,1,1 };
-	f32 diffLight[] = { 1,1,1, 1.0f };
-	f32 lightPos[] = { 0,0,-1.0f,1.0f };
-
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambLight);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffLight);
-	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
-
-	f32 const matAmbient[] = { 1,1,1,1 };
-	f32 const matDiffuse[] = { 1.0f,1.0f,1.0f,1.0f };
-	glMaterialfv(GL_FRONT, GL_AMBIENT, matAmbient);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, matDiffuse);*/
-
 	glPushMatrix();
 
 	glTranslatef(0.0f, 0.0f,_cameraPosition);
@@ -75,12 +70,19 @@ void World::Draw(const GameTime &gameTime)
 	glTranslatef(0.0f, -1.0f,0.0f);
 	
 	glPushMatrix();
-	glBindTexture(GL_TEXTURE_2D, testTextureID);
+	glEnable(GL_TEXTURE_2D);
+
+	grasstexture->Activate();
+
+	//glBindTexture(GL_TEXTURE_2D, testTextureID);
 	glRotatef(90, 1,0,0);
-	glScalef(5.48,5.48,5.48);
+	glScalef(5.48f,5.48f,5.48f);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	terrain->Draw(false);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	grasstexture->Deactivate();
+
 	glPopMatrix();
 	
 	glPushMatrix();

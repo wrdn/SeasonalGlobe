@@ -23,7 +23,7 @@ public:
 struct Face
 {
 public:
-	float3 pos1, pos2, pos3;
+	VERTEX pos1, pos2, pos3;
 };
 
 void TerrainDisk::Draw(const bool drawPoints)
@@ -36,7 +36,8 @@ void TerrainDisk::Draw(const bool drawPoints)
 		glBegin(GL_POINTS);
 		for(u32 i=0;i<_vertices.size();++i)
 		{
-			glVertex3fv(_vertices[i].vec);
+			glTexCoord2fv(_vertices[i].uvs.vec);
+			glVertex3fv(_vertices[i].pos.vec);
 		}
 		glEnd();
 		if(cullingEnabled)
@@ -51,9 +52,14 @@ void TerrainDisk::Draw(const bool drawPoints)
 		glBegin(GL_TRIANGLES);
 		for(u32 i=0;i<_faces.size();++i)
 		{
-			glVertex3fv(_faces[i].pos1.vec);
-			glVertex3fv(_faces[i].pos2.vec);
-			glVertex3fv(_faces[i].pos3.vec);
+			glTexCoord2fv(_faces[i].pos1.uvs.vec);
+			glVertex3fv(_faces[i].pos1.pos.vec);
+
+			glTexCoord2fv(_faces[i].pos2.uvs.vec);
+			glVertex3fv(_faces[i].pos2.pos.vec);
+
+			glTexCoord2fv(_faces[i].pos3.uvs.vec);
+			glVertex3fv(_faces[i].pos3.pos.vec);
 		}
 		glEnd();
 		if(cullingEnabled)
@@ -105,13 +111,14 @@ bool TerrainDisk::CreateTerrainDisk(const c8 * const heightmap_filename)
 				// UV
 				float2 tx((f32)p1x / (f32)(sourceImage.Width()-1),
 					(f32)i / (f32)(sourceImage.Height()-1));
-				_tex.push_back(tx);
 
 				// Vertex
-				float3 v(
+				float3 vpos(
 					-2.0f + 4.0f * tx.x(),
 					-2.0f + 4.0f * tx.y(),
 					(f32)rowptr[p1x * bpp]/255.0f);
+
+				VERTEX v(vpos, float3(), tx);
 				_vertices.push_back(v);
 
 				++p1x;
@@ -166,10 +173,10 @@ bool TerrainDisk::CreateTerrainDisk(const c8 * const heightmap_filename)
 		Face f1, f2;
 		for(int j=0;j<OverlapLength;++j)
 		{
-			float3 v1 = _vertices[currentRow->prevertexcount + j + 1];
-			float3 v2 = _vertices[currentRow->prevertexcount + j];
-			float3 v3 = _vertices[nextRow->prevertexcount + j];
-			float3 v4 = _vertices[nextRow->prevertexcount + j + 1];
+			VERTEX v1 = _vertices[currentRow->prevertexcount + j + 1];
+			VERTEX v2 = _vertices[currentRow->prevertexcount + j];
+			VERTEX v3 = _vertices[nextRow->prevertexcount + j];
+			VERTEX v4 = _vertices[nextRow->prevertexcount + j + 1];
 
 			f1.pos1 = v1;
 			f1.pos2 = v2;
@@ -189,14 +196,16 @@ bool TerrainDisk::CreateTerrainDisk(const c8 * const heightmap_filename)
 			rightFace.pos1 = _vertices[currentRow->postvertexcount-1];
 			rightFace.pos2 = _vertices[currentRow->postvertexcount-D-1];
 			rightFace.pos3 = _vertices[nextRow->postvertexcount-1];
+			_faces.push_back(rightFace);
 		}
 		else
 		{
-			rightFace.pos1 = _vertices[currentRow->postvertexcount-1];
-			rightFace.pos2 = _vertices[nextRow->postvertexcount-1];
+			rightFace.pos2 = _vertices[currentRow->postvertexcount-1];
+			rightFace.pos1 = _vertices[nextRow->postvertexcount-1];
 			rightFace.pos3 = _vertices[nextRow->postvertexcount-D-1];
+			_faces.push_back(rightFace);
 		}
-		_faces.push_back(rightFace);
+		
 	}
 
 	#pragma endregion

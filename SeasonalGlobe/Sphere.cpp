@@ -20,18 +20,12 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 	VERTEX *verts = new VERTEX[arraySize];
 
 	// Top
-	VERTEX top;
-	top.pos[0] = 0; top.pos[1] = radius; top.pos[2] = 0;
-	top.norm[0] = 0; top.norm[1] = 1; top.norm[2] = 0;
-	top.uvs[0] = 0; top.uvs[1] = 1;
+	VERTEX top( float3(0,radius,0), float3(0,1,0), float2(0,1));
 	verts[vertexCount] = top;
 	++vertexCount;
 
 	// Bottom
-	VERTEX bottom;
-	bottom.pos[0] = 0; bottom.pos[1] = -radius; bottom.pos[2] = 0;
-	bottom.norm[0] = 0; bottom.norm[1] = -1; bottom.norm[2] = 0;
-	bottom.uvs[0] = 0; bottom.uvs[1] = 0;
+	VERTEX bottom(float3(0,-radius,0), float3(0,-1,0), float2(0,0));
 	verts[vertexCount] = bottom;
 	++vertexCount;
 
@@ -48,20 +42,15 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 			x = cos((float)j * slice_increment);
 			z = -sin((float)j*slice_increment);
 			
-			VERTEX v;
-			v.pos[0] = radius * temp_radius * x;
-			v.pos[1] = radius * y;
-			v.pos[2] = radius * temp_radius * z;
-			v.norm[0] = temp_radius * x;
-			v.norm[1] = y;
-			v.norm[2] = temp_radius * z;
-			v.uvs[0] = (float)j / (float)slices;
-			v.uvs[1] = temp_tex;
+			VERTEX v(
+				float3(radius*temp_radius*x, radius*y, radius*temp_radius*z),
+				float3(temp_radius*x, y, temp_radius*z),
+				float2((float)j/(float)slices, temp_tex));
 			verts[vertexCount] = v;
 			++vertexCount;
 		}
 		VERTEX lv = verts[temp_vcount];
-		lv.uvs[1] = temp_tex;
+		lv.uvs.y(temp_tex);
 		verts[vertexCount] = lv;
 		++vertexCount;
 	}

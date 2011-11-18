@@ -24,6 +24,8 @@ private:
 	Sphere *sphere;
 	TerrainDisk *terrain;
 
+	Texture *grasstexture;
+
 public:
 
 	// Temporary Camera Variables (Code from RealTime Graphics module tutorials)

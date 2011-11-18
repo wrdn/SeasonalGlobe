@@ -30,6 +30,17 @@ public:
 	void x(const f32 v) { vec[0]=v; };
 	void y(const f32 v) { vec[1]=v; };
 
+	void set(const f32 _x, const f32 _y)
+	{
+		vec[0] = _x;
+		vec[1] = _y;
+	};
+	void set(const f32 * const v)
+	{
+		vec[0] = v[0];
+		vec[1] = v[1];
+	};
+
 	void zero(); // zero's the current vector
 	void setall(const f32 v);
 

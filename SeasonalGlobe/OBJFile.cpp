@@ -245,8 +245,8 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 					indices[0] -= 1; indices[1] -= 1;
 
 					// Copy data
-					memcpy(vertexArray[vertexArrayInsertionPos].pos, &vertex_data[indices[0]*3], sizeof(f32)*3);
-					memcpy(vertexArray[vertexArrayInsertionPos].norm, &normal_data[indices[1]*3], sizeof(f32)*3);
+					vertexArray[vertexArrayInsertionPos].pos.set(&vertex_data[indices[0]*3]);
+					vertexArray[vertexArrayInsertionPos].normal.set(&vertex_data[indices[1]*3]);
 
 					hashMap[sh] = vertexArrayInsertionPos;
 					indexArray[insertionPos++] = vertexArrayInsertionPos;
@@ -295,9 +295,9 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 					indices[0] -= 1; indices[1] -= 1; indices[2] -= 1;
 
 					// Copy data
-					memcpy(vertexArray[vertexArrayInsertionPos].pos, &vertex_data[indices[0]*3], sizeof(f32)*3);
-					memcpy(vertexArray[vertexArrayInsertionPos].uvs, &uv_data[indices[1]*2], sizeof(f32)*2);
-					memcpy(vertexArray[vertexArrayInsertionPos].norm, &normal_data[indices[2]*3], sizeof(f32)*3);
+					vertexArray[vertexArrayInsertionPos].pos.set(&vertex_data[indices[0]*3]);
+					vertexArray[vertexArrayInsertionPos].uvs.set(&uv_data[indices[1]*2]);
+					vertexArray[vertexArrayInsertionPos].normal.set(&normal_data[indices[2]*3]);
 
 					hashMap[sh] = vertexArrayInsertionPos;
 					indexArray[insertionPos++] = vertexArrayInsertionPos;

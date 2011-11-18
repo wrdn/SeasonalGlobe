@@ -3,6 +3,8 @@
 
 #include "ctypes.h"
 #include "util.h"
+#include "float2.h"
+#include "float3.h"
 #include <GXBase.h>
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
@@ -23,15 +25,25 @@ public:
 struct VERTEX
 {
 public:
-	f32 pos[3]; // 12
-	f32 norm[3]; // 12
-	f32 uvs[2]; // 8
+	//f32 pos[3]; // 12
+	//f32 norm[3]; // 12
+	//f32 uvs[2]; // 8
+
+	float3 pos, normal;
+	float2 uvs;
 	
 	// NOTE: Remember to change these if you change the size/order of this structure
 	// Values are in bytes and are used during VBO creation
 	static const u32 POS_BUFFER_OFFSET = 0;
 	static const u32 NORMAL_BUFFER_OFFSET = 12;
 	static const u32 UV_BUFFER_OFFSET = 24;
+
+	VERTEX() { };
+	VERTEX(float3 _pos, float3 _normal, float2 _uv)
+		: pos(_pos), normal(_normal), uvs(_uv)
+	{
+	};
+
 };
 
 class Model : public glex

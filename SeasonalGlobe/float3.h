@@ -19,6 +19,19 @@ public:
 	void y(const f32 v) { vec[1]=v; };
 	void z(const f32 v) { vec[2]=v; };
 
+	void set(const f32 x, const f32 y, const f32 z)
+	{
+		vec[0] = x;
+		vec[1] = y;
+		vec[2] = z;
+	};
+	void set(const f32 * const v)
+	{
+		vec[0] = v[0];
+		vec[1] = v[1];
+		vec[2] = v[2];
+	};
+
 	~float3();
 	float3(); // sets all to 0
 	float3(const f32 v);
