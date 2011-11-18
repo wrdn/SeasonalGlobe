@@ -144,9 +144,7 @@ bool TerrainDisk::CreateTerrainDisk(const c8 * const heightmap_filename)
 		}
 		i32 OverlapEnd = OverlapStart + min(currentRow->pixcount, nextRow->pixcount);
 		i32 OverlapLength = OverlapEnd - OverlapStart;
-
-
-		// Finish left face (on "left" side of disk)
+		
 		Face leftFace;
 		if(currentRow->pixcount >= nextRow->pixcount) // A Length >= B Length
 		{
@@ -156,75 +154,58 @@ bool TerrainDisk::CreateTerrainDisk(const c8 * const heightmap_filename)
 		}
 		else // B Length > A Length
 		{
-			Face leftFace;
 			leftFace.pos1 = _vertices[currentRow->prevertexcount];
 			leftFace.pos2 = _vertices[nextRow->prevertexcount];
 			leftFace.pos3 = _vertices[nextRow->prevertexcount+D];
 		}
-		//_faces.push_back(leftFace);
+		_faces.push_back(leftFace);
 
 		// Faces for Overlapping pixels
 		Face f1, f2;
 		for(int j=0;j<OverlapLength;++j)
 		{
-			/*VERTEX v1 = _vertices[currentRow->prevertexcount + j + 1];
-			VERTEX v2 = _vertices[currentRow->prevertexcount + j];
-			VERTEX v3 = _vertices[nextRow->prevertexcount + j];
-			VERTEX v4 = _vertices[nextRow->prevertexcount + j + 1];*/
-
+			VERTEX v1,v2,v3,v4;
 			if(currentRow->pixcount > nextRow->pixcount)
 			{
-				VERTEX v1 = _vertices[currentRow->prevertexcount + D + j];
-				VERTEX v2 = _vertices[currentRow->prevertexcount + D + j + 1];
-				VERTEX v3 = _vertices[nextRow->prevertexcount + j];
-				VERTEX v4 = _vertices[nextRow->prevertexcount + j + 1];
+				v1 = _vertices[currentRow->prevertexcount + D + j];
+				v2 = _vertices[currentRow->prevertexcount + D + j + 1];
+				v3 = _vertices[nextRow->prevertexcount + j];
+				v4 = _vertices[nextRow->prevertexcount + j + 1];
 
-				f1.pos1 = v2;
-				f1.pos2 = v1;
-				f1.pos3 = v3;
-
-				f2.pos1 = v2;
-				f2.pos2 = v3;
-				f2.pos3 = v4;
-
-				_faces.push_back(f1);
-				_faces.push_back(f2);
 			}
 			else
 			{
-				VERTEX v1 = _vertices[currentRow->prevertexcount + j];
-				VERTEX v2 = _vertices[currentRow->prevertexcount + j + 1];
-				VERTEX v3 = _vertices[nextRow->prevertexcount + D + j];
-				VERTEX v4 = _vertices[nextRow->prevertexcount + D + j + 1];
-
-				f1.pos1 = v2;
-				f1.pos2 = v1;
-				f1.pos3 = v3;
-
-				f2.pos1 = v2;
-				f2.pos2 = v3;
-				f2.pos3 = v4;
-
-				_faces.push_back(f1);
-				_faces.push_back(f2);
+				v1 = _vertices[currentRow->prevertexcount + j];
+				v2 = _vertices[currentRow->prevertexcount + j + 1];
+				v3 = _vertices[nextRow->prevertexcount + D + j];
+				v4 = _vertices[nextRow->prevertexcount + D + j + 1];
 			}
+			f1.pos1 = v2;
+			f1.pos2 = v1;
+			f1.pos3 = v3;
+
+			f2.pos1 = v2;
+			f2.pos2 = v3;
+			f2.pos3 = v4;
+
+			_faces.push_back(f1);
+			_faces.push_back(f2);
 		}
 
 		Face rightFace;
 		if(currentRow->pixcount >= nextRow->pixcount) // A Length >= B Length
 		{
 			rightFace.pos1 = _vertices[currentRow->postvertexcount-1];
-			rightFace.pos3 = _vertices[nextRow->postvertexcount-1];
 			rightFace.pos2 = _vertices[currentRow->postvertexcount-D-1];
-			//_faces.push_back(rightFace);
+			rightFace.pos3 = _vertices[nextRow->postvertexcount-1];
 		}
 		else
 		{
-			rightFace.pos2 = _vertices[currentRow->postvertexcount-1];
-			rightFace.pos1 = _vertices[nextRow->postvertexcount-1];
-			rightFace.pos3 = _vertices[nextRow->postvertexcount-D-1];
-			//_faces.push_back(rightFace);
+			rightFace.pos1 = _vertices[currentRow->postvertexcount-1];
+			rightFace.pos2 = _vertices[nextRow->postvertexcount-1-D];
+			rightFace.pos3 = _vertices[nextRow->postvertexcount-1];
 		}
+		_faces.push_back(rightFace);
 		
 	}
 
