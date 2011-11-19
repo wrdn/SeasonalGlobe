@@ -27,6 +27,10 @@ public:
 
 	f32 x() const { return vec[0]; };
 	f32 y() const { return vec[1]; };
+
+	f32 r() const { return x(); };
+	f32 g() const { return y(); };
+
 	void x(const f32 v) { vec[0]=v; };
 	void y(const f32 v) { vec[1]=v; };
 

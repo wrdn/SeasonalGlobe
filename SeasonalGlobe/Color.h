@@ -1,16 +1,9 @@
 #pragma once
 
 #include "ctypes.h"
+#include "float4.h"
 
-struct Color4f
-{
-public:
-	f32 r,g,b,a;
-
-	Color4f();
-	Color4f(f32 _r, f32 _g, f32 _b, f32 _a);
-	Color4f(f32 v);
-};
+typedef float4 Color4f;
 
 // Static class to hold some colors (in Color4f r,g,b,a form)
 class Color

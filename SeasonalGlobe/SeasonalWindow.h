@@ -26,6 +26,7 @@ private:
 	bool _leftDown, _rightDown;
 
 public:
+
 	void OnCreate();
 	void OnDestroy();
 

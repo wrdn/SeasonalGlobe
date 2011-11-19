@@ -1,4 +1,6 @@
 #include "World.h"
+#include "strutils.h"
+#include "Color.h"
 
 GLuint textures[2];
 
@@ -20,17 +22,15 @@ bool World::Load()
 	cubeModel = new OBJFile();
 	cubeModel->ParseOBJFile("Data/TexturedCube.obj");
 	cubeModel->BuildModelVBOs();
-
+	
 	grasstexture = texMan.LoadTextureFromFile("Data/Textures/Grass2.jpg");
 	grasstexture->SetWrapS(GL_REPEAT);
 	grasstexture->SetWrapT(GL_REPEAT);
-	if(grasstexture) { testTextureID = grasstexture->GetID(); }
 	
 	houseModel = new OBJFile();
 	houseModel->ParseOBJFile("Data/House/Haus20.obj");
 	houseModel->BuildModelVBOs();
-	Texture *t = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg");
-	if(t) { houseTextureID = t->GetID(); }
+	houseTexture = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg");
 
 	floor = new Floor();
 	floor->CreateFloor(40,11);
@@ -41,12 +41,36 @@ bool World::Load()
 	terrain = new TerrainDisk();
 	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
 
+	if(_phongShader.Init())
+	{
+		c8* phong_frag_src = read_src_fast("Data/Shaders/phong.frag");
+		c8* phong_vert_src = read_src_fast("Data/Shaders/phong.vert");
+
+		_phongShader.CompilerVertexShader(phong_vert_src);
+		_phongShader.CompileFragmentShader(phong_frag_src);
+		_phongShader.PrintShaderLog(GL_VERTEX_SHADER, std::cout);
+		_phongShader.PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
+
+		if(_phongShader.CreateProgram())
+		{
+			_phongShader.Activate();
+			
+			_phongShader.SetUniform("red", 3.0f);
+			
+			_phongShader.Deactivate();
+		}
+
+		delete [] phong_frag_src;
+		delete [] phong_vert_src;
+	}
+
+
 	return true;
 };
 
 void World::Shutdown()
 {
-	texMan.DeleteTexture(testTextureID);
+	texMan.Cleanup();
 };
 
 float angle=0; const float rotationSpeed = 50.0f;
@@ -69,37 +93,31 @@ void World::Draw(const GameTime &gameTime)
 	glEnable(GL_TEXTURE_2D);
 
 	grasstexture->Activate();
-
-	//glBindTexture(GL_TEXTURE_2D, testTextureID);
 	glRotatef(90, 1,0,0);
 	glScalef(5.48f,5.48f,5.48f);
 	glPolygonMode(GL_FRONT_AND_BACK, terrainPolyMode);
 	terrain->Draw(false);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
 	grasstexture->Deactivate();
-
 	glPopMatrix();
 	
 	glPushMatrix();
-	glBindTexture(GL_TEXTURE_2D, houseTextureID);
 	glTranslatef(-5.5,0,0.5);
 	glScalef(.05f,.05f,.05f);
+	houseTexture->Activate();
 	houseModel->Draw();
+	houseTexture->Deactivate();
 	glPopMatrix();
 
 	glPushMatrix();
 	glTranslatef(0,2,0);
 	glRotatef(angle,1,1,0);
+	houseTexture->Activate();
+	_phongShader.Activate();
 	cubeModel->Draw();
+	_phongShader.Deactivate();
+	houseTexture->Deactivate();
 	glPopMatrix();
-
-	//sphere->GetModel().SetDrawMode(terrainPolyMode);
-	//glDisable(GL_TEXTURE_2D);
-	//glDisable(GL_CULL_FACE);
-	//glPushMatrix();
-	//sphere->Draw();
-	//glPopMatrix();
 
 	glPushMatrix();
 	glEnable(GL_CLIP_PLANE0); // use clip plane to cut bottom half

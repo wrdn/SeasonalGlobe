@@ -21,4 +21,6 @@ public:
 
 	const Texture* GetTexture(const u32 _id) const;
 	bool DeleteTexture(const u32 _id); // returns false if texture doesn't exist
+
+	void Cleanup();
 };

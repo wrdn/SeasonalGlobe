@@ -8,6 +8,11 @@ TextureManager::TextureManager(void)
 
 TextureManager::~TextureManager(void)
 {
+	Cleanup();
+}
+
+void TextureManager::Cleanup()
+{
 	// Generally the texture manager will be a singleton, and will exist throughout the entire application
 	// The texture manager will ensure that any textures are cleaned up (if not done elsewhere)
 	for (std::map<u32,Texture>::iterator it=textures.begin() ; it != textures.end(); it++ )
@@ -15,7 +20,7 @@ TextureManager::~TextureManager(void)
 		glDeleteTextures(1, &it->first);
 	}
 	textures.clear();
-}
+};
 
 Texture* TextureManager::LoadTextureFromFile(const c8* const _filename)
 {

@@ -60,7 +60,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>.\..\Libraries\GXBase\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gxbasemd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -101,6 +101,7 @@
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PerfTimer.cpp" />
     <ClCompile Include="SeasonalWindow.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="SphericalCamera.cpp" />
     <ClCompile Include="strutils.cpp" />
@@ -133,6 +134,7 @@
     <ClInclude Include="Particle.h" />
     <ClInclude Include="PerfTimer.h" />
     <ClInclude Include="SeasonalWindow.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="SphericalCamera.h" />
     <ClInclude Include="strutils.h" />
@@ -152,15 +154,22 @@
     </Object>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Data\House\Haus20.mtl" />
     <None Include="Data\House\Haus_020_unwrap.jpg">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </None>
+    <None Include="Data\House\Haus_020_unwrap_NRM.jpg" />
+    <None Include="Data\House\Haus_020_unwrap_SPEC.jpg" />
+    <None Include="Data\Shaders\phong.frag" />
+    <None Include="Data\Shaders\phong.vert" />
     <None Include="Data\Textures\Grass.jpg">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </None>
+    <None Include="Data\Textures\Grass2.jpg" />
     <None Include="Data\Textures\ground_heightmap.bmp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </None>
+    <None Include="Data\Textures\ground_old.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,9 +1,5 @@
 #include "Color.h"
 
-Color4f::Color4f() : r(0), g(0), b(0), a(0) { };
-Color4f::Color4f(f32 _r, f32 _g, f32 _b, f32 _a) : r(_r), g(_g), b(_b), a(_a) { };
-Color4f::Color4f(f32 v) : r(v), g(v), b(v), a(v) { };
-
 Color::Color() { };
 
 const Color4f Color::BLACK  = Color4f();
@@ -33,7 +29,7 @@ u32 Color::ToInt(f32 _r, const f32 _g, const f32 _b, const f32 _a)
 
 u32 Color::ToInt(const Color4f &c)
 {
-	return ToInt(c.r, c.g, c.b, c.a);
+	return ToInt(c.r(), c.g(), c.b(), c.a());
 };
 
 ColorU32::ColorU32() : color(0) { };

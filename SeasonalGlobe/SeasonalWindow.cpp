@@ -13,6 +13,10 @@ SeasonalWindow::SeasonalWindow() : clearColor(Color::BLACK)
 {
 	windowRes[0] = DEFAULT_WIDTH;
 	windowRes[1] = DEFAULT_HEIGHT;
+
+	SetSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+	SetDepthBits(24);
+	SetTitle(DEFAULT_WINDOW_TITLE);
 };
 
 const Color4f& SeasonalWindow::GetClearColor() const
@@ -61,7 +65,7 @@ void SeasonalWindow::OnDisplay()
 {
 	gameTime.Update();
 
-	glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+	glClearColor(clearColor.r(), clearColor.g(), clearColor.b(), clearColor.a());
 
 	scn.Draw(gameTime);
 	
@@ -177,13 +181,14 @@ void SeasonalWindow::OnMouseMove(int x, int y)
 
 void SeasonalWindow::OnCreate()
 {
+	GLWindowEx::OnCreate();
+	
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 	scn.Load();
 
 	gameTime.Init();
 
-	GLWindowEx::OnCreate();
 	SetTitle(DEFAULT_WINDOW_TITLE);
 	SetWindowResolution(windowRes[0], windowRes[1]);
 

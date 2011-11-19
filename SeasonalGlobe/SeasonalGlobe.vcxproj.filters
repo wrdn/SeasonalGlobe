@@ -16,6 +16,15 @@
     <Filter Include="Resource Files\Data">
       <UniqueIdentifier>{a0bd3c2b-2db1-4d8c-9505-afe747cdeba9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Data\House">
+      <UniqueIdentifier>{4800405b-47dd-42eb-8885-121cf02c22fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Data\Textures">
+      <UniqueIdentifier>{cb7e9c9c-0e91-48a9-9252-7276aecc2c91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Data\Shaders">
+      <UniqueIdentifier>{f8a8bd17-4033-4dca-8337-3f687eae5f31}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -97,6 +106,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Collision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -191,24 +203,48 @@
     <ClInclude Include="Line.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Object Include="Data\TexturedCube.obj">
       <Filter>Resource Files\Data</Filter>
     </Object>
     <Object Include="Data\House\Haus20.obj">
-      <Filter>Resource Files\Data</Filter>
+      <Filter>Resource Files\Data\House</Filter>
     </Object>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Data\Textures\Grass.jpg">
-      <Filter>Resource Files\Data</Filter>
+    <None Include="Data\House\Haus_020_unwrap_SPEC.jpg">
+      <Filter>Resource Files\Data\House</Filter>
     </None>
-    <None Include="Data\Textures\ground_heightmap.bmp">
-      <Filter>Resource Files\Data</Filter>
+    <None Include="Data\House\Haus_020_unwrap_NRM.jpg">
+      <Filter>Resource Files\Data\House</Filter>
     </None>
     <None Include="Data\House\Haus_020_unwrap.jpg">
-      <Filter>Resource Files\Data</Filter>
+      <Filter>Resource Files\Data\House</Filter>
+    </None>
+    <None Include="Data\House\Haus20.mtl">
+      <Filter>Resource Files\Data\House</Filter>
+    </None>
+    <None Include="Data\Textures\ground_heightmap.bmp">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Textures\ground_old.bmp">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Textures\Grass2.jpg">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Textures\Grass.jpg">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Shaders\phong.frag">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\phong.vert">
+      <Filter>Resource Files\Data\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

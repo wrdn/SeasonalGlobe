@@ -4,22 +4,22 @@
 void SAFE_DELETE(const void *p) { if(p) { delete p; p = 0; } };
 void SAFE_DELETE_ARRAY(const void *p) { if(p) { delete [] p; p = 0; } };
 
-void set_bit(i32 &opt, const u32 bit)
+void set_bit(u32 &opt, const u32 bit)
 {
 	opt |= bit;
 };
 
-i32 bit_set(const i32 &opt, const u32 bit)
+i32 bit_set(const u32 &opt, const u32 bit)
 {
 	return (opt & bit);
 };
 
-void clear_bit(i32 &opt, const u32 bit)
+void clear_bit(u32 &opt, const u32 bit)
 {
 	opt &= (~bit);
 };
 
-void toggle_bit(i32 &opt, const u32 bit)
+void toggle_bit(u32 &opt, const u32 bit)
 {
 	opt ^= bit;
 };

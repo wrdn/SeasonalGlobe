@@ -24,6 +24,12 @@ public:
 	f32 y() const { return vec[1]; };
 	f32 z() const { return vec[2]; };
 	f32 w() const { return vec[3]; };
+
+	f32 r() const { return x(); };
+	f32 g() const { return y(); };
+	f32 b() const { return z(); };
+	f32 a() const { return w(); };
+
 	void x(const f32 v) { vec[0]=v; };
 	void y(const f32 v) { vec[1]=v; };
 	void z(const f32 v) { vec[2]=v; };

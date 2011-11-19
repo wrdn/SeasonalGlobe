@@ -7,6 +7,7 @@
 #include "Floor.h"
 #include "Sphere.h"
 #include "TerrainDisk.h"
+#include "Shader.h"
 
 class World
 {
@@ -15,8 +16,6 @@ private:
 	Camera cams[World::CAMERA_COUNT];
 
 	TextureManager texMan;
-	int testTextureID;
-	int houseTextureID;
 
 	OBJFile *cubeModel;
 	Floor *floor;
@@ -24,8 +23,9 @@ private:
 	Sphere *sphere;
 
 	TerrainDisk *terrain;
+	Texture *grasstexture, *houseTexture;
 
-	Texture *grasstexture;
+	Shader _phongShader;
 
 public:
 
