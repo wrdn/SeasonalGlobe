@@ -16,8 +16,6 @@ Thumbs.db
 *.ilk
 *.log
 [Bb]in
-SeasonalGlobe/[Dd]ebug*/
-SeasonalGlobe/[Rr]elease*/
 *.sbr
 obj/
 _ReSharper*/
@@ -32,8 +30,11 @@ _ReSharper*/
 ipch/
 *.bin
 [Bb]uild/
-TerrainDiscGenerator/[Dd]ebug/
-TerrainDiscGenerator/[Rr]elease/
+[Dd]ebug/
+[Rr]elease/
+!Libraries/
+!Libraries/
 .parasoft.dat/
 .parasoft
 .cpptest/
+*.vsp
