@@ -20,9 +20,7 @@ bool LSystem::AddAxiom(char c, string str) {
 };
 
 const string& LSystem::GetReplacementString(const char axiom) {
-
-	if(_last_axiom_request == axiom)
-		return *_last_axiom_result;
+	if(_last_axiom_request == axiom) return *_last_axiom_result;
 
 	_last_axiom_request = axiom;
 	_last_axiom_result = &productionRules.at(axiom);
@@ -62,13 +60,29 @@ const string LSystem::Evaluate(const unsigned int level) {
 	string replacementString;
 	replacementString.reserve(1000000); // stops too many reallocations
 
+	evaluatedString.reserve(1000000);
+	evaluatedString = startingAxiom;
+
 	for(unsigned int i=1;i<=buildLevel;++i)
 	{
 		replacementString.clear();
 
 		for (unsigned int j = 0; j < evaluatedString.length(); ++j)
 		{
-			replacementString.append(GetReplacementString(evaluatedString[j]));
+			char _c = evaluatedString[j];
+
+			if(_last_axiom_request == _c)
+				replacementString.append(*_last_axiom_result);
+			else if(HasAxiom(_c))
+			{
+				_last_axiom_request = _c;
+				_last_axiom_result = &productionRules[_c];
+				replacementString.append(*_last_axiom_result);
+			}
+			else
+			{
+				replacementString += _c; // constant (not a variable)
+			}
 		}
 
 		evaluatedString = replacementString;

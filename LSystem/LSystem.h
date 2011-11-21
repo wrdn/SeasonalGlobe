@@ -4,6 +4,15 @@
 #include <string>
 #include <map>
 
+// Variables: e.g. F, K
+// Constants: Any variables that have not been added e.g. + -
+// Starting Axiom: e.g. F
+// Production Rules: Replacement strings for the variables e.g. F -> FF
+// Example:
+// Generation 0: F
+// Generation 1: FF
+// Generation 2: FFFF
+// Generation 3: FFFFFFFF
 class LSystem {
 private:
     std::map<char, std::string> productionRules;
@@ -15,7 +24,6 @@ private:
 	// speed up GetReplacementString by caching last result
 	char _last_axiom_request;
 	std::string* _last_axiom_result;
-
 public:
     LSystem();
     ~LSystem();
