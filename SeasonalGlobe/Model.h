@@ -46,6 +46,12 @@ public:
 
 };
 
+enum TriangleDrawMethod
+{
+	TRIANGLES = GL_TRIANGLES,
+	TRIANGLE_STRIP = GL_TRIANGLE_STRIP,
+};
+
 class Model : public glex
 {
 private:
@@ -54,7 +60,7 @@ private:
 	u32 *indicesArray; u32 indicesArraySize;
 	u32 triangleDrawCount; // indices to use = triangleDrawCount * 3
 	GLenum drawMode;
-
+	TriangleDrawMethod triDrawMethod;
 public:
 	Model();
 	~Model();
@@ -79,12 +85,26 @@ public:
 
 		indicesArray = _indicesArray;
 		indicesArraySize = _indicesArraySize;
-		triangleDrawCount = indicesArraySize / 3;
+		
+		//triangleDrawCount = indicesArraySize / 3;
 	};
 
 	const u32 GetTriangleDrawCount() const { return triangleDrawCount; };
 	void RecalculateTriangleDrawCount() { triangleDrawCount = indicesArraySize / 3; };
 	void SetTriangleDrawCount(const u32 v) { triangleDrawCount = v; };
+
+	void SetTriangleDrawMethod(TriangleDrawMethod method)
+	{
+		/*if(method == TRIANGLES)
+		{
+			RecalculateTriangleDrawCount();
+		}
+		else
+		{
+			triangleDrawCount = indicesArraySize; // 3 indices for triangle 1, +1 per next triangle
+		}*/
+		triDrawMethod = method;
+	};
 
 	const GLenum GetDrawMode() const { return drawMode; };
 	void SetDrawMode(const GLenum m) { drawMode = m; };

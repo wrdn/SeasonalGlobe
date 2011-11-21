@@ -86,6 +86,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="Cylinder.cpp" />
     <ClCompile Include="float2.cpp" />
     <ClCompile Include="float3.cpp" />
     <ClCompile Include="float4.cpp" />
@@ -119,6 +120,7 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="ctypes.h" />
     <ClInclude Include="CustomModel.h" />
+    <ClInclude Include="Cylinder.h" />
     <ClInclude Include="float2.h" />
     <ClInclude Include="float3.h" />
     <ClInclude Include="float4.h" />

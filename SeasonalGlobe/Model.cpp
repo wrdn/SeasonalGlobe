@@ -11,7 +11,7 @@ using namespace std;
 
 Model::Model()
 	: vertexArray(0), vertexArraySize(0), indicesArray(0), indicesArraySize(0),
-	triangleDrawCount(0), drawMode(GL_FILL)
+	triangleDrawCount(0), drawMode(GL_FILL), triDrawMethod(TRIANGLES)
 {
 	glex::Load();
 };
@@ -62,7 +62,7 @@ bool Model::BuildVBO()
 		return false;
 	}
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mvbo.indices_vboid);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, (triangleDrawCount*3)*sizeof(u32), indicesArray, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesArraySize*sizeof(u32), indicesArray, GL_STATIC_DRAW);
 
 	return true;
 };
@@ -82,7 +82,7 @@ void Model::Draw()
 	glNormalPointer(GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX::NORMAL_BUFFER_OFFSET));
 	glTexCoordPointer(2, GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX::UV_BUFFER_OFFSET));
 
-	glDrawElements(GL_TRIANGLES, triangleDrawCount*3, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+	glDrawElements(triDrawMethod, indicesArraySize, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
