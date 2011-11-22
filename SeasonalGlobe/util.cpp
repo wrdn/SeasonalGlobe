@@ -2,7 +2,14 @@
 #include <math.h>
 
 void SAFE_DELETE(const void *p) { if(p) { delete p; p = 0; } };
-void SAFE_DELETE_ARRAY(const void *p) { if(p) { delete [] p; p = 0; } };
+void SAFE_DELETE_ARRAY(const void *p)
+{
+	if(p)
+	{
+		delete [] p;
+		p = 0;
+	}
+};
 
 void set_bit(u32 &opt, const u32 bit)
 {

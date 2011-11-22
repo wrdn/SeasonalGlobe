@@ -64,6 +64,8 @@ bool World::Load()
 		delete [] phong_vert_src;
 	}
 
+	_cylinder = new Cylinder();
+	_cylinder->Create(6, 5, 20, 20);
 
 	return true;
 };
@@ -90,6 +92,12 @@ void World::Draw(const GameTime &gameTime)
 	glTranslatef(0.0f, -1.0f,0.0f);
 	
 	glPushMatrix();
+	//_cylinder->Draw();
+	_cylinder->GetModel().DrawVertexPoints();
+	glPopMatrix();
+
+
+	/*glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
 
 	grasstexture->Activate();
@@ -131,7 +139,7 @@ void World::Draw(const GameTime &gameTime)
 	sphere->Draw();
 	glDisable(GL_BLEND);
 	glDisable(GL_CLIP_PLANE0);
-	glPopMatrix();
+	glPopMatrix();*/
 
 	glPopMatrix();
 

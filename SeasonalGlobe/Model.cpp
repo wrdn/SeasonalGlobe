@@ -18,8 +18,14 @@ Model::Model()
 
 Model::~Model()
 {
-	SAFE_DELETE_ARRAY(vertexArray);
+	//SAFE_DELETE_ARRAY(vertexArray);
+	if(vertexArray)
+	{
+		delete vertexArray;
+	}
+
 	SAFE_DELETE_ARRAY(indicesArray);
+
 	triangleDrawCount = 0;
 
 	if(mvbo.modeldata_vboid)
@@ -98,4 +104,16 @@ ModelVBO::ModelVBO() : modeldata_vboid(0), indices_vboid(0)
 
 ModelVBO::~ModelVBO()
 {
+};
+
+void Model::DrawVertexPoints()
+{
+	glBegin(GL_POINTS);
+
+	for(u32 i=0;i<vertexArraySize;++i)
+	{
+		glVertex3fv(vertexArray[i].pos.vec);
+	}
+
+	glEnd();
 };

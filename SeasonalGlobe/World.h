@@ -6,6 +6,7 @@
 #include "TextureManager.h"
 #include "Floor.h"
 #include "Sphere.h"
+#include "Cylinder.h"
 #include "TerrainDisk.h"
 #include "Shader.h"
 
@@ -26,6 +27,8 @@ private:
 	Texture *grasstexture, *houseTexture;
 
 	Shader _phongShader;
+
+	Cylinder *_cylinder;
 
 public:
 

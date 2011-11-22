@@ -95,14 +95,6 @@ public:
 
 	void SetTriangleDrawMethod(TriangleDrawMethod method)
 	{
-		/*if(method == TRIANGLES)
-		{
-			RecalculateTriangleDrawCount();
-		}
-		else
-		{
-			triangleDrawCount = indicesArraySize; // 3 indices for triangle 1, +1 per next triangle
-		}*/
 		triDrawMethod = method;
 	};
 
@@ -111,6 +103,8 @@ public:
 
 	bool BuildVBO();
 	void Draw(); // dumb function, does no data checking
+
+	void DrawVertexPoints(); //draws each vertex as a point
 };
 
 #endif

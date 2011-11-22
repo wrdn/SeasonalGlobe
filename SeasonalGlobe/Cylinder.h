@@ -11,6 +11,6 @@ public:
 	Cylinder(void);
 	~Cylinder(void);
 
-	void Create(f32 _radius, f32 _height, u32 _slices, u32 _stacks);
+	bool Create(f32 _radius, f32 _height, u32 _slices, u32 _stacks);
 };
 
