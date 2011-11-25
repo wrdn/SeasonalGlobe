@@ -9,7 +9,6 @@
 #include "Cylinder.h"
 #include "TerrainDisk.h"
 #include "Shader.h"
-#include "MyCylinder.h"
 
 class World
 {
@@ -30,9 +29,6 @@ private:
 	Cylinder *_cylinder;
 	Sphere *sphere;
 	TerrainDisk *terrain;
-
-	MyCylinder *mycylinder;
-
 
 	std::vector<CustomModel*> models;
 

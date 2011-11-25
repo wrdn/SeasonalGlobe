@@ -56,9 +56,6 @@ bool World::Load()
 	_cylinder = AddModel<Cylinder>();
 	_cylinder->Create(2.5, 2.5, 10, 20,20);
 
-	mycylinder = new MyCylinder();
-	mycylinder->create(0.5, 1, 10, 5, true);
-
 	if(_phongShader.Init())
 	{
 		c8* phong_frag_src = read_src_fast("Data/Shaders/phong.frag");
@@ -120,7 +117,6 @@ void World::Draw(const GameTime &gameTime)
 	glColor3f(1,1,1);
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_CULL_FACE);
-	//mycylinder->draw();
 	barkTexture->Activate();
 	_cylinder->Draw();
 	barkTexture->Deactivate();
