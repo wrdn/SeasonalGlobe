@@ -17,6 +17,16 @@ World::~World(void)
 {
 }
 
+// adds the model to models vector, templated to ensure constructor gets called properly
+// example: Sphere *s = AddModel<Sphere>();
+template<class T>
+T* World::AddModel()
+{
+	T *n = new T();
+	models.push_back(n);
+	return n;
+};
+
 bool World::Load()
 {
 	cubeModel = new OBJFile();
@@ -24,9 +34,11 @@ bool World::Load()
 	cubeModel->BuildModelVBOs();
 	
 	grasstexture = texMan.LoadTextureFromFile("Data/Textures/Grass2.jpg");
-	grasstexture->SetWrapS(GL_REPEAT);
-	grasstexture->SetWrapT(GL_REPEAT);
 	
+	barkTexture = texMan.LoadTextureFromFile("Data/Textures/checkerboard.jpg");
+	barkTexture->SetWrapS(GL_REPEAT);
+	barkTexture->SetWrapT(GL_REPEAT);
+
 	houseModel = new OBJFile();
 	houseModel->ParseOBJFile("Data/House/Haus20.obj");
 	houseModel->BuildModelVBOs();
@@ -35,11 +47,17 @@ bool World::Load()
 	floor = new Floor();
 	floor->CreateFloor(40,11);
 
-	sphere = new Sphere();
-	sphere->CreateSphere(11,40,40);
+	sphere = AddModel<Sphere>();
+	sphere->CreateSphere(11, 40, 40);
 
-	terrain = new TerrainDisk();
+	terrain = AddModel<TerrainDisk>();
 	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
+
+	_cylinder = AddModel<Cylinder>();
+	_cylinder->Create(2.5, 2.5, 10, 20,20);
+
+	mycylinder = new MyCylinder();
+	mycylinder->create(0.5, 1, 10, 5, true);
 
 	if(_phongShader.Init())
 	{
@@ -64,22 +82,25 @@ bool World::Load()
 		delete [] phong_vert_src;
 	}
 
-	_cylinder = new Cylinder();
-	_cylinder->Create(6, 5, 20, 20);
-
 	return true;
 };
 
 void World::Shutdown()
 {
 	texMan.Cleanup();
+
+	for(std::vector<CustomModel*>::iterator it = models.begin(); it != models.end(); ++it)
+	{
+		SAFE_DELETE(*it);
+	}
 };
 
-float angle=0; const float rotationSpeed = 50.0f;
+f32 angle=0; const f32 rotationSpeed = 50.0f;
 void World::Draw(const GameTime &gameTime)
 {
 	glDisable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_CULL_FACE);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
@@ -91,9 +112,19 @@ void World::Draw(const GameTime &gameTime)
 	glRotatef(_cameraRotation, 0.0, 1.0, 0.0);
 	glTranslatef(0.0f, -1.0f,0.0f);
 	
+	//barkTexture->SetWrapS(GL_REPEAT);
+	//barkTexture->SetWrapT(GL_REPEAT);
+
 	glPushMatrix();
-	//_cylinder->Draw();
-	_cylinder->GetModel().DrawVertexPoints();
+	_cylinder->GetModel().SetDrawMode(terrainPolyMode);
+	glColor3f(1,1,1);
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
+	//mycylinder->draw();
+	barkTexture->Activate();
+	_cylinder->Draw();
+	barkTexture->Deactivate();
+	//_cylinder->GetModel().DrawVertexPoints();
 	glPopMatrix();
 
 

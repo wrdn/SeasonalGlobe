@@ -146,7 +146,7 @@ std::vector<c8*> read_src_to_vec(const c8* file, bool incBlankLines, const u32 o
 			std::string tmp;
 			getline(infile,tmp);
 
-			int len = tmp.length();
+			u32 len = tmp.length();
 			if(tmp.length() > 0)
 			{
 				vec.push_back(copystr_unsafe(tmp.c_str(),len));
@@ -244,7 +244,7 @@ const char* bstr(const bool b)
 	return b ? "True" : "False";
 };
 
-bool fast_strcmp(char *a, char *b)
+bool fast_strcmp(c8 *a, c8 *b)
 {
 	u32 len = strlen(a);
 	// First check string lengths are equal
@@ -256,7 +256,7 @@ bool fast_strcmp(char *a, char *b)
 	return false;
 };
 
-bool fast_strcmp(char *a, char *b, u32 len)
+bool fast_strcmp(c8 *a, c8 *b, u32 len)
 {
 	// First check string lengths are equal
 	if(strlen(a) != strlen(b)) return false;

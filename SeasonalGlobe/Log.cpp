@@ -149,7 +149,7 @@ bool Log::write_log_header( const c8* filename, const bool append )
 	{
 		TimeInfo tinfo;
 		const time_t t = tinfo.get_raw_time();
-		char *dt = tinfo.tostr(tinfo.get_local_time(&t));
+		c8 *dt = tinfo.tostr(tinfo.get_local_time(&t));
 		fl << "***************  LOGGING STARTED  " << dt << "  ***************\n"; // write header on log
 	}
 	else { return false; }
@@ -172,7 +172,7 @@ bool Log::write_log_footer( const c8* filename )
 	{
 		TimeInfo tinfo;
 		const time_t t = tinfo.get_raw_time();
-		char *dt = tinfo.tostr(tinfo.get_local_time(&t));
+		c8 *dt = tinfo.tostr(tinfo.get_local_time(&t));
 		fl << "***************  LOGGING ENDED  " << dt << "  ***************\n\n"; // write header on log
 	}
 	else { return false; }

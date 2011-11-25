@@ -162,7 +162,7 @@ bool TerrainDisk::CreateTerrainDisk(const c8 * const heightmap_filename)
 
 		// Faces for Overlapping pixels
 		Face f1, f2;
-		for(int j=0;j<OverlapLength;++j)
+		for(i32 j=0;j<OverlapLength;++j)
 		{
 			VERTEX v1,v2,v3,v4;
 			if(currentRow->pixcount > nextRow->pixcount)

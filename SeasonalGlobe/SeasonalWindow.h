@@ -35,7 +35,7 @@ public:
 
 	void OnKeyboard(i32 key, bool down);
 	void OnMouseButton(MouseButton button, bool down);
-	void OnMouseMove(int x, int y);
+	void OnMouseMove(i32 x, i32 y);
 
 	const u32* const GetWindowRes() const;
 	void SetWindowResolution(const u32 width, const u32 height);

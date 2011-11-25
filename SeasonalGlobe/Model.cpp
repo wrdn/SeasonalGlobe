@@ -18,12 +18,7 @@ Model::Model()
 
 Model::~Model()
 {
-	//SAFE_DELETE_ARRAY(vertexArray);
-	if(vertexArray)
-	{
-		delete vertexArray;
-	}
-
+	SAFE_DELETE_ARRAY(vertexArray);
 	SAFE_DELETE_ARRAY(indicesArray);
 
 	triangleDrawCount = 0;

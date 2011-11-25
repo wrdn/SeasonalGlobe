@@ -96,7 +96,7 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 	}
 	else if(key == VK_LEFT && !down)
 	{
-		int params[2];
+		GLint params[2];
 		glGetIntegerv(GL_POLYGON_MODE, params);
 
 		if(params[0] == GL_LINE)
@@ -166,9 +166,9 @@ void SeasonalWindow::OnMouseButton(MouseButton button, bool down)
 	}
 };
 
-void SeasonalWindow::OnMouseMove(int x, int y)
+void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 {
-	static int temp_x, temp_y;
+	static i32 temp_x, temp_y;
 	if(_leftDown) {
 		scn._cameraPosition += (y-temp_y)*0.05f;
 	}

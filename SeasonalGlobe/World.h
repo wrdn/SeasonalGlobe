@@ -9,6 +9,7 @@
 #include "Cylinder.h"
 #include "TerrainDisk.h"
 #include "Shader.h"
+#include "MyCylinder.h"
 
 class World
 {
@@ -17,18 +18,26 @@ private:
 	Camera cams[World::CAMERA_COUNT];
 
 	TextureManager texMan;
-
-	OBJFile *cubeModel;
-	Floor *floor;
-	OBJFile *houseModel;
-	Sphere *sphere;
-
-	TerrainDisk *terrain;
-	Texture *grasstexture, *houseTexture;
-
+	
 	Shader _phongShader;
-
+	
+	Texture *grasstexture, *houseTexture, *barkTexture;
+	
+	OBJFile *cubeModel;
+	OBJFile *houseModel;
+	
+	Floor *floor;
 	Cylinder *_cylinder;
+	Sphere *sphere;
+	TerrainDisk *terrain;
+
+	MyCylinder *mycylinder;
+
+
+	std::vector<CustomModel*> models;
+
+	template<class T>
+	T* AddModel();
 
 public:
 

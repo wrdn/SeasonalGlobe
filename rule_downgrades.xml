@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><rulemap>
+   <category description="UNKNOWN" id="OPT-13"/>
+   <category description="UNKNOWN" id="CODSTA-CPP-06"/>
+   <category description="UNKNOWN" id="OOP-05"/>
+   <rule id="OPT-13" newId="OPT-13-DOWNGRADED" severity="5"/>
+   <rule id="CODSTA-CPP-06" newId="CODSTA-CPP-06-DOWNGRADED" severity="5"/>
+   <rule id="OOP-05" newId="OOP-05-DOWNGRADED" severity="5"/>
+</rulemap>

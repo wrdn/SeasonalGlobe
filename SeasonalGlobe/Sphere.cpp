@@ -63,7 +63,7 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 	
 	u32 indicesArraySz = ((2+(stacks-1)*(slices+1)*2) * 3) - 6;
 	u32 *indicesArray = new u32[indicesArraySz];
-	int index=0;
+	u32 index=0;
 
 	// Top
 	for(u32 j=0; j < slices; ++j)

@@ -5,13 +5,13 @@ bool LineCircleCollision(const Line2D &line, const Circle &c, CollisionPoint &cp
 {
 	float2 lineDir = line.end - line.start;
 
-	float A = lineDir.dot(lineDir);
-	float B = 2.0f * (lineDir.x() * (line.start.x() - c.pos.x()) + lineDir.y() * (line.start.y() - c.pos.y()));
-	float C = (line.start.x() - c.pos.x()) * (line.start.x() - c.pos.x()) +
+	f32 A = lineDir.dot(lineDir);
+	f32 B = 2.0f * (lineDir.x() * (line.start.x() - c.pos.x()) + lineDir.y() * (line.start.y() - c.pos.y()));
+	f32 C = (line.start.x() - c.pos.x()) * (line.start.x() - c.pos.x()) +
 		(line.start.y() - c.pos.y()) * (line.start.y() - c.pos.y()) -
 		c.radius * c.radius;
 
-	float det = B*B - 4 * A * C;
+	f32 det = B*B - 4 * A * C;
 	if(det < 0 || A < 0.0001f) { return false; }
 	else if(det < 0)
 	{
@@ -29,7 +29,7 @@ bool LineCircleCollision(const Line2D &line, const Circle &c, CollisionPoint &cp
 		cp.t2 = (-B - sqrtf(det)) / (2*A);
 		if(cp.t1 > cp.t2)
 		{
-			float tmp = cp.t1;
+			f32 tmp = cp.t1;
 			cp.t1 = cp.t2;
 			cp.t2 = tmp;
 		}

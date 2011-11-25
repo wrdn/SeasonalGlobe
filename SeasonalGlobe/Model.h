@@ -7,7 +7,7 @@
 #include "float3.h"
 #include <GXBase.h>
 
-#define BUFFER_OFFSET(i) ((char *)NULL + (i))
+#define BUFFER_OFFSET(i) ((c8 *)NULL + (i))
 
 //! Constructor will ensure both vboids are set to 0 originally
 struct ModelVBO // 8 bytes

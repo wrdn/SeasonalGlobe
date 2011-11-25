@@ -57,10 +57,10 @@ f32 InvSqrt(f32 x)
 };
 
 // Source: http://www.cse.yorku.ca/~oz/hash.html
-unsigned long hash_djb2(unsigned char *str)
+unsigned long hash_djb2(uc8 *str)
 {
 	unsigned long hash = 5381;
-	int c;
+	u32 c;
 
 	while (c = *str++)
 		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */

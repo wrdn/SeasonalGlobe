@@ -239,7 +239,7 @@ void Mat44::BatchMult(const float4 * const in, float4 *out, u32 len) const
 
 void Mat44::Cramers_Inverse(Mat44 *out, f32 &det) const
 {
-	float    tmp[12]; /* temp array for pairs                      */
+	f32 tmp[12]; /* temp array for pairs                      */
 
 	f32 *src = Transpose().mat, *dst;
 	Mat44 outp;
@@ -326,7 +326,7 @@ void Mat44::Cramers_Inverse(Mat44 *out, f32 &det) const
 
 	/* calculate matrix inverse */
 	det = 1/det;
-	for (int j = 0; j < 16; j++)
+	for (u32 j = 0; j < 16; j++)
 		dst[j] *= det;
 };
 

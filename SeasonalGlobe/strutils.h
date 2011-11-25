@@ -42,5 +42,5 @@ void cleanup_str_vec(std::vector<c8*> &v);
 
 const char* bstr(const bool b);
 
-bool fast_strcmp(char *a, char *b);
-bool fast_strcmp(char *a, char *b, u32 len);
+bool fast_strcmp(c8 *a, c8 *b);
+bool fast_strcmp(c8 *a, c8 *b, u32 len);

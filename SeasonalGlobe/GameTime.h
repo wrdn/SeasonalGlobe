@@ -11,8 +11,8 @@ private:
 public:
 	GameTime() : currentTime(0), deltaTime(0) { };
 
-	const float GetCurrentTime() const;
-	const float GetDeltaTime() const;
+	const f32 GetCurrentTime() const;
+	const f32 GetDeltaTime() const;
 
 	void Init();
 	void Update();
