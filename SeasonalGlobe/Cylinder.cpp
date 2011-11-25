@@ -27,7 +27,8 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 	f32 radius_increment = (topRadius - bottomRadius) / (stacks-1);
 	f32 angle = 0;
 
-	const u32 VertexArraySize = (slices*2) + (stacks*slices) + 2;
+	// slices*2+2 for top and bottom, (stacks*slices)+stacks for body (with 'stacks' replicated vertices)
+	const u32 VertexArraySize = (slices*2) + 2 + (stacks*slices) + stacks;
 	VERTEX *vertexArray = new VERTEX[VertexArraySize];
 	u32 vertexInsertionPos = 0;
 
@@ -43,7 +44,7 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 		vertexArray[vertexInsertionPos++] = VERTEX(
 			float3( topRadius * cos(angle), half_height, -topRadius * sin(angle) ),
 			float3(0,1,0),
-			float2(cos(angle) * 0.25f, -sin(angle) * 0.25f));
+			float2(0.5f - sin(angle) * topRadius / (2.0f*topRadius), 0.5f + cos(angle) * topRadius / (2.0f*topRadius)));
 	}
 
 	// Bottom vertices disk
@@ -53,37 +54,37 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 		vertexArray[vertexInsertionPos++] = VERTEX(
 			float3( bottomRadius * cos(angle), -half_height, -bottomRadius * sin(angle) ),
 			float3(0,-1,0),
-			float2(1-cos(angle) * 0.25f, 1-sin(angle) * 0.25f));
+			float2((0.5f - sin(angle) * bottomRadius / (2.0f*bottomRadius)), (0.5f - cos(angle) * bottomRadius / (2.0f*bottomRadius))));
 	}
 
 	// Body vertices
 	angle = 0;
 	f32 currentRadius = topRadius;
-	f32 v=0;
-	f32 vincrement = 1.0f / (float)(stacks);
-	//f32 uincrement = 1.0f / (float)slices;
+	f32 v=1;
+	f32 vincrement = 1.0f / (float)(stacks-1);
 	
 	for ( u32 currStack = 0; currStack < stacks; ++currStack )
 	{
+		// Replicate first vertex (this will be connected to the last vertex with correct UVs)
+		vertexArray[vertexInsertionPos++] = VERTEX(
+				float3(currentRadius*cos(angle), current_height, -currentRadius*sin(angle)),
+				float3(cos(angle), 0, -sin(angle)), float2( 1.0f , v ));
+
 		for (u32 currSlice = 0; currSlice < slices; ++currSlice )
 		{
-			f32 u = (float)currSlice / (float)(slices-1);
+			f32 u = (float)currSlice / (float)(slices);
 
 			vertexArray[vertexInsertionPos++] = VERTEX(
 				float3(currentRadius*cos(angle), current_height, -currentRadius*sin(angle)),
 				float3(cos(angle), 0, -sin(angle)), float2( u , v ));
-			//cout << currStack << "," << currSlice << ": " << vertexArray[vertexInsertionPos-1].uvs;
-
+			
 			angle += sliceincrement;
 		}
-
-		//vertexArray[vertexInsertionPos-slices-1].uvs = float2(0.8, v);
-
 		current_height -= stack_increment;
 		currentRadius -= radius_increment;
-		v += vincrement;
+		v -= vincrement;
+		angle = 0;
 	}
-
 
 	// Indices
 	/*
@@ -92,8 +93,9 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 	Bottom: slices*3
 	Top+Bottom=slices*6
 	Body: (slices*(stacks-1))*6
+	stacks + (Body): stacks is for the replicated vertices
 	*/
-	const u32 indexArraySize = (slices*6) + ((slices*(stacks-1))*6);
+	const u32 indexArraySize = (slices*6) + ((stacks*3) + ((slices*(stacks-1))*6));
 	u32 *indexArray = new u32[indexArraySize];
 	u32 indexInsertionPos = 0;
 	u32 vertexIndex = 2;
@@ -124,7 +126,7 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 	indexArray[indexInsertionPos++] = slices*2+1;
 
 	// Body indices
-	vertexIndex = slices*2+2;
+	vertexIndex = slices*2+2+1;
 	for( u32 currStack = 0; currStack < stacks-1; ++currStack )
 	{
 		for (u32 currSlice = 0; currSlice < slices-1; ++currSlice )
@@ -141,81 +143,23 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 		}
 
 		indexArray[indexInsertionPos++] = vertexIndex;
-		indexArray[indexInsertionPos++] = vertexIndex + slices;
-		indexArray[indexInsertionPos++] = vertexIndex+1;
+		indexArray[indexInsertionPos++] = vertexIndex+slices;
+		indexArray[indexInsertionPos++] = vertexIndex+slices+1;
 
-		indexArray[indexInsertionPos++] = vertexIndex+1;
-		indexArray[indexInsertionPos++] = vertexIndex-slices+1;
+		u32 replicatedVertexIndex = vertexIndex - slices;
+
+		indexArray[indexInsertionPos++] = replicatedVertexIndex + slices + 1;
+		indexArray[indexInsertionPos++] = replicatedVertexIndex;
 		indexArray[indexInsertionPos++] = vertexIndex;
 
-		++vertexIndex;
+		indexArray[indexInsertionPos++] = replicatedVertexIndex + slices + 1;
+		indexArray[indexInsertionPos++] = replicatedVertexIndex + slices;
+		indexArray[indexInsertionPos++] = vertexIndex+slices+1;
+
+		vertexIndex += 2; // move over the replicated vertex
 	}
 
 	GetModel().SetVertexArray(vertexArray, VertexArraySize);
 	GetModel().SetIndicesArray(indexArray, indexArraySize);
 	return GetModel().BuildVBO();
 };
-
-/*
-	vector<u32> indices;
-	u32 vertexIndex = 2;
-
-	// Top Indices
-	for(u32 j=0; j < slices-1; ++j)
-	{
-		indices.push_back(0);
-		indices.push_back(vertexIndex);
-		indices.push_back(vertexIndex+1);
-		++vertexIndex;
-	}
-	indices.push_back(0);
-	indices.push_back(slices+1);
-	indices.push_back(2);
-
-	// Bottom Indices
-	vertexIndex = slices + 2;
-	for(u32 j=0; j < slices-1; ++j)
-	{
-		indices.push_back(1);
-		indices.push_back(vertexIndex+1);
-		indices.push_back(vertexIndex);
-		++vertexIndex;
-	}
-	indices.push_back(1);
-	indices.push_back(slices+2);
-	indices.push_back(slices*2+1);
-
-	// Body indices
-	vertexIndex = slices*2+2;
-	for( u32 currStack = 0; currStack < stacks-1; ++currStack )
-	{
-		for (u32 currSlice = 0; currSlice < slices-1; ++currSlice )
-		{
-			indices.push_back(vertexIndex);
-			indices.push_back(vertexIndex+slices);
-			indices.push_back(vertexIndex+slices+1);
-
-			indices.push_back(vertexIndex);
-			indices.push_back(vertexIndex+slices+1);
-			indices.push_back(vertexIndex+1);
-
-			++vertexIndex;
-		}
-		indices.push_back(vertexIndex);
-		indices.push_back(vertexIndex + slices);
-		indices.push_back(vertexIndex+1);
-
-		indices.push_back(vertexIndex+1);
-		indices.push_back(vertexIndex-slices+1);
-		indices.push_back(vertexIndex);
-
-		++vertexIndex;
-	}
-
-	u32 *indexArray = new u32[indices.size()];
-	memcpy(indexArray, &indices[0], sizeof(u32) * indices.size());
-
-	GetModel().SetVertexArray(vertexArray, VertexArraySize);
-	GetModel().SetIndicesArray(indexArray, indices.size());
-	return GetModel().BuildVBO();
-*/

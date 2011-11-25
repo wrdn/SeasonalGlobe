@@ -294,5 +294,8 @@
     <None Include="Data\Textures\checkerboard.jpg">
       <Filter>Resource Files\Data\Textures</Filter>
     </None>
+    <None Include="Data\Textures\checkerboard_Test.jpg">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
   </ItemGroup>
 </Project>

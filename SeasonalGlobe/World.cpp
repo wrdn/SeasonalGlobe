@@ -35,7 +35,8 @@ bool World::Load()
 	
 	grasstexture = texMan.LoadTextureFromFile("Data/Textures/Grass2.jpg");
 	
-	barkTexture = texMan.LoadTextureFromFile("Data/Textures/checkerboard.jpg");
+	barkTexture = texMan.LoadTextureFromFile("Data/Textures/checkerboard_Test.jpg");
+	//barkTexture = texMan.LoadTextureFromFile("Data/Textures/bark.jpg");
 	barkTexture->SetWrapS(GL_REPEAT);
 	barkTexture->SetWrapT(GL_REPEAT);
 
@@ -54,7 +55,7 @@ bool World::Load()
 	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
 
 	_cylinder = AddModel<Cylinder>();
-	_cylinder->Create(2.5, 2.5, 10, 20,20);
+	_cylinder->Create(0.3, 0.4, 2.5, 35,35);
 
 	if(_phongShader.Init())
 	{
@@ -97,7 +98,6 @@ void World::Draw(const GameTime &gameTime)
 {
 	glDisable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
-	glDisable(GL_CULL_FACE);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
@@ -109,22 +109,16 @@ void World::Draw(const GameTime &gameTime)
 	glRotatef(_cameraRotation, 0.0, 1.0, 0.0);
 	glTranslatef(0.0f, -1.0f,0.0f);
 	
-	//barkTexture->SetWrapS(GL_REPEAT);
-	//barkTexture->SetWrapT(GL_REPEAT);
-
 	glPushMatrix();
 	_cylinder->GetModel().SetDrawMode(terrainPolyMode);
-	glColor3f(1,1,1);
-	glDisable(GL_CULL_FACE);
-	glEnable(GL_CULL_FACE);
 	barkTexture->Activate();
+	glTranslatef(0, _cylinder->GetHeight()/2, 0);
 	_cylinder->Draw();
 	barkTexture->Deactivate();
-	//_cylinder->GetModel().DrawVertexPoints();
 	glPopMatrix();
 
 
-	/*glPushMatrix();
+	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
 
 	grasstexture->Activate();
@@ -144,15 +138,15 @@ void World::Draw(const GameTime &gameTime)
 	houseTexture->Deactivate();
 	glPopMatrix();
 
-	glPushMatrix();
-	glTranslatef(0,2,0);
-	glRotatef(angle,1,1,0);
-	houseTexture->Activate();
-	_phongShader.Activate();
-	cubeModel->Draw();
-	_phongShader.Deactivate();
-	houseTexture->Deactivate();
-	glPopMatrix();
+	//glPushMatrix();
+	//glTranslatef(0,2,0);
+	//glRotatef(angle,1,1,0);
+	//houseTexture->Activate();
+	//_phongShader.Activate();
+	//cubeModel->Draw();
+	//_phongShader.Deactivate();
+	//houseTexture->Deactivate();
+	//glPopMatrix();
 
 	glPushMatrix();
 	glEnable(GL_CLIP_PLANE0); // use clip plane to cut bottom half
@@ -166,7 +160,7 @@ void World::Draw(const GameTime &gameTime)
 	sphere->Draw();
 	glDisable(GL_BLEND);
 	glDisable(GL_CLIP_PLANE0);
-	glPopMatrix();*/
+	glPopMatrix();
 
 	glPopMatrix();
 

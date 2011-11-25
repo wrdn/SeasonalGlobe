@@ -134,7 +134,16 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 						scn.terrainPolyMode = GL_LINE;
 					}
 				}
-				
+			} break;
+		case 'c':
+			{
+				if(!down)
+				{
+					if(glIsEnabled(GL_CULL_FACE))
+						glDisable(GL_CULL_FACE);
+					else
+						glEnable(GL_CULL_FACE);
+				}
 			} break;
 	}
 };
