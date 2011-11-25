@@ -159,7 +159,7 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 		vertexIndex += 2; // move over the replicated vertex
 	}
 
-	GetModel().SetVertexArray(vertexArray, VertexArraySize);
-	GetModel().SetIndicesArray(indexArray, indexArraySize);
-	return GetModel().BuildVBO();
+	this->SetVertexArray(vertexArray, VertexArraySize);
+	this->SetIndicesArray(indexArray, indexArraySize);
+	return this->BuildVBO();
 };

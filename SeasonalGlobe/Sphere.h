@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CustomModel.h"
+#include "Model.h"
 
-class Sphere : public CustomModel
+class Sphere : public Model
 {
 private:
 	f32 radius;

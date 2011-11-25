@@ -188,9 +188,6 @@
     <ClInclude Include="Model.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="CustomModel.h">
-      <Filter>Header Files\Geometry</Filter>
-    </ClInclude>
     <ClInclude Include="Color.h">
       <Filter>Header Files\Shading</Filter>
     </ClInclude>

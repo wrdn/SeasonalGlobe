@@ -119,7 +119,6 @@
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="ctypes.h" />
-    <ClInclude Include="CustomModel.h" />
     <ClInclude Include="Cylinder.h" />
     <ClInclude Include="float2.h" />
     <ClInclude Include="float3.h" />

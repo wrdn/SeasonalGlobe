@@ -11,7 +11,7 @@ Floor::~Floor(void)
 {
 }
 
-void Floor::CreateFloor(u32 _slices, f32 _radius)
+bool Floor::CreateFloor(u32 _slices, f32 _radius)
 {
 	slices = _slices;
 	radius = _radius;
@@ -43,9 +43,9 @@ void Floor::CreateFloor(u32 _slices, f32 _radius)
 	indexArray[indexipos] = i;
 	indexArray[indexipos+1] = 1;
 
-	Model &floorModel = GetModel();
-	floorModel.SetVertexArray(floorVerts, vertexCount);
-	floorModel.SetIndicesArray(indexArray, slices*3);
+	//Model &floorModel = GetModel();
+	this->SetVertexArray(floorVerts, vertexCount);
+	this->SetIndicesArray(indexArray, slices*3);
 
-	floorModel.BuildVBO();
+	return this->BuildVBO();
 };

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CustomModel.h"
+#include "Model.h"
 
 // disc with grass (etc) on it
-class Floor : public CustomModel
+class Floor : public Model
 {
 private:
 	f32 radius; u32 slices;
@@ -14,6 +14,6 @@ public:
 	const f32 GetRadius() const { return radius; };
 	const u32 GetSlices() const { return slices; };
 
-	void CreateFloor(u32 slices, f32 radius);
+	bool CreateFloor(u32 slices, f32 radius);
 };
 

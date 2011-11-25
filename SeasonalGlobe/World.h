@@ -30,7 +30,7 @@ private:
 	Sphere *sphere;
 	TerrainDisk *terrain;
 
-	std::vector<CustomModel*> models;
+	std::vector<Model*> models;
 
 	template<class T>
 	T* AddModel();

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CustomModel.h"
+#include "Model.h"
 
-class Cylinder : public CustomModel
+class Cylinder : public Model
 {
 private:
 	f32 topRadius,

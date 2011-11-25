@@ -55,8 +55,7 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 		++vertexCount;
 	}
 
-	Model &sphereModel = GetModel();
-	sphereModel.SetVertexArray(verts, vertexCount);
+	this->SetVertexArray(verts, vertexCount);
 	
 	indexCount = 0;
 	vertexCount = 2;
@@ -101,8 +100,6 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 		indicesArray[index++] = vertexCount+slices-j-1;
 	}
 
-	sphereModel.SetIndicesArray(indicesArray, indicesArraySz);
-	sphereModel.BuildVBO();
-
-	return false;
+	this->SetIndicesArray(indicesArray, indicesArraySz);
+	return this->BuildVBO();
 };

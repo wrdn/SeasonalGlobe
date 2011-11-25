@@ -55,7 +55,7 @@ bool World::Load()
 	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
 
 	_cylinder = AddModel<Cylinder>();
-	_cylinder->Create(0.3, 0.4, 2.5, 35,35);
+	_cylinder->Create(0.3f, 0.4f, 2.5f, 35,35);
 
 	if(_phongShader.Init())
 	{
@@ -87,7 +87,7 @@ void World::Shutdown()
 {
 	texMan.Cleanup();
 
-	for(std::vector<CustomModel*>::iterator it = models.begin(); it != models.end(); ++it)
+	for(std::vector<Model*>::iterator it = models.begin(); it != models.end(); ++it)
 	{
 		SAFE_DELETE(*it);
 	}
@@ -110,7 +110,7 @@ void World::Draw(const GameTime &gameTime)
 	glTranslatef(0.0f, -1.0f,0.0f);
 	
 	glPushMatrix();
-	_cylinder->GetModel().SetDrawMode(terrainPolyMode);
+	_cylinder->SetDrawMode(terrainPolyMode);
 	barkTexture->Activate();
 	glTranslatef(0, _cylinder->GetHeight()/2, 0);
 	_cylinder->Draw();
@@ -156,7 +156,7 @@ void World::Draw(const GameTime &gameTime)
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glColor4f(1.0f,1.0f,1.0f,0.25f);
-	sphere->GetModel().SetDrawMode(terrainPolyMode);
+	sphere->SetDrawMode(terrainPolyMode);
 	sphere->Draw();
 	glDisable(GL_BLEND);
 	glDisable(GL_CLIP_PLANE0);

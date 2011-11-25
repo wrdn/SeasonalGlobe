@@ -3,7 +3,7 @@
 #include <vector>
 #include "float3.h"
 #include "float2.h"
-#include "CustomModel.h"
+#include "Model.h"
  
 struct Face
 {
@@ -11,7 +11,7 @@ public:
 	VERTEX pos1, pos2, pos3;
 };
 
-class TerrainDisk : public CustomModel
+class TerrainDisk : public Model
 {
 private:
 	//std::vector<float2> _tex; // uvs
