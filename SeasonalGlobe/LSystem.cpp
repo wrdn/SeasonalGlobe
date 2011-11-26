@@ -98,3 +98,19 @@ const string LSystem::Evaluate(const string startAxiom, const u32 level) {
     SetStartingAxiom(startAxiom);
     return Evaluate(level);
 };
+
+void LSystem::ConvertEvaluatedStringToUpperCase()
+{
+	for(u32 i=0;i<evaluatedString.length();++i)
+	{
+		evaluatedString[i] = toupper(evaluatedString[i]);
+	}
+};
+
+void LSystem::ConvertEvaluatedStringToLowerCase()
+{
+	for(u32 i=0;i<evaluatedString.length();++i)
+	{
+		evaluatedString[i] = tolower(evaluatedString[i]);
+	}
+};

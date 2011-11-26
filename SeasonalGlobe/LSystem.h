@@ -61,6 +61,9 @@ public:
 	const std::string Evaluate();
     const std::string Evaluate(const u32 level);
     const std::string Evaluate(const std::string startAxiom, const u32 level);
+
+	void ConvertEvaluatedStringToUpperCase();
+	void ConvertEvaluatedStringToLowerCase();
 };
 
 #endif

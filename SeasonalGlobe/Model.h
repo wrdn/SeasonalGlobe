@@ -31,7 +31,7 @@ public:
 
 	float3 pos, normal;
 	float2 uvs;
-	
+
 	// NOTE: Remember to change these if you change the size/order of this structure
 	// Values are in bytes and are used during VBO creation
 	static const u32 POS_BUFFER_OFFSET = 0;
@@ -64,15 +64,29 @@ private:
 	TriangleDrawMethod triDrawMethod;
 public:
 	Model();
-	~Model();
+	virtual ~Model()
+	{
+		if(mvbo.modeldata_vboid)
+			glDeleteBuffers(1, &mvbo.modeldata_vboid);
+		if(mvbo.indices_vboid)
+			glDeleteBuffers(1, &mvbo.indices_vboid);
+
+		delete [] vertexArray;
+		delete [] indicesArray;
+
+		triangleDrawCount = 0;
+
+		mvbo.modeldata_vboid = mvbo.indices_vboid = 0;
+	};
 
 	const ModelVBO& GetModelVBO() const { return mvbo; };
-	
+
 	const VERTEX * const GetVertexArray() const { return vertexArray; };
 	const u32 GetVertexArraySize() const { return vertexArraySize; };
-	void SetVertexArray(VERTEX * const _vertexArray, const u32 _vertexArraySize)
+	void SetVertexArray(VERTEX * _vertexArray, const u32 _vertexArraySize)
 	{
-		SAFE_DELETE_ARRAY(vertexArray);
+		if(vertexArray)
+			delete [] vertexArray;
 
 		vertexArray = _vertexArray;
 		vertexArraySize = _vertexArraySize;
@@ -80,9 +94,11 @@ public:
 
 	const u32 * const GetIndicesArray() const { return indicesArray; };
 	const u32 GetIndicesArraySize() const { return indicesArraySize; };
-	void SetIndicesArray(u32 * const _indicesArray, const u32 _indicesArraySize)
+	void SetIndicesArray(u32 * _indicesArray, const u32 _indicesArraySize)
 	{
-		SAFE_DELETE_ARRAY(indicesArray);
+		//SAFE_DELETE_ARRAY(indicesArray);
+		if(indicesArray)
+			delete [] indicesArray;
 
 		indicesArray = _indicesArray;
 		indicesArraySize = _indicesArraySize;

@@ -49,8 +49,8 @@ bool World::Load()
 
 	// http://www.geekyblogger.com/2008/04/tree-and-l-system.html
 	tree = new FractalTree();
-	tree->Init(float3(25), 0.02f, 0.0015f, 0.15f);
-	tree->SetInitialString("FFFA");
+	tree->Init(float3(25), 0.1f, 0.0015f, 0.5f);
+	tree->SetInitialString("FFF");
 	tree->AddProductionRule('A', "F[++A][--A]>>>A");
 	tree->SetGenerations(6);
 	tree->EvaluateTreeLSystem();
@@ -110,6 +110,7 @@ void World::Draw(const GameTime &gameTime)
 	glPushMatrix();
 	tree->GetBranchModel().SetDrawMode(terrainPolyMode);
 	barkTexture->Activate();
+	glTranslatef(0, tree->GetBranchModel().GetHeight()/2, 0); // put first tree on ground
 	tree->Draw();
 	barkTexture->Deactivate();
 	glPopMatrix();

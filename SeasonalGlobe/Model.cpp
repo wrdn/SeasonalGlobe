@@ -16,21 +16,6 @@ Model::Model()
 	glex::Load();
 };
 
-Model::~Model()
-{
-	SAFE_DELETE_ARRAY(vertexArray);
-	SAFE_DELETE_ARRAY(indicesArray);
-
-	triangleDrawCount = 0;
-
-	if(mvbo.modeldata_vboid)
-		glDeleteBuffers(1, &mvbo.modeldata_vboid);
-	if(mvbo.indices_vboid)
-		glDeleteBuffers(1, &mvbo.indices_vboid);
-
-	mvbo.modeldata_vboid = mvbo.indices_vboid = 0;
-};
-
 bool Model::BuildVBO()
 {
 	// No data

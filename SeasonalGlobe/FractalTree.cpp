@@ -7,18 +7,17 @@ const float3 FractalTree::DEFAULT_ROTATION_ANGLES = float3(25, 25, 25);
 
 FractalTree::FractalTree(void)
 {
-	Init(DEFAULT_ROTATION_ANGLES, DEFAULT_BRANCH_RADIUS, 
-		DEFAULT_BRANCH_RADIUS_REDUCTION, DEFAULT_BRANCH_LENGTH);
+	_branchModel = 0;
 }
 
 FractalTree::~FractalTree(void)
 {
+	delete _branchModel;
 }
 
-FractalTree::FractalTree(const float3 _branchRotationAngles, const f32 _branchRadius, 
-	const f32 _branchRadiusReduction, const f32 _branchLength)
+void FractalTree::Init()
 {
-	Init(_branchRotationAngles, _branchRadius, _branchRadiusReduction, _branchLength);
+	Init(DEFAULT_ROTATION_ANGLES, DEFAULT_BRANCH_RADIUS, DEFAULT_BRANCH_RADIUS_REDUCTION, DEFAULT_BRANCH_LENGTH);
 };
 
 void FractalTree::Init(const float3 _branchRotationAngles, const f32 _branchRadius, 
@@ -29,10 +28,9 @@ void FractalTree::Init(const float3 _branchRotationAngles, const f32 _branchRadi
 	branchRadiusReduction = _branchRadiusReduction;
 	branchLength = _branchLength;
 
-	if(!_branchModel.Valid())
-	{
-		_branchModel.Create(branchRadius, branchRadius, branchLength, 20, 20);
-	}
+	delete _branchModel;
+	_branchModel = new Cylinder();
+	_branchModel->Create(branchRadius, branchRadius, branchLength, 20, 20);
 };
 
 bool FractalTree::AddProductionRule(const c8 symbol, const std::string &replacement)
@@ -43,12 +41,28 @@ bool FractalTree::AddProductionRule(const c8 symbol, const std::string &replacem
 void FractalTree::EvaluateTreeLSystem()
 {
 	_lsystree.Evaluate();
+	_lsystree.ConvertEvaluatedStringToUpperCase();
 };
 
 void FractalTree::Draw()
 {
-	glTranslatef(0, _branchModel.GetHeight()/2, 0);
-	_branchModel.Draw();
+	//glTranslatef(0, _branchModel.GetHeight()/2, 0);
+	//_branchModel.Draw();
+	//return;
+
+	// This code will be replaced (just testing the LSystem will actually work properly)
+	// Consider each element of the string, and act accordingly
+
+	for( u32 i = 0; i < _lsystree.GetEvaluatedString().length(); ++i )
+	{
+		c8 symbol = _lsystree.GetEvaluatedString()[i];
+
+		if(symbol == MOVE_FORWARD)
+		{
+			_branchModel->Draw();
+			glTranslatef(0, branchLength, 0);
+		}
+	}
 };
 
 void FractalTree::Reset()
@@ -57,7 +71,7 @@ void FractalTree::Reset()
 };
 
 // Accessors and Mutators
-Cylinder& FractalTree::GetBranchModel() { return _branchModel; };
+Cylinder& FractalTree::GetBranchModel() { return *_branchModel; };
 
 void FractalTree::SetGenerations(const u32 generations) { _lsystree.SetLSystemGenerations(generations); };
 const u32 FractalTree::GetGenerations() const { return _lsystree.GetLSystemGenerations(); };

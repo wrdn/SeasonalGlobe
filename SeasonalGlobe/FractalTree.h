@@ -44,14 +44,12 @@ private:
 
 	// drawn multiple times (with different matrices)
 	// to avoid scaling issues etc, this should be a unit cylinder
-	Cylinder _branchModel;
+	Cylinder *_branchModel;
 public:
 	FractalTree(void);
 	~FractalTree(void);
 
-	FractalTree(const float3 _branchRotationAngles, const f32 _branchRadius, 
-		const f32 _branchRadiusReduction, const f32 _branchLength);
-
+	void Init(); // initialise with defaults
 	void Init(const float3 _branchRotationAngles, const f32 _branchRadius, 
 		const f32 _branchRadiusReduction, const f32 _branchLength);
 
