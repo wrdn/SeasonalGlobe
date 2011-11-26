@@ -40,7 +40,7 @@ Mat44::~Mat44(void)
 {
 }
 
-const f32* const Mat44::GetMatrix() const
+f32* Mat44::GetMatrix()
 {
 	return mat;
 };

@@ -5,6 +5,30 @@
 
 class float4;
 
+
+enum Mat44Index
+{
+	m11 = 0,
+	m12 = 1,
+	m13 = 2,
+	m14 = 3,
+
+	m21 = 4,
+	m22 = 5,
+	m23 = 6,
+	m24 = 7,
+
+	m31 = 8,
+	m32 = 9,
+	m33 = 10,
+	m34 = 11,
+
+	m41 = 12,
+	m42 = 13,
+	m43 = 14,
+	m44 = 15,
+};
+
 // Note: Calculations are performed in SSE registers. Data is assumed to be aligned to a 16 byte boundary.
 // If the memory is on the stack, this is guaranteed by the compiler (due to ALIGN(16) within the classes Mat44 and float4)
 // If it is on the heap, you cannot rely on alignment by default, so you may want to use _aligned_malloc() and _aligned_free
@@ -41,7 +65,7 @@ public:
 
 	static const Mat44 IDENTITY;
 
-	const f32* const GetMatrix() const;
+	f32* GetMatrix();
 	void SetMatrix(const f32* _mat);
 	void Identity(); // sets this matrix back to the identity matrix (Mat44::IDENTITY)
 

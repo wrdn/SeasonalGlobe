@@ -3,6 +3,10 @@
 #include "LSystem.h"
 #include "float3.h"
 #include "Cylinder.h"
+#include "Mat44.h"
+
+#include <stack> // for our matrix stack
+using namespace std;
 
 // Usage:
 // Add a number of production rules: AddProductionRule(...)
@@ -17,6 +21,20 @@ private:
 	// dont want full control over the LSystem outside FractalTree
 	// (hence composition rather than inheritance)
 	LSystem _lsystree;
+
+	stack<Mat44> matrixStack;
+	stack<f32> radiusStack;
+
+	enum RotationMatrixIndex
+	{
+		LeftX = 0,
+		RightX = 1,
+		UpY = 2,
+		DownY = 3,
+		LeftZ = 4,
+		RightZ = 5,
+	};
+	Mat44 rotationMatrices[6];
 
 	// All symbols are upper case, during parsing everything
 	// is converted to upper case before checks
@@ -45,6 +63,18 @@ private:
 	// drawn multiple times (with different matrices)
 	// to avoid scaling issues etc, this should be a unit cylinder
 	Cylinder *_branchModel;
+
+	void BuildXRotationMatrices();
+	void BuildYRotationMatrices();
+	void BuildZRotationMatrices();
+	void BuildAllRotationMatrices();
+
+	void InitMatrixStack();
+	void PopStack();
+	void PushStack();
+	void Rotate(float angle, float x, float y, float z);
+	void Translate(float tx, float ty, float tz);
+
 public:
 	FractalTree(void);
 	~FractalTree(void);
@@ -56,7 +86,14 @@ public:
 	// returns false if the rule already exists
 	bool AddProductionRule(const c8 symbol, const std::string &replacement);
 
-	void EvaluateTreeLSystem(); // evaluates the tree
+	void EvaluateTreeLSystem(); // evaluates the tree, producing the final string
+
+	// Builds a list of matrices from the evaluated LSystem (requires EvaluateTreeLSystem call), and orders them by level
+	// When drawing, we can then draw the branches at any depth. This also makes it easier to create a tree that "grows",
+	// as we can simply scale the matrices over time (per depth). i.e. Start drawing the cylinder using the first set of
+	// matrices (depth 0), and scale by 0<=i<=1 over time to make it grow - then move on to the second set of matrices (depth 1)
+	// and continue until we have finished drawing the last set
+	void BuildTree();
 
 	void Draw();
 

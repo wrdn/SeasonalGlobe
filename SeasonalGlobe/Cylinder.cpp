@@ -22,7 +22,7 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 
 	f32 sliceincrement = PI * 2.0f / slices;
 	f32 half_height = height * 0.5f;
-	f32 current_height = half_height;
+	f32 current_height = height;
 	f32 stack_increment = height / (stacks - 1);
 	f32 radius_increment = (topRadius - bottomRadius) / (stacks-1);
 	f32 angle = 0;
@@ -33,16 +33,16 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 	u32 vertexInsertionPos = 0;
 
 	// Top (centre)
-	vertexArray[vertexInsertionPos++] = VERTEX(float3(0,half_height,0), float3(0,1,0), float2(0.5, 0.5));
+	vertexArray[vertexInsertionPos++] = VERTEX(float3(0,height,0), float3(0,1,0), float2(0.5, 0.5));
 	
 	// Bottom (centre)
-	vertexArray[vertexInsertionPos++] = VERTEX(float3(0,-half_height,0), float3(0,-1,0), float2(0.5, 0.5));
+	vertexArray[vertexInsertionPos++] = VERTEX(float3(0,0,0), float3(0,-1,0), float2(0.5, 0.5));
 
 	// Top vertices disk
 	for( u32 currSlice = 0; currSlice < slices; ++currSlice, angle+=sliceincrement)
 	{
 		vertexArray[vertexInsertionPos++] = VERTEX(
-			float3( topRadius * cos(angle), half_height, -topRadius * sin(angle) ),
+			float3( topRadius * cos(angle), height, -topRadius * sin(angle) ),
 			float3(0,1,0),
 			float2(0.5f - sin(angle) * topRadius / (2.0f*topRadius), 0.5f + cos(angle) * topRadius / (2.0f*topRadius)));
 	}
@@ -52,7 +52,7 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 	for( u32 currSlice = 0; currSlice < slices; ++currSlice, angle+=sliceincrement)
 	{
 		vertexArray[vertexInsertionPos++] = VERTEX(
-			float3( bottomRadius * cos(angle), -half_height, -bottomRadius * sin(angle) ),
+			float3( bottomRadius * cos(angle), 0, -bottomRadius * sin(angle) ),
 			float3(0,-1,0),
 			float2((0.5f - sin(angle) * bottomRadius / (2.0f*bottomRadius)), (0.5f - cos(angle) * bottomRadius / (2.0f*bottomRadius))));
 	}

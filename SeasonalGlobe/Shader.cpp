@@ -221,11 +221,11 @@ void Shader::SetUniform(const c8 * const name, const float4 &val)
 	}
 };
 
-void Shader::SetUniform(const c8 * const name, const Mat44 &val)
+void Shader::SetUniform(const c8 * const name, Mat44 &val)
 {
 	if(GLint _id = GetUnformLocation(name))
 	{
-		glUniformMatrix4fv(_id, 1, GL_FALSE, val.GetMatrix());
+		glUniformMatrix4fv(_id, 1, GL_FALSE, (const f32*)val.GetMatrix());
 	}
 };
 

@@ -31,8 +31,8 @@ bool World::Load()
 {
 	grasstexture = texMan.LoadTextureFromFile("Data/Textures/Grass2.jpg");
 	
-	barkTexture = texMan.LoadTextureFromFile("Data/Textures/checkerboard_Test.jpg");
-	//barkTexture = texMan.LoadTextureFromFile("Data/Textures/bark.jpg");
+	//barkTexture = texMan.LoadTextureFromFile("Data/Textures/checkerboard_Test.jpg");
+	barkTexture = texMan.LoadTextureFromFile("Data/Textures/bark.jpg");
 	barkTexture->SetWrapS(GL_REPEAT);
 	barkTexture->SetWrapT(GL_REPEAT);
 
@@ -49,10 +49,11 @@ bool World::Load()
 
 	// http://www.geekyblogger.com/2008/04/tree-and-l-system.html
 	tree = new FractalTree();
-	tree->Init(float3(25), 0.1f, 0.0015f, 0.5f);
-	tree->SetInitialString("FFF");
+	tree->Init(float3(25), 1, 0.1, 0.6f);
+	tree->SetInitialString("FFFF[A][^^^^^^A]");
 	tree->AddProductionRule('A', "F[++A][--A]>>>A");
-	tree->SetGenerations(6);
+
+	tree->SetGenerations(4);
 	tree->EvaluateTreeLSystem();
 
 	/*if(_phongShader.Init())
@@ -110,8 +111,15 @@ void World::Draw(const GameTime &gameTime)
 	glPushMatrix();
 	tree->GetBranchModel().SetDrawMode(terrainPolyMode);
 	barkTexture->Activate();
-	glTranslatef(0, tree->GetBranchModel().GetHeight()/2, 0); // put first tree on ground
+	//glTranslatef(0, tree->GetBranchModel().GetHeight()/2, 0); // put first tree on ground
+	
 	tree->Draw();
+
+	/*glRotatef(angle, 1,0,0);
+	glRotatef(angle, 0,0,1);
+	glRotatef(angle, 0,1,0);
+	tree->GetBranchModel().Draw();*/
+
 	barkTexture->Deactivate();
 	glPopMatrix();
 
@@ -155,7 +163,7 @@ void World::Draw(const GameTime &gameTime)
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glColor4f(1.0f,1.0f,1.0f,0.25f);
 	sphere->SetDrawMode(terrainPolyMode);
-	sphere->Draw();
+	//sphere->Draw();
 	glDisable(GL_BLEND);
 	glDisable(GL_CLIP_PLANE0);
 	glPopMatrix();
