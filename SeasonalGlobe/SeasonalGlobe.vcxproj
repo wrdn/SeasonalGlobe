@@ -92,6 +92,7 @@
     <ClCompile Include="float4.cpp" />
     <ClCompile Include="Floor.cpp" />
     <ClCompile Include="FractalTree.cpp" />
+    <ClCompile Include="FractalTree2.cpp" />
     <ClCompile Include="GameTime.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="LSystem.cpp" />
@@ -127,6 +128,7 @@
     <ClInclude Include="float4.h" />
     <ClInclude Include="Floor.h" />
     <ClInclude Include="FractalTree.h" />
+    <ClInclude Include="FractalTree2.h" />
     <ClInclude Include="GameTime.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Log.h" />

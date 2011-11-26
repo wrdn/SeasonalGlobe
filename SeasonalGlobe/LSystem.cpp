@@ -43,7 +43,7 @@ const u32 LSystem::GetLSystemGenerations() const {
     return generations;
 };
 
-const string LSystem::GetEvaluatedString() const {
+const string& LSystem::GetEvaluatedString() const {
     return evaluatedString;
 };
 
@@ -54,8 +54,11 @@ const std::string LSystem::Evaluate()
 
 // Rebuild LSystem string 'level' times using the ProductionRules
 const string LSystem::Evaluate(const u32 level) {
-    if (!startingAxiom.length()) return string();
-    if (!level) return startingAxiom; // At level 0, we have the starting axiom
+    if (!startingAxiom.length() || !level)
+	{
+		evaluatedString = startingAxiom;
+		return evaluatedString; // At level 0, we have the starting axiom
+	}
 
 	generations = level;
     evaluatedString = startingAxiom;

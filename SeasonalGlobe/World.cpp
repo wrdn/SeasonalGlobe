@@ -47,6 +47,10 @@ bool World::Load()
 	terrain = AddModel<TerrainDisk>();
 	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
 
+	FractalTree2 *tree2 = new FractalTree2();
+	tree2->SetInitialString("FF[F[F]]FF[F[F]F[F]]F");
+	tree2->CalculateTreeDepth();
+
 	// http://www.geekyblogger.com/2008/04/tree-and-l-system.html
 	tree = new FractalTree();
 	tree->Init(float3(25), 1, 0.1, 0.6f);

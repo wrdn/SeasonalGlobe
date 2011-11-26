@@ -162,6 +162,9 @@
     <ClCompile Include="FractalTree.cpp">
       <Filter>Source Files\LSystem</Filter>
     </ClCompile>
+    <ClCompile Include="FractalTree2.cpp">
+      <Filter>Source Files\LSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="float2.h">
@@ -261,6 +264,9 @@
       <Filter>Header Files\LSystem</Filter>
     </ClInclude>
     <ClInclude Include="FractalTree.h">
+      <Filter>Header Files\LSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="FractalTree2.h">
       <Filter>Header Files\LSystem</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,6 +10,7 @@
 #include "TerrainDisk.h"
 #include "Shader.h"
 #include "FractalTree.h"
+#include "FractalTree2.h"
 
 class World
 {

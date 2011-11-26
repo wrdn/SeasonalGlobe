@@ -52,7 +52,7 @@ public:
     // build level is the 'level' parameter passed to Evaluate()
     const u32 GetLSystemGenerations() const;
 
-    const std::string GetEvaluatedString() const;
+    const std::string& GetEvaluatedString() const;
 
     // Evaluate function is used to build the LSystem string, recursing 'level'
     // times. You may also set the starting axiom at Evaluation time if required
