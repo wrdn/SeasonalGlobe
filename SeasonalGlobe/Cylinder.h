@@ -2,6 +2,7 @@
 
 #include "Model.h"
 
+// Origin of cylinder is its centre
 class Cylinder : public Model
 {
 private:

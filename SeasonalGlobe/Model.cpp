@@ -11,7 +11,7 @@ using namespace std;
 
 Model::Model()
 	: vertexArray(0), vertexArraySize(0), indicesArray(0), indicesArraySize(0),
-	triangleDrawCount(0), drawMode(GL_FILL), triDrawMethod(TRIANGLES)
+	triangleDrawCount(0), drawMode(GL_FILL), triDrawMethod(DM_TRIANGLES)
 {
 	glex::Load();
 };
@@ -101,14 +101,7 @@ ModelVBO::~ModelVBO()
 {
 };
 
-void Model::DrawVertexPoints()
+bool Model::Valid() const
 {
-	glBegin(GL_POINTS);
-
-	for(u32 i=0;i<vertexArraySize;++i)
-	{
-		glVertex3fv(vertexArray[i].pos.vec);
-	}
-
-	glEnd();
+	return ( mvbo.modeldata_vboid > 0 && mvbo.indices_vboid > 0 );
 };

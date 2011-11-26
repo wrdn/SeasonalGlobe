@@ -29,10 +29,6 @@ T* World::AddModel()
 
 bool World::Load()
 {
-	cubeModel = new OBJFile();
-	cubeModel->ParseOBJFile("Data/TexturedCube.obj");
-	cubeModel->BuildModelVBOs();
-	
 	grasstexture = texMan.LoadTextureFromFile("Data/Textures/Grass2.jpg");
 	
 	barkTexture = texMan.LoadTextureFromFile("Data/Textures/checkerboard_Test.jpg");
@@ -45,19 +41,21 @@ bool World::Load()
 	houseModel->BuildModelVBOs();
 	houseTexture = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg");
 
-	floor = new Floor();
-	floor->CreateFloor(40,11);
-
 	sphere = AddModel<Sphere>();
 	sphere->CreateSphere(11, 40, 40);
 
 	terrain = AddModel<TerrainDisk>();
 	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
 
-	_cylinder = AddModel<Cylinder>();
-	_cylinder->Create(0.3f, 0.4f, 2.5f, 35,35);
+	// http://www.geekyblogger.com/2008/04/tree-and-l-system.html
+	tree = new FractalTree();
+	tree->Init(float3(25), 0.02f, 0.0015f, 0.15f);
+	tree->SetInitialString("FFFA");
+	tree->AddProductionRule('A', "F[++A][--A]>>>A");
+	tree->SetGenerations(6);
+	tree->EvaluateTreeLSystem();
 
-	if(_phongShader.Init())
+	/*if(_phongShader.Init())
 	{
 		c8* phong_frag_src = read_src_fast("Data/Shaders/phong.frag");
 		c8* phong_vert_src = read_src_fast("Data/Shaders/phong.vert");
@@ -78,7 +76,7 @@ bool World::Load()
 
 		delete [] phong_frag_src;
 		delete [] phong_vert_src;
-	}
+	}*/
 
 	return true;
 };
@@ -110,10 +108,9 @@ void World::Draw(const GameTime &gameTime)
 	glTranslatef(0.0f, -1.0f,0.0f);
 	
 	glPushMatrix();
-	_cylinder->SetDrawMode(terrainPolyMode);
+	tree->GetBranchModel().SetDrawMode(terrainPolyMode);
 	barkTexture->Activate();
-	glTranslatef(0, _cylinder->GetHeight()/2, 0);
-	_cylinder->Draw();
+	tree->Draw();
 	barkTexture->Deactivate();
 	glPopMatrix();
 
@@ -138,15 +135,15 @@ void World::Draw(const GameTime &gameTime)
 	houseTexture->Deactivate();
 	glPopMatrix();
 
-	//glPushMatrix();
-	//glTranslatef(0,2,0);
-	//glRotatef(angle,1,1,0);
-	//houseTexture->Activate();
-	//_phongShader.Activate();
-	//cubeModel->Draw();
-	//_phongShader.Deactivate();
-	//houseTexture->Deactivate();
-	//glPopMatrix();
+	/*glPushMatrix();
+	glTranslatef(0,2,0);
+	glRotatef(angle,1,1,0);
+	houseTexture->Activate();
+	_phongShader.Activate();
+	cubeModel->Draw();
+	_phongShader.Deactivate();
+	houseTexture->Deactivate();
+	glPopMatrix();*/
 
 	glPushMatrix();
 	glEnable(GL_CLIP_PLANE0); // use clip plane to cut bottom half

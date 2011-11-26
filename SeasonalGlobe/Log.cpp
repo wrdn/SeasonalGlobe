@@ -15,8 +15,8 @@ void Log::log( const LOG_LEVEL logLevel, const c8* logmsg )
 	if(!LOGGING_ENABLED) return;
 
 	std::string st = 
-		logLevel == INFO ? "[INFO] " :
-		(logLevel == WARN ? "[WARN] " : "[ERROR] ");
+		logLevel == LOG_INFO ? "[INFO] " :
+		(logLevel == LOG_WARN ? "[WARN] " : "[ERROR] ");
 	st += logmsg;
 
 	std::cout << st << std::endl;
@@ -27,7 +27,7 @@ void Log::log( const LOG_LEVEL logLevel, const c8* logmsg )
 
 void Log::log( const c8* logmsg )
 {
-	log(INFO, logmsg);
+	log(LOG_INFO, logmsg);
 }
 
 void Log::clear_log_buff()

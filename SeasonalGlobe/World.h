@@ -9,6 +9,7 @@
 #include "Cylinder.h"
 #include "TerrainDisk.h"
 #include "Shader.h"
+#include "FractalTree.h"
 
 class World
 {
@@ -22,13 +23,11 @@ private:
 	
 	Texture *grasstexture, *houseTexture, *barkTexture;
 	
-	OBJFile *cubeModel;
 	OBJFile *houseModel;
 	
-	Floor *floor;
-	Cylinder *_cylinder;
 	Sphere *sphere;
 	TerrainDisk *terrain;
+	FractalTree *tree;
 
 	std::vector<Model*> models;
 

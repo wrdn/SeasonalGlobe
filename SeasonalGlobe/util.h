@@ -3,6 +3,11 @@
 
 #include "ctypes.h"
 
+// most files include util.h somewhere in the dependency hierarchy
+// Adding Log.h include here means most files can easily log messages
+// without manually adding includes
+#include "Log.h"
+
 #define EPSILON 0.000001f // rough epsilon
 #define PI 3.1415926f
 

@@ -91,8 +91,10 @@
     <ClCompile Include="float3.cpp" />
     <ClCompile Include="float4.cpp" />
     <ClCompile Include="Floor.cpp" />
+    <ClCompile Include="FractalTree.cpp" />
     <ClCompile Include="GameTime.cpp" />
     <ClCompile Include="Log.cpp" />
+    <ClCompile Include="LSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mat44.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -124,9 +126,11 @@
     <ClInclude Include="float3.h" />
     <ClInclude Include="float4.h" />
     <ClInclude Include="Floor.h" />
+    <ClInclude Include="FractalTree.h" />
     <ClInclude Include="GameTime.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Log.h" />
+    <ClInclude Include="LSystem.h" />
     <ClInclude Include="Mat44.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Model.h" />

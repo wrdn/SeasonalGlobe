@@ -6,9 +6,9 @@
 
 enum LOG_LEVEL
 {
-	INFO,
-	WARN,
-	ERROR
+	LOG_INFO,
+	LOG_WARN,
+	LOG_ERROR
 };
 
 // Global logging class (NOT thread safe)
@@ -74,11 +74,11 @@ public:
 static inline void log(const LOG_LEVEL logLevel, const c8* logmsg)
 {
 	Log::log(logLevel,logmsg);
-}
+};
 
 static inline void log(const c8* logmsg)
 {
 	Log::log(logmsg);
-}
+};
 
 #endif

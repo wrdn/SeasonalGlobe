@@ -48,8 +48,9 @@ public:
 
 enum TriangleDrawMethod
 {
-	TRIANGLES = GL_TRIANGLES,
-	TRIANGLE_STRIP = GL_TRIANGLE_STRIP,
+	DM_TRIANGLES = GL_TRIANGLES,
+	DM_TRIANGLE_STRIP = GL_TRIANGLE_STRIP,
+	DM_POINTS = GL_POINTS,
 };
 
 class Model : public glex
@@ -85,26 +86,24 @@ public:
 
 		indicesArray = _indicesArray;
 		indicesArraySize = _indicesArraySize;
-		
-		//triangleDrawCount = indicesArraySize / 3;
 	};
 
 	const u32 GetTriangleDrawCount() const { return triangleDrawCount; };
 	void RecalculateTriangleDrawCount() { triangleDrawCount = indicesArraySize / 3; };
 	void SetTriangleDrawCount(const u32 v) { triangleDrawCount = v; };
 
-	void SetTriangleDrawMethod(TriangleDrawMethod method)
+	void SetDrawMethod(TriangleDrawMethod method) // points, triangle, triangle strip
 	{
 		triDrawMethod = method;
 	};
 
 	const GLenum GetDrawMode() const { return drawMode; };
-	void SetDrawMode(const GLenum m) { drawMode = m; };
+	void SetDrawMode(const GLenum m) { drawMode = m; }; // GL_FILL, GL_LINE, GL_POINTS etc
 
 	bool BuildVBO();
 	void Draw(); // dumb function, does no data checking
 
-	void DrawVertexPoints(); //draws each vertex as a point
+	bool Valid() const; // returns true if the VBO is valid (IDs != 0)
 };
 
 #endif
