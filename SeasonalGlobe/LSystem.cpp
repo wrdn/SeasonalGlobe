@@ -106,7 +106,7 @@ void LSystem::ConvertEvaluatedStringToUpperCase()
 {
 	for(u32 i=0;i<evaluatedString.length();++i)
 	{
-		evaluatedString[i] = toupper(evaluatedString[i]);
+		evaluatedString[i] = (c8)toupper(evaluatedString[i]);
 	}
 };
 
@@ -114,6 +114,6 @@ void LSystem::ConvertEvaluatedStringToLowerCase()
 {
 	for(u32 i=0;i<evaluatedString.length();++i)
 	{
-		evaluatedString[i] = tolower(evaluatedString[i]);
+		evaluatedString[i] = (c8)tolower(evaluatedString[i]);
 	}
 };

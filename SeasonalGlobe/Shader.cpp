@@ -175,6 +175,8 @@ void Shader::SetUniform(const GLint _id, const GLint val)
 // TODO: CHANGE THIS AND THE TEXTURE CLASS SO YOU CAN SPECIFY TEXTURE 0-7
 void Shader::SetUniform(const c8 * const name, const Texture &tex)
 {
+	if(tex.GetID()) { }; // get rid of unreferenced formal parameter warning
+
 	if(GLint _id = GetUnformLocation(name))
 	{
 		SetUniform(_id, 0);

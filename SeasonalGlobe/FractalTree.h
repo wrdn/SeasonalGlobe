@@ -95,7 +95,7 @@ public:
 	// and continue until we have finished drawing the last set
 	void BuildTree();
 
-	void Draw();
+	void Draw(bool writeMatricesToFile);
 
 	void Reset();
 

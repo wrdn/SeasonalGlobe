@@ -4,6 +4,8 @@
 #include "Cylinder.h"
 #include "Mat44.h"
 
+// Usage:
+// * 
 class FractalTree2
 {
 private:
@@ -40,8 +42,7 @@ private:
 	f32 branchLength;
 
 	// single cylinder to be drawn many times
-	// recreated every time the tree is built (the tree should only
-	// be built once, with the matrices reused, so this is not a problem)
+	// created once only (in BuildTree())
 	Cylinder gbranch;
 
 	// This holds the index of the first matrix per level of the tree
@@ -60,15 +61,14 @@ private:
 	Mat44 *transformationMatrices;
 	#pragma endregion
 
-
 	// Builds each of the 6 matrices required for applying rotations
 	void BuildRotationMatrices();
 
-public:
 	// Calculate the tree depth, create transformationMatrices array
 	// and levels vector
 	void CalculateTreeDepth();
 
+public:
 	// Constructors / Destructors
 	FractalTree2();
 	~FractalTree2();
@@ -80,6 +80,8 @@ public:
 	// depth (with branches per level), and create the matrices that can then be
 	// used for drawing
 	void BuildTree();
+
+	void Draw();
 
 	#pragma region Accessors and Mutators
 	Cylinder& GetBranchModel() { return gbranch; };
@@ -96,6 +98,11 @@ public:
 		rotationAngles[0] = rotationAnglesXYZ[0];
 		rotationAngles[1] = rotationAnglesXYZ[1];
 		rotationAngles[2] = rotationAnglesXYZ[2];
+		BuildRotationMatrices();
+	};
+	void SetBranchRotationAngles(const f32 angle)
+	{
+		rotationAngles[0] = rotationAngles[1] = rotationAngles[2] = angle;
 		BuildRotationMatrices();
 	};
 	

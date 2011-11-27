@@ -47,18 +47,24 @@ bool World::Load()
 	terrain = AddModel<TerrainDisk>();
 	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
 
-	FractalTree2 *tree2 = new FractalTree2();
-	tree2->SetInitialString("FF[F[F]]FF[F[F]F[F]]F");
-	tree2->CalculateTreeDepth();
-
 	// http://www.geekyblogger.com/2008/04/tree-and-l-system.html
 	tree = new FractalTree();
-	tree->Init(float3(25), 1, 0.1, 0.6f);
-	tree->SetInitialString("FFFF[A][^^^^^^A]");
+	tree->Init(float3(25), 1.0f, 0.1f, 0.6f);
+	//tree->SetInitialString("FFFF[A][^^^^^^A]");
+	tree->SetInitialString("FF+F[+F]");
 	tree->AddProductionRule('A', "F[++A][--A]>>>A");
-
-	tree->SetGenerations(4);
+	tree->SetGenerations(2);
 	tree->EvaluateTreeLSystem();
+	tree->Draw(true);
+
+	tree2 = new FractalTree2();
+	tree2->SetBranchRadius(1.0f);
+	tree2->SetBranchRadiusReduction(0.1f);
+	tree2->SetBranchLength(0.6f);
+	tree2->SetBranchRotationAngles(25);
+	tree2->SetInitialString("FF+F[+F]");
+	//tree2->SetInitialString("FF");
+	tree2->BuildTree();
 
 	/*if(_phongShader.Init())
 	{
@@ -117,7 +123,8 @@ void World::Draw(const GameTime &gameTime)
 	barkTexture->Activate();
 	//glTranslatef(0, tree->GetBranchModel().GetHeight()/2, 0); // put first tree on ground
 	
-	tree->Draw();
+	//tree->Draw(false);
+	tree2->Draw();
 
 	/*glRotatef(angle, 1,0,0);
 	glRotatef(angle, 0,0,1);

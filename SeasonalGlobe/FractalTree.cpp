@@ -1,5 +1,8 @@
 #include "FractalTree.h"
 
+#include <fstream>
+using namespace std;
+
 #pragma warning( disable : 4482 )
 
 const f32 FractalTree::DEFAULT_BRANCH_RADIUS = 0.2f;
@@ -46,7 +49,7 @@ void FractalTree::EvaluateTreeLSystem()
 	_lsystree.ConvertEvaluatedStringToUpperCase();
 };
 
-void FractalTree::Draw()
+void FractalTree::Draw(bool writeMatricesToFile)
 {
 	//glTranslatef(0, _branchModel.GetHeight()/2, 0);
 	//_branchModel.Draw();
@@ -54,6 +57,13 @@ void FractalTree::Draw()
 
 	// This code will be replaced (just testing the LSystem will actually work properly)
 	// Consider each element of the string, and act accordingly
+
+	ofstream out;
+	if(writeMatricesToFile)
+	{
+		// each matrix used in MOVE_FORWARD is written to the file
+		out = ofstream("FractalTreeClass_Matrices.txt");
+	}
 
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -74,6 +84,11 @@ void FractalTree::Draw()
 		{
 		case MOVE_FORWARD:
 			{
+				if(writeMatricesToFile)
+				{
+					out << matrixStack.top() << endl;
+				}
+
 				glMatrixMode(GL_MODELVIEW);
 				glPushMatrix();
 				glScalef(_radius, _radius, _radius);
@@ -119,8 +134,10 @@ void FractalTree::Draw()
 
 		glPopMatrix();
 	}
-
 	glPopMatrix();
+
+	if(writeMatricesToFile && out.is_open())
+		out.close();
 };
 
 void FractalTree::Reset()

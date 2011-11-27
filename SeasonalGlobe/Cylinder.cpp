@@ -21,7 +21,6 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 	stacks = _stacks;
 
 	f32 sliceincrement = PI * 2.0f / slices;
-	f32 half_height = height * 0.5f;
 	f32 current_height = height;
 	f32 stack_increment = height / (stacks - 1);
 	f32 radius_increment = (topRadius - bottomRadius) / (stacks-1);

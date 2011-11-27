@@ -28,8 +28,10 @@ private:
 	
 	Sphere *sphere;
 	TerrainDisk *terrain;
+	
 	FractalTree *tree;
-
+	FractalTree2 *tree2;
+	
 	std::vector<Model*> models;
 
 	template<class T>
