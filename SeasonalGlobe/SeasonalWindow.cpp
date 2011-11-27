@@ -145,6 +145,13 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 						glEnable(GL_CULL_FACE);
 				}
 			} break;
+		case 'r':
+			{
+				if(!down)
+				{
+					scn.AutoRotate = !scn.AutoRotate;
+				}
+			} break;
 	}
 };
 

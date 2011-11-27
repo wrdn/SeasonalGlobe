@@ -527,3 +527,12 @@ Mat44 Mat44::BuildRotationMatrix(f32 angle_in_degrees, f32 x, f32 y, f32 z)
 		0, 0, 0, 1     // m41, m42, m43, m44
 		);
 };
+
+Mat44 Mat44::BuildScaleMatrix(f32 xscale, f32 yscale, f32 zscale)
+{
+	return Mat44(
+		xscale,  0,       0,       0,
+		0,       yscale,  0,       0,
+		0,       0,       zscale,  0,
+		0,       0,       0,       1);
+};

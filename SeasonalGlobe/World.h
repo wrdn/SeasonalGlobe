@@ -37,12 +37,16 @@ private:
 	template<class T>
 	T* AddModel();
 
+	float3 sceneRotationAxis;
+
 public:
 
 	// Temporary Camera Variables (Code from RealTime Graphics module tutorials)
 	f32 _cameraAngle;
 	f32 _cameraPosition;
 	f32 _cameraRotation;
+	
+	bool AutoRotate;
 
 	GLenum terrainPolyMode;
 

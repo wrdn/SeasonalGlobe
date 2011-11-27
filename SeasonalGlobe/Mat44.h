@@ -98,7 +98,7 @@ public:
 	void write(std::ostream &out);
 
 	static Mat44 BuildRotationMatrix(f32 angle_in_degrees, f32 x, f32 y, f32 z);
+	static Mat44 BuildScaleMatrix(f32 xscale, f32 yscale, f32 zscale);
 };
 
 std::ostream& operator<<(std::ostream &out, Mat44 &m);
-

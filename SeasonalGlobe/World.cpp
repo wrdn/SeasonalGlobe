@@ -12,6 +12,9 @@ World::World(void)
 	_cameraRotation = 0.0f;
 
 	terrainPolyMode = GL_FILL;
+
+	sceneRotationAxis.set(0, 1, 0);
+	AutoRotate = true;
 }
 
 World::~World(void)
@@ -48,8 +51,7 @@ bool World::Load()
 	terrain = AddModel<TerrainDisk>();
 	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
 
-	PerfTimer pt;
-	pt.start();
+	/*
 	// http://www.geekyblogger.com/2008/04/tree-and-l-system.html
 	tree = new FractalTree();
 	tree->Init(float3(25), 1.0f, 0.1f, 0.6f);
@@ -58,26 +60,19 @@ bool World::Load()
 	tree->AddProductionRule('A', "F[++A][--A]>>>A");
 	tree->SetGenerations(2);
 	tree->EvaluateTreeLSystem();
-	tree->Draw(false);
-	pt.end();
-	cout << "Fractal Tree Draw Time: " << pt.time() << endl;
-
-	pt.start();
+	tree->Draw(false);*/
+	
 	tree2 = new FractalTree2();
 	tree2->SetBranchRadius(1.0f);
 	tree2->SetBranchRadiusReduction(0.1f);
 	tree2->SetBranchLength(0.6f);
 	tree2->SetBranchRotationAngles(25);
-	tree2->SetInitialString("FF+F[+F]");
-	//tree2->SetInitialString("FF");
+	//tree2->SetInitialString("FFF[A][^^^^^^A]");
+	tree2->SetInitialString("FF");
+	tree2->AddProductionRule('A', "F[++A][--A]>>>A");
+	tree2->SetGenerations(4);
 	tree2->BuildTree(false);
-	pt.end();
-	cout << "FractalTree2 Build Time: " << pt.time() << endl;
-
-	pt.start();
-	tree2->Draw();
-	pt.end();
-	cout << "FractalTree2 Draw Time: " << pt.time() << endl;
+	//tree2->Draw();
 
 	/*if(_phongShader.Init())
 	{
@@ -131,19 +126,12 @@ void World::Draw(const GameTime &gameTime)
 	glRotatef(_cameraRotation, 0.0, 1.0, 0.0);
 	glTranslatef(0.0f, -1.0f,0.0f);
 	
+	glRotatef(angle, 0, 1, 0);
+
 	glPushMatrix();
-	tree->GetBranchModel().SetDrawMode(terrainPolyMode);
+	tree2->GetBranchModel().SetDrawMode(terrainPolyMode);
 	barkTexture->Activate();
-	//glTranslatef(0, tree->GetBranchModel().GetHeight()/2, 0); // put first tree on ground
-	
-	//tree->Draw(false);
 	tree2->Draw();
-
-	/*glRotatef(angle, 1,0,0);
-	glRotatef(angle, 0,0,1);
-	glRotatef(angle, 0,1,0);
-	tree->GetBranchModel().Draw();*/
-
 	barkTexture->Deactivate();
 	glPopMatrix();
 
@@ -164,6 +152,7 @@ void World::Draw(const GameTime &gameTime)
 	glTranslatef(-5.5,0,0.5);
 	glScalef(.05f,.05f,.05f);
 	houseTexture->Activate();
+	((Model*)houseModel->GetModels())->SetDrawMode(terrainPolyMode);
 	houseModel->Draw();
 	houseTexture->Deactivate();
 	glPopMatrix();
@@ -194,6 +183,9 @@ void World::Draw(const GameTime &gameTime)
 
 	glPopMatrix();
 
-	angle += rotationSpeed * gameTime.GetDeltaTime();
-	if(angle >= 360) { angle-=360; }
+	if(AutoRotate)
+	{
+		angle += rotationSpeed * gameTime.GetDeltaTime();
+		if(angle >= 360) { angle-=360; }
+	}
 }
