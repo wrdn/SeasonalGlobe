@@ -1,6 +1,7 @@
 #include "World.h"
 #include "strutils.h"
 #include "Color.h"
+#include "PerfTimer.h"
 
 GLuint textures[2];
 
@@ -47,6 +48,8 @@ bool World::Load()
 	terrain = AddModel<TerrainDisk>();
 	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
 
+	PerfTimer pt;
+	pt.start();
 	// http://www.geekyblogger.com/2008/04/tree-and-l-system.html
 	tree = new FractalTree();
 	tree->Init(float3(25), 1.0f, 0.1f, 0.6f);
@@ -56,7 +59,10 @@ bool World::Load()
 	tree->SetGenerations(2);
 	tree->EvaluateTreeLSystem();
 	tree->Draw(false);
+	pt.end();
+	cout << "Fractal Tree Draw Time: " << pt.time() << endl;
 
+	pt.start();
 	tree2 = new FractalTree2();
 	tree2->SetBranchRadius(1.0f);
 	tree2->SetBranchRadiusReduction(0.1f);
@@ -65,6 +71,13 @@ bool World::Load()
 	tree2->SetInitialString("FF+F[+F]");
 	//tree2->SetInitialString("FF");
 	tree2->BuildTree(false);
+	pt.end();
+	cout << "FractalTree2 Build Time: " << pt.time() << endl;
+
+	pt.start();
+	tree2->Draw();
+	pt.end();
+	cout << "FractalTree2 Draw Time: " << pt.time() << endl;
 
 	/*if(_phongShader.Init())
 	{

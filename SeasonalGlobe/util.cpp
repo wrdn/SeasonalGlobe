@@ -67,3 +67,13 @@ unsigned long hash_djb2(uc8 *str)
 
 	return hash;
 }
+
+f32 DEGTORAD(f32 degs)
+{
+	return (degs * (PI / 180.0f));
+};
+
+f32 RADTODEG(f32 rads)
+{
+	return (rads * (180.0f / PI));
+};

@@ -33,7 +33,6 @@ ipch/
 [Dd]ebug/
 [Rr]elease/
 !Libraries/
-!Libraries/
 .parasoft.dat/
 .parasoft
 .cpptest/

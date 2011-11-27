@@ -67,6 +67,12 @@ public:
 
 	f32* GetMatrix();
 	void SetMatrix(const f32* _mat);
+
+	void SetMatrix(const f32 m11, const f32 m12, const f32 m13, const f32 m14,
+	const f32 m21, const f32 m22, const f32 m23, const f32 m24,
+	const f32 m31, const f32 m32, const f32 m33, const f32 m34,
+	const f32 m41, const f32 m42, const f32 m43, const f32 m44);
+
 	void Identity(); // sets this matrix back to the identity matrix (Mat44::IDENTITY)
 
 	Mat44 Add(const Mat44 &m) const; // standard matrix addition
@@ -90,6 +96,8 @@ public:
 	Mat44 Transpose() const;
 
 	void write(std::ostream &out);
+
+	static Mat44 BuildRotationMatrix(f32 angle_in_degrees, f32 x, f32 y, f32 z);
 };
 
 std::ostream& operator<<(std::ostream &out, Mat44 &m);

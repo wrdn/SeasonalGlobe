@@ -1,5 +1,7 @@
 #include "Mat44.h"
 #include "float4.h"
+#include "float3.h"
+#include "util.h"
 #include <pmmintrin.h>
 
 const f32 IDENTITY_MAT44_DATA[] = 
@@ -25,6 +27,18 @@ Mat44::Mat44(const f32* _mat) // use existing FP array to initialise the matrix
 
 Mat44::Mat44(
 	const f32 m11, const f32 m12, const f32 m13, const f32 m14,
+	const f32 m21, const f32 m22, const f32 m23, const f32 m24,
+	const f32 m31, const f32 m32, const f32 m33, const f32 m34,
+	const f32 m41, const f32 m42, const f32 m43, const f32 m44)
+{
+	SetMatrix(
+		m11, m12, m13, m14,
+		m21, m22, m23, m24,
+		m31, m32, m33, m34,
+		m41, m42, m43, m44);
+};
+
+void Mat44::SetMatrix(const f32 m11, const f32 m12, const f32 m13, const f32 m14,
 	const f32 m21, const f32 m22, const f32 m23, const f32 m24,
 	const f32 m31, const f32 m32, const f32 m33, const f32 m34,
 	const f32 m41, const f32 m42, const f32 m43, const f32 m44)
@@ -477,4 +491,39 @@ std::ostream& operator<<(std::ostream &out, Mat44 &m)
 {
 	m.write(out);
 	return out;
+};
+
+Mat44 Mat44::BuildRotationMatrix(f32 angle_in_degrees, f32 x, f32 y, f32 z)
+{
+	float3 fv(x,y,z);
+	fv.normalize();
+	
+	x = fv.x();
+	y = fv.y();
+	z = fv.z();
+
+	f32 angle = DEGTORAD(angle_in_degrees);
+
+	f32 c = cos(angle);
+	f32 s = sin(angle);
+
+	return Mat44
+		(
+		x*x*(1-c)+c,   // m11
+		x*y*(1-c)-z*s, // m12
+		x*z*(1-c)+y*s, // m13
+		0,			   // m14
+
+		y*x*(1-c)+z*s, // m21
+		y*y*(1-c)+c,   // m22
+		y*z*(1-c)-x*s, // m23
+		0,			   // m24
+
+		x*z*(1-c)-y*s, // m31 
+		y*z*(1-c)+x*s, // m32
+		z*z*(1-c)+c,   // m33
+		0,			   // m34
+
+		0, 0, 0, 1     // m41, m42, m43, m44
+		);
 };

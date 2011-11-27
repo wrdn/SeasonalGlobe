@@ -51,52 +51,19 @@ void FractalTree2::BuildRotationMatrices()
 	// need to set individual elements
 
 	// X Rotation Matrix
-	f32 *LeftXMatrix = rotationMatrices[LeftX].GetMatrix();
-	f32 *RightXMatrix = rotationMatrices[RightX].GetMatrix();
 	f32 angle = rotationAngles[0];
-
-	LeftXMatrix[m22] = cos(angle);
-	LeftXMatrix[m23] = -sin(angle);
-	LeftXMatrix[m32] = sin(angle);
-	LeftXMatrix[m33] = cos(angle);
-
-	angle = -angle;
-	RightXMatrix[m22] = cos(angle);
-	RightXMatrix[m23] = -sin(angle);
-	RightXMatrix[m32] = sin(angle);
-	RightXMatrix[m33] = cos(angle);
+	rotationMatrices[LeftX] = Mat44::BuildRotationMatrix(-angle, 1, 0, 0);
+	rotationMatrices[RightX] = Mat44::BuildRotationMatrix(angle, 1, 0, 0);
 
 	// Y Rotation Matrix
-	f32 *UpYMatrix = rotationMatrices[UpY].GetMatrix();
-	f32 *DownYMatrix = rotationMatrices[DownY].GetMatrix();
 	angle = rotationAngles[1];
-	
-	UpYMatrix[m11] = cos(angle);
-	UpYMatrix[m13] = sin(angle);
-	UpYMatrix[m31] = -sin(angle);
-	UpYMatrix[m33] = cos(angle);
-
-	angle = -angle;
-	DownYMatrix[m11] = cos(angle);
-	DownYMatrix[m13] = sin(angle);
-	DownYMatrix[m31] = -sin(angle);
-	DownYMatrix[m33] = cos(angle);
+	rotationMatrices[UpY] = Mat44::BuildRotationMatrix(angle, 0, 1, 0);
+	rotationMatrices[DownY] = Mat44::BuildRotationMatrix(-angle, 0, 1, 0);
 
 	// Z Rotation Matrix
-	f32 *LeftZMatrix = rotationMatrices[LeftZ].GetMatrix();
-	f32 *RightZMatrix = rotationMatrices[RightZ].GetMatrix();
 	angle = rotationAngles[2];
-
-	LeftZMatrix[m11] = cos(angle);
-	LeftZMatrix[m12] = -sin(angle);
-	LeftZMatrix[m21] = sin(angle);
-	LeftZMatrix[m22] = cos(angle);
-
-	angle = -angle;
-	RightZMatrix[m11] = cos(angle);
-	RightZMatrix[m12] = -sin(angle);
-	RightZMatrix[m21] = sin(angle);
-	RightZMatrix[m22] = cos(angle);
+	rotationMatrices[LeftZ] = Mat44::BuildRotationMatrix(angle, 0, 0, 1);
+	rotationMatrices[RightZ] = Mat44::BuildRotationMatrix(-angle, 0, 0, 1);
 };
 
 void FractalTree2::CalculateTreeDepth()
@@ -208,7 +175,7 @@ void FractalTree2::BuildTree(bool dbg_writeMatricesToFile)
 			glPushMatrix();
 			glLoadIdentity();
 			glMultMatrixf(matrixStack.top().GetMatrix());
-			glRotatef(rotationAngles[0], 1,0,0);
+			glMultMatrixf(rotationMatrices[LeftX].GetMatrix());
 			glGetFloatv(GL_MODELVIEW_MATRIX, matrixStack.top().GetMatrix());
 			glPopMatrix();
 		}
@@ -219,7 +186,7 @@ void FractalTree2::BuildTree(bool dbg_writeMatricesToFile)
 			glPushMatrix();
 			glLoadIdentity();
 			glMultMatrixf(matrixStack.top().GetMatrix());
-			glRotatef(-rotationAngles[0], 1,0,0);
+			glMultMatrixf(rotationMatrices[RightX].GetMatrix());
 			glGetFloatv(GL_MODELVIEW_MATRIX, matrixStack.top().GetMatrix());
 			glPopMatrix();
 		}
@@ -230,7 +197,7 @@ void FractalTree2::BuildTree(bool dbg_writeMatricesToFile)
 			glPushMatrix();
 			glLoadIdentity();
 			glMultMatrixf(matrixStack.top().GetMatrix());
-			glRotatef(rotationAngles[1],0,1,0);
+			glMultMatrixf(rotationMatrices[UpY].GetMatrix());
 			glGetFloatv(GL_MODELVIEW_MATRIX, matrixStack.top().GetMatrix());
 			glPopMatrix();
 		}
@@ -241,7 +208,7 @@ void FractalTree2::BuildTree(bool dbg_writeMatricesToFile)
 			glPushMatrix();
 			glLoadIdentity();
 			glMultMatrixf(matrixStack.top().GetMatrix());
-			glRotatef(-rotationAngles[1],0,1,0);
+			glMultMatrixf(rotationMatrices[DownY].GetMatrix());
 			glGetFloatv(GL_MODELVIEW_MATRIX, matrixStack.top().GetMatrix());
 			glPopMatrix();
 		}
@@ -252,7 +219,7 @@ void FractalTree2::BuildTree(bool dbg_writeMatricesToFile)
 			glPushMatrix();
 			glLoadIdentity();
 			glMultMatrixf(matrixStack.top().GetMatrix());
-			glRotatef(rotationAngles[2],0,0,1);
+			glMultMatrixf(rotationMatrices[LeftZ].GetMatrix());
 			glGetFloatv(GL_MODELVIEW_MATRIX, matrixStack.top().GetMatrix());
 			glPopMatrix();
 		}
@@ -263,7 +230,7 @@ void FractalTree2::BuildTree(bool dbg_writeMatricesToFile)
 			glPushMatrix();
 			glLoadIdentity();
 			glMultMatrixf(matrixStack.top().GetMatrix());
-			glRotatef(-rotationAngles[2],0,0,1);
+			glMultMatrixf(rotationMatrices[RightZ].GetMatrix());
 			glGetFloatv(GL_MODELVIEW_MATRIX, matrixStack.top().GetMatrix());
 			glPopMatrix();
 		}
