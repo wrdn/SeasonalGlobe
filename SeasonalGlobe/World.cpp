@@ -1,4 +1,4 @@
-#include "World.h"
+﻿#include "World.h"
 #include "strutils.h"
 #include "Color.h"
 #include "PerfTimer.h"
@@ -68,10 +68,10 @@ bool World::Load()
 	tree2->SetBranchLength(0.6f);
 	tree2->SetBranchRotationAngles(30);
 	//tree2->SetInitialString("FFF[A][^^^^^^A]");
-	//tree2->SetInitialString("FA");
-	tree2->SetInitialString("FF+F");
+	tree2->SetInitialString("A");
 	tree2->AddProductionRule('A', "F[^B][^^^^^^^B]");
 	tree2->AddProductionRule('B', "F^[-B]^B");
+
 	tree2->SetGenerations(8);
 	tree2->BuildTree(false);
 	tree2->drawLevel = 0;
@@ -134,7 +134,7 @@ void World::Draw(const GameTime &gameTime)
 	glPushMatrix();
 	tree2->GetBranchModel().SetDrawMode(terrainPolyMode);
 	barkTexture->Activate();
-	tree2->Draw(gameTime.GetDeltaTime() / 2.0f);
+	tree2->Draw(gameTime.GetDeltaTime() * 0.005f);
 	barkTexture->Deactivate();
 	glPopMatrix();
 

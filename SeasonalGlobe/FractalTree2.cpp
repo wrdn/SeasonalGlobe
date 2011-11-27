@@ -316,8 +316,8 @@ void FractalTree2::Draw(float dt)
 	for(u32 i = BranchToScale; i < BranchToScale+1; ++i)
 	{
 		glMatrixMode(GL_MODELVIEW); glPushMatrix();
-		glMultMatrixf(transformationMatrices[i].GetMatrix());
-		glMultMatrixf(scaleMatrix.GetMatrix());
+		//glMultMatrixf(transformationMatrices[i].GetMatrix());
+		glMultMatrixf(scaleMatrix.Mult(transformationMatrices[i]).GetMatrix());
 		gbranch.Draw();
 		glPopMatrix();
 	}
