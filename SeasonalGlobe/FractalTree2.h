@@ -79,7 +79,9 @@ public:
 	// Evaluates the LSystem string and if successful, will calculate the tree
 	// depth (with branches per level), and create the matrices that can then be
 	// used for drawing
-	void BuildTree();
+	// dbg_writeMatricesToFile is used to write all the matrices that will be used for drawing to a file
+	// (i.e. the matrix at the top of the stack when 'F' is encountered)
+	void BuildTree(bool dbg_writeMatricesToFile);
 
 	void Draw();
 

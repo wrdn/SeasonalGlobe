@@ -1,6 +1,7 @@
 #include "FractalTree2.h"
 #include <stack>
 #include <fstream>
+#include <iostream>
 using namespace std;
 //#pragma warning( disable : 4482 )
 
@@ -148,7 +149,7 @@ void FractalTree2::CalculateTreeDepth()
 	}
 };
 
-void FractalTree2::BuildTree()
+void FractalTree2::BuildTree(bool dbg_writeMatricesToFile)
 {
 	if(!gbranch.Valid())
 		gbranch.Create(0.05f, 0.05f, branchLength, 7,7);
@@ -161,7 +162,8 @@ void FractalTree2::BuildTree()
 	std::vector<u32> MatricesCalculatedPerDepth(levels.size(), 0);
 	u32 currentDepth = 0;
 
-	ofstream out("FractalTree2_BuildTree_Matrices.txt");
+	ofstream out;
+	if(dbg_writeMatricesToFile) { out = ofstream("FractalTree2_BuildTree_Matrices.txt"); }
 
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -188,7 +190,7 @@ void FractalTree2::BuildTree()
 			// Grab matrix and store in valid location for currentDepth then
 			// translate matrix stack top
 			transformationMatrices[levels[currentDepth] + MatricesCalculatedPerDepth[currentDepth]] = matrixStack.top();
-			out << matrixStack.top() << endl;
+			if(dbg_writeMatricesToFile) { out << matrixStack.top() << endl; }
 			++MatricesCalculatedPerDepth[currentDepth];
 
 			glMatrixMode(GL_MODELVIEW);
@@ -293,7 +295,7 @@ void FractalTree2::BuildTree()
 	}
 	glPopMatrix();
 
-	if(out.is_open())
+	if(dbg_writeMatricesToFile && out.is_open())
 		out.close();
 };
 

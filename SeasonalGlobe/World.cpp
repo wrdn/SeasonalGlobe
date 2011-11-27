@@ -55,7 +55,7 @@ bool World::Load()
 	tree->AddProductionRule('A', "F[++A][--A]>>>A");
 	tree->SetGenerations(2);
 	tree->EvaluateTreeLSystem();
-	tree->Draw(true);
+	tree->Draw(false);
 
 	tree2 = new FractalTree2();
 	tree2->SetBranchRadius(1.0f);
@@ -64,7 +64,7 @@ bool World::Load()
 	tree2->SetBranchRotationAngles(25);
 	tree2->SetInitialString("FF+F[+F]");
 	//tree2->SetInitialString("FF");
-	tree2->BuildTree();
+	tree2->BuildTree(false);
 
 	/*if(_phongShader.Init())
 	{
