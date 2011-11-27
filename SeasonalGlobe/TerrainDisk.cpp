@@ -20,50 +20,8 @@ public:
 	i32 postvertexcount; // count after we added vertices for this row
 };
 
-void TerrainDisk::Draw(const bool drawPoints)
-{
-	if(drawPoints)
-	{
-		glColor3f(1,1,1);
-		GLboolean cullingEnabled = glIsEnabled(GL_CULL_FACE);
-		glDisable(GL_CULL_FACE);
-		glBegin(GL_POINTS);
-		for(u32 i=0;i<_vertices.size();++i)
-		{
-			glTexCoord2fv(_vertices[i].uvs.vec);
-			glVertex3fv(_vertices[i].pos.vec);
-		}
-		glEnd();
-		if(cullingEnabled)
-			glEnable(GL_CULL_FACE);
-	}
-	else
-	{
-		// draw faces
-		glColor3f(1,1,1);
-		//GLboolean cullingEnabled = glIsEnabled(GL_CULL_FACE);
-		//glDisable(GL_CULL_FACE);
-		glBegin(GL_TRIANGLES);
-		for(u32 i=0;i<_faces.size();++i)
-		{
-			glTexCoord2fv(_faces[i].pos1.uvs.vec);
-			glVertex3fv(_faces[i].pos1.pos.vec);
-
-			glTexCoord2fv(_faces[i].pos2.uvs.vec);
-			glVertex3fv(_faces[i].pos2.pos.vec);
-
-			glTexCoord2fv(_faces[i].pos3.uvs.vec);
-			glVertex3fv(_faces[i].pos3.pos.vec);
-		}
-		glEnd();
-		//if(cullingEnabled)
-		//	glEnable(GL_CULL_FACE);
-	}
-};
-
 bool TerrainDisk::CreateTerrainDisk(const c8 * const heightmap_filename)
 {
-	#pragma region Setup
 	Image sourceImage;
 	if(!sourceImage.Load(heightmap_filename)) { return false; };
 
@@ -72,16 +30,12 @@ bool TerrainDisk::CreateTerrainDisk(const c8 * const heightmap_filename)
 
 	u32 FirstYPixel = (u32)(circle.pos.y() - circle.radius);
 	u32 LastYPixel  = (u32)(circle.pos.y() + circle.radius);
-	//u32 CirclePixelHeight = LastYPixel - FirstYPixel;
-
+	
 	uc8* rowptr=0; // pointer to the row of pixels
 	u32 bpp = sourceImage.GetPixelSize(); // bits per pixel
 
 	std::vector<RowInfo> rows;
 
-	#pragma endregion
-
-	#pragma region Read Pixels
 	for(u32 i = FirstYPixel; i < LastYPixel; ++i)
 	{
 		rowptr = sourceImage.GetRowData(i);
@@ -121,9 +75,6 @@ bool TerrainDisk::CreateTerrainDisk(const c8 * const heightmap_filename)
 			rows.push_back(r);
 		}
 	} // End of pixel reading for loop
-	#pragma endregion
-
-	#pragma region Build Faces
 
 	for( u32 i=0; i < rows.size()-2; ++i)
 	{
@@ -145,71 +96,63 @@ bool TerrainDisk::CreateTerrainDisk(const c8 * const heightmap_filename)
 		i32 OverlapEnd = OverlapStart + min(currentRow->pixcount, nextRow->pixcount);
 		i32 OverlapLength = OverlapEnd - OverlapStart;
 		
-		Face leftFace;
 		if(currentRow->pixcount >= nextRow->pixcount) // A Length >= B Length
 		{
-			leftFace.pos1 = _vertices[currentRow->prevertexcount+D];
-			leftFace.pos2 = _vertices[currentRow->prevertexcount];
-			leftFace.pos3 = _vertices[nextRow->prevertexcount];
+			_indices.push_back(currentRow->prevertexcount+D);
+			_indices.push_back(currentRow->prevertexcount);
+			_indices.push_back(nextRow->prevertexcount);
 		}
 		else // B Length > A Length
 		{
-			leftFace.pos1 = _vertices[currentRow->prevertexcount];
-			leftFace.pos2 = _vertices[nextRow->prevertexcount];
-			leftFace.pos3 = _vertices[nextRow->prevertexcount+D];
+			_indices.push_back(currentRow->prevertexcount);
+			_indices.push_back(nextRow->prevertexcount);
+			_indices.push_back(nextRow->prevertexcount+D);
 		}
-		_faces.push_back(leftFace);
-
+		
 		// Faces for Overlapping pixels
-		Face f1, f2;
 		for(i32 j=0;j<OverlapLength;++j)
 		{
-			VERTEX v1,v2,v3,v4;
+			u32 indices[4];
+
 			if(currentRow->pixcount > nextRow->pixcount)
 			{
-				v1 = _vertices[currentRow->prevertexcount + D + j];
-				v2 = _vertices[currentRow->prevertexcount + D + j + 1];
-				v3 = _vertices[nextRow->prevertexcount + j];
-				v4 = _vertices[nextRow->prevertexcount + j + 1];
-
+				indices[0] = currentRow->prevertexcount + D + j;
+				indices[1] = currentRow->prevertexcount + D + j + 1;
+				indices[2] = nextRow->prevertexcount + j;
+				indices[3] = nextRow->prevertexcount + j + 1;
 			}
 			else
 			{
-				v1 = _vertices[currentRow->prevertexcount + j];
-				v2 = _vertices[currentRow->prevertexcount + j + 1];
-				v3 = _vertices[nextRow->prevertexcount + D + j];
-				v4 = _vertices[nextRow->prevertexcount + D + j + 1];
+				indices[0] = currentRow->prevertexcount + j;
+				indices[1] = currentRow->prevertexcount + j + 1;
+				indices[2] = nextRow->prevertexcount + D + j;
+				indices[3] = nextRow->prevertexcount + D + j + 1;
 			}
-			f1.pos1 = v2;
-			f1.pos2 = v1;
-			f1.pos3 = v3;
+			_indices.push_back(indices[1]);
+			_indices.push_back(indices[0]);
+			_indices.push_back(indices[2]);
 
-			f2.pos1 = v2;
-			f2.pos2 = v3;
-			f2.pos3 = v4;
-
-			_faces.push_back(f1);
-			_faces.push_back(f2);
+			_indices.push_back(indices[1]);
+			_indices.push_back(indices[2]);
+			_indices.push_back(indices[3]);
 		}
 
-		Face rightFace;
 		if(currentRow->pixcount >= nextRow->pixcount) // A Length >= B Length
 		{
-			rightFace.pos1 = _vertices[currentRow->postvertexcount-1];
-			rightFace.pos2 = _vertices[currentRow->postvertexcount-D-1];
-			rightFace.pos3 = _vertices[nextRow->postvertexcount-1];
+			_indices.push_back(currentRow->postvertexcount-1);
+			_indices.push_back(currentRow->postvertexcount-D-1);
+			_indices.push_back(nextRow->postvertexcount-1);
 		}
 		else
 		{
-			rightFace.pos1 = _vertices[currentRow->postvertexcount-1];
-			rightFace.pos2 = _vertices[nextRow->postvertexcount-1-D];
-			rightFace.pos3 = _vertices[nextRow->postvertexcount-1];
-		}
-		_faces.push_back(rightFace);
-		
+			_indices.push_back(currentRow->postvertexcount-1);
+			_indices.push_back(nextRow->postvertexcount-1-D);
+			_indices.push_back(nextRow->postvertexcount-1);
+		}	
 	}
 
-	#pragma endregion
+	SetVertexArray((VERTEX*)&_vertices[0], _vertices.size());
+	SetIndicesArray((u32*)&_indices[0], _indices.size());
 
-	return false;
+	return BuildVBO();
 };

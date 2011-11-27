@@ -3,12 +3,10 @@
 #include "Color.h"
 #include "PerfTimer.h"
 
-GLuint textures[2];
-
 World::World(void)
 {
 	_cameraAngle = 30.0f;
-	_cameraPosition = -3.8500025;
+	_cameraPosition = -3.8500025f;
 	_cameraRotation = -232.0f;
 
 	terrainPolyMode = GL_FILL;
@@ -75,7 +73,6 @@ bool World::Load()
 	tree2->SetGenerations(8);
 	tree2->BuildTree(false);
 	tree2->drawLevel = 0;
-	//tree2->Draw();
 
 	/*if(_phongShader.Init())
 	{
@@ -145,9 +142,8 @@ void World::Draw(const GameTime &gameTime)
 	grasstexture->Activate();
 	glRotatef(90, 1,0,0);
 	glScalef(5.48f,5.48f,5.48f);
-	glPolygonMode(GL_FRONT_AND_BACK, terrainPolyMode);
-	terrain->Draw(false);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	terrain->SetDrawMode(terrainPolyMode);
+	terrain->Draw();
 	grasstexture->Deactivate();
 	glPopMatrix();
 	
@@ -159,16 +155,6 @@ void World::Draw(const GameTime &gameTime)
 	houseModel->Draw();
 	houseTexture->Deactivate();
 	glPopMatrix();
-
-	/*glPushMatrix();
-	glTranslatef(0,2,0);
-	glRotatef(angle,1,1,0);
-	houseTexture->Activate();
-	_phongShader.Activate();
-	cubeModel->Draw();
-	_phongShader.Deactivate();
-	houseTexture->Deactivate();
-	glPopMatrix();*/
 
 	glPushMatrix();
 	glEnable(GL_CLIP_PLANE0); // use clip plane to cut bottom half

@@ -296,12 +296,12 @@ void FractalTree2::Draw(float dt)
 	u32 _start = 0;
 	u32 _end = transformationMatricesArraySize;
 
-	int P = ( _end - _start); // number of branches (cylinder)
-	float Range = 1.0 / P; // range of time (0..1) we have to draw each branch (cylinder) in
-	float t = currentScale; // time
-	float Q = t / Range;
-	int BranchToScale = (int)Q; // index of the branch (in the current depth) we are scaling
-	float BranchScaleFactor = fract(Q);
+	u32 P = ( _end - _start); // number of branches (cylinder)
+	f32 Range = 1.0f / P; // range of time (0..1) we have to draw each branch (cylinder) in
+	f32 t = currentScale; // time
+	f32 Q = t / Range;
+	u32 BranchToScale = (u32)Q; // index of the branch (in the current depth) we are scaling
+	f32 BranchScaleFactor = fract(Q);
 	scaleMatrix = Mat44::BuildScaleMatrix(1, BranchScaleFactor, 1);
 
 	for(u32 i = _start; i < (_start+BranchToScale); ++i) // non scaled branch

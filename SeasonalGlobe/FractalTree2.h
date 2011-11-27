@@ -68,7 +68,7 @@ public: // change to private!!!
 	// and levels vector
 	void CalculateTreeDepth();
 
-	float currentScale; // used to make branches grow, update by dt, range 0<=currentScale<=1
+	f32 currentScale; // used to make branches grow, update by dt, range 0<=currentScale<=1
 
 	i32 AnimationLevel; // which level of the tree are we drawing?
 
@@ -83,12 +83,12 @@ public: // change to private!!!
 		}
 		currentScale += dt;
 
-		if(AnimationLevel >= levels.size())
+		if((u32)AnimationLevel >= levels.size())
 			AnimationLevel = 0;
 	};
 
 public:
-	int drawLevel;
+	u32 drawLevel;
 
 	// Constructors / Destructors
 	FractalTree2();
