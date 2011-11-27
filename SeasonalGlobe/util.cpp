@@ -77,3 +77,8 @@ f32 RADTODEG(f32 rads)
 {
 	return (rads * (180.0f / PI));
 };
+
+float fract(float c)
+{
+	return (c - floor(c));
+};

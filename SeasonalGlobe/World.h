@@ -30,7 +30,6 @@ private:
 	TerrainDisk *terrain;
 	
 	FractalTree *tree;
-	FractalTree2 *tree2;
 	
 	std::vector<Model*> models;
 
@@ -40,6 +39,7 @@ private:
 	float3 sceneRotationAxis;
 
 public:
+	FractalTree2 *tree2;
 
 	// Temporary Camera Variables (Code from RealTime Graphics module tutorials)
 	f32 _cameraAngle;

@@ -8,13 +8,13 @@ GLuint textures[2];
 World::World(void)
 {
 	_cameraAngle = 30.0f;
-	_cameraPosition = -15.0f;
-	_cameraRotation = 0.0f;
+	_cameraPosition = -3.8500025;
+	_cameraRotation = -232.0f;
 
 	terrainPolyMode = GL_FILL;
 
 	sceneRotationAxis.set(0, 1, 0);
-	AutoRotate = true;
+	AutoRotate = false;
 }
 
 World::~World(void)
@@ -66,12 +66,15 @@ bool World::Load()
 	tree2->SetBranchRadius(1.0f);
 	tree2->SetBranchRadiusReduction(0.1f);
 	tree2->SetBranchLength(0.6f);
-	tree2->SetBranchRotationAngles(25);
+	tree2->SetBranchRotationAngles(30);
 	//tree2->SetInitialString("FFF[A][^^^^^^A]");
-	tree2->SetInitialString("FF");
-	tree2->AddProductionRule('A', "F[++A][--A]>>>A");
-	tree2->SetGenerations(4);
+	//tree2->SetInitialString("FA");
+	tree2->SetInitialString("FF+F");
+	tree2->AddProductionRule('A', "F[^B][^^^^^^^B]");
+	tree2->AddProductionRule('B', "F^[-B]^B");
+	tree2->SetGenerations(8);
 	tree2->BuildTree(false);
+	tree2->drawLevel = 0;
 	//tree2->Draw();
 
 	/*if(_phongShader.Init())
@@ -131,7 +134,7 @@ void World::Draw(const GameTime &gameTime)
 	glPushMatrix();
 	tree2->GetBranchModel().SetDrawMode(terrainPolyMode);
 	barkTexture->Activate();
-	tree2->Draw();
+	tree2->Draw(gameTime.GetDeltaTime() / 2.0f);
 	barkTexture->Deactivate();
 	glPopMatrix();
 

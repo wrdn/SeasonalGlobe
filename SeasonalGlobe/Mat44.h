@@ -99,6 +99,9 @@ public:
 
 	static Mat44 BuildRotationMatrix(f32 angle_in_degrees, f32 x, f32 y, f32 z);
 	static Mat44 BuildScaleMatrix(f32 xscale, f32 yscale, f32 zscale);
+
+	// modifies only the elements for the scale matrix (assumes rest is identity)
+	static void BuildScaleMatrix(f32 xscale, f32 yscale, f32 zscale, Mat44 &out);
 };
 
 std::ostream& operator<<(std::ostream &out, Mat44 &m);

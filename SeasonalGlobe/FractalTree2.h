@@ -8,7 +8,7 @@
 // * 
 class FractalTree2
 {
-private:
+public: // change to private!!!
 	enum SYMBOL_SET
 	{
 		MOVE_FORWARD = 'F',
@@ -68,7 +68,28 @@ private:
 	// and levels vector
 	void CalculateTreeDepth();
 
+	float currentScale; // used to make branches grow, update by dt, range 0<=currentScale<=1
+
+	i32 AnimationLevel; // which level of the tree are we drawing?
+
+	// used to update currentScale (0...1) and update the animation level 
+	// of the tree if neccessary
+	void CalculateAnimationLevel(float dt)
+	{
+		if( (currentScale+dt) > 1.0f )
+		{
+			++AnimationLevel;
+			currentScale = 0;
+		}
+		currentScale += dt;
+
+		if(AnimationLevel >= levels.size())
+			AnimationLevel = 0;
+	};
+
 public:
+	int drawLevel;
+
 	// Constructors / Destructors
 	FractalTree2();
 	~FractalTree2();
@@ -83,7 +104,7 @@ public:
 	// (i.e. the matrix at the top of the stack when 'F' is encountered)
 	void BuildTree(bool dbg_writeMatricesToFile);
 
-	void Draw();
+	void Draw(float dt);
 
 	#pragma region Accessors and Mutators
 	Cylinder& GetBranchModel() { return gbranch; };

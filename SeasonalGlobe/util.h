@@ -32,4 +32,6 @@ unsigned long hash_djb2(uc8 *str);
 f32 DEGTORAD(f32 degs);
 f32 RADTODEG(f32 rads);
 
+float fract(float c);
+
 #endif

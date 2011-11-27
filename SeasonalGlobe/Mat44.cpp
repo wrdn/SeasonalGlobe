@@ -536,3 +536,10 @@ Mat44 Mat44::BuildScaleMatrix(f32 xscale, f32 yscale, f32 zscale)
 		0,       0,       zscale,  0,
 		0,       0,       0,       1);
 };
+
+void Mat44::BuildScaleMatrix(f32 xscale, f32 yscale, f32 zscale, Mat44 &out)
+{
+	out.mat[m11] = xscale;
+	out.mat[m22] = yscale;
+	out.mat[m33] = zscale;
+};
