@@ -155,12 +155,12 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		case 'q':
 			{
 				if(!down)
-					scn.tree2->drawLevel = max(0, scn.tree2->drawLevel-1);
+					scn.tree2->SetDrawLevel(scn.tree2->GetDrawLevel()-1);
 			} break;
 		case 'w':
 			{
 				if(!down)
-					scn.tree2->drawLevel = min(scn.tree2->drawLevel+1, scn.tree2->levels.size()-1);
+					scn.tree2->SetDrawLevel(scn.tree2->GetDrawLevel()+1);
 			} break;
 	}
 };

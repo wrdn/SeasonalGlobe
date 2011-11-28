@@ -3,7 +3,6 @@
 #include <fstream>
 #include <iostream>
 using namespace std;
-//#pragma warning( disable : 4482 )
 
 FractalTree2::FractalTree2() : transformationMatrices(0), transformationMatricesArraySize(0),
 	branchRadius(_GetDefaultBranchRadius()), branchRadiusReduction(_GetDefaultBranchRadiusReduction()),
@@ -70,26 +69,39 @@ void FractalTree2::CalculateTreeDepth()
 {
 	// matrix count at each 'depth' in the tree, max depth is matrixCounts.size()
 	std::vector<u32> matrixCounts;
-	u32 currentDepth = 0;
+	std::vector<BranchSegment> segments;
+	u32 currentDepth = 0, i=0;
 
 	for( std::string::const_iterator it = lsysTree.GetEvaluatedString().begin();
-		it < lsysTree.GetEvaluatedString().end(); ++it)
+		it < lsysTree.GetEvaluatedString().end(); ++it, ++i)
 	{
 		if(*it == MOVE_FORWARD)
 		{
+			// Update matrix count for current depth (push new counter if neccessary)
 			if(!matrixCounts.size())
-				matrixCounts.push_back(1);
-			else
-				++matrixCounts[currentDepth];
+				matrixCounts.push_back(0);
+			
+			++matrixCounts[currentDepth];
 		}
 		else if(*it == PUSH_MATRIX_STACK)
 		{
-			if((currentDepth+1) >= matrixCounts.size())
-				matrixCounts.push_back(0);
+			// Update depth and push another matrix counter if neccessary
 			++currentDepth;
+			if(currentDepth >= matrixCounts.size())
+				matrixCounts.push_back(0);
+
+			if(currentDepth > treeBranchSegments.size())
+				treeBranchSegments.push_back(BranchDepth());
+
+			BranchSegment seg;
+			seg._startPos = matrixCounts[currentDepth];
+			
+			treeBranchSegments[currentDepth-1]._depth = currentDepth;
+			treeBranchSegments[currentDepth-1].segments.push_back(seg);
 		}
 		else if(*it == POP_MATRIX_STACK)
 		{
+			treeBranchSegments[currentDepth-1].segments.back()._endPos = matrixCounts[currentDepth];
 			--currentDepth;
 		}
 	}

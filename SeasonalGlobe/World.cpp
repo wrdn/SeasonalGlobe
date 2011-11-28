@@ -71,6 +71,9 @@ bool World::Load()
 	tree2->AddProductionRule('B', "F^[-B]^B");
 
 	tree2->SetGenerations(8);
+
+	tree2->SetInitialString("FF[FF]");
+
 	tree2->BuildTree(false);
 	tree2->drawLevel = 0;
 

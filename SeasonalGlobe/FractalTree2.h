@@ -8,7 +8,7 @@
 // * 
 class FractalTree2
 {
-public: // change to private!!!
+private:
 	enum SYMBOL_SET
 	{
 		MOVE_FORWARD = 'F',
@@ -27,6 +27,26 @@ public: // change to private!!!
 		DownY = 3, LeftZ = 4, RightZ = 5,
 	};
 	
+	// BranchSegment and BranchDepth hold information about where each set of matrices (for branches)
+	// starts and ends. A branch segment starts at "[" and ends at the corresponding "]". Note however
+	// a level of the tree (BranchDepth) can contain multiple segments.
+	// These structures are required so we can grow the tree properly
+	struct BranchSegment
+	{
+		u32 _startPos; // first matrix in the segment
+		u32 _endPos; // last matrix in the segment
+
+		BranchSegment() : _startPos(0), _endPos(0) { };
+		~BranchSegment() { };
+	};
+	struct BranchDepth
+	{
+		u32 _depth;
+		std::vector<BranchSegment> segments;
+
+		BranchDepth() : _depth(0) { };
+	};
+
 	static const u32 DefaultAngle = 25;
 
 	#pragma region Class Members
@@ -52,6 +72,8 @@ public: // change to private!!!
 	// transformationMatrices[K]. For the last level, the indices are in
 	// transformationMatrices[levels.size()-1] to transformationMatricesArraySize-1
 	std::vector<u32> levels;
+
+	std::vector<BranchDepth> treeBranchSegments;
 
 	// Once we have built the tree, we can buildan array of matrices used
 	// to transform the cylinder into place. It is much cheaper to calculate
@@ -89,6 +111,9 @@ public: // change to private!!!
 
 public:
 	u32 drawLevel;
+
+	const u32 GetDrawLevel() const { return drawLevel; };
+	void SetDrawLevel(const u32 dl) { drawLevel = min(levels.size()-1, dl); };
 
 	// Constructors / Destructors
 	FractalTree2();
