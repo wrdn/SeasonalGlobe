@@ -69,8 +69,12 @@ void FractalTree2::CalculateTreeDepth()
 {
 	// matrix count at each 'depth' in the tree, max depth is matrixCounts.size()
 	std::vector<u32> matrixCounts;
-	std::vector<BranchSegment> segments;
 	u32 currentDepth = 0, i=0;
+
+	/*treeBranchSegments.push_back(BranchDepth());
+	treeBranchSegments.begin()->_depth = 0;
+	treeBranchSegments.begin()->segments.push_back(BranchSegment());
+	treeBranchSegments.begin()->segments.begin()->_startPos = 0;*/
 
 	for( std::string::const_iterator it = lsysTree.GetEvaluatedString().begin();
 		it < lsysTree.GetEvaluatedString().end(); ++it, ++i)
@@ -90,33 +94,56 @@ void FractalTree2::CalculateTreeDepth()
 			if(currentDepth >= matrixCounts.size())
 				matrixCounts.push_back(0);
 
-			if(currentDepth > treeBranchSegments.size())
+			/*if(currentDepth >= treeBranchSegments.size())
 				treeBranchSegments.push_back(BranchDepth());
 
 			BranchSegment seg;
 			seg._startPos = matrixCounts[currentDepth];
 			
-			treeBranchSegments[currentDepth-1]._depth = currentDepth;
-			treeBranchSegments[currentDepth-1].segments.push_back(seg);
+			treeBranchSegments[currentDepth]._depth = currentDepth;
+			treeBranchSegments[currentDepth].segments.push_back(seg);*/
 		}
 		else if(*it == POP_MATRIX_STACK)
 		{
-			treeBranchSegments[currentDepth-1].segments.back()._endPos = matrixCounts[currentDepth];
+			//treeBranchSegments[currentDepth].segments.back()._endPos = matrixCounts[currentDepth];
 			--currentDepth;
 		}
 	}
+	//treeBranchSegments.begin()->segments.begin()->_endPos = matrixCounts[0];
 
 	if(matrixCounts.size())
 	{
 		levels.push_back(0);
 		transformationMatricesArraySize = *matrixCounts.begin();
 
-		for(std::vector<u32>::const_iterator it = matrixCounts.begin()+1;
-			it < matrixCounts.end(); ++it)
+		for(std::vector<u32>::const_iterator it = matrixCounts.begin()+1; it < matrixCounts.end(); ++it)
 		{
 			levels.push_back(transformationMatricesArraySize);
 			transformationMatricesArraySize += *it; // sum matrix counts per level
 		}
+
+		/*
+		// Fix up the branch segment _startPos and _endPos
+		u32 T = 0; // current matrix array sz
+		u32 branchDepth=0;
+		for(std::vector<u32>::const_iterator it = matrixCounts.begin(); it < matrixCounts.end(); ++it, ++branchDepth)
+		{
+			BranchSegment &firstSegment = treeBranchSegments[branchDepth].segments[0];
+			u32 SegmentLengthSum = (firstSegment._endPos - firstSegment._startPos);
+			firstSegment._startPos = T;
+			firstSegment._endPos = T + SegmentLengthSum;
+
+			for(std::vector<BranchSegment>::iterator seg = treeBranchSegments[branchDepth].segments.begin()+1;
+				seg < treeBranchSegments[branchDepth].segments.end(); ++seg)
+			{
+				u32 segLen = seg->_endPos - seg->_startPos;
+				seg->_startPos = T + SegmentLengthSum;
+				seg->_endPos = seg->_startPos + segLen;
+
+			}
+			T += matrixCounts[branchDepth];
+		}
+		*/
 
 		if(transformationMatrices) { _aligned_free(transformationMatrices); }
 		transformationMatrices = (Mat44*)_aligned_malloc(
@@ -140,6 +167,9 @@ void FractalTree2::BuildTree(bool dbg_writeMatricesToFile)
 	// required to ensure we don't overwrite a previous matrix in that depth
 	std::vector<u32> MatricesCalculatedPerDepth(levels.size(), 0);
 	u32 currentDepth = 0;
+
+	treeBranchSegments.resize(levels.size(), BranchDepth(0));
+	for(u32 i=0;i<treeBranchSegments.size();++i) treeBranchSegments[i].depth = i;
 
 	ofstream out;
 	if(dbg_writeMatricesToFile) { out = ofstream("FractalTree2_BuildTree_Matrices.txt"); }
@@ -252,9 +282,13 @@ void FractalTree2::BuildTree(bool dbg_writeMatricesToFile)
 
 			Mat44 _m = matrixStack.top();
 			matrixStack.push(_m);
+
+			treeBranchSegments[currentDepth].segments.push_back(BranchSegment(levels[currentDepth] + MatricesCalculatedPerDepth[currentDepth], 0));
 		}
 		else if(*it == POP_MATRIX_STACK)
 		{
+			treeBranchSegments[currentDepth].segments.back().end = levels[currentDepth] + MatricesCalculatedPerDepth[currentDepth];
+
 			currentDepth = max(0, currentDepth-1);
 
 			matrixStack.pop();
@@ -274,12 +308,70 @@ void FractalTree2::BuildTree(bool dbg_writeMatricesToFile)
 	}
 	glPopMatrix();
 
+	treeBranchSegments[0].segments.push_back(BranchSegment(0, MatricesCalculatedPerDepth[0]));
+
 	if(dbg_writeMatricesToFile && out.is_open())
 		out.close();
 };
 
 void FractalTree2::Draw(float dt)
 {
+	// Branch Segment Drawing
+	{
+		stack<Mat44> matrixStack;
+		glMatrixMode(GL_MODELVIEW); glPushMatrix();
+		Mat44 ma; glPushMatrix(); glLoadIdentity();
+		glGetFloatv(GL_MODELVIEW_MATRIX, ma.GetMatrix());
+		matrixStack.push(ma); glPopMatrix();
+
+		// Render each branch level
+		for(std::vector<BranchDepth>::const_iterator bd = treeBranchSegments.begin(); bd != treeBranchSegments.end()-drawLevel; ++bd)
+		{
+			for(std::vector<BranchSegment>::const_iterator it = bd->segments.begin(); it != bd->segments.end(); ++it)
+			{
+				for(u32 i = it->start; i < it->end; ++i)
+				{
+					glMatrixMode(GL_MODELVIEW); glPushMatrix();
+					glMultMatrixf(matrixStack.top().GetMatrix());
+					glMatrixMode(GL_MODELVIEW); glPushMatrix();
+					glMultMatrixf(transformationMatrices[i].GetMatrix());
+					gbranch.Draw();
+					glPopMatrix();
+				}
+			}
+		}
+	}
+	return;
+
+	/*
+	// Normal static draw code (No Animation)
+	{
+		stack<Mat44> matrixStack;
+		Mat44 ma;
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		glGetFloatv(GL_MODELVIEW_MATRIX, ma.GetMatrix());
+		matrixStack.push(ma);
+		glPopMatrix();
+		for(u32 i=levels[0]; i <= transformationMatricesArraySize;++i)
+		{
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+			glMultMatrixf(matrixStack.top().GetMatrix());
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+			//glMultMatrixf(transformationMatrices[i].GetMatrix());
+			glMultMatrixf(transformationMatrices[i].GetMatrix());
+			gbranch.Draw();
+			glPopMatrix();
+		}
+	}
+	return;
+	*/
+
+	/*
+	// Animated Drawing (with no branch segments)
 	CalculateAnimationLevel(dt); // update scale and level of the tree we are animating
 
 	// Initialisation
@@ -288,21 +380,6 @@ void FractalTree2::Draw(float dt)
 	Mat44 ma; glPushMatrix(); glLoadIdentity();
 	glGetFloatv(GL_MODELVIEW_MATRIX, ma.GetMatrix());
 	matrixStack.push(ma); glPopMatrix();
-	
-	//u32 _end=0; // each level under animation level
-	//_end = levels[AnimationLevel];
-
-	// Draw each level below the animation level with a scale of 1.0 (No Scale)
-	/*for(u32 i = levels[0]; i < _end; ++i)
-	{
-		glMatrixMode(GL_MODELVIEW); glPushMatrix();
-		glMultMatrixf(matrixStack.top().GetMatrix());
-		glMatrixMode(GL_MODELVIEW); glPushMatrix();
-		glMultMatrixf(transformationMatrices[i].GetMatrix());
-		gbranch.Draw();
-		glPopMatrix();
-	}
-	*/
 
 	Mat44 scaleMatrix = Mat44::BuildScaleMatrix(currentScale, currentScale, currentScale);
 	u32 _start = 0;
@@ -335,55 +412,6 @@ void FractalTree2::Draw(float dt)
 	}
 
 	glPopMatrix();
-
 	return;
-
-	/*glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-
-	currentScale += dt;
-	Mat44 scaleMatrix = Mat44::BuildScaleMatrix(currentScale, currentScale, currentScale);
-
-	stack<Mat44> matrixStack;
-
-	Mat44 ma;
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glGetFloatv(GL_MODELVIEW_MATRIX, ma.GetMatrix());
-	matrixStack.push(ma);
-	glPopMatrix();
-
-	for(u32 i=levels[0]; i <= transformationMatricesArraySize;++i)
-	{
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glMultMatrixf(matrixStack.top().GetMatrix());
-
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		//glMultMatrixf(transformationMatrices[i].GetMatrix());
-		glMultMatrixf(transformationMatrices[i].Mult(scaleMatrix).GetMatrix());
-		gbranch.Draw();
-		glPopMatrix();
-	}*/
-
-	/*for(u32 i=0;i<transformationMatricesArraySize;++i)
-	{
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glMultMatrixf(matrixStack.top().GetMatrix());
-
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		//glMultMatrixf(transformationMatrices[i].GetMatrix());
-		glMultMatrixf(transformationMatrices[i].Mult(scaleMatrix).GetMatrix());
-		gbranch.Draw();
-		glPopMatrix();
-	}*/
-
-	/*glPopMatrix();
-
-	if(currentScale > 1.0f)
-		currentScale = 0.0f;*/
+	*/
 };

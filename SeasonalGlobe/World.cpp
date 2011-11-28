@@ -65,17 +65,18 @@ bool World::Load()
 	tree2->SetBranchRadiusReduction(0.1f);
 	tree2->SetBranchLength(0.6f);
 	tree2->SetBranchRotationAngles(30);
-	//tree2->SetInitialString("FFF[A][^^^^^^A]");
+	tree2->SetInitialString("FFF[A][^^^^^^A]");
+	//tree2->SetInitialString("FFF[A]");
 	tree2->SetInitialString("A");
 	tree2->AddProductionRule('A', "F[^B][^^^^^^^B]");
 	tree2->AddProductionRule('B', "F^[-B]^B");
 
 	tree2->SetGenerations(8);
 
-	tree2->SetInitialString("FF[FF]");
+	//tree2->SetInitialString("FF[+FF]");
 
 	tree2->BuildTree(false);
-	tree2->drawLevel = 0;
+	tree2->SetDrawLevel(0);
 
 	/*if(_phongShader.Init())
 	{
@@ -134,7 +135,7 @@ void World::Draw(const GameTime &gameTime)
 	glPushMatrix();
 	tree2->GetBranchModel().SetDrawMode(terrainPolyMode);
 	barkTexture->Activate();
-	tree2->Draw(gameTime.GetDeltaTime() * 0.005f);
+	tree2->Draw(gameTime.GetDeltaTime() * 0.2f);
 	barkTexture->Deactivate();
 	glPopMatrix();
 

@@ -33,18 +33,23 @@ private:
 	// These structures are required so we can grow the tree properly
 	struct BranchSegment
 	{
-		u32 _startPos; // first matrix in the segment
-		u32 _endPos; // last matrix in the segment
+		u32 start; // first matrix in the segment
+		u32 end; // last matrix in the segment
 
-		BranchSegment() : _startPos(0), _endPos(0) { };
+		BranchSegment() : start(0), end(0) { };
+		BranchSegment(u32 _start, u32 _end) : start(_start), end(_end) { };
+
 		~BranchSegment() { };
 	};
 	struct BranchDepth
 	{
-		u32 _depth;
+		u32 depth;
 		std::vector<BranchSegment> segments;
 
-		BranchDepth() : _depth(0) { };
+		BranchDepth() : depth(0) { };
+		BranchDepth(u32 _depth) : depth(_depth) { };
+
+		~BranchDepth() { };
 	};
 
 	static const u32 DefaultAngle = 25;
@@ -109,11 +114,17 @@ private:
 			AnimationLevel = 0;
 	};
 
-public:
 	u32 drawLevel;
 
+public:
 	const u32 GetDrawLevel() const { return drawLevel; };
-	void SetDrawLevel(const u32 dl) { drawLevel = min(levels.size()-1, dl); };
+	void SetDrawLevel(const i32 dl)
+	{
+		if(dl < 0)
+			drawLevel = 0;
+		else
+			drawLevel = min(treeBranchSegments.size()-1, (u32)dl);
+	};
 
 	// Constructors / Destructors
 	FractalTree2();
