@@ -24,7 +24,15 @@ OBJFile::~OBJFile()
 		}
 	}
 	catch(...) { }*/
-	SAFE_DELETE_ARRAY(models);
+	//SAFE_DELETE_ARRAY(models);
+
+	if(models)
+	{
+		for(u32 i=0;i<modelCount;++i)
+			delete models[i];
+		
+		delete [] models;
+	}
 };
 
 void OBJFile::Draw()

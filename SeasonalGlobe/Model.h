@@ -7,7 +7,7 @@
 #include "float3.h"
 #include <GXBase.h>
 
-#define BUFFER_OFFSET(i) ((c8 *)NULL + (i))
+const GLvoid* BUFFER_OFFSET(const u32 i);
 
 //! Constructor will ensure both vboids are set to 0 originally
 struct ModelVBO // 8 bytes
@@ -62,21 +62,42 @@ private:
 	u32 triangleDrawCount; // indices to use = triangleDrawCount * 3
 	GLenum drawMode;
 	TriangleDrawMethod triDrawMethod;
+
+	void DeepCopy(Model *dst) const
+	{
+		dst->mvbo = mvbo;
+		dst->vertexArraySize = vertexArraySize;
+		dst->indicesArraySize = indicesArraySize;
+		dst->triangleDrawCount = triangleDrawCount;
+		dst->drawMode = drawMode;
+		dst->triDrawMethod = triDrawMethod;
+
+		dst->vertexArray = new VERTEX[dst->vertexArraySize];
+		dst->indicesArray = new u32[dst->indicesArraySize];
+		memcpy(dst->vertexArray, vertexArray, sizeof(VERTEX) * dst->vertexArraySize);
+		memcpy(dst->indicesArray, indicesArray, sizeof(u32) * dst->indicesArraySize);
+	};
+
 public:
 	Model();
-	virtual ~Model()
+	virtual ~Model();
+
+	Model(Model const& other) // copy constructor
 	{
-		if(mvbo.modeldata_vboid)
-			glDeleteBuffers(1, &mvbo.modeldata_vboid);
-		if(mvbo.indices_vboid)
-			glDeleteBuffers(1, &mvbo.indices_vboid);
+		other.DeepCopy(this);
+	};
+	Model& operator= (Model const& other)
+	{
+		if(this != &other)
+		{
+			if(mvbo.modeldata_vboid) { glDeleteBuffers(1, &mvbo.modeldata_vboid); }
+			if(mvbo.indices_vboid) { glDeleteBuffers(1, &mvbo.indices_vboid); }
+			delete [] vertexArray;
+			delete [] indicesArray;
 
-		delete [] vertexArray;
-		delete [] indicesArray;
-
-		triangleDrawCount = 0;
-
-		mvbo.modeldata_vboid = mvbo.indices_vboid = 0;
+			other.DeepCopy(this);
+		}
+		return *this;
 	};
 
 	const ModelVBO& GetModelVBO() const { return mvbo; };

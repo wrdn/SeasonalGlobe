@@ -17,22 +17,6 @@ float4::float4()
 	zero();
 };
 
-float4::float4(const float3 &f)
-{
-	vec[0] = f.vec[0];
-	vec[1] = f.vec[1];
-	vec[2] = f.vec[2];
-	vec[3] = 0;
-};
-
-float4::float4(const float3 &f, const f32 w)
-{
-	vec[0] = f.vec[0];
-	vec[1] = f.vec[1];
-	vec[2] = f.vec[2];
-	vec[3] = w;
-};
-
 float4::float4(const f32 v)
 {
 	setall(v);
@@ -220,7 +204,7 @@ float4 float4::absolute() const
 	return float4(fabs(vec[0]), fabs(vec[1]), fabs(vec[2]), fabs(vec[3]));
 };
 
-float4 operator-(float4 &v) { return v.negate(); };
+float4 operator-(const float4 &v) { return v.negate(); };
 
 float4 operator+(const float4 &a, const float4 &b) { return a.add(b); };
 float4 operator-(const float4 &a, const float4 &b) { return a.sub(b); };
@@ -250,9 +234,10 @@ void operator/=(float4 &a, const f32 &b) { a = a.div(b); };
 float4 operator^(const float4 &a, const float4 &b) { return a.cross(b); };
 void operator^=(float4 &a, const float4 &b) { a = a.cross(b); };
 
-std::ostream& operator<<(std::ostream &out, float4 &m)
+std::ostream& operator<<(std::ostream &out, const float4 &m)
 {
-	std::cout << "{" << m.vec[0] << "," << m.vec[1] << "," << m.vec[2] << "," << m.vec[3] << "}";
+	f32 * vec = m.GetVec();
+	std::cout << "{" << vec[0] << "," << vec[1] << "," << vec[2] << "," << vec[3] << "}";
 	return out;
 };
 

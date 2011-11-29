@@ -109,7 +109,7 @@ std::ostream& operator<<(std::ostream &out, float2 &m)
 };
 
 // Auxiliary Functions (operator overloads)
-float2 operator-(float2 &v) { return v.negate(); };
+float2 operator-(const float2 &v) { return v.negate(); };
 
 float2 operator+(const float2 &a, const float2 &b) { return a.add(b); };
 float2 operator-(const float2 &a, const float2 &b) { return a.sub(b); };

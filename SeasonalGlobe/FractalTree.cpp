@@ -1,279 +1,387 @@
 #include "FractalTree.h"
-
+#include <stack>
 #include <fstream>
+#include <iostream>
 using namespace std;
 
-#pragma warning( disable : 4482 )
-
-const f32 FractalTree::DEFAULT_BRANCH_RADIUS = 0.2f;
-const f32 FractalTree::DEFAULT_BRANCH_RADIUS_REDUCTION = 0.005f;
-const f32 FractalTree::DEFAULT_BRANCH_LENGTH = 0.5f;
-const float3 FractalTree::DEFAULT_ROTATION_ANGLES = float3(25, 25, 25);
-
-FractalTree::FractalTree(void)
+FractalTree::FractalTree() : branchRadius(_GetDefaultBranchRadius()), branchRadiusReduction(_GetDefaultBranchRadiusReduction()),
+	branchLength(_GetDefaultBranchLength()), transformationMatricesArraySize(0), transformationMatrices(0), 
+	currentScale(0), lastTime(0), AnimationLevel(0), drawLevel(0), loop_growth(false)
 {
-	_branchModel = 0;
-}
-
-FractalTree::~FractalTree(void)
-{
-	delete _branchModel;
-}
-
-void FractalTree::Init()
-{
-	Init(DEFAULT_ROTATION_ANGLES, DEFAULT_BRANCH_RADIUS, DEFAULT_BRANCH_RADIUS_REDUCTION, DEFAULT_BRANCH_LENGTH);
+	rotationAngles[0] = rotationAngles[1] = rotationAngles[2] = DefaultAngle;
+	BuildRotationMatrices();
 };
 
-void FractalTree::Init(const float3 _branchRotationAngles, const f32 _branchRadius, 
-	const f32 _branchRadiusReduction, const f32 _branchLength)
+FractalTree::FractalTree(FractalTree const& t)
 {
-	SetBranchRotationAngles(_branchRotationAngles);
-	SetBranchRadius(_branchRadius);
-	SetBranchRadiusReduction(_branchRadiusReduction);
-	SetBranchLength(_branchLength);
+	t.DeepCopy(this);
 
-	delete _branchModel;
-	_branchModel = new Cylinder();
-	_branchModel->Create(0.05f, 0.05f, branchLength, 20, 20);
-};
-
-bool FractalTree::AddProductionRule(const c8 symbol, const std::string &replacement)
-{
-	return _lsystree.AddAxiom(symbol, replacement);
-};
-
-void FractalTree::EvaluateTreeLSystem()
-{
-	_lsystree.Evaluate();
-	_lsystree.ConvertEvaluatedStringToUpperCase();
-};
-
-void FractalTree::Draw(bool writeMatricesToFile)
-{
-	//glTranslatef(0, _branchModel.GetHeight()/2, 0);
-	//_branchModel.Draw();
-	//return;
-
-	// This code will be replaced (just testing the LSystem will actually work properly)
-	// Consider each element of the string, and act accordingly
-
-	ofstream out;
-	if(writeMatricesToFile)
+	if(transformationMatricesArraySize)
 	{
-		// each matrix used in MOVE_FORWARD is written to the file
-		out = ofstream("FractalTreeClass_Matrices.txt");
+		transformationMatrices = (Mat44*)_aligned_malloc(sizeof(Mat44) * transformationMatricesArraySize, 16);
+		memcpy(transformationMatrices, &t.transformationMatrices, sizeof(Mat44) * transformationMatricesArraySize);
 	}
+	else
+	{
+		transformationMatrices = 0;
+	}
+};
+
+void FractalTree::DeepCopy(const FractalTree *dstp) const
+{
+	FractalTree &dst = (FractalTree&)*dstp;
+
+	dst.lsysTree = lsysTree;
+
+	memcpy(dst.rotationMatrices, rotationMatrices, sizeof(Mat44) * 6);
+	memcpy(dst.rotationAngles, rotationAngles, sizeof(f32) * 3);
+
+	dst.branchRadius = branchRadius;
+	dst.branchRadiusReduction = branchRadiusReduction;
+	dst.branchLength = branchLength;
+	dst.gbranch = gbranch;
+	dst.levels = levels;
+	dst.treeBranchSegments = treeBranchSegments;
+	dst.transformationMatricesArraySize = transformationMatricesArraySize;
+
+	dst.currentScale = currentScale;
+	dst.lastTime = lastTime;
+	dst.AnimationLevel = AnimationLevel;
+	dst.drawLevel = drawLevel;
+	dst.loop_growth = loop_growth;
+};
+
+FractalTree::~FractalTree()
+{
+	if(transformationMatrices)
+		_aligned_free(transformationMatrices);
+};
+
+void FractalTree::Reset()
+{
+	delete [] transformationMatrices;
+	transformationMatrices = 0;
+	levels.clear();
+
+	lsysTree.ClearProductionRules();
+	lsysTree.SetLSystemGenerations(0);
+
+	branchRadius = _GetDefaultBranchRadius();
+	branchRadiusReduction = _GetDefaultBranchRadiusReduction();
+	branchLength = _GetDefaultBranchLength();
+
+	// default angle = 25 degrees
+	rotationAngles[0] = rotationAngles[1] = rotationAngles[2] = DefaultAngle;
+	BuildRotationMatrices();
+};
+
+bool FractalTree::AddProductionRule(const c8 axiom, const std::string &replacement)
+{
+	return lsysTree.AddAxiom(axiom, replacement);
+};
+
+void FractalTree::BuildRotationMatrices()
+{
+	// The matrices are already identity matrices, so we only 
+	// need to set individual elements
+
+	// X Rotation Matrix
+	f32 angle = rotationAngles[0];
+	rotationMatrices[LeftX] = Mat44::BuildRotationMatrix(-angle, 1, 0, 0);
+	rotationMatrices[RightX] = Mat44::BuildRotationMatrix(angle, 1, 0, 0);
+
+	// Y Rotation Matrix
+	angle = rotationAngles[1];
+	rotationMatrices[UpY] = Mat44::BuildRotationMatrix(angle, 0, 1, 0);
+	rotationMatrices[DownY] = Mat44::BuildRotationMatrix(-angle, 0, 1, 0);
+
+	// Z Rotation Matrix
+	angle = rotationAngles[2];
+	rotationMatrices[LeftZ] = Mat44::BuildRotationMatrix(angle, 0, 0, 1);
+	rotationMatrices[RightZ] = Mat44::BuildRotationMatrix(-angle, 0, 0, 1);
+};
+
+void FractalTree::CalculateTreeDepth()
+{
+	// matrix count at each 'depth' in the tree, max depth is matrixCounts.size()
+	std::vector<u32> matrixCounts;
+	u32 currentDepth = 0, i=0;
+
+	for( std::string::const_iterator it = lsysTree.GetEvaluatedString().begin();
+		it < lsysTree.GetEvaluatedString().end(); ++it, ++i)
+	{
+		if(*it == MOVE_FORWARD)
+		{
+			// Update matrix count for current depth (push new counter if neccessary)
+			if(!matrixCounts.size())
+				matrixCounts.push_back(0);
+			
+			++matrixCounts[currentDepth];
+		}
+		else if(*it == PUSH_MATRIX_STACK)
+		{
+			// Update depth and push another matrix counter if neccessary
+			++currentDepth;
+			if(currentDepth >= matrixCounts.size())
+				matrixCounts.push_back(0);
+		}
+		else if(*it == POP_MATRIX_STACK)
+		{
+			--currentDepth;
+		}
+	}
+
+	if(matrixCounts.size())
+	{
+		levels.push_back(0);
+		transformationMatricesArraySize = *matrixCounts.begin();
+
+		for(std::vector<u32>::const_iterator it = matrixCounts.begin()+1; it < matrixCounts.end(); ++it)
+		{
+			levels.push_back(transformationMatricesArraySize);
+			transformationMatricesArraySize += *it; // sum matrix counts per level
+		}
+
+		if(transformationMatrices) { _aligned_free(transformationMatrices); }
+		transformationMatrices = (Mat44*)_aligned_malloc(
+			transformationMatricesArraySize * sizeof(Mat44), 16);
+		
+		// Set each matrix to the identity matrix
+		for(u32 i=0;i<transformationMatricesArraySize;++i)
+			transformationMatrices[i].Identity();
+	}
+};
+
+void FractalTree::BuildTree()
+{
+	if(!gbranch.Valid())
+		gbranch.Create(0.05f, 0.05f, branchLength, 7,7);
+
+	lsysTree.Evaluate();
+	CalculateTreeDepth();
+
+	// used to hold the count (per depth) of matrices calculated so far
+	// required to ensure we don't overwrite a previous matrix in that depth
+	std::vector<u32> MatricesCalculatedPerDepth(levels.size(), 0);
+	u32 currentDepth = 0;
+
+	treeBranchSegments.resize(levels.size(), BranchDepth(0));
+	for(u32 i=0;i<treeBranchSegments.size();++i) treeBranchSegments[i].depth = i;
 
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
-	InitMatrixStack();
 
-	f32 _radius = branchRadius;
+	// create and initialise matrix stack
+	stack<Mat44> matrixStack;
+	Mat44 ma;
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+	glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)ma.GetMatrix());
+	matrixStack.push(ma);
+	glPopMatrix();
 
-	for( u32 i = 0; i < _lsystree.GetEvaluatedString().length(); ++i )
+	for( string::const_iterator it = lsysTree.GetEvaluatedString().begin();
+		it < lsysTree.GetEvaluatedString().end(); ++it)
 	{
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
-
 		glMultMatrixf(matrixStack.top().GetMatrix());
 
-		c8 symbol = _lsystree.GetEvaluatedString()[i];
-
-		switch(symbol)
+		if(*it == MOVE_FORWARD)
 		{
-		case MOVE_FORWARD:
-			{
-				if(writeMatricesToFile)
-				{
-					out << matrixStack.top() << endl;
-				}
+			// Grab matrix and store in valid location for currentDepth then
+			// translate matrix stack top
+			transformationMatrices[levels[currentDepth] + MatricesCalculatedPerDepth[currentDepth]] = matrixStack.top();
+			++MatricesCalculatedPerDepth[currentDepth];
 
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+			glLoadIdentity();
+			glMultMatrixf(matrixStack.top().GetMatrix());
+			glTranslatef(0, branchLength, 0);
+			glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)matrixStack.top().GetMatrix());
+			glPopMatrix();
+		}
+		else if(*it == ROTATE_LEFT_X)
+		{
+			// Perform rotation as normal
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+			glLoadIdentity();
+			glMultMatrixf(matrixStack.top().GetMatrix());
+			glMultMatrixf(rotationMatrices[LeftX].GetMatrix());
+			glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)matrixStack.top().GetMatrix());
+			glPopMatrix();
+		}
+		else if(*it == ROTATE_RIGHT_X)
+		{
+			// Perform rotation as normal
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+			glLoadIdentity();
+			glMultMatrixf(matrixStack.top().GetMatrix());
+			glMultMatrixf(rotationMatrices[RightX].GetMatrix());
+			glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)matrixStack.top().GetMatrix());
+			glPopMatrix();
+		}
+		else if(*it == ROTATE_UP_Y)
+		{
+			// Perform rotation as normal
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+			glLoadIdentity();
+			glMultMatrixf(matrixStack.top().GetMatrix());
+			glMultMatrixf(rotationMatrices[UpY].GetMatrix());
+			glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)matrixStack.top().GetMatrix());
+			glPopMatrix();
+		}
+		else if(*it == ROTATE_DOWN_Y)
+		{
+			// Perform rotation as normal
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+			glLoadIdentity();
+			glMultMatrixf(matrixStack.top().GetMatrix());
+			glMultMatrixf(rotationMatrices[DownY].GetMatrix());
+			glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)matrixStack.top().GetMatrix());
+			glPopMatrix();
+		}
+		else if(*it == ROTATE_LEFT_Z)
+		{
+			// Perform rotation as normal
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+			glLoadIdentity();
+			glMultMatrixf(matrixStack.top().GetMatrix());
+			glMultMatrixf(rotationMatrices[LeftZ].GetMatrix());
+			glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)matrixStack.top().GetMatrix());
+			glPopMatrix();
+		}
+		else if(*it == ROTATE_RIGHT_Z)
+		{
+			// Perform rotation as normal
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+			glLoadIdentity();
+			glMultMatrixf(matrixStack.top().GetMatrix());
+			glMultMatrixf(rotationMatrices[RightZ].GetMatrix());
+			glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)matrixStack.top().GetMatrix());
+			glPopMatrix();
+		}
+		else if(*it == PUSH_MATRIX_STACK)
+		{
+			currentDepth = min(levels.size(), currentDepth+1);
+
+			Mat44 _m = matrixStack.top();
+			matrixStack.push(_m);
+
+			treeBranchSegments[currentDepth].segments.push_back(BranchSegment(levels[currentDepth] + MatricesCalculatedPerDepth[currentDepth], 0));
+		}
+		else if(*it == POP_MATRIX_STACK)
+		{
+			treeBranchSegments[currentDepth].segments.back().end = levels[currentDepth] + MatricesCalculatedPerDepth[currentDepth];
+
+			currentDepth = max(0, currentDepth-1);
+
+			matrixStack.pop();
+			if(matrixStack.empty()) // reinitialise stack if empty
+			{
+				Mat44 ma;
 				glMatrixMode(GL_MODELVIEW);
 				glPushMatrix();
-				glScalef(_radius, _radius, _radius);
-				_branchModel->Draw();
-				//_radius -= branchRadiusReduction;
+				glLoadIdentity();
+				glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)ma.GetMatrix());
+				matrixStack.push(ma);
 				glPopMatrix();
-
-				Translate(0, branchLength, 0);
-			} break;
-		case ROTATE_LEFT_X:
-			{
-				Rotate(branchRotationAngles.x(), 1,0,0);
-			} break;
-		case ROTATE_RIGHT_X:
-			{
-				Rotate(-branchRotationAngles.x(), 1,0,0);
-			} break;
-		case ROTATE_UP_Y:
-			{
-				Rotate(branchRotationAngles.y(), 0, 1, 0);
-			} break;
-		case ROTATE_DOWN_Y:
-			{
-				Rotate(-branchRotationAngles.y(), 0, 1, 0);
-			} break;
-		case ROTATE_LEFT_Z:
-			{
-				Rotate(branchRotationAngles.z(), 0, 0, 1);
-			} break;
-		case ROTATE_RIGHT_Z:
-			{
-				Rotate(-branchRotationAngles.z(), 0, 0, 1);
-			} break;
-		case PUSH_MATRIX_STACK:
-			{
-				PushStack();
-			} break;
-		case POP_MATRIX_STACK:
-			{
-				PopStack();
-			} break;
+			}
 		}
 
 		glPopMatrix();
 	}
 	glPopMatrix();
 
-	if(writeMatricesToFile && out.is_open())
-		out.close();
+	treeBranchSegments[0].segments.push_back(BranchSegment(0, MatricesCalculatedPerDepth[0]));
 };
 
-void FractalTree::Reset()
-{
-	_lsystree.ClearProductionRules();
-};
-
-void FractalTree::BuildXRotationMatrices()
-{
-	f32 *LeftMatrix = rotationMatrices[RotationMatrixIndex::LeftX].GetMatrix();
-	f32 *RightMatrix = rotationMatrices[RotationMatrixIndex::RightX].GetMatrix();
-
-	f32 angle = branchRotationAngles.x();
-	LeftMatrix[m22] = cos(angle);
-	LeftMatrix[m23] = -sin(angle);
-	LeftMatrix[m32] = sin(angle);
-	LeftMatrix[m33] = cos(angle);
-
-	angle = -angle;
-	RightMatrix[m22] = cos(angle);
-	RightMatrix[m23] = -sin(angle);
-	RightMatrix[m32] = sin(angle);
-	RightMatrix[m33] = cos(angle);
-};
-void FractalTree::BuildYRotationMatrices()
-{
-	f32 *UpMatrix = rotationMatrices[RotationMatrixIndex::UpY].GetMatrix();
-	f32 *DownMatrix = rotationMatrices[RotationMatrixIndex::DownY].GetMatrix();
-
-	f32 angle = branchRotationAngles.y();
-	UpMatrix[m11] = cos(angle);
-	UpMatrix[m13] = sin(angle);
-	UpMatrix[m31] = -sin(angle);
-	UpMatrix[m33] = cos(angle);
-
-	angle = -angle;
-	DownMatrix[m11] = cos(angle);
-	DownMatrix[m13] = sin(angle);
-	DownMatrix[m31] = -sin(angle);
-	DownMatrix[m33] = cos(angle);
-};
-void FractalTree::BuildZRotationMatrices()
-{
-	f32 *LeftMatrix = rotationMatrices[RotationMatrixIndex::LeftZ].GetMatrix();
-	f32 *RightMatrix = rotationMatrices[RotationMatrixIndex::RightZ].GetMatrix();
-
-	f32 angle = branchRotationAngles.z();
-	LeftMatrix[m11] = cos(angle);
-	LeftMatrix[m12] = -sin(angle);
-	LeftMatrix[m21] = sin(angle);
-	LeftMatrix[m22] = cos(angle);
-
-	angle = -angle;
-	RightMatrix[m11] = cos(angle);
-	RightMatrix[m12] = -sin(angle);
-	RightMatrix[m21] = sin(angle);
-	RightMatrix[m22] = cos(angle);
-};
-void FractalTree::BuildAllRotationMatrices()
-{
-	BuildXRotationMatrices();
-	BuildYRotationMatrices();
-	BuildZRotationMatrices();
-};
-
-// Accessors and Mutators
-Cylinder& FractalTree::GetBranchModel() { return *_branchModel; };
-
-void FractalTree::SetGenerations(const u32 generations) { _lsystree.SetLSystemGenerations(generations); };
-const u32 FractalTree::GetGenerations() const { return _lsystree.GetLSystemGenerations(); };
-
-void FractalTree::SetInitialString(const std::string &initString) { _lsystree.SetStartingAxiom(initString); };
-const std::string FractalTree::GetInitialString() const { return _lsystree.GetStartingAxiom(); };
-
-const float3& FractalTree::GetBranchRotationAngles() const { return branchRotationAngles; };
-void FractalTree::SetBranchRotationAngles(const float3 &rotationAngles)
-{
-	branchRotationAngles = rotationAngles;
-	BuildAllRotationMatrices();
-};
-
-const f32 FractalTree::GetBranchRadius() const { return branchRadius; };
-void FractalTree::SetBranchRadius(const f32 radius) { branchRadius = radius; };
-
-const f32 FractalTree::GetBranchRadiusReduction() const { return branchRadiusReduction; };
-void FractalTree::SetBranchRadiusReduction(const f32 radiusReduction) { branchRadiusReduction = radiusReduction; };
-
-const f32 FractalTree::GetBranchLength() const { return branchLength; };
-void FractalTree::SetBranchLength(const f32 length) { branchLength = length; };
-
-
-void FractalTree::InitMatrixStack()
-{
-	matrixStack = stack<Mat44>();
-	Mat44 mat;
-
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glGetFloatv(GL_MODELVIEW_MATRIX, mat.GetMatrix());
-	glPopMatrix();
-
-	matrixStack.push(mat);
-};
-
-void FractalTree::PopStack()
-{
-	matrixStack.pop();
-
-	if(matrixStack.empty())
-		InitMatrixStack();
-};
-
-void FractalTree::PushStack()
-{
-	Mat44 _m = matrixStack.top();
-	matrixStack.push(_m);
-};
-
-void FractalTree::Rotate(float angle, float x, float y, float z)
+void FractalTree::DrawBranch(const Mat44 &transformationMatrix, const Mat44 &scaleMatrix)
 {
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
-	glLoadIdentity();
-	glMultMatrixf(matrixStack.top().GetMatrix());
-	glRotatef(angle, x,y,z);
-	glGetFloatv(GL_MODELVIEW_MATRIX, matrixStack.top().GetMatrix());
+	glMultMatrixf(scaleMatrix.Mult(transformationMatrix).GetMatrix());
+	gbranch.Draw();
 	glPopMatrix();
 };
-void FractalTree::Translate(float tx, float ty, float tz)
+void FractalTree::DrawBranch(const Mat44 &transformationMatrix)
 {
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
-	glLoadIdentity();
-	glMultMatrixf(matrixStack.top().GetMatrix());
-	glTranslatef(tx, ty, tz);
-	glGetFloatv(GL_MODELVIEW_MATRIX, matrixStack.top().GetMatrix());
+	glMultMatrixf(((Mat44&)transformationMatrix).GetMatrix());
+	gbranch.Draw();
 	glPopMatrix();
+};
+
+void FractalTree::Draw(const float dt)
+{
+	stack<Mat44> matrixStack;
+	glMatrixMode(GL_MODELVIEW); glPushMatrix();
+	Mat44 ma; glPushMatrix(); glLoadIdentity();
+	glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)ma.GetMatrix());
+	matrixStack.push(ma); glPopMatrix();
+
+	if(AnimationLevel < 0)
+	{
+		for(u32 i=0; i < transformationMatricesArraySize; ++i)
+		{
+			DrawBranch(transformationMatrices[i]);
+		}
+		return;
+	}
+
+	for(u32 i=0; i < levels[AnimationLevel]; ++i)
+	{
+		DrawBranch(transformationMatrices[i]);
+	}
+
+	currentScale += dt;
+	if(currentScale >= 1.0f)
+	{
+		AnimationLevel++;
+		if((u32)AnimationLevel >= levels.size())
+		{
+			if(loop_growth)
+			{
+				AnimationLevel = 0;
+			}
+			else
+			{
+				AnimationLevel = -1;
+				return;
+			}
+		}
+
+		currentScale=0;
+	}
+
+	for(u32 i = 0; i < treeBranchSegments[AnimationLevel].segments.size(); ++i)
+	{
+		f32 t = currentScale;
+
+		BranchSegment &seg = treeBranchSegments[AnimationLevel].segments[i];
+
+		f32 timetb=3; // time to build each segment
+		f32 rate = 1.0f / timetb;
+		t += dt * rate;
+		if(t>=1.0f) t=0;
+
+		u32 len = seg.end - seg.start;
+		f32 K = lerp(0, (f32)len, t);
+		u32 branchToDisplay = (u32)K;
+
+		for(u32 i=seg.start;i<seg.start+branchToDisplay;++i)
+			DrawBranch(transformationMatrices[i]);
+
+		Mat44 scaleMatrix = Mat44::BuildScaleMatrix(1, fract(K), 1);
+		DrawBranch(transformationMatrices[seg.start+branchToDisplay], scaleMatrix);
+	}
 };

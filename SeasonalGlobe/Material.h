@@ -9,6 +9,9 @@ private:
 	u32 ka, kd, ks, ke;
 	
 public:
+	Material() : ka(0), kd(0), ks(0), ke(0) { };
+	~Material() { };
+
 	const u32 GetAmbientInteger() const;
 	const u32 GetDiffuseInteger() const;
 	const u32 GetSpecularInteger() const;

@@ -6,8 +6,11 @@
 class float4;
 class float3
 {
-public:
+private:
 	f32 vec[3];
+
+public:
+	f32 * GetVec() const { return (f32*)vec; };
 
 	static const float3 ZERO;
 	static const float3 ONE;
@@ -39,10 +42,9 @@ public:
 
 	~float3();
 	float3(); // sets all to 0
-	float3(const f32 v);
+	explicit float3(const f32 v);
 	float3(const f32 _x, f32 _y, f32 _z);
-	float3(const f32 * v);
-	float3(const float4 &f);
+	explicit float3(const f32 * v);
 
 	float4 ToFloat4() const;
 
@@ -106,4 +108,4 @@ void operator/=(float3 &a, const f32 &b);
 float3 operator^(const float3 &a, const float3 &b);
 void operator^=(float3 &a, const float3 &b);
 
-std::ostream& operator<<(std::ostream &out, float3 &m);
+std::ostream& operator<<(std::ostream &out, const float3 &m);

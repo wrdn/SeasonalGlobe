@@ -13,6 +13,11 @@ class OBJFile
 private:
 	Model **models;
 	u32 modelCount;
+
+	// No copying
+	OBJFile(OBJFile const& other);
+	OBJFile& operator= (OBJFile const& other);
+
 public:
 	OBJFile();
 	~OBJFile();
@@ -21,7 +26,7 @@ public:
 	
 	bool ParseOBJFile(const std::vector<c8*> &objFile);
 
-	const Model* GetModels() { return *models; }
+	const Model* GetModels() const { return *models; }
 
 	void Draw();
 

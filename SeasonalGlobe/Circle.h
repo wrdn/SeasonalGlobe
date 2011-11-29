@@ -9,7 +9,7 @@ public:
 	f32 radius;
 
 	Circle() : pos(), radius(0) { };
-	Circle(const float2 _pos, const f32 _radius)
+	Circle(const float2 &_pos, const f32 &_radius)
 		: pos(_pos), radius(_radius)
 	{ };
 };

@@ -30,8 +30,8 @@ public:
 	void SetActive(bool _isActive);
 
 	// Each emitter (typically very few will exist) can update and draw itself
-	void Update(f32 dt);
-	void Render();
+	void Update(f32 dt) const;
+	void Draw() const;
 
 private:
 	Particle _particles[ParticleEmitter::MAX_PARTICLES]; // each particle emitter has a maximum
@@ -60,8 +60,8 @@ public:
 	ParticleSystem();
 	~ParticleSystem();
 
-	void Update(const f32 dt); // loops over the emitters and updates each
-	void Render() const; // loops over the emitters and renders each
+	void Update(const f32 dt) const; // loops over the emitters and updates each
+	void Draw() const; // loops over the emitters and renders each
 
 	const bool IsActive() const;
 	void SetActive(bool _isActive); // enable/disable system

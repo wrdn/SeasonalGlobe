@@ -23,4 +23,3 @@ public:
 	const u32 GetSlices() const { return slices; };
 	const u32 GetStacks() const { return stacks; };
 };
-

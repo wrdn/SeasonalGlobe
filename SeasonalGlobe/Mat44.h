@@ -37,10 +37,10 @@ class Mat44
 {
 private:
 	static const c8 MATRIX_ELEMENT_COUNT = 16;
-	ALIGN(16) f32 mat[Mat44::MATRIX_ELEMENT_COUNT];
+	__declspec(align(16)) f32 mat[Mat44::MATRIX_ELEMENT_COUNT];
 
-	void Cramers_Inverse(Mat44 *out, f32 &det) const;
-	void Cramers_Inverse_SSE(Mat44 *out, f32 &det) const;
+	void Cramers_Inverse(const Mat44 *out, f32 &det) const;
+	void Cramers_Inverse_SSE(const Mat44 *out, f32 &det) const;
 
 	/*
 	[ 0  1  2  3]
@@ -55,8 +55,8 @@ private:
 	*/
 public:
 	Mat44(void);
-	Mat44(const f32* _mat); // use existing FP array to initialise the matrix
-	Mat44(
+	explicit Mat44(const f32* _mat); // use existing FP array to initialise the matrix
+	explicit Mat44(
 		const f32 m11, const f32 m12, const f32 m13, const f32 m14,
 		const f32 m21, const f32 m22, const f32 m23, const f32 m24,
 		const f32 m31, const f32 m32, const f32 m33, const f32 m34,
@@ -65,15 +65,15 @@ public:
 
 	static const Mat44 IDENTITY;
 
-	f32* GetMatrix();
-	void SetMatrix(const f32* _mat);
+	const f32* GetMatrix() const;
+	void SetMatrix(const f32* _mat) const;
 
 	void SetMatrix(const f32 m11, const f32 m12, const f32 m13, const f32 m14,
 	const f32 m21, const f32 m22, const f32 m23, const f32 m24,
 	const f32 m31, const f32 m32, const f32 m33, const f32 m34,
 	const f32 m41, const f32 m42, const f32 m43, const f32 m44);
 
-	void Identity(); // sets this matrix back to the identity matrix (Mat44::IDENTITY)
+	void Identity() const; // sets this matrix back to the identity matrix (Mat44::IDENTITY)
 
 	Mat44 Add(const Mat44 &m) const; // standard matrix addition
 	Mat44 Add(const f32 v) const; // adds v to each matrix element

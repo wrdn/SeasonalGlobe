@@ -2,7 +2,7 @@
 #include "util.h"
 #include <math.h>
 
-Floor::Floor(void) : slices(0), radius(0)
+Floor::Floor(void) : radius(0), slices(0)
 {
 }
 

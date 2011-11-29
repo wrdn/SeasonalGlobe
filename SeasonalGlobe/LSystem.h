@@ -30,7 +30,7 @@ public:
     ~LSystem();
 
     // fails if axiom 'c' already exists
-    bool AddAxiom(c8 c, std::string str);
+    bool AddAxiom(c8 c, const std::string &str);
 
     // clears productionRules dictionary (essentially resetting the LSystem)
     void ClearProductionRules();
@@ -45,7 +45,7 @@ public:
     const std::string& GetStartingAxiom() const;
 
     // sets startingAxiom to parameter startAxiom
-    void SetStartingAxiom(std::string startAxiom);
+    void SetStartingAxiom(const std::string &startAxiom);
 
 	void SetLSystemGenerations(const u32 _generations) { generations = _generations; };
 
@@ -60,7 +60,7 @@ public:
     // SetStartingAxiom and set the starting axiom for the entire LSystem object
 	const std::string Evaluate();
     const std::string Evaluate(const u32 level);
-    const std::string Evaluate(const std::string startAxiom, const u32 level);
+    const std::string Evaluate(const std::string &startAxiom, const u32 level);
 
 	void ConvertEvaluatedStringToUpperCase();
 	void ConvertEvaluatedStringToLowerCase();

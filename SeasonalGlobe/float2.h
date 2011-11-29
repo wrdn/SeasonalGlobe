@@ -13,17 +13,19 @@ public:
 
 class float2
 {
-public:
+private:
 	f32 vec[2];
-
+public:
 	static const float2 ZERO;
 	static const float2 ONE;
 
 	~float2();
 	float2();
-	float2(const f32 v);
-	float2(const f32 _x, f32 _y);
-	float2(const f32 * v);
+	explicit float2(const f32 v);
+	explicit float2(const f32 _x, f32 _y);
+	explicit float2(const f32 * v);
+
+	f32 * GetVec() const { return (f32*)vec; };
 
 	f32 x() const { return vec[0]; };
 	f32 y() const { return vec[1]; };

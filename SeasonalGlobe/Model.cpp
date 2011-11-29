@@ -9,11 +9,35 @@
 #include <fstream>
 using namespace std;
 
+const GLvoid* BUFFER_OFFSET(const u32 i)
+{
+	return ((c8 *)NULL + (i));
+};
+
 Model::Model()
 	: vertexArray(0), vertexArraySize(0), indicesArray(0), indicesArraySize(0),
 	triangleDrawCount(0), drawMode(GL_FILL), triDrawMethod(DM_TRIANGLES)
 {
 	glex::Load();
+};
+
+Model::~Model()
+{
+	try
+	{
+		if(mvbo.modeldata_vboid)
+			glDeleteBuffers(1, &mvbo.modeldata_vboid);
+		if(mvbo.indices_vboid)
+			glDeleteBuffers(1, &mvbo.indices_vboid);
+
+		delete [] vertexArray;
+		delete [] indicesArray;
+
+		triangleDrawCount = 0;
+
+		mvbo.modeldata_vboid = mvbo.indices_vboid = 0;
+	}
+	catch(...) { }
 };
 
 bool Model::BuildVBO()

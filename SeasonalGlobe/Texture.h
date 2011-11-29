@@ -12,7 +12,7 @@ private:
 
 public:
 	Texture(void);
-	Texture(const u32 _id);
+	explicit Texture(const u32 _id);
 	~Texture(void);
 
 	const u32 GetID() const;

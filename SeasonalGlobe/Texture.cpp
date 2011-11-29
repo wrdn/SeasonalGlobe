@@ -3,13 +3,13 @@
 
 Texture::Texture(void)
 	: id(0), minFilter(GL_LINEAR_MIPMAP_LINEAR), magFilter(GL_LINEAR_MIPMAP_LINEAR),
-	wrapS(GL_REPEAT), wrapT(GL_REPEAT)
+	wrapS(GL_REPEAT), wrapT(GL_REPEAT), width(0), height(0)
 {
 }
 
 Texture::Texture(const u32 _id)
 	: id(_id), minFilter(GL_LINEAR_MIPMAP_LINEAR), magFilter(GL_LINEAR_MIPMAP_LINEAR),
-	wrapS(GL_REPEAT), wrapT(GL_REPEAT)
+	wrapS(GL_REPEAT), wrapT(GL_REPEAT), width(0), height(0)
 {
 };
 

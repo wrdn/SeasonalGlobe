@@ -4,19 +4,27 @@
 #include "PerfTimer.h"
 
 World::World(void)
+	: grasstexture(0), houseTexture(0), barkTexture(0),
+	  houseModel(0),
+	  sphere(0),
+	  terrain(0),
+	  tree2(0),
+	  sceneRotationAxis(0,1,0),
+	  _cameraAngle(30.0f),
+	  _cameraPosition(-3.8500025f),
+	  _cameraRotation(-232.0f),
+	   AutoRotate(false),
+	   polygonMode(GL_FILL)
 {
-	_cameraAngle = 30.0f;
-	_cameraPosition = -3.8500025f;
-	_cameraRotation = -232.0f;
-
-	terrainPolyMode = GL_FILL;
-
-	sceneRotationAxis.set(0, 1, 0);
-	AutoRotate = false;
 }
 
 World::~World(void)
 {
+	try
+	{
+		Shutdown();
+	}
+	catch(...) { };
 }
 
 // adds the model to models vector, templated to ensure constructor gets called properly
@@ -49,34 +57,18 @@ bool World::Load()
 	terrain = AddModel<TerrainDisk>();
 	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
 
-	/*
 	// http://www.geekyblogger.com/2008/04/tree-and-l-system.html
-	tree = new FractalTree();
-	tree->Init(float3(25), 1.0f, 0.1f, 0.6f);
-	//tree->SetInitialString("FFFF[A][^^^^^^A]");
-	tree->SetInitialString("FF+F[+F]");
-	tree->AddProductionRule('A', "F[++A][--A]>>>A");
-	tree->SetGenerations(2);
-	tree->EvaluateTreeLSystem();
-	tree->Draw(false);*/
-	
-	tree2 = new FractalTree2();
+	tree2 = new FractalTree();
 	tree2->SetBranchRadius(1.0f);
 	tree2->SetBranchRadiusReduction(0.1f);
 	tree2->SetBranchLength(0.6f);
 	tree2->SetBranchRotationAngles(30);
 	tree2->SetInitialString("FFF[A][^^^^^^A]");
-	//tree2->SetInitialString("FFF[A]");
 	tree2->SetInitialString("A");
 	tree2->AddProductionRule('A', "F[^B][^^^^^^^B]");
 	tree2->AddProductionRule('B', "F^[-B]^B");
-
 	tree2->SetGenerations(8);
-
-	//tree2->SetInitialString("FF[+FF]");
-
 	tree2->BuildTree();
-	tree2->SetDrawLevel(0);
 
 	/*if(_phongShader.Init())
 	{
@@ -112,6 +104,8 @@ void World::Shutdown()
 	{
 		SAFE_DELETE(*it);
 	}
+	delete houseModel;
+	delete tree2;
 };
 
 f32 angle=0; const f32 rotationSpeed = 50.0f;
@@ -133,7 +127,7 @@ void World::Draw(const GameTime &gameTime)
 	glRotatef(angle, 0, 1, 0);
 
 	glPushMatrix();
-	tree2->GetBranchModel().SetDrawMode(terrainPolyMode);
+	((Model*)tree2->GetBranchModel())->SetDrawMode(polygonMode);
 	barkTexture->Activate();
 	tree2->Draw(gameTime.GetDeltaTime());
 	barkTexture->Deactivate();
@@ -146,7 +140,7 @@ void World::Draw(const GameTime &gameTime)
 	grasstexture->Activate();
 	glRotatef(90, 1,0,0);
 	glScalef(5.48f,5.48f,5.48f);
-	terrain->SetDrawMode(terrainPolyMode);
+	terrain->SetDrawMode(polygonMode);
 	terrain->Draw();
 	grasstexture->Deactivate();
 	glPopMatrix();
@@ -155,7 +149,7 @@ void World::Draw(const GameTime &gameTime)
 	glTranslatef(-5.5,0,0.5);
 	glScalef(.05f,.05f,.05f);
 	houseTexture->Activate();
-	((Model*)houseModel->GetModels())->SetDrawMode(terrainPolyMode);
+	((Model*)houseModel->GetModels())->SetDrawMode(polygonMode);
 	houseModel->Draw();
 	houseTexture->Deactivate();
 	glPopMatrix();
@@ -168,7 +162,7 @@ void World::Draw(const GameTime &gameTime)
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glColor4f(1.0f,1.0f,1.0f,0.25f);
-	sphere->SetDrawMode(terrainPolyMode);
+	sphere->SetDrawMode(polygonMode);
 	//sphere->Draw();
 	glDisable(GL_BLEND);
 	glDisable(GL_CLIP_PLANE0);

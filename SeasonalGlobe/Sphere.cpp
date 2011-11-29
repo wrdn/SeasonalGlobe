@@ -24,12 +24,18 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 	VERTEX *verts = new VERTEX[arraySize];
 
 	// Top
-	VERTEX top( float3(0,radius,0), float3(0,1,0), float2(0,1));
+	VERTEX top;
+	top.pos = float3(0, radius, 0);
+	top.normal = float3(0, 1, 0);
+	top.uvs = float2(0, 1);
 	verts[vertexCount] = top;
 	++vertexCount;
 
 	// Bottom
-	VERTEX bottom(float3(0,-radius,0), float3(0,-1,0), float2(0,0));
+	VERTEX bottom;
+	bottom.pos = float3(0, -radius, 0);
+	bottom.normal = float3(0, -1, 0);
+	bottom.uvs = float2::ZERO;
 	verts[vertexCount] = bottom;
 	++vertexCount;
 

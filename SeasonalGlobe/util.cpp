@@ -57,7 +57,7 @@ f32 InvSqrt(f32 x)
 };
 
 // Source: http://www.cse.yorku.ca/~oz/hash.html
-unsigned long hash_djb2(uc8 *str)
+unsigned long hash_djb2(const uc8 *str)
 {
 	unsigned long hash = 5381;
 	u32 c;

@@ -203,7 +203,7 @@ void Shader::SetUniform(const c8 * const name, const float2 &val)
 {
 	if(GLint _id = GetUnformLocation(name))
 	{
-		glUniform2fv(_id, 1, val.vec);
+		glUniform2fv(_id, 1, val.GetVec());
 	}
 };
 
@@ -211,7 +211,7 @@ void Shader::SetUniform(const c8 * const name, const float3 &val)
 {
 	if(GLint _id = GetUnformLocation(name))
 	{
-		glUniform3fv(_id, 1, val.vec);
+		glUniform3fv(_id, 1, val.GetVec());
 	}
 };
 
@@ -219,15 +219,15 @@ void Shader::SetUniform(const c8 * const name, const float4 &val)
 {
 	if(GLint _id = GetUnformLocation(name))
 	{
-		glUniform4fv(_id, 1, val.vec);
+		glUniform4fv(_id, 1, val.GetVec());
 	}
 };
 
-void Shader::SetUniform(const c8 * const name, Mat44 &val)
+void Shader::SetUniform(const c8 * const name, const Mat44 &val)
 {
 	if(GLint _id = GetUnformLocation(name))
 	{
-		glUniformMatrix4fv(_id, 1, GL_FALSE, (const f32*)val.GetMatrix());
+		glUniformMatrix4fv(_id, 1, GL_FALSE, val.GetMatrix());
 	}
 };
 

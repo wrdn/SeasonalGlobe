@@ -8,8 +8,8 @@
 // without manually adding includes
 #include "Log.h"
 
-#define EPSILON 0.000001f // rough epsilon
-#define PI 3.1415926f
+const f32 EPSILON = 0.000001f; // rough epsilon
+const f32 PI = 3.1415926f;
 
 void SAFE_DELETE(const void *p);
 void SAFE_DELETE_ARRAY(const void *p);
@@ -27,7 +27,7 @@ bool NearZero(const f32 v);
 f32 InvSqrt(f32 x);
 
 // djb2 string hashing
-unsigned long hash_djb2(uc8 *str);
+unsigned long hash_djb2(const uc8 *str);
 
 f32 DEGTORAD(f32 degs);
 f32 RADTODEG(f32 rads);

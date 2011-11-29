@@ -10,45 +10,50 @@
 #include "TerrainDisk.h"
 #include "Shader.h"
 #include "FractalTree.h"
-#include "FractalTree2.h"
 
 class World
 {
 private:
 	static const u32 CAMERA_COUNT = 1;
 	Camera cams[World::CAMERA_COUNT];
-
 	TextureManager texMan;
-	
 	Shader _phongShader;
-	
 	Texture *grasstexture, *houseTexture, *barkTexture;
-	
 	OBJFile *houseModel;
-	
 	Sphere *sphere;
 	TerrainDisk *terrain;
-	
-	FractalTree *tree;
-	
+	FractalTree *tree2;
+	float3 sceneRotationAxis;
+	f32 _cameraAngle;
+	f32 _cameraPosition;
+	f32 _cameraRotation;
+	bool AutoRotate;
+	GLenum polygonMode;
+
 	std::vector<Model*> models;
 
 	template<class T>
 	T* AddModel();
 
-	float3 sceneRotationAxis;
+	// Prevent copying
+	World(World const& w);
+	World& operator= (World const& other);
 
 public:
-	FractalTree2 *tree2;
+	const bool GetAutoRotate() const { return AutoRotate; };
+	void SetAutoRotate(const bool b) { AutoRotate = b; };
 
-	// Temporary Camera Variables (Code from RealTime Graphics module tutorials)
-	f32 _cameraAngle;
-	f32 _cameraPosition;
-	f32 _cameraRotation;
+	FractalTree * GetTree() const { return tree2; };
+	const GLenum GetPolygonMode() const { return polygonMode; };
+	void SetPolygonMode(const GLenum polyMode) { polygonMode = polyMode; };
 	
-	bool AutoRotate;
+	const f32 GetCameraAngle() const { return _cameraAngle; };
+	const f32 GetCameraPosition() const { return _cameraPosition; };
+	const f32 GetCameraRotation() const { return _cameraRotation; };
 
-	GLenum terrainPolyMode;
+	void SetCameraAngle(f32 v) { _cameraAngle = v; };
+	void SetCameraPosition(f32 v) { _cameraPosition = v; };
+	void SetCameraRotation(f32 v) { _cameraRotation = v; };
 
 	World(void);
 	~World(void);

@@ -37,7 +37,7 @@ enum ShaderError
 // * Deactivate() after use
 class Shader : public glex
 {
-public:
+private:
 	bool isActive; // deactivates entire shader
 	GLuint vertexShaderID, fragmentShaderID, shaderProgramID;
 	u32 error; // error flag (used for more details if function returns ERROR_FAIL)
@@ -66,7 +66,7 @@ public:
 	void SetUniform(const c8 * const name, const float2 &val);
 	void SetUniform(const c8 * const name, const float3 &val);
 	void SetUniform(const c8 * const name, const float4 &val);
-	void SetUniform(const c8 * const name, Mat44 &val);
+	void SetUniform(const c8 * const name, const Mat44 &val);
 
 	void Activate();
 	void Deactivate();

@@ -11,7 +11,11 @@ ParticleSystem::ParticleSystem() : isActive(true), delCount(0)
 
 ParticleSystem::~ParticleSystem()
 {
-	Cleanup();
+	try
+	{
+		Cleanup();
+	}
+	catch(...) { };
 };
 
 const bool ParticleSystem::IsActive() const { return isActive; };
@@ -53,7 +57,7 @@ bool ParticleSystem::DeleteParticleEmitter(const u32 id)
 	return false;
 };
 
-void ParticleSystem::Update(const f32 dt)
+void ParticleSystem::Update(const f32 dt) const
 {
 	if(isActive)
 	{
@@ -68,7 +72,7 @@ void ParticleSystem::Update(const f32 dt)
 	}
 };
 
-void ParticleSystem::Render() const
+void ParticleSystem::Draw() const
 {
 	// Render all the active emitters
 	if(isActive)
@@ -77,7 +81,7 @@ void ParticleSystem::Render() const
 		{
 			if((*it)->IsActive())
 			{
-				(*it)->Render();
+				(*it)->Draw();
 			}
 		}
 	}
@@ -102,13 +106,13 @@ const bool ParticleEmitter::IsActive() const { return isActive; };
 
 void ParticleEmitter::SetActive(bool _isActive) { isActive = _isActive; };
 
-void ParticleEmitter::Update(f32 dt)
+void ParticleEmitter::Update(f32 dt) const
 {
 	// get rid of unreferenced formal parameter warning
 	// (remove when Update(f32 dt) implemented)
 	if(dt) { }
 };
 
-void ParticleEmitter::Render()
+void ParticleEmitter::Draw() const
 {
 };

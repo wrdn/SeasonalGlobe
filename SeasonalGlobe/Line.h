@@ -8,7 +8,7 @@ public:
 	float2 start, end;
 
 	Line2D() : start(), end() { };
-	Line2D(float2 _start, float2 _end)
+	Line2D(const float2 &_start, const float2 &_end)
 		: start(_start), end(_end)
 	{ };
 };

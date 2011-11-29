@@ -3,8 +3,6 @@
 
 //#include <pmmintrin.h> // SSE3 header
 
-#define ALIGN(N) __declspec(align(N))
-
 typedef float f32; // float
 //typedef __m128 float4; // SIMD type
 

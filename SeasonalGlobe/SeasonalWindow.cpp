@@ -9,7 +9,7 @@ using namespace std;
 
 const c8* SeasonalWindow::DEFAULT_WINDOW_TITLE = "Seasonal Globe";
 
-SeasonalWindow::SeasonalWindow() : clearColor(Color::BLACK)
+SeasonalWindow::SeasonalWindow() : clearColor(Color::BLACK), _leftDown(false), _rightDown(false)
 {
 	windowRes[0] = DEFAULT_WIDTH;
 	windowRes[1] = DEFAULT_HEIGHT;
@@ -116,22 +116,22 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 	switch(tolower(key))
 	{
 		case 'a': 
-			scn._cameraAngle += 5.0;
+			scn.SetCameraAngle(scn.GetCameraAngle() + 5.0f);
 			break;
 		case 'z':
-			scn._cameraAngle -= 5.0;
+			scn.SetCameraAngle(scn.GetCameraAngle() - 5.0f);
 			break;
 		case 't':
 			{
 				if(!down)
 				{
-					if(scn.terrainPolyMode == GL_LINE)
+					if(scn.GetPolygonMode() == GL_LINE)
 					{
-						scn.terrainPolyMode = GL_FILL;
+						scn.SetPolygonMode(GL_FILL);
 					}
 					else
 					{
-						scn.terrainPolyMode = GL_LINE;
+						scn.SetPolygonMode(GL_LINE);
 					}
 				}
 			} break;
@@ -149,23 +149,23 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 			{
 				if(!down)
 				{
-					scn.AutoRotate = !scn.AutoRotate;
+					scn.SetAutoRotate(!scn.GetAutoRotate());
 				}
 			} break;
 		case 'q':
 			{
 				if(!down)
-					scn.tree2->SetDrawLevel(scn.tree2->GetDrawLevel()-1);
+					scn.GetTree()->SetDrawLevel(scn.GetTree()->GetDrawLevel()-1);
 			} break;
 		case 'w':
 			{
 				if(!down)
-					scn.tree2->SetDrawLevel(scn.tree2->GetDrawLevel()+1);
+					scn.GetTree()->SetDrawLevel(scn.GetTree()->GetDrawLevel()+1);
 			} break;
 		case 'b':
 			{
 				if(!down)
-					scn.tree2->SetAnimationLevel(0);
+					scn.GetTree()->SetAnimationLevel(0);
 			}
 	}
 };
@@ -201,10 +201,12 @@ void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 {
 	static i32 temp_x, temp_y;
 	if(_leftDown) {
-		scn._cameraPosition += (y-temp_y)*0.05f;
+		scn.SetCameraPosition(scn.GetCameraPosition() + (y-temp_y)*0.05f);
+		//scn._cameraPosition += (y-temp_y)*0.05f;
 	}
 	if(_rightDown) {
-		scn._cameraRotation += (x-temp_x)*0.5f;
+		scn.SetCameraRotation(scn.GetCameraRotation()+(x-temp_x)*0.5f);
+		//scn._cameraRotation += (x-temp_x)*0.5f;
 	}
 	temp_x = x;
 	temp_y = y;
@@ -212,6 +214,10 @@ void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 
 void SeasonalWindow::OnCreate()
 {
+	Mat44 matA(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16);
+	Mat44 matB;
+	matB.SetMatrix(matA.GetMatrix());
+
 	GLWindowEx::OnCreate();
 	
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);

@@ -2,7 +2,7 @@
 #include <vector>
 using namespace std;
 
-LSystem::LSystem() : generations(0) {
+LSystem::LSystem() : generations(0), _last_axiom_request(0), _last_axiom_result() {
 };
 
 LSystem::~LSystem() {
@@ -12,7 +12,7 @@ bool LSystem::HasAxiom(const c8 c) const {
     return productionRules.count(c) > 0;
 };
 
-bool LSystem::AddAxiom(c8 c, string str) {
+bool LSystem::AddAxiom(c8 c, const string &str) {
     if (HasAxiom(c)) return false;
 
     productionRules[c] = str;
@@ -35,7 +35,7 @@ const string& LSystem::GetStartingAxiom() const {
     return startingAxiom;
 };
 
-void LSystem::SetStartingAxiom(string startAxiom) {
+void LSystem::SetStartingAxiom(const string &startAxiom) {
     startingAxiom = startAxiom;
 };
 
@@ -97,7 +97,7 @@ const string LSystem::Evaluate(const u32 level) {
     return evaluatedString;
 };
 
-const string LSystem::Evaluate(const string startAxiom, const u32 level) {
+const string LSystem::Evaluate(const string &startAxiom, const u32 level) {
     SetStartingAxiom(startAxiom);
     return Evaluate(level);
 };

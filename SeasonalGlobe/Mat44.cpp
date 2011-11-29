@@ -54,17 +54,17 @@ Mat44::~Mat44(void)
 {
 }
 
-f32* Mat44::GetMatrix()
+const f32* Mat44::GetMatrix() const
 {
 	return mat;
 };
 
-void Mat44::SetMatrix(const f32* _mat)
+void Mat44::SetMatrix(const f32* _mat) const
 {
-	memcpy(mat, _mat, sizeof(f32) * Mat44::MATRIX_ELEMENT_COUNT);
+	memcpy((f32*)mat, _mat, sizeof(f32) * Mat44::MATRIX_ELEMENT_COUNT);
 };
 
-void Mat44::Identity()
+void Mat44::Identity() const
 {
 	SetMatrix(IDENTITY_MAT44_DATA);
 };
@@ -193,7 +193,7 @@ float4 Mat44::Mult(const float4 &m) const
 		_mm_load_ps(tr.mat+12)
 	};
 
-	__m128 v = _mm_load_ps(m.vec);
+	__m128 v = _mm_load_ps(m.GetVec());
 
 	// Broadcast vector into SSE registers
 	__m128 xb = _mm_shuffle_ps(v,v,0x00);
@@ -211,7 +211,7 @@ float4 Mat44::Mult(const float4 &m) const
 	__m128 r = _mm_add_ps(_mm_add_ps(xb, yb),_mm_add_ps(zb, wb));
 
 	float4 returnVec;
-	_mm_store_ps(returnVec.vec, r);
+	_mm_store_ps(returnVec.GetVec(), r);
 	return returnVec;
 };
 
@@ -228,7 +228,7 @@ void Mat44::BatchMult(const float4 * const in, float4 *out, u32 len) const
 
 	while(len--)
 	{
-		__m128 v = _mm_load_ps(in[len].vec);
+		__m128 v = _mm_load_ps(in[len].GetVec());
 		_mm_prefetch((const char*)&in[len+1], _MM_HINT_T0);
 
 		// Broadcast vector into SSE registers
@@ -247,11 +247,11 @@ void Mat44::BatchMult(const float4 * const in, float4 *out, u32 len) const
 		__m128 r = _mm_add_ps(_mm_add_ps(xb, yb),_mm_add_ps(zb, wb));
 
 		_mm_prefetch((const char*)&out[len+1], _MM_HINT_T0);
-		_mm_store_ps(out[len].vec, r);
+		_mm_store_ps(out[len].GetVec(), r);
 	}
 };
 
-void Mat44::Cramers_Inverse(Mat44 *out, f32 &det) const
+void Mat44::Cramers_Inverse(const Mat44 *out, f32 &det) const
 {
 	f32 tmp[12]; /* temp array for pairs                      */
 
@@ -259,7 +259,7 @@ void Mat44::Cramers_Inverse(Mat44 *out, f32 &det) const
 	Mat44 outp;
 
 	if(out)
-		dst = out->mat;
+		dst = (f32*)out->mat;
 	else
 		dst = outp.mat;
 
@@ -344,7 +344,7 @@ void Mat44::Cramers_Inverse(Mat44 *out, f32 &det) const
 		dst[j] *= det;
 };
 
-void Mat44::Cramers_Inverse_SSE(Mat44 *out, f32 &detv) const
+void Mat44::Cramers_Inverse_SSE(const Mat44 *out, f32 &detv) const
 {
 	f32 *src = (f32*)&mat;
 
@@ -425,7 +425,7 @@ void Mat44::Cramers_Inverse_SSE(Mat44 *out, f32 &detv) const
 	Mat44 t;
 	if(out)
 	{
-		src = out->mat;
+		src = (f32*)out->mat;
 	}
 	else
 	{

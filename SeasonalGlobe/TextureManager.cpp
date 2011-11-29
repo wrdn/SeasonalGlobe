@@ -8,7 +8,11 @@ TextureManager::TextureManager(void)
 
 TextureManager::~TextureManager(void)
 {
-	Cleanup();
+	try
+	{
+		Cleanup();
+	}
+	catch(...) { };
 }
 
 void TextureManager::Cleanup()

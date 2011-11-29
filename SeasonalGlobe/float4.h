@@ -6,19 +6,20 @@
 class float3;
 class float4
 {
+private:
+	__declspec(align(16)) f32 vec[4];
+
 public:
-	ALIGN(16) f32 vec[4];
+	f32 * GetVec() const { return (f32*)vec; };
 
 	static const float4 ZERO;
 	static const float4 ONE;
 
 	float4(); // sets all to 0
-	float4(const float3 &f);
-	float4(const float3 &f, const f32 w);
-	float4(const f32 v);
+	explicit float4(const f32 v);
 	float4(const f32 _x, f32 _y, f32 _z);
 	float4(const f32 _x, f32 _y, f32 _z, f32 _w);
-	float4(const f32 * v); // copy from 4 element array
+	explicit float4(const f32 * v); // copy from 4 element array
 
 	f32 x() const { return vec[0]; };
 	f32 y() const { return vec[1]; };
@@ -99,7 +100,7 @@ void operator/=(float4 &a, const f32 &b);
 float4 operator^(const float4 &a, const float4 &b);
 void operator^=(float4 &a, const float4 &b);
 
-std::ostream& operator<<(std::ostream &out, float4 &m);
+std::ostream& operator<<(std::ostream &out, const float4 &m);
 
 /*
 #include <emmintrin.h> // SSE2    http://softpixel.com/~cwright/programming/simd/sse2.php
