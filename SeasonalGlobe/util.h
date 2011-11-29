@@ -34,4 +34,6 @@ f32 RADTODEG(f32 rads);
 
 float fract(float c);
 
+f32 lerp(f32 min, f32 max, f32 t);
+
 #endif

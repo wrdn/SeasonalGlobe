@@ -75,7 +75,7 @@ bool World::Load()
 
 	//tree2->SetInitialString("FF[+FF]");
 
-	tree2->BuildTree(false);
+	tree2->BuildTree();
 	tree2->SetDrawLevel(0);
 
 	/*if(_phongShader.Init())
@@ -135,7 +135,7 @@ void World::Draw(const GameTime &gameTime)
 	glPushMatrix();
 	tree2->GetBranchModel().SetDrawMode(terrainPolyMode);
 	barkTexture->Activate();
-	tree2->Draw(gameTime.GetDeltaTime() * 0.2f);
+	tree2->Draw(gameTime.GetDeltaTime());
 	barkTexture->Deactivate();
 	glPopMatrix();
 

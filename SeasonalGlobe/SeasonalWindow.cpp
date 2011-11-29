@@ -162,6 +162,11 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 				if(!down)
 					scn.tree2->SetDrawLevel(scn.tree2->GetDrawLevel()+1);
 			} break;
+		case 'b':
+			{
+				if(!down)
+					scn.tree2->SetAnimationLevel(0);
+			}
 	}
 };
 

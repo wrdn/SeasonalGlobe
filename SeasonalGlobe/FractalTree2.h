@@ -96,14 +96,15 @@ private:
 	void CalculateTreeDepth();
 
 	f32 currentScale; // used to make branches grow, update by dt, range 0<=currentScale<=1
+	f32 lastTime;
 
 	i32 AnimationLevel; // which level of the tree are we drawing?
 
 	// used to update currentScale (0...1) and update the animation level 
 	// of the tree if neccessary
-	void CalculateAnimationLevel(float dt)
+	void CalculateAnimationLevel(const float dt)
 	{
-		if( (currentScale+dt) > 1.0f )
+		/*if( (currentScale+dt) > 1.0f )
 		{
 			++AnimationLevel;
 			currentScale = 0;
@@ -111,12 +112,27 @@ private:
 		currentScale += dt;
 
 		if((u32)AnimationLevel >= levels.size())
-			AnimationLevel = 0;
+			AnimationLevel = 0;*/
+		
+		lastTime += dt;
+		currentScale = fract(lastTime);
+		AnimationLevel = min(levels.size()-1, (u32)lastTime);
 	};
 
 	u32 drawLevel;
 
+	void DrawBranch(const Mat44 &transformationMatrix, const Mat44 &scaleMatrix);
+	void DrawBranch(const Mat44 &transformationMatrix);
+
+	bool loop_growth;
+
 public:
+
+	void SetAnimationLevel(i32 v)
+	{
+		AnimationLevel = v;
+	};
+
 	const u32 GetDrawLevel() const { return drawLevel; };
 	void SetDrawLevel(const i32 dl)
 	{
@@ -134,13 +150,10 @@ public:
 	bool AddProductionRule(const c8 axiom, const std::string &replacement);
 
 	// Evaluates the LSystem string and if successful, will calculate the tree
-	// depth (with branches per level), and create the matrices that can then be
-	// used for drawing
-	// dbg_writeMatricesToFile is used to write all the matrices that will be used for drawing to a file
-	// (i.e. the matrix at the top of the stack when 'F' is encountered)
-	void BuildTree(bool dbg_writeMatricesToFile);
+	// depth (with branches per level), and create the matrices used for drawing
+	void BuildTree();
 
-	void Draw(float dt);
+	void Draw(const float dt);
 
 	#pragma region Accessors and Mutators
 	Cylinder& GetBranchModel() { return gbranch; };

@@ -82,3 +82,8 @@ float fract(float c)
 {
 	return (c - floor(c));
 };
+
+f32 lerp(f32 min, f32 max, f32 t)
+{
+	return (min + (t * (max-min)));
+};
