@@ -66,6 +66,7 @@ void SeasonalWindow::OnDisplay()
 {
 	gameTime.Update();
 	
+	clearColor = Color::GREY;
 	glClearColor(clearColor.r(), clearColor.g(), clearColor.b(), clearColor.a());
 	
 	scn.Draw(gameTime);

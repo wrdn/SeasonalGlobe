@@ -70,11 +70,16 @@ bool World::Load()
 	tree2->SetGenerations(8);
 	tree2->BuildTree();
 	
+	Texture *particleTexture = texMan.LoadTextureFromFile
+		("Data/Textures/particleTexture.tga");
+	particleTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
+	particleTexture->SetMagFilter(GL_LINEAR);
+
 	psys = new ParticleSystem();
 	psys->Init();
 	testEmitter = psys->GetEmitter();
 	testEmitter.Get()->Init();
-	testEmitter.Get()->SetTexture(*barkTexture);
+	testEmitter.Get()->SetTexture(*particleTexture);
 	Particle *pts = testEmitter.Get()->GetParticles();
 	float3 pos, inc(2,0,0);
 	for(u32 i=0;i<10;++i)
@@ -126,10 +131,11 @@ void World::Shutdown()
 f32 angle=0; const f32 rotationSpeed = 50.0f;
 void World::Draw(const GameTime &gameTime)
 {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
 	glDisable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
 	glLoadIdentity();
 
 	glPushMatrix();
@@ -140,12 +146,6 @@ void World::Draw(const GameTime &gameTime)
 	glTranslatef(0.0f, -1.0f,0.0f);
 	
 	glRotatef(angle, 0, 1, 0);
-
-	glPushMatrix();
-	//glDisable(GL_CULL_FACE);
-	testEmitter.Get()->Draw();
-	//glEnable(GL_CULL_FACE);
-	glPopMatrix();
 
 	glPushMatrix();
 	((Model*)tree2->GetBranchModel())->SetDrawMode(polygonMode);
@@ -174,6 +174,17 @@ void World::Draw(const GameTime &gameTime)
 	houseTexture->Deactivate();
 	glPopMatrix();
 
+	glColor4f(1,1,1,1);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	glPushMatrix();
+	glDepthMask(GL_FALSE);
+	psys->Draw();
+	glDepthMask(GL_TRUE);
+	glPopMatrix();
+	glDisable(GL_BLEND);
+
 	glPushMatrix();
 	glEnable(GL_CLIP_PLANE0); // use clip plane to cut bottom half
 	GLdouble eq[] = { 0, 1, 0, 0 };
@@ -183,7 +194,7 @@ void World::Draw(const GameTime &gameTime)
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glColor4f(1.0f,1.0f,1.0f,0.25f);
 	sphere->SetDrawMode(polygonMode);
-	//sphere->Draw();
+	sphere->Draw();
 	glDisable(GL_BLEND);
 	glDisable(GL_CLIP_PLANE0);
 	glPopMatrix();

@@ -21,14 +21,14 @@ void ParticleEmitter::Draw()
 {
 	if(!isActive) return;
 
-	glScalef(10,10,10);
+	//glScalef(10,10,10);
 
 	/*tex.Activate();
 	BillboardModel.Draw();
 	tex.Deactivate();*/
 
 	tex.Activate();
-	glScalef(0.1f, 0.1f, 0.1f);
+	//glScalef(0.1f, 0.1f, 0.1f);
 	for(u32 i=0;i<MAX_PARTICLES;++i)
 	{
 		Particle &p = particles[i];
