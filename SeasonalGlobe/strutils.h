@@ -23,7 +23,6 @@ void split(const std::string &s, c8 delim, std::vector<std::string> &v);
 void printf_array(f32 *arr, u32 sz);
 void printi_array(u32 *arr, u32 sz);
 
-const bool file_exists(const c8 *filename);
 c8 *read_src(const c8 *file); // adds newline characters back when reading
 c8 *read_src_raw(const c8 *file); // doesn't add newline characters back when reading
 c8 *read_src_fast(const c8 *file); // gets file size then reads entire file into memory in single read
@@ -44,3 +43,6 @@ const char* bstr(const bool b);
 
 bool fast_strcmp(c8 *a, c8 *b);
 bool fast_strcmp(c8 *a, c8 *b, u32 len);
+
+void TrimLeadingWhitespace(std::string &s);
+void TrimTrailingWhitespace(std::string &s);

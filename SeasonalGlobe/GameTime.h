@@ -7,7 +7,9 @@ class GameTime
 {
 private:
 	f32 currentTime;
+	f32 oldTime;
 	f32 deltaTime;
+	f32 FrameRate;
 public:
 	GameTime() : currentTime(0), deltaTime(0) { };
 
@@ -16,4 +18,6 @@ public:
 
 	void Init();
 	void Update();
+
+	const f32 GetFrameRate() const { return FrameRate; };
 };

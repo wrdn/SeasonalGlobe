@@ -69,6 +69,21 @@ bool World::Load()
 	tree2->AddProductionRule('B', "F^[-B]^B");
 	tree2->SetGenerations(8);
 	tree2->BuildTree();
+	
+	psys = new ParticleSystem();
+	psys->Init();
+	testEmitter = psys->GetEmitter();
+	testEmitter.Get()->Init();
+	testEmitter.Get()->SetTexture(*barkTexture);
+	Particle *pts = testEmitter.Get()->GetParticles();
+	float3 pos, inc(2,0,0);
+	for(u32 i=0;i<10;++i)
+	{
+		pts[i].alive = true;
+		pts[i].pos = pos;
+		pos += inc;
+	}
+	//testEmitter.Get()->particles
 
 	/*if(_phongShader.Init())
 	{
@@ -127,12 +142,17 @@ void World::Draw(const GameTime &gameTime)
 	glRotatef(angle, 0, 1, 0);
 
 	glPushMatrix();
+	//glDisable(GL_CULL_FACE);
+	testEmitter.Get()->Draw();
+	//glEnable(GL_CULL_FACE);
+	glPopMatrix();
+
+	glPushMatrix();
 	((Model*)tree2->GetBranchModel())->SetDrawMode(polygonMode);
 	barkTexture->Activate();
 	tree2->Draw(gameTime.GetDeltaTime());
 	barkTexture->Deactivate();
 	glPopMatrix();
-
 
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);

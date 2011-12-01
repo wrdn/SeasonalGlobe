@@ -109,6 +109,9 @@ public:
 		if(vertexArray)
 			delete [] vertexArray;
 
+		/*vertexArraySize = _vertexArraySize;
+		vertexArray = new VERTEX[vertexArraySize];
+		memcpy(vertexArray, _vertexArray, sizeof(VERTEX)*vertexArraySize);*/
 		vertexArray = _vertexArray;
 		vertexArraySize = _vertexArraySize;
 	};
@@ -121,8 +124,12 @@ public:
 		if(indicesArray)
 			delete [] indicesArray;
 
-		indicesArray = _indicesArray;
 		indicesArraySize = _indicesArraySize;
+		indicesArray = _indicesArray;
+		/*indicesArraySize = _indicesArraySize;
+		indicesArray = new u32[indicesArraySize];
+		memcpy(indicesArray, _indicesArray, sizeof(u32)*indicesArraySize);*/
+		//indicesArray = _indicesArray;
 	};
 
 	const u32 GetTriangleDrawCount() const { return triangleDrawCount; };

@@ -6,9 +6,14 @@ const f32 GameTime::GetDeltaTime() const { return deltaTime; };
 
 void GameTime::Update()
 {
-	f32 temp_time = (f32)gxbase::App::GetTime();
+	/*f32 temp_time = (f32)gxbase::App::GetTime();
 	deltaTime = temp_time - currentTime;
-	currentTime = temp_time;
+	FrameRate = 1.0f / deltaTime;
+	currentTime = temp_time;*/
+	currentTime = (f32)gxbase::App::GetTime();
+	deltaTime = currentTime - oldTime;
+	FrameRate = 1.0f / deltaTime;
+	oldTime = currentTime;
 };
 
-void GameTime::Init() { currentTime = (f32)gxbase::App::GetTime(); };
+void GameTime::Init() { currentTime = (f32)gxbase::App::GetTime(); oldTime = currentTime; };

@@ -2,6 +2,7 @@
 #include "OBJFile.h"
 #include "float4.h"
 #include "Mat44.h"
+#include "AppConfig.h"
 
 #include <WinUser.h>
 #include <iostream>
@@ -64,9 +65,9 @@ const bool SeasonalWindow::IsFullScreen() const
 void SeasonalWindow::OnDisplay()
 {
 	gameTime.Update();
-
+	
 	glClearColor(clearColor.r(), clearColor.g(), clearColor.b(), clearColor.a());
-
+	
 	scn.Draw(gameTime);
 	
 	SwapBuffers();
@@ -214,9 +215,11 @@ void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 
 void SeasonalWindow::OnCreate()
 {
-	Mat44 matA(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16);
-	Mat44 matB;
-	matB.SetMatrix(matA.GetMatrix());
+	AppConfig conf;
+	if(conf.ParseConfigFile("Data/ConfigFile.txt"))
+		cout << "Parsed config file" << endl;
+	else
+		cout << "Failed to parse config file" << endl;
 
 	GLWindowEx::OnCreate();
 	

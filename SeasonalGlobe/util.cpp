@@ -1,5 +1,6 @@
 #include "util.h"
 #include <math.h>
+#include <sys/stat.h>
 
 void SAFE_DELETE(const void *p) { if(p) { delete p; p = 0; } };
 void SAFE_DELETE_ARRAY(const void *p)
@@ -87,3 +88,9 @@ f32 lerp(f32 min, f32 max, f32 t)
 {
 	return (min + (t * (max-min)));
 };
+
+const bool file_exists(const c8 *filename)
+{
+	struct stat f; // careful not to mix up the structure and function
+	return (stat(filename,&f) == 0); // 0 if file exists
+}

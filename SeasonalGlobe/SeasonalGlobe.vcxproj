@@ -87,8 +87,13 @@
       <AdditionalDependencies>gxbasem.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy $(ProjectDir)Data $(OutDir)Data /I /E /C /H /Y /Q</Command>
+      <Message>Copy data directory to output directory (overwrites without warning)</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AppConfig.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Color.cpp" />
@@ -107,7 +112,8 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MyApp.cpp" />
     <ClCompile Include="OBJFile.cpp" />
-    <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="ParticleEmitter.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PerfTimer.cpp" />
     <ClCompile Include="SeasonalWindow.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -122,6 +128,7 @@
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AppConfig.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Circle.h" />
     <ClInclude Include="Collision.h" />
@@ -142,7 +149,8 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="MyApp.h" />
     <ClInclude Include="OBJFile.h" />
-    <ClInclude Include="Particle.h" />
+    <ClInclude Include="ParticleEmitter.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PerfTimer.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SeasonalWindow.h" />
@@ -168,6 +176,9 @@
     </Object>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Data\ConfigFile.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </None>
     <None Include="Data\House\Haus20.mtl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>

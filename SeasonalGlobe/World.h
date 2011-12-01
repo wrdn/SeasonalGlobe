@@ -10,6 +10,7 @@
 #include "TerrainDisk.h"
 #include "Shader.h"
 #include "FractalTree.h"
+#include "ParticleSystem.h"
 
 class World
 {
@@ -29,6 +30,9 @@ private:
 	f32 _cameraRotation;
 	bool AutoRotate;
 	GLenum polygonMode;
+
+	ParticleSystem* psys;
+	EmitterHandle testEmitter;
 
 	std::vector<Model*> models;
 

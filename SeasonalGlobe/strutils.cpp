@@ -114,12 +114,6 @@ void printi_array(u32 *arr, u32 sz)
 	}
 }
 
-const bool file_exists(const c8 *filename)
-{
-	struct stat f; // careful not to mix up the structure and function
-	return (stat(filename,&f) == 0); // 0 if file exists
-}
-
 std::vector<c8*> read_src_to_vec(const c8* file)
 {
 	return read_src_to_vec(file,true,100);
@@ -265,4 +259,23 @@ bool fast_strcmp(c8 *a, c8 *b, u32 len)
 		return true;
 
 	return false;
+};
+
+void TrimLeadingWhitespace(std::string &s)
+{
+	if(!s.size()) return;
+
+	// Trim leading whitespace
+	u32 tmp=0;
+	while(s[tmp] == ' ') ++tmp;
+	s.erase(s.begin(), s.begin()+tmp);
+};
+
+void TrimTrailingWhitespace(std::string &s)
+{
+	if(!s.size()) return;
+
+	u32 tmp = s.size()-1;
+	while(s[tmp] == ' ') --tmp;
+	s.erase(s.begin()+tmp+1, s.end());
 };

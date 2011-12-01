@@ -114,9 +114,6 @@
     <ClCompile Include="Material.cpp">
       <Filter>Source Files\Shading</Filter>
     </ClCompile>
-    <ClCompile Include="Particle.cpp">
-      <Filter>Source Files\Particles</Filter>
-    </ClCompile>
     <ClCompile Include="util.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
@@ -161,6 +158,15 @@
     </ClCompile>
     <ClCompile Include="FractalTree.cpp">
       <Filter>Source Files\LSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleEmitter.cpp">
+      <Filter>Source Files\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Source Files\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="AppConfig.cpp">
+      <Filter>Source Files\Misc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -236,9 +242,6 @@
     <ClInclude Include="PerfTimer.h">
       <Filter>Header Files\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="Particle.h">
-      <Filter>Header Files\Particles</Filter>
-    </ClInclude>
     <ClInclude Include="Collision.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
@@ -265,6 +268,15 @@
     </ClInclude>
     <ClInclude Include="FractalTree.h">
       <Filter>Header Files\LSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleEmitter.h">
+      <Filter>Header Files\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Header Files\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="AppConfig.h">
+      <Filter>Header Files\Misc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -317,6 +329,9 @@
     </None>
     <None Include="snow_globe_icon.ico">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Data\ConfigFile.txt">
+      <Filter>Resource Files\Data</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
