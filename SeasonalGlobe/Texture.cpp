@@ -3,7 +3,7 @@
 
 Texture::Texture(void)
 	: id(0), minFilter(GL_LINEAR_MIPMAP_LINEAR), magFilter(GL_LINEAR_MIPMAP_LINEAR),
-	wrapS(GL_REPEAT), wrapT(GL_REPEAT), width(0), height(0)
+	wrapS(GL_REPEAT), wrapT(GL_REPEAT), width(0), height(0), textureSlot(SLOT_GL_TEXTURE_0)
 {
 }
 

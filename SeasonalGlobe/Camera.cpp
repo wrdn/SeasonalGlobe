@@ -3,6 +3,7 @@
 const f32 Camera::DEFAULT_FOV = 45.0f;
 const float3 Camera::DEFAULT_UP = float3(0,1,0);
 
+/*
 Camera::Camera(void) : position(), direction(), up(DEFAULT_UP), fov(DEFAULT_FOV)
 {
 }
@@ -10,6 +11,7 @@ Camera::Camera(void) : position(), direction(), up(DEFAULT_UP), fov(DEFAULT_FOV)
 Camera::~Camera(void)
 {
 }
+*/
 
 const float3& Camera::GetPosition() const
 {

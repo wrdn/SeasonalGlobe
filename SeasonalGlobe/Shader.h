@@ -57,7 +57,7 @@ public:
 
 	bool CreateProgram(); // creates and links shader program
 
-	const GLint GetUnformLocation(const c8* name); // 0 on fail
+	const GLint GetUnformLocation(const GLchar* name); // 0 on fail or -1
 
 	void SetUniform(const GLint _id, const GLint val);
 	void SetUniform(const c8 * const name, const Texture &tex);
@@ -70,6 +70,25 @@ public:
 
 	void Activate();
 	void Deactivate();
+
+	void PrintActiveUniforms()
+	{
+		int total = -1;
+		glGetProgramiv( shaderProgramID, GL_ACTIVE_UNIFORMS, &total );
+		if(total == 0) return;
+
+		for(int i=0; i<total; ++i)  {
+			int name_len=-1, num=-1;
+			GLenum type = GL_ZERO;
+			char name[100];
+			glGetActiveUniform( shaderProgramID, GLuint(i), sizeof(name)-1,
+				&name_len, &num, &type, name );
+			name[name_len] = 0;
+			std::cout << name << ", ";
+			GLuint location = glGetUniformLocation( shaderProgramID, name );
+		};
+		std::cout << std::endl;
+	};
 
 	void PrintShaderLog(GLenum shaderType, std::ostream &out);
 };

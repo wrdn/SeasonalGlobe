@@ -1,1 +1,3 @@
 # Put configuration values in this file in the format Parameter Name = Value
+LSystemGenerations=8
+GlobeRadius=11

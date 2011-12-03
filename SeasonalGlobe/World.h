@@ -11,17 +11,27 @@
 #include "Shader.h"
 #include "FractalTree.h"
 #include "ParticleSystem.h"
+#include "AppConfig.h"
 
 class World
 {
 private:
-	static const u32 CAMERA_COUNT = 1;
-	Camera cams[World::CAMERA_COUNT];
+	//static const u32 CAMERA_COUNT = 1;
+	//Camera cams[World::CAMERA_COUNT];
+
+	AppConfig conf;
+
+	Camera cam;
+
 	TextureManager texMan;
-	Shader _phongShader;
+	Shader *_phongShader;
 	Texture *grasstexture, *houseTexture, *barkTexture;
 	OBJFile *houseModel;
 	Sphere *sphere;
+	Cylinder *globeBase;
+
+	OBJFile *baseModel;
+
 	TerrainDisk *terrain;
 	FractalTree *tree2;
 	float3 sceneRotationAxis;
@@ -44,6 +54,8 @@ private:
 	World& operator= (World const& other);
 
 public:
+	float scaleX, scaleZ;
+
 	const bool GetAutoRotate() const { return AutoRotate; };
 	void SetAutoRotate(const bool b) { AutoRotate = b; };
 
@@ -58,6 +70,8 @@ public:
 	void SetCameraAngle(f32 v) { _cameraAngle = v; };
 	void SetCameraPosition(f32 v) { _cameraPosition = v; };
 	void SetCameraRotation(f32 v) { _cameraRotation = v; };
+
+	Camera &GetCamera() { return cam; };
 
 	World(void);
 	~World(void);

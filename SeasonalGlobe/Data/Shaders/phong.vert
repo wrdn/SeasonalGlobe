@@ -1,13 +1,11 @@
-varying vec3 Nt, Lt, Vt;
-varying vec2 tc;
-
+varying vec4 Normal;
+varying vec2 texcoord;
+uniform vec3 camPos, lightPos;
+uniform int K;
+uniform vec3 cameraPosition2; 
 void main(void)
 {
-	vec4 objectPos = gl_ModelViewMatrix * gl_Vertex;
-	Nt.xyz = gl_NormalMatrix * gl_Normal;
-	Lt.xyz = vec3(0,0,0) - objectPos.xyz;
-	Vt.xyz = vec3(0,0.5,4) - objectPos.xyz;
-	tc = gl_MultiTexCoord0.xy;
-
+	Normal = vec4(gl_Normal,1);
+	texcoord.xy = gl_MultiTexCoord0.xy;
 	gl_Position = ftransform();
-}
+};

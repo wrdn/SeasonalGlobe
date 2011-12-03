@@ -11,6 +11,12 @@ Shader::Shader() : isActive(true),
 Shader::~Shader()
 {
 	// TODO: Cleanup the OpenGL shader objects here
+	glUseProgram(0);
+	glDetachObjectARB(shaderProgramID, vertexShaderID);
+	glDetachObjectARB(shaderProgramID, fragmentShaderID);
+	glDeleteShader(vertexShaderID);
+	glDeleteShader(fragmentShaderID);
+	glDeleteProgram(shaderProgramID);
 
 	// invalidate shader IDs
 	vertexShaderID = fragmentShaderID = shaderProgramID = 0;
@@ -75,7 +81,9 @@ bool Shader::CompilerVertexShader(const c8 * const src)
 	else if(!vertexShaderID)
 	{ error = ERROR_INVALID_VS_ID; return ERROR_FAIL; }
 
-	glShaderSourceARB(vertexShaderID, 1, (const GLcharARB**)&src, NULL);
+	GLint len = strlen(src);
+
+	glShaderSourceARB(vertexShaderID, 1, (const GLchar**)&src, &len);
 	//glShaderSource(vertexShaderID, 1, (const GLchar**)&src, 0);
 	glCompileShaderARB(vertexShaderID);
 
@@ -100,7 +108,8 @@ bool Shader::CompileFragmentShader(const c8 * const src)
 	else if(!vertexShaderID)
 	{ error = ERROR_INVALID_VS_ID; return ERROR_FAIL; }
 
-	glShaderSourceARB(fragmentShaderID, 1, (const GLchar**)&src, NULL);
+	GLint len = strlen(src);
+	glShaderSourceARB(fragmentShaderID, 1, (const GLchar**)&src, &len);
 	glCompileShader(fragmentShaderID);
 
 	i32 shader_ok = 0;
@@ -123,7 +132,8 @@ bool Shader::CreateProgram()
 	else if(!vertexShaderID)
 	{ error = ERROR_INVALID_VS_ID; return ERROR_FAIL; }
 
-	shaderProgramID = glCreateProgramObjectARB();
+	//shaderProgramID = glCreateProgramObjectARB();
+	shaderProgramID = glCreateProgram();
 	if(!shaderProgramID) { error = ERROR_CREATE_PROGRAM_FAILED; return ERROR_FAIL; };
 
 	glAttachObjectARB(shaderProgramID, vertexShaderID);
@@ -137,16 +147,25 @@ bool Shader::CreateProgram()
 		error = ERROR_LINK_FAILED;
 		return ERROR_FAIL;
 	}
+	/*i32 logLength;
+	glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &logLength);
+	c8* _log = new c8[logLength];
+	glGetShaderInfoLog(shaderID, logLength, NULL, _log);
+	out << _log << std::endl;*/
+
+	GLint logLen=0;
+	glGetProgramiv(shaderProgramID, GL_INFO_LOG_LENGTH, &logLen);
+	c8 *log = new c8[logLen];
+	glGetProgramInfoLog(shaderProgramID, logLen, NULL, log);
+	std::cout << log << std::endl;
+	delete [] log;
+
 	return ERROR_OK;
 };
 
-const GLint Shader::GetUnformLocation(const c8* name)
+const GLint Shader::GetUnformLocation(const GLchar* name)
 {
-	if(shaderProgramID)
-	{
-		return glGetUniformLocation(shaderProgramID, name);
-	}
-	return 0;
+	return glGetUniformLocationARB(shaderProgramID, name);
 };
 
 void Shader::PrintShaderLog(GLenum shaderType, std::ostream &out)
@@ -168,73 +187,55 @@ void Shader::PrintShaderLog(GLenum shaderType, std::ostream &out)
 
 void Shader::SetUniform(const GLint _id, const GLint val)
 {
-	if(_id)
-		glUniform1i(_id, val);
+	glUniform1i(_id, val);
 };
 
 // TODO: CHANGE THIS AND THE TEXTURE CLASS SO YOU CAN SPECIFY TEXTURE 0-7
 void Shader::SetUniform(const c8 * const name, const Texture &tex)
 {
-	if(tex.GetID()) { }; // get rid of unreferenced formal parameter warning
-
-	if(GLint _id = GetUnformLocation(name))
-	{
-		SetUniform(_id, 0);
-	}
+	GLint _id = GetUnformLocation(name);
+	SetUniform(_id, tex.GetTextureSlot() - SLOT_GL_TEXTURE_0);
 };
 
 void Shader::SetUniform(const c8 * const name, const f32 val)
 {
-	if(GLint _id = GetUnformLocation(name))
-	{
-		glUniform1f(_id, val);
-	}
+	GLint _id = GetUnformLocation(name);
+	glUniform1f(_id, val);
 };
 
 void Shader::SetUniform(const c8 * const name, const GLint val)
 {
-	if(GLint _id = GetUnformLocation(name))
-	{
-		glUniform1i(_id, val);
-	}
+	GLint _id = GetUnformLocation(name);
+	glUniform1i(_id, val);
 };
 
 void Shader::SetUniform(const c8 * const name, const float2 &val)
 {
-	if(GLint _id = GetUnformLocation(name))
-	{
-		glUniform2fv(_id, 1, val.GetVec());
-	}
+	GLint _id = GetUnformLocation(name);
+	glUniform2fv(_id, 1, val.GetVec());
 };
 
 void Shader::SetUniform(const c8 * const name, const float3 &val)
 {
-	if(GLint _id = GetUnformLocation(name))
-	{
-		glUniform3fv(_id, 1, val.GetVec());
-	}
+	GLint _id = GetUnformLocation(name);
+	glUniform3fv(_id, 1, val.GetVec());
 };
 
 void Shader::SetUniform(const c8 * const name, const float4 &val)
 {
-	if(GLint _id = GetUnformLocation(name))
-	{
-		glUniform4fv(_id, 1, val.GetVec());
-	}
+	GLint _id = GetUnformLocation(name);
+	glUniform4fv(_id, 1, val.GetVec());
 };
 
 void Shader::SetUniform(const c8 * const name, const Mat44 &val)
 {
-	if(GLint _id = GetUnformLocation(name))
-	{
-		glUniformMatrix4fv(_id, 1, GL_FALSE, val.GetMatrix());
-	}
+	GLint _id = GetUnformLocation(name);
+	glUniformMatrix4fv(_id, 1, GL_FALSE, val.GetMatrix());
 };
 
 void Shader::Activate()
 {
-	if(isActive)
-		glUseProgram(shaderProgramID);
+	glUseProgram(shaderProgramID);
 };
 
 void Shader::Deactivate()

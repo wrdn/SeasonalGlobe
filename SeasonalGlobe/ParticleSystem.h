@@ -145,12 +145,16 @@ public:
 		}
 	};
 
-	void Draw() const // draw the active emitters
+	void Draw(f32 dt) const // draw the active emitters
 	{
 		for(std::vector<EmitterHandleBase>::const_iterator it = handles.begin(); it < handles.end(); ++it)
 		{
 			if(it->IsActive)
-				it->emitter->Draw();
+			{
+				//glPushMatrix();
+				it->emitter->Draw(dt);
+				//glPopMatrix();
+			}
 		}
 	};
 };

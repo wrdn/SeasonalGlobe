@@ -1,6 +1,19 @@
 #pragma once
 
 #include "ctypes.h"
+#include <GXBase.h>
+
+enum OpenGLTextureSlot
+{
+	SLOT_GL_TEXTURE_0 = GL_TEXTURE0,
+	SLOT_GL_TEXTURE_1 = GL_TEXTURE1,
+	SLOT_GL_TEXTURE_2 = GL_TEXTURE2,
+	SLOT_GL_TEXTURE_3 = GL_TEXTURE3,
+	SLOT_GL_TEXTURE_4 = GL_TEXTURE4,
+	SLOT_GL_TEXTURE_5 = GL_TEXTURE5,
+	SLOT_GL_TEXTURE_6 = GL_TEXTURE6,
+	SLOT_GL_TEXTURE_7 = GL_TEXTURE7,
+};
 
 // Used to manage textures from OpenGL.
 class Texture
@@ -9,6 +22,7 @@ private:
 	u32 id;
 	u32 minFilter, magFilter, wrapS, wrapT; // automatically set on activation
 	u32 width, height;
+	OpenGLTextureSlot textureSlot; // GL_TEXTURE_0 to GL_TEXTURE_7, slots are at GL_TEXTURE_0+n
 
 public:
 	Texture(void);
@@ -38,6 +52,9 @@ public:
 	void SetHeight(const u32 _height);
 	const u32 GetWidth() const;
 	const u32 GetHeight() const;
+
+	void SetTextureSlot(OpenGLTextureSlot s) { textureSlot = s; };
+	const OpenGLTextureSlot GetTextureSlot() const { return textureSlot; };
 };
 
 /*

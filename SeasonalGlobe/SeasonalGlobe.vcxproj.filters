@@ -286,6 +286,9 @@
     <Object Include="Data\House\Haus20.obj">
       <Filter>Resource Files\Data\House</Filter>
     </Object>
+    <Object Include="Data\base2.obj">
+      <Filter>Resource Files\Data</Filter>
+    </Object>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\House\Haus_020_unwrap_SPEC.jpg">

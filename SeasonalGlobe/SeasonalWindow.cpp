@@ -3,7 +3,7 @@
 #include "float4.h"
 #include "Mat44.h"
 #include "AppConfig.h"
-
+#include "strutils.h"
 #include <WinUser.h>
 #include <iostream>
 using namespace std;
@@ -70,7 +70,7 @@ void SeasonalWindow::OnDisplay()
 	glClearColor(clearColor.r(), clearColor.g(), clearColor.b(), clearColor.a());
 	
 	scn.Draw(gameTime);
-	
+
 	SwapBuffers();
 };
 
@@ -117,11 +117,24 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 
 	switch(tolower(key))
 	{
+	case 'y':
+		scn.scaleX += 0.01f;
+		break;
+	case 'u':
+		scn.scaleZ += 0.01f;
+		break;
+	case 'h':
+		scn.scaleX -= 0.01f;
+		break;
+	case 'j':
+		scn.scaleZ -= 0.01f;
+		break;
+
 		case 'a': 
-			scn.SetCameraAngle(scn.GetCameraAngle() + 5.0f);
+			scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(5, 1,0,0));
 			break;
 		case 'z':
-			scn.SetCameraAngle(scn.GetCameraAngle() - 5.0f);
+			scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(-5, 1,0,0));
 			break;
 		case 't':
 			{
@@ -203,11 +216,23 @@ void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 {
 	static i32 temp_x, temp_y;
 	if(_leftDown) {
-		scn.SetCameraPosition(scn.GetCameraPosition() + (y-temp_y)*0.05f);
+		float3 currentPos = scn.GetCamera().GetPosition();
+		scn.GetCamera().Translate( scn.GetCamera().GetDirection() * ((f32)y-(f32)temp_y)*0.05f );
+
+		//currentPos.z( scn.GetCamera().GetDirection().z() * currentPos.z() +  (y-temp_y)*0.05f );
+		//scn.GetCamera().SetPosition(currentPos);
+
+		//scn.SetCameraPosition(scn.GetCameraPosition() + (y-temp_y)*0.05f);
 		//scn._cameraPosition += (y-temp_y)*0.05f;
 	}
 	if(_rightDown) {
-		scn.SetCameraRotation(scn.GetCameraRotation()+(x-temp_x)*0.5f);
+		//float3 currentPos = scn.GetCamera().GetDirection();
+		//currentPos.z( currentPos.z() +  +(x-temp_x)*0.5f );
+		//scn.GetCamera().SetPosition(currentPos);
+
+		scn.GetCamera().Rotate( Mat44::BuildRotationMatrix( (x-temp_x)*0.5f, 0,1,0));
+
+		//scn.SetCameraRotation(scn.GetCameraRotation()+(x-temp_x)*0.5f);
 		//scn._cameraRotation += (x-temp_x)*0.5f;
 	}
 	temp_x = x;
@@ -236,7 +261,8 @@ void SeasonalWindow::OnCreate()
 	//glEnable(GL_LIGHTING);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_TEXTURE_2D);    
+
 };
 
 void SeasonalWindow::OnDestroy()

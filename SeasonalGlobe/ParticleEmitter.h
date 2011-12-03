@@ -23,6 +23,34 @@ public:
 	Particle() : alive(false)
 	{
 	};
+
+	void SetDefaultValues()
+	{
+		//timeToLive = 1.0f;
+
+		//timeToLive = (float)rand() % 5;
+		timeToLive = rand() % 1500;
+		//timeToLive = rand()%3 * 0.3f;
+
+		//color.SetColor(Color::FromInt(Color::ToInt(Color::RED)));
+		color.SetColor(Color::ToInt(Color::WHITE));
+		alive=true;
+
+		float n = (float)rand() / RAND_MAX;
+		float x = n * 2 - 1;
+
+		n = (float)rand()/RAND_MAX;
+		float y = n;
+
+		n = (float)rand()/RAND_MAX;
+		float z = n * 2 - 1;
+
+		velocity = float3(x,y,z);
+		velocity.normalize();
+		velocity *= 3;
+
+		pos = float3();
+	};
 };
 
 // represents a "set" of particles e.g. snow or smoke particles
@@ -31,7 +59,7 @@ class ParticleEmitter
 private:
 	Model BillboardModel; // square
 
-	static const u32 MAX_PARTICLES = 1000;
+	static const u32 MAX_PARTICLES = 50;
 	Particle particles[ParticleEmitter::MAX_PARTICLES];
 
 	bool isActive;
@@ -55,7 +83,7 @@ public:
 
 	// Each emitter (typically very few will exist) can update and draw itself
 	void Update(const f32 dt);
-	void Draw();
+	void Draw(f32 dt);
 
 	// Only call this once to create the quad we will be drawing
 	void Init()
@@ -75,4 +103,6 @@ public:
 		BillboardModel.SetIndicesArray(indices, 6);
 		BillboardModel.BuildVBO();
 	};
+
+	void InitParticles();
 };

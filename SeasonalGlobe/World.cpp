@@ -39,12 +39,14 @@ T* World::AddModel()
 
 bool World::Load()
 {
+	conf.ParseConfigFile("Data/ConfigFile.txt");
+
 	grasstexture = texMan.LoadTextureFromFile("Data/Textures/Grass2.jpg");
 	
 	//barkTexture = texMan.LoadTextureFromFile("Data/Textures/checkerboard_Test.jpg");
 	barkTexture = texMan.LoadTextureFromFile("Data/Textures/bark.jpg");
-	barkTexture->SetWrapS(GL_REPEAT);
-	barkTexture->SetWrapT(GL_REPEAT);
+	//barkTexture->SetWrapS(GL_REPEAT);
+	//barkTexture->SetWrapT(GL_REPEAT);
 
 	houseModel = new OBJFile();
 	houseModel->ParseOBJFile("Data/House/Haus20.obj");
@@ -52,7 +54,15 @@ bool World::Load()
 	houseTexture = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg");
 
 	sphere = AddModel<Sphere>();
-	sphere->CreateSphere(11, 40, 40);
+	f32 radius=11;
+	conf.GetFloat("GlobeRadius",radius);
+	sphere->CreateSphere(radius, 40, 40);
+
+	baseModel = new OBJFile();
+	baseModel->ParseOBJFile("Data/base2.obj");
+	baseModel->BuildModelVBOs();
+	scaleX = 2.1f; // scale for x and z on globe (height not scaled)
+	scaleZ = 2.1f;
 
 	terrain = AddModel<TerrainDisk>();
 	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
@@ -67,7 +77,11 @@ bool World::Load()
 	tree2->SetInitialString("A");
 	tree2->AddProductionRule('A', "F[^B][^^^^^^^B]");
 	tree2->AddProductionRule('B', "F^[-B]^B");
-	tree2->SetGenerations(8);
+
+	i32 _gen = 8;
+	conf.GetInt("LSystemGenerations", _gen);
+	tree2->SetGenerations(_gen);
+	
 	tree2->BuildTree();
 	
 	Texture *particleTexture = texMan.LoadTextureFromFile
@@ -80,38 +94,29 @@ bool World::Load()
 	testEmitter = psys->GetEmitter();
 	testEmitter.Get()->Init();
 	testEmitter.Get()->SetTexture(*particleTexture);
-	Particle *pts = testEmitter.Get()->GetParticles();
-	float3 pos, inc(2,0,0);
-	for(u32 i=0;i<10;++i)
-	{
-		pts[i].alive = true;
-		pts[i].pos = pos;
-		pos += inc;
-	}
+	testEmitter.Get()->InitParticles();
 	//testEmitter.Get()->particles
 
-	/*if(_phongShader.Init())
+	_phongShader = new Shader();
+	if(_phongShader->Init())
 	{
-		c8* phong_frag_src = read_src_fast("Data/Shaders/phong.frag");
-		c8* phong_vert_src = read_src_fast("Data/Shaders/phong.vert");
+		//c8* phong_frag_src = read_src_fast("Data/Shaders/phong.frag");
+		//c8* phong_vert_src = read_src_fast("Data/Shaders/phong.vert");
+		c8* phong_frag_src = read_src("Data/Shaders/phong.frag");
+		c8* phong_vert_src = read_src("Data/Shaders/phong.vert");
 
-		_phongShader.CompilerVertexShader(phong_vert_src);
-		_phongShader.CompileFragmentShader(phong_frag_src);
-		_phongShader.PrintShaderLog(GL_VERTEX_SHADER, std::cout);
-		_phongShader.PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
+		_phongShader->CompilerVertexShader(phong_vert_src);
+		_phongShader->CompileFragmentShader(phong_frag_src);
+		_phongShader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
+		_phongShader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
 
-		if(_phongShader.CreateProgram())
-		{
-			_phongShader.Activate();
-			
-			_phongShader.SetUniform("red", 3.0f);
-			
-			_phongShader.Deactivate();
-		}
+		_phongShader->CreateProgram();
 
 		delete [] phong_frag_src;
 		delete [] phong_vert_src;
-	}*/
+	}
+
+	cam.Init(45, 1.333f, 0.3f, 100, float3(0,1, -3), float3(0,0,1), float3(0,1,0));
 
 	return true;
 };
@@ -119,6 +124,9 @@ bool World::Load()
 void World::Shutdown()
 {
 	texMan.Cleanup();
+
+	_phongShader->Deactivate();
+	delete _phongShader;
 
 	for(std::vector<Model*>::iterator it = models.begin(); it != models.end(); ++it)
 	{
@@ -129,34 +137,36 @@ void World::Shutdown()
 };
 
 f32 angle=0; const f32 rotationSpeed = 50.0f;
+float inc=0;
 void World::Draw(const GameTime &gameTime)
 {
+	glClearColor(0,0,0,1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	glDisable(GL_LIGHTING);
+	//glDisable(GL_LIGHTING);
+	//glEnable(GL_LIGHTING);
+
+	//_light1.create(0, Color::black(), Color(0.5f,0.5f,0.5f,1.0f)); 
+
 	glEnable(GL_TEXTURE_2D);
 	
 	glLoadIdentity();
 
 	glPushMatrix();
 
-	glTranslatef(0.0f, 0.0f,_cameraPosition);
+	/*glTranslatef(0.0f, 0.0f,_cameraPosition);
 	glRotatef(_cameraAngle, 1.0,0.0,0.0);
 	glRotatef(_cameraRotation, 0.0, 1.0, 0.0);
-	glTranslatef(0.0f, -1.0f,0.0f);
-	
+	glTranslatef(0.0f, -1.0f,0.0f);*/
+	cam.Update();
+
 	glRotatef(angle, 0, 1, 0);
 
-	glPushMatrix();
-	((Model*)tree2->GetBranchModel())->SetDrawMode(polygonMode);
-	barkTexture->Activate();
-	tree2->Draw(gameTime.GetDeltaTime());
-	barkTexture->Deactivate();
-	glPopMatrix();
+	inc += 0.0001f;
+	if(inc > 20) inc=0;
 
+	// Terrain (floor)
 	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-
 	grasstexture->Activate();
 	glRotatef(90, 1,0,0);
 	glScalef(5.48f,5.48f,5.48f);
@@ -165,33 +175,63 @@ void World::Draw(const GameTime &gameTime)
 	grasstexture->Deactivate();
 	glPopMatrix();
 	
+	// Base
+	barkTexture->Activate();
 	glPushMatrix();
+	glScalef(scaleX,1,scaleZ);;
+	baseModel->Draw();
+	glPopMatrix();
+	barkTexture->Deactivate();
+
+
+	// Tree
+	glPushMatrix();
+	((Model*)tree2->GetBranchModel())->SetDrawMode(polygonMode);
+	barkTexture->Activate();
+	tree2->Draw(gameTime.GetDeltaTime());
+	barkTexture->Deactivate();
+	glPopMatrix();
+
+	// House
+	glPushMatrix();
+
+	_phongShader->Activate();
+	float3 mv(cam.GetPosition());
+	_phongShader->PrintActiveUniforms();
+	_phongShader->SetUniform("timeVariable", mv);
+	_phongShader->SetUniform("cameraPosition2", mv);
+
 	glTranslatef(-5.5,0,0.5);
 	glScalef(.05f,.05f,.05f);
 	houseTexture->Activate();
 	((Model*)houseModel->GetModels())->SetDrawMode(polygonMode);
 	houseModel->Draw();
 	houseTexture->Deactivate();
+
+	_phongShader->Deactivate();
+
 	glPopMatrix();
 
-	glColor4f(1,1,1,1);
+	// Particle system
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	glPushMatrix();
 	glDepthMask(GL_FALSE);
-	psys->Draw();
-	glDepthMask(GL_TRUE);
+	glPushMatrix();
+	glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
+	psys->Draw(gameTime.GetDeltaTime());
 	glPopMatrix();
+	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 
+	// Globe
 	glPushMatrix();
 	glEnable(GL_CLIP_PLANE0); // use clip plane to cut bottom half
 	GLdouble eq[] = { 0, 1, 0, 0 };
 	glClipPlane(GL_CLIP_PLANE0, eq);
 	glDisable(GL_TEXTURE_2D);
 	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE);//GL_ONE_MINUS_SRC_ALPHA);
 	glColor4f(1.0f,1.0f,1.0f,0.25f);
 	sphere->SetDrawMode(polygonMode);
 	sphere->Draw();
