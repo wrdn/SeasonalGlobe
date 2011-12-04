@@ -54,7 +54,11 @@ public:
 	const u32 GetHeight() const;
 
 	void SetTextureSlot(OpenGLTextureSlot s) { textureSlot = s; };
+
 	const OpenGLTextureSlot GetTextureSlot() const { return textureSlot; };
+
+	// returns a value in range 0 to 7 (used by shader system)
+	const u32 GetTextureSlotIndex() const { return textureSlot - SLOT_GL_TEXTURE_0; };
 };
 
 /*

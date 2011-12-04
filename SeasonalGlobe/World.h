@@ -10,8 +10,8 @@
 #include "TerrainDisk.h"
 #include "Shader.h"
 #include "FractalTree.h"
-#include "ParticleSystem.h"
 #include "AppConfig.h"
+#include "KParticleSystem.h"
 
 class World
 {
@@ -24,7 +24,10 @@ private:
 	Camera cam;
 
 	TextureManager texMan;
+	
 	Shader *_phongShader;
+	Shader *globeShader;
+
 	Texture *grasstexture, *houseTexture, *barkTexture;
 	OBJFile *houseModel;
 	Sphere *sphere;
@@ -41,8 +44,7 @@ private:
 	bool AutoRotate;
 	GLenum polygonMode;
 
-	ParticleSystem* psys;
-	EmitterHandle testEmitter;
+	KParticleSystem particleSystem;
 
 	std::vector<Model*> models;
 

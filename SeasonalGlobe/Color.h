@@ -23,6 +23,9 @@ public:
 	static Color4f FromInt(const u32 i);
 	static u32 ToInt(f32 _r, const f32 _g, const f32 _b, const f32 _a);
 	static u32 ToInt(const Color4f &c);
+
+	// Maps each value in Color4f c into the range 0 to 1 (for GLSL)
+	static Color4f Normalize(const Color4f &c);
 };
 
 class ColorU32 // color represented as int

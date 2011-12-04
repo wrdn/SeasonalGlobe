@@ -104,6 +104,8 @@
     <ClCompile Include="Floor.cpp" />
     <ClCompile Include="FractalTree.cpp" />
     <ClCompile Include="GameTime.cpp" />
+    <ClCompile Include="KParticleEmitter.cpp" />
+    <ClCompile Include="KParticleSystem.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="LSystem.cpp" />
     <ClCompile Include="main.cpp" />
@@ -112,6 +114,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MyApp.cpp" />
     <ClCompile Include="OBJFile.cpp" />
+    <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ParticleEmitter.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PerfTimer.cpp" />
@@ -141,6 +144,10 @@
     <ClInclude Include="Floor.h" />
     <ClInclude Include="FractalTree.h" />
     <ClInclude Include="GameTime.h" />
+    <ClInclude Include="KParticle.h" />
+    <ClInclude Include="KParticleEmitter.h" />
+    <ClInclude Include="KParticleSystem.h" />
+    <ClInclude Include="KPointParticleEmitter.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="LSystem.h" />
@@ -149,6 +156,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="MyApp.h" />
     <ClInclude Include="OBJFile.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="ParticleEmitter.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PerfTimer.h" />
@@ -197,6 +205,12 @@
     <None Include="Data\House\Haus_020_unwrap_SPEC.jpg">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="Data\Shaders\globe.frag">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="Data\Shaders\globe.vert">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </None>
     <None Include="Data\Shaders\phong.frag">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

@@ -131,10 +131,14 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		break;
 
 		case 'a': 
-			scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(5, 1,0,0));
+			//scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(5, 1,0,0));
+			//scn.SetCameraRotation(scn.GetCameraRotation() + 5.0f);
+			scn.SetCameraAngle(scn.GetCameraAngle() + 5.0f);
 			break;
 		case 'z':
-			scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(-5, 1,0,0));
+			scn.SetCameraAngle(scn.GetCameraAngle() - 5.0f);
+			//scn.SetCameraRotation(scn.GetCameraRotation() - 5.0f);
+			//scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(-5, 1,0,0));
 			break;
 		case 't':
 			{
@@ -216,23 +220,19 @@ void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 {
 	static i32 temp_x, temp_y;
 	if(_leftDown) {
+		//scn.GetCamera().Translate( scn.GetCamera().GetDirection() * ((f32)y-(f32)temp_y)*0.05f );
 		float3 currentPos = scn.GetCamera().GetPosition();
-		scn.GetCamera().Translate( scn.GetCamera().GetDirection() * ((f32)y-(f32)temp_y)*0.05f );
-
-		//currentPos.z( scn.GetCamera().GetDirection().z() * currentPos.z() +  (y-temp_y)*0.05f );
+		currentPos.z( scn.GetCamera().GetDirection().z() * currentPos.z() +  (y-temp_y)*0.05f );
+		scn.SetCameraPosition(scn.GetCameraPosition() + (y-temp_y)*0.05f);
 		//scn.GetCamera().SetPosition(currentPos);
-
-		//scn.SetCameraPosition(scn.GetCameraPosition() + (y-temp_y)*0.05f);
 		//scn._cameraPosition += (y-temp_y)*0.05f;
 	}
 	if(_rightDown) {
+		scn.SetCameraRotation(scn.GetCameraRotation()+(x-temp_x)*0.5f);
 		//float3 currentPos = scn.GetCamera().GetDirection();
 		//currentPos.z( currentPos.z() +  +(x-temp_x)*0.5f );
 		//scn.GetCamera().SetPosition(currentPos);
-
-		scn.GetCamera().Rotate( Mat44::BuildRotationMatrix( (x-temp_x)*0.5f, 0,1,0));
-
-		//scn.SetCameraRotation(scn.GetCameraRotation()+(x-temp_x)*0.5f);
+		//scn.GetCamera().Rotate( Mat44::BuildRotationMatrix( (x-temp_x)*0.5f, 0,1,0));
 		//scn._cameraRotation += (x-temp_x)*0.5f;
 	}
 	temp_x = x;

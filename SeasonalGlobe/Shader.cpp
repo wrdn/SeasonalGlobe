@@ -190,11 +190,12 @@ void Shader::SetUniform(const GLint _id, const GLint val)
 	glUniform1i(_id, val);
 };
 
-// TODO: CHANGE THIS AND THE TEXTURE CLASS SO YOU CAN SPECIFY TEXTURE 0-7
+
 void Shader::SetUniform(const c8 * const name, const Texture &tex)
 {
 	GLint _id = GetUnformLocation(name);
-	SetUniform(_id, tex.GetTextureSlot() - SLOT_GL_TEXTURE_0);
+	SetUniform(_id, tex.GetTextureSlotIndex());
+	//SetUniform(_id, 0);
 };
 
 void Shader::SetUniform(const c8 * const name, const f32 val)

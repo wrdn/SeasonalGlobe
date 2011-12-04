@@ -45,3 +45,9 @@ const u32 ColorU32::GetColor() const
 {
 	return color;
 };
+
+Color4f Color::Normalize(const Color4f &c)
+{
+	const f32 mul = 1.0f / 255.0f;
+	return c*mul;
+};

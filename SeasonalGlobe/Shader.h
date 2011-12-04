@@ -85,7 +85,7 @@ public:
 				&name_len, &num, &type, name );
 			name[name_len] = 0;
 			std::cout << name << ", ";
-			GLuint location = glGetUniformLocation( shaderProgramID, name );
+			//GLuint location = glGetUniformLocation( shaderProgramID, name );
 		};
 		std::cout << std::endl;
 	};

@@ -1,17 +1,29 @@
-uniform sampler2D tex;
-uniform vec4 mulCol;
-uniform vec3 cameraPosition2; 
-uniform vec3 timeVariable; 
-varying vec4 Normal;
-varying vec2 texcoord;
+uniform vec4 fAmbient, fDiffuse;
+uniform sampler2D baseMap;
+uniform bool applyTexture;
+varying vec3 vlightDirection, vNormal;
+varying vec2 vTexCoord;
 
-void main(void)
+void main()
 {
-	if(timeVariable.x>2) { };
+	vec3 lightDir = normalize(vlightDirection);
+	vec3 Normal = normalize(vNormal);
+	float ndotl = dot(Normal, lightDir);
 
-	vec2 tc = texcoord;
-	tc.xy = tc.xy + cameraPosition2.xy;
+	vec4 baseCol = texture2D(baseMap, vTexCoord);
 
-	gl_FragColor.xyz =  texture2D(tex, tc).xyz;
-	gl_FragColor.w = 1;
+	if(applyTexture)
+	{
+		vec4 AmbResult = fAmbient * baseCol;
+		vec4 DiffResult = fDiffuse * ndotl * baseCol;
+		DiffResult.w = 1;
+		gl_FragColor = AmbResult + DiffResult;
+	}
+	else
+	{
+		vec4 AmbResult = fAmbient;
+		vec4 DiffResult = fDiffuse * ndotl;
+		DiffResult.w = 1;
+		gl_FragColor = AmbResult + DiffResult;
+	}
 };

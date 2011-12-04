@@ -1,65 +1,34 @@
 #include "ParticleEmitter.h"
 
-ParticleEmitter::ParticleEmitter() : isActive(true), emitterOrigin(), tex()
-{
-};
+#pragma region Accessors and Mutators
+void ParticleEmitter::SetBillboardType(const BillboardType btype) { billboardType = btype; };
+void ParticleEmitter::SetModel(const Model *m) { model = (Model*)m; };
 
-ParticleEmitter::~ParticleEmitter()
-{
-};
+void ParticleEmitter::SetEmitterOrigin(const float3& f) { emitterOrigin = f; };
+const float3& ParticleEmitter::GetEmitterOrigin() const { return emitterOrigin; };
 
-void ParticleEmitter::Update(const f32 dt)
-{
-	if(!isActive) return;
+void ParticleEmitter::SetLocalParticleMaximum(const u32 localMax) { localParticleMaximum = localMax; };
+const u32 ParticleEmitter::GetLocalParticleMaximum() const { return localParticleMaximum; };
 
-	if(dt) { }; // get rid of unreferenced formal parameter
-};
+void ParticleEmitter::DoUpdate(const bool shouldUpdate) { doUpdate = shouldUpdate; };
+const bool ParticleEmitter::DoUpdate() const { return doUpdate; };
+void ParticleEmitter::DoDraw(const bool shouldDraw) { doDraw = shouldDraw; };
+const bool ParticleEmitter::DoDraw() const { return doDraw; };
+void ParticleEmitter::DoEmit(const bool shouldEmit) { doEmit = shouldEmit; };
+const bool ParticleEmitter::DoEmit() const { return doEmit; };
 
-void ParticleEmitter::Draw(f32 dt)
-{
-	if(!isActive) return;
-	
-	tex.Activate();
-	for(u32 i=0;i<MAX_PARTICLES;++i)
-	{
-		particles[i].pos += particles[i].velocity;
-		//particles[i].timeToLive -= dt;
-		particles[i].timeToLive -= 1;
+void ParticleEmitter::ApplyForces(const bool shouldApplyForces) { applyForces = shouldApplyForces; };
+const bool ParticleEmitter::ApplyForces() const { return applyForces; };
+void ParticleEmitter::ClearForces() { forceVectors.clear(); };
+void ParticleEmitter::AddForce(const float3 &f) { forceVectors.push_back(f); };
+const std::vector<float3>& ParticleEmitter::GetForces() const { return forceVectors; };
 
-		Color4f col = Color::FromInt(particles[i].color.GetColor());
-		glColor3fv(col.GetVec());
+void ParticleEmitter::SetShader(const Shader *shader) { emitterShader = (Shader*)shader; };
+const Shader* ParticleEmitter::GetShader() const { return emitterShader; };
 
-		glPushMatrix();
+void ParticleEmitter::SetAlphaMap(const Texture t) { alphaMap = t; };
+const Texture& ParticleEmitter::GetAlphaMap() const { return alphaMap; };
 
-		glScalef(0.001f, 0.001f, 0.001f);
-		glTranslatef(particles[i].pos.x(), particles[i].pos.y(), particles[i].pos.z());
-
-		f32 mat[16];
-		glGetFloatv(GL_MODELVIEW_MATRIX, mat);
-
-		/*mat[0] = mat[10] = 1.0f;
-		mat[1] = mat[2] = mat[8] = mat[9] = 0.0f;*/
-
-		mat[0] 	= mat[10] = mat[5] 	= 1;
-		mat[1] 	= mat[2] 	= mat[3] 	= mat[4] = 0;
-		mat[6] 	= mat[7] 	= mat[8] 	= mat[9] = 0;
-		mat[11] 	= 0;
-		glLoadMatrixf(mat);
-
-		BillboardModel.Draw();
-
-		glPopMatrix();
-
-		if(particles[i].timeToLive < 0)
-			particles[i].SetDefaultValues();
-	}
-	tex.Deactivate();
-};
-
-void ParticleEmitter::InitParticles()
-{
-	for(u32 i=0;i<MAX_PARTICLES;++i)
-	{
-		particles[i].SetDefaultValues();
-	}
-};
+void ParticleEmitter::SetSourceAlphaBlendFunction(const GLenum blendfunc) { sourceAlphaBlendFunction = blendfunc; };
+const GLenum ParticleEmitter::GetSourceAlphaBlendFunction() const { return sourceAlphaBlendFunction; };
+#pragma endregion
