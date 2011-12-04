@@ -1,5 +1,5 @@
 #include "Shader.h"
-#include "util.h"
+#include "strutils.h"
 #include <iostream>
 
 Shader::Shader() : isActive(true),
@@ -71,7 +71,29 @@ const bool Shader::Init()
 	return ERROR_OK;
 };
 
-bool Shader::CompilerVertexShader(const c8 * const src)
+const bool Shader::LoadShader(const c8* fragment_shader_filename, const c8* vertex_shader_filename)
+{
+	if(!vertexShaderID || !fragmentShaderID)
+	{
+		if(!Init()) { return false; }
+	}
+
+	c8* frag_src = read_src_fast(fragment_shader_filename);
+	c8* vert_src = read_src_fast(vertex_shader_filename);
+
+	if(!CompileVertexShader(vert_src) || !CompileFragmentShader(frag_src))
+	{
+		delete [] frag_src;
+		delete [] vert_src;
+		return false;
+	}
+	delete [] frag_src;
+	delete [] vert_src;
+
+	return CreateProgram();
+};
+
+bool Shader::CompileVertexShader(const c8 * const src)
 {
 	// Error checking
 	if(!fragmentShaderID && !vertexShaderID)
@@ -84,7 +106,6 @@ bool Shader::CompilerVertexShader(const c8 * const src)
 	GLint len = strlen(src);
 
 	glShaderSourceARB(vertexShaderID, 1, (const GLchar**)&src, &len);
-	//glShaderSource(vertexShaderID, 1, (const GLchar**)&src, 0);
 	glCompileShaderARB(vertexShaderID);
 
 	i32 shader_ok = 0;
@@ -132,7 +153,6 @@ bool Shader::CreateProgram()
 	else if(!vertexShaderID)
 	{ error = ERROR_INVALID_VS_ID; return ERROR_FAIL; }
 
-	//shaderProgramID = glCreateProgramObjectARB();
 	shaderProgramID = glCreateProgram();
 	if(!shaderProgramID) { error = ERROR_CREATE_PROGRAM_FAILED; return ERROR_FAIL; };
 
@@ -147,18 +167,6 @@ bool Shader::CreateProgram()
 		error = ERROR_LINK_FAILED;
 		return ERROR_FAIL;
 	}
-	/*i32 logLength;
-	glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &logLength);
-	c8* _log = new c8[logLength];
-	glGetShaderInfoLog(shaderID, logLength, NULL, _log);
-	out << _log << std::endl;*/
-
-	GLint logLen=0;
-	glGetProgramiv(shaderProgramID, GL_INFO_LOG_LENGTH, &logLen);
-	c8 *log = new c8[logLen];
-	glGetProgramInfoLog(shaderProgramID, logLen, NULL, log);
-	std::cout << log << std::endl;
-	delete [] log;
 
 	return ERROR_OK;
 };
@@ -166,23 +174,6 @@ bool Shader::CreateProgram()
 const GLint Shader::GetUnformLocation(const GLchar* name)
 {
 	return glGetUniformLocationARB(shaderProgramID, name);
-};
-
-void Shader::PrintShaderLog(GLenum shaderType, std::ostream &out)
-{
-	u32 shaderID=0;
-	if(shaderType == GL_VERTEX_SHADER)
-		shaderID = vertexShaderID;
-	else if(shaderType == GL_FRAGMENT_SHADER)
-		shaderID = fragmentShaderID;
-	else return;
-
-	i32 logLength;
-	glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &logLength);
-	c8* _log = new c8[logLength];
-	glGetShaderInfoLog(shaderID, logLength, NULL, _log);
-	out << _log << std::endl;
-	delete [] _log;
 };
 
 void Shader::SetUniform(const GLint _id, const GLint val)
@@ -195,7 +186,6 @@ void Shader::SetUniform(const c8 * const name, const Texture &tex)
 {
 	GLint _id = GetUnformLocation(name);
 	SetUniform(_id, tex.GetTextureSlotIndex());
-	//SetUniform(_id, 0);
 };
 
 void Shader::SetUniform(const c8 * const name, const f32 val)
@@ -242,4 +232,49 @@ void Shader::Activate()
 void Shader::Deactivate()
 {
 	glUseProgram(0);
+};
+
+void Shader::PrintShaderLog(GLenum shaderType, std::ostream &out)
+{
+	u32 shaderID=0;
+	if(shaderType == GL_VERTEX_SHADER)
+		shaderID = vertexShaderID;
+	else if(shaderType == GL_FRAGMENT_SHADER)
+		shaderID = fragmentShaderID;
+	else return;
+
+	i32 logLength;
+	glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &logLength);
+	c8* _log = new c8[logLength];
+	glGetShaderInfoLog(shaderID, logLength, NULL, _log);
+	out << _log << std::endl;
+	delete [] _log;
+};
+
+void Shader::PrintProgramLog(std::ostream &out)
+{
+	GLint logLen=0;
+	glGetProgramiv(shaderProgramID, GL_INFO_LOG_LENGTH, &logLen);
+	c8 *log = new c8[logLen];
+	glGetProgramInfoLog(shaderProgramID, logLen, NULL, log);
+	out << log << std::endl;
+	delete [] log;
+};
+
+void Shader::PrintActiveUniforms(std::ostream &out)
+{
+	i32 total = -1;
+	glGetProgramiv( shaderProgramID, GL_ACTIVE_UNIFORMS, &total );
+	if(total == 0) return;
+
+	for(i32 i=0; i<total; ++i)  {
+		i32 name_len=-1, num=-1;
+		GLenum type = GL_ZERO;
+		c8 name[100];
+		glGetActiveUniform( shaderProgramID, GLuint(i), sizeof(name)-1,
+			&name_len, &num, &type, name );
+		name[name_len] = 0;
+		out << name << ", ";
+	};
+	out << std::endl;
 };

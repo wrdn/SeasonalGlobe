@@ -60,7 +60,7 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 	angle = 0;
 	f32 currentRadius = topRadius;
 	f32 v=1;
-	f32 vincrement = 1.0f / (float)(stacks-1);
+	f32 vincrement = 1.0f / (f32)(stacks-1);
 	
 	for ( u32 currStack = 0; currStack < stacks; ++currStack )
 	{
@@ -71,7 +71,7 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 
 		for (u32 currSlice = 0; currSlice < slices; ++currSlice )
 		{
-			f32 u = (float)currSlice / (float)(slices);
+			f32 u = (f32)currSlice / (f32)(slices);
 
 			vertexArray[vertexInsertionPos++] = VERTEX(
 				float3(currentRadius*cos(angle), current_height, -currentRadius*sin(angle)),

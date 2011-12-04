@@ -1,12 +1,5 @@
 #include "SeasonalWindow.h"
-#include "OBJFile.h"
-#include "float4.h"
-#include "Mat44.h"
-#include "AppConfig.h"
-#include "strutils.h"
 #include <WinUser.h>
-#include <iostream>
-using namespace std;
 
 const c8* SeasonalWindow::DEFAULT_WINDOW_TITLE = "Seasonal Globe";
 
@@ -241,12 +234,6 @@ void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 
 void SeasonalWindow::OnCreate()
 {
-	AppConfig conf;
-	if(conf.ParseConfigFile("Data/ConfigFile.txt"))
-		cout << "Parsed config file" << endl;
-	else
-		cout << "Failed to parse config file" << endl;
-
 	GLWindowEx::OnCreate();
 	
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);

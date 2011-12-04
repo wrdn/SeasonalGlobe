@@ -117,7 +117,7 @@ bool AppConfig::GetVec2(const std::string &param, float2 &out)
 
 		float2 ret;
 		stringstream buff(str);
-		char open_bracket, comma, close_bracket;
+		c8 open_bracket, comma, close_bracket;
 		buff >> open_bracket >> ret.GetVec()[0] >> comma >> ret.GetVec()[1] >> close_bracket;
 		if(open_bracket != '(' || close_bracket != ')' || comma != ','
 			|| buff.fail()) { return false; }
@@ -136,7 +136,7 @@ bool AppConfig::GetVec3(const std::string &param, float3 &out)
 
 		float3 ret;
 		stringstream buff(str);
-		char open_bracket, comma, comma2, close_bracket;
+		c8 open_bracket, comma, comma2, close_bracket;
 		buff >> open_bracket >> ret.GetVec()[0] >> comma >> ret.GetVec()[1] >> comma2 >> ret.GetVec()[2] >> close_bracket;
 		if(open_bracket != '(' || close_bracket != ')' || comma != ','
 			|| comma2 != ',' || buff.fail()) { return false; }
@@ -155,7 +155,7 @@ bool AppConfig::GetVec4(const std::string &param, float4 &out)
 
 		float4 ret;
 		stringstream buff(str);
-		char open_bracket, comma, comma2, comma3, close_bracket;
+		c8 open_bracket, comma, comma2, comma3, close_bracket;
 		buff >> open_bracket >> ret.GetVec()[0] >> comma >> ret.GetVec()[1] >> comma2 >> ret.GetVec()[2] >> 
 			comma3 >> ret.GetVec()[3] >> close_bracket;
 		if(open_bracket != '(' || close_bracket != ')' || comma != ','

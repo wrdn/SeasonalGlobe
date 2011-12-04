@@ -52,7 +52,10 @@ public:
 
 	const bool Init();
 
-	bool CompilerVertexShader(const c8 * const src);
+	// calls Init() so you dont have to
+	const bool LoadShader(const c8* fragment_shader_filename, const c8* vertex_shader_filename);
+
+	bool CompileVertexShader(const c8 * const src);
 	bool CompileFragmentShader(const c8 * const src);
 
 	bool CreateProgram(); // creates and links shader program
@@ -70,25 +73,8 @@ public:
 
 	void Activate();
 	void Deactivate();
-
-	void PrintActiveUniforms()
-	{
-		int total = -1;
-		glGetProgramiv( shaderProgramID, GL_ACTIVE_UNIFORMS, &total );
-		if(total == 0) return;
-
-		for(int i=0; i<total; ++i)  {
-			int name_len=-1, num=-1;
-			GLenum type = GL_ZERO;
-			char name[100];
-			glGetActiveUniform( shaderProgramID, GLuint(i), sizeof(name)-1,
-				&name_len, &num, &type, name );
-			name[name_len] = 0;
-			std::cout << name << ", ";
-			//GLuint location = glGetUniformLocation( shaderProgramID, name );
-		};
-		std::cout << std::endl;
-	};
-
+	
 	void PrintShaderLog(GLenum shaderType, std::ostream &out);
+	void PrintProgramLog(std::ostream &out);
+	void PrintActiveUniforms(std::ostream &out);
 };

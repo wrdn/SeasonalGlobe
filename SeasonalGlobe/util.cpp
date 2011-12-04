@@ -79,7 +79,7 @@ f32 RADTODEG(f32 rads)
 	return (rads * (180.0f / PI));
 };
 
-float fract(float c)
+f32 fract(f32 c)
 {
 	return (c - floor(c));
 };
@@ -94,3 +94,13 @@ const bool file_exists(const c8 *filename)
 	struct stat f; // careful not to mix up the structure and function
 	return (stat(filename,&f) == 0); // 0 if file exists
 }
+
+f32 randflt(f32 max, f32 min)
+{
+    f32 random = ((f32) rand()) / (f32) RAND_MAX;
+
+    // generate (in your case) a float between 0 and (4.5-.78)
+    // then add .78, giving you a float between .78 and 4.5
+    f32 range = max - min;  
+    return (random*range) + min;
+};

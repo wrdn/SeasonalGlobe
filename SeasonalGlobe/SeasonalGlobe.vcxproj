@@ -120,6 +120,7 @@
     <ClCompile Include="PerfTimer.cpp" />
     <ClCompile Include="SeasonalWindow.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="SphericalCamera.cpp" />
     <ClCompile Include="strutils.cpp" />
@@ -160,9 +161,11 @@
     <ClInclude Include="ParticleEmitter.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PerfTimer.h" />
+    <ClInclude Include="GradientParticleEmitter.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SeasonalWindow.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="SphericalCamera.h" />
     <ClInclude Include="strutils.h" />
@@ -210,6 +213,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </None>
     <None Include="Data\Shaders\globe.vert">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="Data\Shaders\gradientMap.frag">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="Data\Shaders\gradientMap.vert">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </None>
     <None Include="Data\Shaders\phong.frag">

@@ -16,8 +16,8 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 	slices = _slices;
 	stacks = _stacks;
 
-	f32 stack_increment = 1.0f / (float)stacks; // y
-	f32 slice_increment = PI*2.0f / (float)slices; // x
+	f32 stack_increment = 1.0f / (f32)stacks; // y
+	f32 slice_increment = PI*2.0f / (f32)slices; // x
 	f32 x,y,z;
 	u32 vertexCount=0; u32 indexCount=0;
 	u32 arraySize = (slices+1)*(stacks-1)+2;
@@ -41,21 +41,21 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 
 	for( u32 i = 1; i < stacks; ++i )
 	{
-		y = sin(PI*(1/2.0f - stack_increment * (float)i));
-		f32 temp_radius = cos(PI*(1/2.0f - stack_increment * (float)i));
-		f32 temp_tex = 1.0f - stack_increment * (float)i;
+		y = sin(PI*(1/2.0f - stack_increment * (f32)i));
+		f32 temp_radius = cos(PI*(1/2.0f - stack_increment * (f32)i));
+		f32 temp_tex = 1.0f - stack_increment * (f32)i;
 		u32 temp_vcount = vertexCount;
 
 		// Create vertices around the sphere (slices)
 		for( u32 j = 0; j < slices; ++j )
 		{
-			x = cos((float)j * slice_increment);
-			z = -sin((float)j*slice_increment);
+			x = cos((f32)j * slice_increment);
+			z = -sin((f32)j*slice_increment);
 			
 			VERTEX v(
 				float3(radius*temp_radius*x, radius*y, radius*temp_radius*z),
 				float3(temp_radius*x, y, temp_radius*z),
-				float2((float)j/(float)slices, temp_tex));
+				float2((f32)j/(f32)slices, temp_tex));
 			verts[vertexCount] = v;
 			++vertexCount;
 		}

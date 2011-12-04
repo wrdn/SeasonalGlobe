@@ -23,6 +23,7 @@ private:
 	float3 emitterOrigin;
 	u32 localParticleMaximum;
 	bool doUpdate, doDraw, doEmit; // can turn off specific emitter functionality
+	u32 rateOfEmission;
 
 	// Forces
 	bool applyForces; // false by default i.e. only add velocity, dont apply a force to it
@@ -32,6 +33,13 @@ private:
 	Shader *emitterShader;
 	Texture alphaMap; // at a minumum, particles should have a alpha texture
 	GLenum sourceAlphaBlendFunction; // e.g. GL_ONE, GL_ONE_MINUS_SRC_ALPHA
+
+	// NOTE: the matrix trick for spherical/cylindrical billboarding should be done in the shader
+	// In order to perform the adjustment in the shader, either write 2 shaders, or the derived
+	// particle emitter could set a uniform variable in the shader (e.g. uniform bool billboardingSpherical)
+	// These functions are used if a shader is not employed.
+	void CylindricalBillboardAdjust();
+	void SphericalBillboardAdjust();
 
 protected:
 	// Only emitters need access to particles. This protected function allows derived
@@ -44,7 +52,13 @@ protected:
 	virtual void Emit(Particle &p, void *gdata)=0;
 public:
 
-	virtual void Draw(); // Defaults to activating the shader, then drawing each particle in turn (up to localParticleMaximum)
+	ParticleEmitter();
+	virtual ~ParticleEmitter();
+
+	// Activates the shader, then drawing each particle in turn (up to localParticleMaximum)
+	// If emitterShader is NULL, it will set the colour using fixed function functions and draw particles
+	virtual void Draw();
+
 	virtual void Update(const f32 dt); // Defaults to applying forces (or just adding velocity is applyForces=false)
 
 	#pragma region Accessors and Mutators
@@ -63,6 +77,9 @@ public:
 	const bool DoDraw() const;
 	void DoEmit(const bool shouldEmit);
 	const bool DoEmit() const;
+
+	void SetRateOfEmission(const u32 rate);
+	const u32 GetRateOfEmission() const;
 
 	void ApplyForces(const bool shouldApplyForces);
 	const bool ApplyForces() const;

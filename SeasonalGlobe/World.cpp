@@ -11,9 +11,9 @@ World::World(void)
 	  terrain(0),
 	  tree2(0),
 	  sceneRotationAxis(0,1,0),
+	  _cameraPosition(-23.2f),
 	  _cameraAngle(30.0f),
-	  _cameraPosition(-3.8500025f),
-	  _cameraRotation(-232.0f),
+	  _cameraRotation(-357.0f),
 	   AutoRotate(false),
 	   polygonMode(GL_FILL)
 {
@@ -103,47 +103,24 @@ bool World::Load()
 	
 	tree2->BuildTree();
 	
-	Texture *particleTexture = texMan.LoadTextureFromFile
-		("Data/Textures/particleTexture.tga");
+	Texture *particleTexture = texMan.LoadTextureFromFile("Data/Textures/particleTexture.tga");
 	particleTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	particleTexture->SetMagFilter(GL_LINEAR);
 
-	_phongShader = new Shader();
-	if(_phongShader->Init())
-	{
-		c8* phong_frag_src = read_src("Data/Shaders/phong.frag");
-		c8* phong_vert_src = read_src("Data/Shaders/phong.vert");
+	phongShaderID = shaderMan.AddShader();
+	Shader* phongShader = shaderMan.GetShader(phongShaderID);
+	phongShader->LoadShader("Data/Shaders/phong.frag", "Data/Shaders/phong.vert");
 
-		_phongShader->CompilerVertexShader(phong_vert_src);
-		_phongShader->CompileFragmentShader(phong_frag_src);
-		_phongShader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
-		_phongShader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
+	globeShaderID = shaderMan.AddShader();
+	Shader* globeShader = shaderMan.GetShader(globeShaderID);
+	globeShader->LoadShader("Data/Shaders/globe.frag", "Data/Shaders/globe.vert");
 
-		_phongShader->CreateProgram();
-
-		delete [] phong_frag_src;
-		delete [] phong_vert_src;
-	}
-
-	globeShader = new Shader();
-	if(globeShader->Init())
-	{
-		c8* globe_frag_src = read_src("Data/Shaders/globe.frag");
-		c8* globe_vert_src = read_src("Data/Shaders/globe.vert");
-
-		globeShader->CompilerVertexShader(globe_vert_src);
-		globeShader->CompileFragmentShader(globe_frag_src);
-		globeShader->CreateProgram();
-
-		delete [] globe_frag_src;
-		delete [] globe_vert_src;
-	}
 
 	//cam.Init(45, 1.333f, 0.3f, 100, float3(0,1, -3), float3(0,0,1), float3(0,1,0));
 
 	Model *billboardModel = CreateBillboardModel();
 
-	u32 firstEmitter = particleSystem.AddEmitter<KPointParticleEmitter>();
+	/*u32 firstEmitter = particleSystem.AddEmitter<KPointParticleEmitter>();
 	KPointParticleEmitter *emitter = (KPointParticleEmitter*)particleSystem.GetEmitter(firstEmitter);
 	emitter->SetParticleSpread(0.4f);
 	emitter->SetRateOfEmission(1);
@@ -170,7 +147,7 @@ bool World::Load()
 		delete [] gradmap_frag_src;
 		delete [] gradmap_vert_src;
 	}
-	emitter->SetGradientMapShader(gradientMapShader);
+	emitter->SetGradientMapShader(gradientMapShader);*/
 
 	/*u32 firstEmitter = particleSystem.AddEmitter<KParticleEmitter>();
 	KParticleEmitter *emitter = particleSystem.GetEmitter(firstEmitter);
@@ -183,9 +160,7 @@ bool World::Load()
 void World::Shutdown()
 {
 	texMan.Cleanup();
-
-	_phongShader->Deactivate();
-	delete _phongShader;
+	shaderMan.Clean();
 
 	for(std::vector<Model*>::iterator it = models.begin(); it != models.end(); ++it)
 	{
@@ -196,7 +171,7 @@ void World::Shutdown()
 };
 
 f32 angle=0; const f32 rotationSpeed = 50.0f;
-float inc=0;
+f32 inc=0;
 void World::Draw(const GameTime &gameTime)
 {
 	glClearColor(0,0,0,1);
@@ -236,15 +211,16 @@ void World::Draw(const GameTime &gameTime)
 	glPopMatrix();
 	
 	// Base
-	_phongShader->Activate();
+	Shader *phongShader = shaderMan.GetShader(phongShaderID);
+	phongShader->Activate();
 	{
 		float3 lightPos(0, 5 , 5);
-		_phongShader->SetUniform("lightPosition", lightPos);
+		phongShader->SetUniform("lightPosition", lightPos);
 	}
-	_phongShader->SetUniform("fAmbient", Color::BLACK);
-	_phongShader->SetUniform("fDiffuse",Color::GREY);
-	_phongShader->SetUniform("baseMap", *barkTexture);
-	_phongShader->SetUniform("applyTexture", true);
+	phongShader->SetUniform("fAmbient", Color::BLACK);
+	phongShader->SetUniform("fDiffuse",Color::GREY);
+	phongShader->SetUniform("baseMap", *barkTexture);
+	phongShader->SetUniform("applyTexture", true);
 	barkTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	barkTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR);
 	barkTexture->SetWrapS(GL_REPEAT);
@@ -255,7 +231,7 @@ void World::Draw(const GameTime &gameTime)
 	baseModel->Draw();
 	glPopMatrix();
 	barkTexture->Deactivate();
-	_phongShader->Deactivate();
+	phongShader->Deactivate();
 
 	// Tree
 	glPushMatrix();
@@ -269,20 +245,20 @@ void World::Draw(const GameTime &gameTime)
 	// House
 	glPushMatrix();
 
-	_phongShader->Activate();
+	phongShader->Activate();
 	float3 lightPos(0, 5 , 5);
-	_phongShader->SetUniform("lightPosition", lightPos);
-	_phongShader->SetUniform("fAmbient", Color::BLACK);
-	_phongShader->SetUniform("fDiffuse",Color::WHITE);
-	_phongShader->SetUniform("baseMap", *houseTexture);
-	_phongShader->SetUniform("applyTexture", true);
+	phongShader->SetUniform("lightPosition", lightPos);
+	phongShader->SetUniform("fAmbient", Color::BLACK);
+	phongShader->SetUniform("fDiffuse",Color::WHITE);
+	phongShader->SetUniform("baseMap", *houseTexture);
+	phongShader->SetUniform("applyTexture", true);
 	houseTexture->Activate();
 	glTranslatef(-5.5,0,0.5);
 	glScalef(.05f,.05f,.05f);
 	((Model*)houseModel->GetModels())->SetDrawMode(polygonMode);
 	houseModel->Draw();
 	houseTexture->Deactivate();
-	_phongShader->Deactivate();
+	phongShader->Deactivate();
 
 	glPopMatrix();
 
@@ -293,13 +269,14 @@ void World::Draw(const GameTime &gameTime)
 	glDepthMask(GL_FALSE);
 	glPushMatrix();
 	glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
-	particleSystem.Update(gameTime.GetDeltaTime());
-	particleSystem.Draw();
+	//particleSystem.Update(gameTime.GetDeltaTime());
+	//particleSystem.Draw();
 	glPopMatrix();
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 
 	// Globe
+	Shader* globeShader = shaderMan.GetShader(globeShaderID);
 	globeShader->Activate();
 	globeShader->SetUniform("eyePos", cam.GetPosition());
 

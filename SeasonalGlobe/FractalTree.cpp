@@ -321,7 +321,7 @@ void FractalTree::DrawBranch(const Mat44 &transformationMatrix)
 	glPopMatrix();
 };
 
-void FractalTree::Draw(const float dt)
+void FractalTree::Draw(const f32 dt)
 {
 	stack<Mat44> matrixStack;
 	glMatrixMode(GL_MODELVIEW); glPushMatrix();

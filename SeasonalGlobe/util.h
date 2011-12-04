@@ -32,10 +32,12 @@ unsigned long hash_djb2(const uc8 *str);
 f32 DEGTORAD(f32 degs);
 f32 RADTODEG(f32 rads);
 
-float fract(float c);
+f32 fract(f32 c);
 
 f32 lerp(f32 min, f32 max, f32 t);
 
 const bool file_exists(const c8 *filename);
+
+f32 randflt(f32 max, f32 min);
 
 #endif

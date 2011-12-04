@@ -8,25 +8,22 @@
 #include "Sphere.h"
 #include "Cylinder.h"
 #include "TerrainDisk.h"
-#include "Shader.h"
+#include "ShaderManager.h"
 #include "FractalTree.h"
 #include "AppConfig.h"
-#include "KParticleSystem.h"
 
 class World
 {
 private:
-	//static const u32 CAMERA_COUNT = 1;
-	//Camera cams[World::CAMERA_COUNT];
-
 	AppConfig conf;
 
 	Camera cam;
 
 	TextureManager texMan;
-	
-	Shader *_phongShader;
-	Shader *globeShader;
+	ShaderManager shaderMan;
+
+	u32 phongShaderID;
+	u32 globeShaderID;
 
 	Texture *grasstexture, *houseTexture, *barkTexture;
 	OBJFile *houseModel;
@@ -44,8 +41,6 @@ private:
 	bool AutoRotate;
 	GLenum polygonMode;
 
-	KParticleSystem particleSystem;
-
 	std::vector<Model*> models;
 
 	template<class T>
@@ -56,7 +51,7 @@ private:
 	World& operator= (World const& other);
 
 public:
-	float scaleX, scaleZ;
+	f32 scaleX, scaleZ;
 
 	const bool GetAutoRotate() const { return AutoRotate; };
 	void SetAutoRotate(const bool b) { AutoRotate = b; };

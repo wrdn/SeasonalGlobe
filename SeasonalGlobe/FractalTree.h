@@ -104,7 +104,7 @@ private:
 
 	// used to update currentScale (0...1) and update the animation level 
 	// of the tree if neccessary
-	void CalculateAnimationLevel(const float dt)
+	void CalculateAnimationLevel(const f32 dt)
 	{
 		lastTime += dt;
 		currentScale = fract(lastTime);
@@ -166,7 +166,7 @@ public:
 	// depth (with branches per level), and create the matrices used for drawing
 	void BuildTree();
 
-	void Draw(const float dt);
+	void Draw(const f32 dt);
 
 	#pragma region Accessors and Mutators
 	const Cylinder* GetBranchModel() { return &gbranch; };

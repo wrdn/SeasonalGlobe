@@ -73,6 +73,12 @@
     <Filter Include="Source Files\Particles\NewParticleEngine">
       <UniqueIdentifier>{ecdf1bef-3c10-46ad-8d10-39a75cc9a2b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Particles\OldParticleEngine">
+      <UniqueIdentifier>{5992628a-8d91-4ef3-8a63-5560c1a9b6b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Particles\OldParticleEngine">
+      <UniqueIdentifier>{517e5db6-f1cd-462e-a701-c43ad8669207}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="float2.cpp">
@@ -168,12 +174,6 @@
     <ClCompile Include="AppConfig.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="KParticleSystem.cpp">
-      <Filter>Source Files\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="KParticleEmitter.cpp">
-      <Filter>Source Files\Particles</Filter>
-    </ClCompile>
     <ClCompile Include="Particle.cpp">
       <Filter>Source Files\Particles\NewParticleEngine</Filter>
     </ClCompile>
@@ -182,6 +182,15 @@
     </ClCompile>
     <ClCompile Include="ParticleEmitter.cpp">
       <Filter>Source Files\Particles\NewParticleEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="KParticleEmitter.cpp">
+      <Filter>Source Files\Particles\OldParticleEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="KParticleSystem.cpp">
+      <Filter>Source Files\Particles\OldParticleEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderManager.cpp">
+      <Filter>Source Files\Shading</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -287,18 +296,6 @@
     <ClInclude Include="AppConfig.h">
       <Filter>Header Files\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="KParticle.h">
-      <Filter>Header Files\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="KParticleEmitter.h">
-      <Filter>Header Files\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="KParticleSystem.h">
-      <Filter>Header Files\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="KPointParticleEmitter.h">
-      <Filter>Header Files\Particles</Filter>
-    </ClInclude>
     <ClInclude Include="Particle.h">
       <Filter>Header Files\Particles\NewParticleEngine</Filter>
     </ClInclude>
@@ -307,6 +304,24 @@
     </ClInclude>
     <ClInclude Include="ParticleEmitter.h">
       <Filter>Header Files\Particles\NewParticleEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="KParticle.h">
+      <Filter>Header Files\Particles\OldParticleEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="KParticleEmitter.h">
+      <Filter>Header Files\Particles\OldParticleEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="KParticleSystem.h">
+      <Filter>Header Files\Particles\OldParticleEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="KPointParticleEmitter.h">
+      <Filter>Header Files\Particles\OldParticleEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="GradientParticleEmitter.h">
+      <Filter>Header Files\Particles\NewParticleEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>Header Files\Shading</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -370,6 +385,12 @@
       <Filter>Resource Files\Data\Shaders</Filter>
     </None>
     <None Include="Data\Shaders\globe.vert">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\gradientMap.frag">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\gradientMap.vert">
       <Filter>Resource Files\Data\Shaders</Filter>
     </None>
   </ItemGroup>
