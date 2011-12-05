@@ -2,7 +2,7 @@
 #include "strutils.h"
 #include "Color.h"
 #include "PerfTimer.h"
-#include "KPointParticleEmitter.h"
+#include "GradientParticleEmitter.h"
 
 World::World(void)
 	: grasstexture(0), houseTexture(0), barkTexture(0),
@@ -60,17 +60,17 @@ bool World::Load()
 {
 	conf.ParseConfigFile("Data/ConfigFile.txt");
 
-	grasstexture = texMan.LoadTextureFromFile("Data/Textures/Grass2.jpg");
+	grasstexture = texMan.LoadTextureFromFile("Data/Textures/Grass2.jpg", GL_TEXTURE0);
 	
 	//barkTexture = texMan.LoadTextureFromFile("Data/Textures/checkerboard_Test.jpg");
-	barkTexture = texMan.LoadTextureFromFile("Data/Textures/bark.jpg");
+	barkTexture = texMan.LoadTextureFromFile("Data/Textures/bark.jpg", GL_TEXTURE0);
 	//barkTexture->SetWrapS(GL_REPEAT);
 	//barkTexture->SetWrapT(GL_REPEAT);
 
 	houseModel = new OBJFile();
 	houseModel->ParseOBJFile("Data/House/Haus20.obj");
 	houseModel->BuildModelVBOs();
-	houseTexture = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg");
+	houseTexture = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg", GL_TEXTURE0);
 
 	sphere = AddModel<Sphere>();
 	f32 radius=11;
@@ -103,9 +103,13 @@ bool World::Load()
 	
 	tree2->BuildTree();
 	
-	Texture *particleTexture = texMan.LoadTextureFromFile("Data/Textures/particleTexture.tga");
+	Texture *particleTexture = texMan.LoadTextureFromFile("Data/Textures/particleTexture.tga", GL_TEXTURE0);
 	particleTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	particleTexture->SetMagFilter(GL_LINEAR);
+
+	Texture *gradientMap = texMan.LoadTextureFromFile("Data/Textures/gradientMap.tga", GL_TEXTURE0);
+	gradientMap->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
+	gradientMap->SetMagFilter(GL_LINEAR);
 
 	phongShaderID = shaderMan.AddShader();
 	Shader* phongShader = shaderMan.GetShader(phongShaderID);
@@ -120,6 +124,28 @@ bool World::Load()
 
 	Model *billboardModel = CreateBillboardModel();
 
+	u32 gradientEmitter = particleSystem.AddEmitter<GradientParticleEmitter>();
+	GradientParticleEmitter *emitter = (GradientParticleEmitter*)particleSystem.GetEmitter(gradientEmitter);
+	emitter->SetParticleSpread(0.4f);
+	emitter->SetRateOfEmission(1);
+	emitter->SetModel(billboardModel);
+	emitter->SetAlphaMap(*particleTexture);
+	emitter->SetGradientMap(*gradientMap);
+	emitter->SetLocalParticleMaximum(80);
+	emitter->SetEmitterOrigin(float3(-5.56f, 3.67f, 0.5f));
+
+	gradientMapShaderID = shaderMan.AddShader();
+	Shader* gradientMapShader = shaderMan.GetShader(gradientMapShaderID);
+	bool res = gradientMapShader->LoadShader("Data/Shaders/gradientMap.frag", "Data/Shaders/gradientMap.vert");
+	if(!res)
+	{
+		gradientMapShader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
+		gradientMapShader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
+		gradientMapShader->PrintProgramLog(std::cout);
+	}
+	//emitter->SetShader(gradientMapShader);
+
+	//emitter->SetShader();
 	/*u32 firstEmitter = particleSystem.AddEmitter<KPointParticleEmitter>();
 	KPointParticleEmitter *emitter = (KPointParticleEmitter*)particleSystem.GetEmitter(firstEmitter);
 	emitter->SetParticleSpread(0.4f);
@@ -253,10 +279,12 @@ void World::Draw(const GameTime &gameTime)
 	phongShader->SetUniform("baseMap", *houseTexture);
 	phongShader->SetUniform("applyTexture", true);
 	houseTexture->Activate();
+	glPushMatrix();
 	glTranslatef(-5.5,0,0.5);
 	glScalef(.05f,.05f,.05f);
 	((Model*)houseModel->GetModels())->SetDrawMode(polygonMode);
 	houseModel->Draw();
+	glPopMatrix();
 	houseTexture->Deactivate();
 	phongShader->Deactivate();
 
@@ -269,8 +297,8 @@ void World::Draw(const GameTime &gameTime)
 	glDepthMask(GL_FALSE);
 	glPushMatrix();
 	glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
-	//particleSystem.Update(gameTime.GetDeltaTime());
-	//particleSystem.Draw();
+	particleSystem.Update(gameTime.GetDeltaTime());
+	particleSystem.Draw();
 	glPopMatrix();
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);

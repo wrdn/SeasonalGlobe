@@ -11,6 +11,7 @@
 #include "ShaderManager.h"
 #include "FractalTree.h"
 #include "AppConfig.h"
+#include "ParticleSystem.h"
 
 class World
 {
@@ -22,8 +23,11 @@ private:
 	TextureManager texMan;
 	ShaderManager shaderMan;
 
+	ParticleSystem particleSystem;
+
 	u32 phongShaderID;
 	u32 globeShaderID;
+	u32 gradientMapShaderID;
 
 	Texture *grasstexture, *houseTexture, *barkTexture;
 	OBJFile *houseModel;

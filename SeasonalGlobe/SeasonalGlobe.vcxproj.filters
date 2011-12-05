@@ -192,6 +192,12 @@
     <ClCompile Include="ShaderManager.cpp">
       <Filter>Source Files\Shading</Filter>
     </ClCompile>
+    <ClCompile Include="GradientParticleEmitter.cpp">
+      <Filter>Source Files\Particles\NewParticleEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="HemiSphericalParticleEmitter.cpp">
+      <Filter>Source Files\Particles\NewParticleEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="float2.h">
@@ -314,14 +320,17 @@
     <ClInclude Include="KParticleSystem.h">
       <Filter>Header Files\Particles\OldParticleEngine</Filter>
     </ClInclude>
-    <ClInclude Include="KPointParticleEmitter.h">
-      <Filter>Header Files\Particles\OldParticleEngine</Filter>
-    </ClInclude>
     <ClInclude Include="GradientParticleEmitter.h">
       <Filter>Header Files\Particles\NewParticleEngine</Filter>
     </ClInclude>
     <ClInclude Include="ShaderManager.h">
       <Filter>Header Files\Shading</Filter>
+    </ClInclude>
+    <ClInclude Include="KPointParticleEmitter.h">
+      <Filter>Header Files\Particles\OldParticleEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="HemiSphericalParticleEmitter.h">
+      <Filter>Header Files\Particles\NewParticleEngine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

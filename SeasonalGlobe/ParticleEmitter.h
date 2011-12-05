@@ -41,15 +41,18 @@ private:
 	void CylindricalBillboardAdjust();
 	void SphericalBillboardAdjust();
 
-protected:
-	// Only emitters need access to particles. This protected function allows derived
-	// emitters to get the particle array. No other code needs it, so it is protected
-	Particle * const GetParticles() const { return (Particle*)particles; };
-
 	// Derived classes need to inherit this function which is used to set the data on new
 	// particles. If required by the class, gdata could be used to pass information into
 	// the emit function.
 	virtual void Emit(Particle &p, void *gdata)=0;
+
+	// this is called from Update(dt), may be easier sometimes to use this than to rewrite Update(dt)
+	virtual void UpdateShader(const f32 dt)=0;
+
+protected:
+	// Only emitters need access to particles. This protected function allows derived
+	// emitters to get the particle array. No other code needs it, so it is protected
+	Particle * const GetParticles() const { return (Particle*)particles; };
 public:
 
 	ParticleEmitter();

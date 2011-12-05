@@ -2,7 +2,8 @@
 
 // Constructors / Destructors
 ParticleEmitter::ParticleEmitter() : model(0), emitterShader(0), applyForces(false),
-	sourceAlphaBlendFunction(GL_ONE), rateOfEmission(20)
+	sourceAlphaBlendFunction(GL_ONE), rateOfEmission(20), billboardType(Spherical),
+	localParticleMaximum(GLOBAL_MAX_PARTICLES_PER_EMITTER), doUpdate(true), doDraw(true), doEmit(true)
 {
 };
 
@@ -107,6 +108,11 @@ void ParticleEmitter::Update(const f32 dt)
 				continue;
 			}
 		}
+	}
+
+	if(emitterShader)
+	{
+		UpdateShader(dt);
 	}
 };
 

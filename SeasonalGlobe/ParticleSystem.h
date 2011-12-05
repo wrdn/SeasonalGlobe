@@ -29,7 +29,7 @@ public:
 	{
 		emitterSet.push_back(new T());
 		emitterSet.back()->SetModel(defaultModel);
-		handles.push_back(KEmitterHandle(emitterSet.back()));
+		handles.push_back(EmitterHandle(emitterSet.back()));
 		return handles.size()-1;
 	};
 

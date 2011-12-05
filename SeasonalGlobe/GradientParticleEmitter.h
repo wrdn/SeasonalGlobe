@@ -11,6 +11,9 @@ private:
 	f32 particleSpread;
 	Texture gradientMap;
 
+	void Emit(Particle &p, void *gdata);
+	void UpdateShader(const f32 dt);
+
 public:
 	GradientParticleEmitter();
 	~GradientParticleEmitter();
@@ -18,5 +21,9 @@ public:
 	// Accessors and Mutators
 	const f32 GetParticleSpread() const { return particleSpread; };
 	void SetParticleSpread(const f32 spread) { particleSpread = spread; };
-	void SetGradientMap(const Texture t) { gradientMap = t; };
+	void SetGradientMap(const Texture t)
+	{
+		gradientMap = t;
+		gradientMap.SetTextureSlot(SLOT_GL_TEXTURE_1);
+	};
 };

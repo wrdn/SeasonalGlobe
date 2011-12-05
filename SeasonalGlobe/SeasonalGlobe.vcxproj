@@ -104,6 +104,8 @@
     <ClCompile Include="Floor.cpp" />
     <ClCompile Include="FractalTree.cpp" />
     <ClCompile Include="GameTime.cpp" />
+    <ClCompile Include="GradientParticleEmitter.cpp" />
+    <ClCompile Include="HemiSphericalParticleEmitter.cpp" />
     <ClCompile Include="KParticleEmitter.cpp" />
     <ClCompile Include="KParticleSystem.cpp" />
     <ClCompile Include="Log.cpp" />
@@ -145,6 +147,7 @@
     <ClInclude Include="Floor.h" />
     <ClInclude Include="FractalTree.h" />
     <ClInclude Include="GameTime.h" />
+    <ClInclude Include="HemiSphericalParticleEmitter.h" />
     <ClInclude Include="KParticle.h" />
     <ClInclude Include="KParticleEmitter.h" />
     <ClInclude Include="KParticleSystem.h" />
