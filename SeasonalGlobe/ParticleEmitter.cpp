@@ -15,13 +15,15 @@ ParticleEmitter::~ParticleEmitter()
 };
 
 // Draw and Update
-void ParticleEmitter::Draw()
+void ParticleEmitter::Draw(const GameTime &gameTime)
 {
-	alphaMap.Activate();
-
 	if(emitterShader) // a shader should be included per emitter, but it is not required
 	{
 		emitterShader->Activate();
+
+		if(emitterShader)
+			UpdateShader(gameTime); // if you wish to use them, you are expected to override and activate textures etc in UpdateShader()
+
 		for(u32 i=0; i<GetLocalParticleMaximum(); ++i)
 		{
 			Particle &p = GetParticles()[i];
@@ -38,6 +40,8 @@ void ParticleEmitter::Draw()
 	}
 	else //!emitterShader, loop, use glColor4f and draw
 	{
+		alphaMap.Activate();
+
 		GLfloat currentColor[4];
 		glGetFloatv(GL_CURRENT_COLOR, currentColor);
 
@@ -59,13 +63,13 @@ void ParticleEmitter::Draw()
 
 		glColor4fv(currentColor); // restore colour
 	}
-
 	alphaMap.Deactivate();
 };
 
-void ParticleEmitter::Update(const f32 dt)
+void ParticleEmitter::Update(const GameTime &gameTime)
 {
 	u32 emittedThisFrame = GetRateOfEmission();
+	f32 dt = gameTime.GetDeltaTime();
 
 	if(applyForces)
 	{
@@ -73,13 +77,16 @@ void ParticleEmitter::Update(const f32 dt)
 		{
 			Particle &p = particles[i];
 
+			p.pos += p.velocity * dt;
+
 			// Apply forces
 			for(u32 i=0;i<forceVectors.size();++i)
 			{
-				p.pos += (p.velocity * forceVectors[i] * dt);
+				//p.pos += (p.velocity * forceVectors[i] * dt);
+				p.pos += forceVectors[i] * dt;
 			}
 
-			p.energy -= dt;
+			p.energy -= gameTime.GetDeltaTime();
 
 			// Check particle life
 			if(p.energy < 0 && emittedThisFrame > 0 )
@@ -108,11 +115,6 @@ void ParticleEmitter::Update(const f32 dt)
 				continue;
 			}
 		}
-	}
-
-	if(emitterShader)
-	{
-		UpdateShader(dt);
 	}
 };
 

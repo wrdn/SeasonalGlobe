@@ -23,22 +23,15 @@ void GradientParticleEmitter::Emit(Particle &p, void *gdata)
 	p.velocity.normalize();
 };
 
-float K=0.0f;
-void GradientParticleEmitter::UpdateShader(const f32 dt)
+void GradientParticleEmitter::UpdateShader(const GameTime &gameTime)
 {
 	//gradientMap.Activate();
 	//GetAlphaMap().Activate();
-
-	Shader* gradientShader = (Shader*)GetShader();
+	//Shader* gradientShader = (Shader*)GetShader();
 	//std::cout << gradientShader->GetUnformLocation("t") << ": " << dt << std::endl;
-
-	gradientShader->Activate();
-
-	K += dt;
-
-	gradientShader->SetUniform("t", fract(K));
+	//gradientShader->Activate();
+	//gradientShader->SetUniform("t", fract(K));
 	//gradientShader->SetUniform("GradientMap", (const GLint)gradientMap.GetTextureSlotIndex());
-	gradientShader->SetUniform("AlphaMap", (const GLint)GetAlphaMap().GetTextureSlotIndex());
-
-	gradientShader->Deactivate();
+	//gradientShader->SetUniform("AlphaMap", (const GLint)GetAlphaMap().GetTextureSlotIndex());
+	//gradientShader->Deactivate();
 };

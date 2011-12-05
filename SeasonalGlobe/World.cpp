@@ -135,13 +135,15 @@ bool World::Load()
 
 	u32 gradientEmitter = particleSystem.AddEmitter<GradientParticleEmitter>();
 	GradientParticleEmitter *emitter = (GradientParticleEmitter*)particleSystem.GetEmitter(gradientEmitter);
-	emitter->SetParticleSpread(0.4f);
+	emitter->SetParticleSpread(0.35f);
 	emitter->SetRateOfEmission(1);
 	emitter->SetModel(billboardModel);
 	emitter->SetAlphaMap(*particleTexture);
 	emitter->SetGradientMap(*gradientMap);
 	emitter->SetLocalParticleMaximum(80);
 	emitter->SetEmitterOrigin(float3(-5.56f, 3.67f, 0.5f));
+	emitter->ApplyForces(true);
+	emitter->AddForce(float3(-0.2f,0.3f,0));
 
 	gradientMapShaderID = shaderMan.AddShader();
 	Shader* gradientMapShader = shaderMan.GetShader(gradientMapShaderID);
@@ -295,6 +297,9 @@ void floor()
 
 void World::reflective_draw(const GameTime &gameTime)
 {
+	float3 floorScale(0.3, 0.3, 0.3);
+	float3 floorPos(3.5, -0.35, 3.6);
+
 	glDisable(GL_DEPTH_TEST);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glDisable(GL_LIGHTING);
@@ -302,7 +307,11 @@ void World::reflective_draw(const GameTime &gameTime)
 	glStencilFunc(GL_ALWAYS, 1, 1);
 	glStencilOp(GL_REPLACE,GL_REPLACE,GL_REPLACE);
 
-	glPushMatrix(); floor(); glPopMatrix(); //floor, pushpop
+	glPushMatrix();
+	glTranslatef(floorPos.x(), floorPos.y(), floorPos.z());
+	glScalef(floorScale.x(), floorScale.y(), floorScale.z());
+	floor();
+	glPopMatrix(); //floor, pushpop
 	
 	glEnable(GL_LIGHTING);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -330,6 +339,8 @@ void World::reflective_draw(const GameTime &gameTime)
 
 	glPushMatrix(); // floor push
 	_material1.apply();
+	glTranslatef(floorPos.x(), floorPos.y(), floorPos.z());
+	glScalef(floorScale.x(), floorScale.y(), floorScale.z());
 	floor();
 	glPopMatrix(); // floor pop
 
@@ -350,13 +361,21 @@ void World::reflective_draw(const GameTime &gameTime)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	_material2.apply();
+	glPushMatrix();
+	glTranslatef(floorPos.x(), floorPos.y(), floorPos.z());
+	glScalef(floorScale.x(), floorScale.y(), floorScale.z());
 	floor();
+	glPopMatrix();
 	glDisable(GL_BLEND);
 
 	// now draw the floor again from below but with no blending
 	// switch meaning of front face from anti-clockwise to clockwise
 	glFrontFace(GL_CW);
+	glPushMatrix();
+	glTranslatef(floorPos.x(), floorPos.y(), floorPos.z());
+	glScalef(floorScale.x(), floorScale.y(), floorScale.z());
 	floor();
+	glPopMatrix();
 	// undo the meaning of front face
 	glFrontFace(GL_CCW);
 
@@ -365,6 +384,7 @@ void World::reflective_draw(const GameTime &gameTime)
 	((Model*)tree2->GetBranchModel())->SetDrawMode(polygonMode);
 	barkTexture->Activate();
 	glTranslatef(2.5f,0,0.2f);
+	glScalef(1,1,1);
 	tree2->Draw(gameTime.GetDeltaTime());
 	barkTexture->Deactivate();
 	glPopMatrix(); // tree pop
@@ -430,21 +450,27 @@ void World::Draw(const GameTime &gameTime)
 	glRotatef(_cameraRotation, 0.0, 1.0, 0.0);
 	glTranslatef(0.0f, -1.0f,0.0f);
 
-	multi_texturing_test();
-	glPopMatrix();
-	return;
-	
-	//// Uncomment this code to draw the reflective scene test
-	//glEnable(GL_LIGHTING);
-	//reflective_draw(gameTime);
+	//multi_texturing_test();
 	//glPopMatrix();
 	//return;
 	
-
+	// Uncomment this code to draw the reflective scene test
+	/*glEnable(GL_LIGHTING);
+	reflective_draw(gameTime);
+	glPopMatrix();
+	return;*/
+	
 	glRotatef(angle, 0, 1, 0);
 
 	inc += 0.0001f;
 	if(inc > 20) inc=0;
+
+	glEnable(GL_LIGHTING);
+	glPushMatrix();
+	//glTranslatef(0, -0.1,0);
+	reflective_draw(gameTime);
+	glPopMatrix();
+	glDisable(GL_LIGHTING);
 
 	// Terrain (floor)
 	glPushMatrix();
@@ -456,11 +482,11 @@ void World::Draw(const GameTime &gameTime)
 	grasstexture->Deactivate();
 	glPopMatrix();
 	
-	glPushMatrix();
+	/*glPushMatrix();
 	glRotatef(90,1,0,0);
-	glTranslatef(3.8, 4.2, 0.6);
+	glTranslatef(3.8f, 4.2f, 0.6f);
 	waterPlane->Draw();
-	glPopMatrix();
+	glPopMatrix();*/
 
 	// Base
 	Shader *phongShader = shaderMan.GetShader(phongShaderID);
@@ -486,13 +512,14 @@ void World::Draw(const GameTime &gameTime)
 	phongShader->Deactivate();
 
 	// Tree
-	glPushMatrix();
+	/*glPushMatrix();
 	((Model*)tree2->GetBranchModel())->SetDrawMode(polygonMode);
 	barkTexture->Activate();
 	glTranslatef(2.5f,0,0.2f);
 	tree2->Draw(gameTime.GetDeltaTime());
 	barkTexture->Deactivate();
-	glPopMatrix();
+	glPopMatrix();*/
+
 
 	// House
 	glPushMatrix();
@@ -523,17 +550,16 @@ void World::Draw(const GameTime &gameTime)
 	glDepthMask(GL_FALSE);
 	glPushMatrix();
 	glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
-	particleSystem.Update(gameTime.GetDeltaTime());
-	particleSystem.Draw();
+	particleSystem.Update(gameTime);
+	particleSystem.Draw(gameTime);
 	glPopMatrix();
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 
 	// Globe
-	Shader* globeShader = shaderMan.GetShader(globeShaderID);
+	/*Shader* globeShader = shaderMan.GetShader(globeShaderID);
 	globeShader->Activate();
 	globeShader->SetUniform("eyePos", cam.GetPosition());
-
 	glPushMatrix();
 	glEnable(GL_CLIP_PLANE0); // use clip plane to cut bottom half
 	GLdouble eq[] = { 0, 1, 0, 0 };
@@ -548,8 +574,7 @@ void World::Draw(const GameTime &gameTime)
 	glDisable(GL_BLEND);
 	glDisable(GL_CLIP_PLANE0);
 	glPopMatrix();
-
-	globeShader->Deactivate();
+	globeShader->Deactivate();*/
 
 	glPopMatrix();
 

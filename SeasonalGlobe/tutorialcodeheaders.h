@@ -152,7 +152,7 @@ public:
 class Lights {
 private:
 	// Light number
-	GLuint _lightNumber;				
+	GLint _lightNumber;				
 
 	// Ambient, diffuse and position
 	ColorT _ambient;

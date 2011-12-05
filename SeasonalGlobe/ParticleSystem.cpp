@@ -40,18 +40,18 @@ ParticleSystem::~ParticleSystem()
 	defaultModel = 0; // nullify but dont delete
 };
 
-void ParticleSystem::Update(const f32 dt)
+void ParticleSystem::Update(const GameTime &gameTime)
 {
 	for(std::vector<ParticleEmitter*>::const_iterator it = emitterSet.begin(); it != emitterSet.end(); ++it)
 	{
-		(*it)->Update(dt);
+		(*it)->Update(gameTime);
 	}
 };
 
-void ParticleSystem::Draw()
+void ParticleSystem::Draw(const GameTime &gameTime)
 {
 	for(std::vector<ParticleEmitter*>::const_iterator it = emitterSet.begin(); it != emitterSet.end(); ++it)
 	{
-		(*it)->Draw();
+		(*it)->Draw(gameTime);
 	}
 };

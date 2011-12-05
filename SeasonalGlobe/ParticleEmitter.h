@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GameTime.h"
 #include "Particle.h"
 #include "Model.h"
 #include "Shader.h"
@@ -46,8 +47,8 @@ private:
 	// the emit function.
 	virtual void Emit(Particle &p, void *gdata)=0;
 
-	// this is called from Update(dt), may be easier sometimes to use this than to rewrite Update(dt)
-	virtual void UpdateShader(const f32 dt)=0;
+	// this is called from Draw(dt) before the particles are drawn
+	virtual void UpdateShader(const GameTime &gameTime)=0;
 
 protected:
 	// Only emitters need access to particles. This protected function allows derived
@@ -60,9 +61,9 @@ public:
 
 	// Activates the shader, then drawing each particle in turn (up to localParticleMaximum)
 	// If emitterShader is NULL, it will set the colour using fixed function functions and draw particles
-	virtual void Draw();
+	virtual void Draw(const GameTime &gameTime);
 
-	virtual void Update(const f32 dt); // Defaults to applying forces (or just adding velocity is applyForces=false)
+	virtual void Update(const GameTime &gameTime); // Defaults to applying forces (or just adding velocity is applyForces=false)
 
 	#pragma region Accessors and Mutators
 	void SetBillboardType(const BillboardType btype);

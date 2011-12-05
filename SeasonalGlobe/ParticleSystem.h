@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GameTime.h"
 #include "ParticleEmitter.h"
 #include <vector>
 
@@ -43,6 +44,6 @@ public:
 	// Remove all the emitters (doesn't alter defaultModel)
 	void Clean();
 
-	void Update(const f32 dt);
-	void Draw();
+	void Update(const GameTime &gameTime);
+	void Draw(const GameTime &gameTime);
 };

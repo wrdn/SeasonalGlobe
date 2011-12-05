@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ParticleEmitter.h"
+#include "Color.h"
 
 // Emits particles from a single point
 // Uses a gradient map to find the particle colour
@@ -11,8 +12,10 @@ private:
 	f32 particleSpread;
 	Texture gradientMap;
 
+	Color4f startColor, endColor;
+
 	void Emit(Particle &p, void *gdata);
-	void UpdateShader(const f32 dt);
+	void UpdateShader(const GameTime &gameTime);
 
 public:
 	GradientParticleEmitter();
@@ -26,4 +29,10 @@ public:
 		gradientMap = t;
 		gradientMap.SetTextureSlot(SLOT_GL_TEXTURE_1);
 	};
+
+	const Color4f& GetStartColor() const { return startColor; };
+	void SetStartColor(const Color4f &c) { startColor = c; };
+
+	const Color4f& GetEndColor() const { return endColor; };
+	void SetEndColor(const Color4f &c) { endColor = c; };
 };
