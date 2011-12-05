@@ -4,7 +4,6 @@
 #include "OBJFile.h"
 #include "GameTime.h"
 #include "TextureManager.h"
-#include "Floor.h"
 #include "Sphere.h"
 #include "Cylinder.h"
 #include "TerrainDisk.h"
@@ -54,8 +53,6 @@ private:
 	f32 _cameraRotation;
 	bool AutoRotate;
 	GLenum polygonMode;
-
-	Floor *waterPlane;
 
 	std::vector<Model*> models;
 

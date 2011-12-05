@@ -156,9 +156,6 @@ bool World::Load()
 	}
 	//emitter->SetShader(gradientMapShader);
 	
-	waterPlane = AddModel<Floor>();
-	waterPlane->CreateFloor(20, 2.25);
-
 	_material1.create(ColorT::black(), ColorT(0.9f,0.9f,0.9f,1.0f));
 	_material2.create(ColorT::black(), ColorT(0.7f,0.7f,0.7f,0.5f));
 	_material3.create(ColorT::black(), ColorT::black(), ColorT::yellow());
@@ -297,8 +294,8 @@ void floor()
 
 void World::reflective_draw(const GameTime &gameTime)
 {
-	float3 floorScale(0.3, 0.3, 0.3);
-	float3 floorPos(3.5, -0.35, 3.6);
+	float3 floorScale(0.3f, 0.3f, 0.3f);
+	float3 floorPos(3.5f, -0.35f, 3.6f);
 
 	glDisable(GL_DEPTH_TEST);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);

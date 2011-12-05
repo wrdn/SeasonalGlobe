@@ -101,7 +101,7 @@
     <ClCompile Include="float2.cpp" />
     <ClCompile Include="float3.cpp" />
     <ClCompile Include="float4.cpp" />
-    <ClCompile Include="Floor.cpp" />
+    <ClCompile Include="Disk.cpp" />
     <ClCompile Include="FractalTree.cpp" />
     <ClCompile Include="GameTime.cpp" />
     <ClCompile Include="GradientParticleEmitter.cpp" />
@@ -144,7 +144,7 @@
     <ClInclude Include="float2.h" />
     <ClInclude Include="float3.h" />
     <ClInclude Include="float4.h" />
-    <ClInclude Include="Floor.h" />
+    <ClInclude Include="Disk.h" />
     <ClInclude Include="FractalTree.h" />
     <ClInclude Include="GameTime.h" />
     <ClInclude Include="HemiSphericalParticleEmitter.h" />

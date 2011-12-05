@@ -1,7 +1,7 @@
 #include "Collision.h"
 #include <math.h>
 
-bool LineCircleCollision(const Line2D &line, const Circle &c, CollisionPoint &cp)
+bool LineCircleCollision(const Line2D &line, const Circle &c, CollisionPoint2D &cp)
 {
 	float2 lineDir = line.end - line.start;
 

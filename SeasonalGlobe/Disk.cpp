@@ -1,17 +1,16 @@
-#include "Floor.h"
+#include "Disk.h"
 #include "util.h"
 #include <math.h>
 
-Floor::Floor(void) : radius(0), slices(0)
+Disk::Disk(void) : radius(0), slices(0)
 {
 }
 
-
-Floor::~Floor(void)
+Disk::~Disk(void)
 {
 }
 
-bool Floor::CreateFloor(u32 _slices, f32 _radius)
+bool Disk::Create(u32 _slices, f32 _radius)
 {
 	slices = _slices;
 	radius = _radius;

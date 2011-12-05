@@ -41,7 +41,7 @@ bool TerrainDisk::CreateTerrainDisk(const c8 * const heightmap_filename)
 		rowptr = sourceImage.GetRowData(i);
 		float2 rowStart(0, (f32)i), rowEnd(circle.pos.x(), (f32)i);
 
-		CollisionPoint cp;
+		CollisionPoint2D cp;
 		const Line2D line(rowStart, rowEnd);
 		if(LineCircleCollision(line, circle, cp))
 		{
