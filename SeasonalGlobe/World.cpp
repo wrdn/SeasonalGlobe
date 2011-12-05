@@ -3,6 +3,7 @@
 #include "Color.h"
 #include "PerfTimer.h"
 #include "GradientParticleEmitter.h"
+#include "tutorialcodeheaders.h"
 
 World::World(void)
 	: grasstexture(0), houseTexture(0), barkTexture(0),
@@ -17,6 +18,9 @@ World::World(void)
 	   AutoRotate(false),
 	   polygonMode(GL_FILL)
 {
+	waterx=3;
+	watery=0;
+	waterz=0;
 }
 
 World::~World(void)
@@ -56,21 +60,26 @@ Model* CreateBillboardModel()
 	return billboardModel;
 };
 
+Lights _light1, _light2, _light3, _light4, _light5;
+Materials _material1, _material2, _material3;
+
 bool World::Load()
 {
+	oglcall.Load();
+
 	conf.ParseConfigFile("Data/ConfigFile.txt");
 
-	grasstexture = texMan.LoadTextureFromFile("Data/Textures/Grass2.jpg", GL_TEXTURE0);
+	grasstexture = texMan.LoadTextureFromFile("Data/Textures/Grass2.jpg");
 	
 	//barkTexture = texMan.LoadTextureFromFile("Data/Textures/checkerboard_Test.jpg");
-	barkTexture = texMan.LoadTextureFromFile("Data/Textures/bark.jpg", GL_TEXTURE0);
+	barkTexture = texMan.LoadTextureFromFile("Data/Textures/bark.jpg");
 	//barkTexture->SetWrapS(GL_REPEAT);
 	//barkTexture->SetWrapT(GL_REPEAT);
 
 	houseModel = new OBJFile();
 	houseModel->ParseOBJFile("Data/House/Haus20.obj");
 	houseModel->BuildModelVBOs();
-	houseTexture = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg", GL_TEXTURE0);
+	houseTexture = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg");
 
 	sphere = AddModel<Sphere>();
 	f32 radius=11;
@@ -103,11 +112,11 @@ bool World::Load()
 	
 	tree2->BuildTree();
 	
-	Texture *particleTexture = texMan.LoadTextureFromFile("Data/Textures/particleTexture.tga", GL_TEXTURE0);
+	Texture *particleTexture = texMan.LoadTextureFromFile("Data/Textures/particleTexture.tga");
 	particleTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	particleTexture->SetMagFilter(GL_LINEAR);
 
-	Texture *gradientMap = texMan.LoadTextureFromFile("Data/Textures/gradientMap.tga", GL_TEXTURE0);
+	Texture *gradientMap = texMan.LoadTextureFromFile("Data/Textures/gradientMap.tga");
 	gradientMap->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	gradientMap->SetMagFilter(GL_LINEAR);
 
@@ -144,42 +153,44 @@ bool World::Load()
 		gradientMapShader->PrintProgramLog(std::cout);
 	}
 	//emitter->SetShader(gradientMapShader);
-
-	//emitter->SetShader();
-	/*u32 firstEmitter = particleSystem.AddEmitter<KPointParticleEmitter>();
-	KPointParticleEmitter *emitter = (KPointParticleEmitter*)particleSystem.GetEmitter(firstEmitter);
-	emitter->SetParticleSpread(0.4f);
-	emitter->SetRateOfEmission(1);
-	emitter->SetModel(*billboardModel);
-	emitter->SetTexture(particleTexture);
-	emitter->SetMaxEmitterParticles(150);
-	emitter->SetEmitterOrigin( float3(-5.56f, 3.67f, 0.5f) );
-	emitter->Init();
-
-	Texture *gradientMap = texMan.LoadTextureFromFile("Data/Textures/FlameGradientMap.tga");
-	gradientMap->SetTextureSlot(SLOT_GL_TEXTURE_1);
-	emitter->SetGradientMap(gradientMap);
-
-	Shader *gradientMapShader = new Shader();
-	if(gradientMapShader->Init())
-	{
-		c8* gradmap_frag_src = read_src("Data/Shaders/gradientMap.frag");
-		c8* gradmap_vert_src = read_src("Data/Shaders/gradientMap.vert");
-
-		gradientMapShader->CompilerVertexShader(gradmap_vert_src);
-		gradientMapShader->CompileFragmentShader(gradmap_frag_src);
-		gradientMapShader->CreateProgram();
-
-		delete [] gradmap_frag_src;
-		delete [] gradmap_vert_src;
-	}
-	emitter->SetGradientMapShader(gradientMapShader);*/
-
-	/*u32 firstEmitter = particleSystem.AddEmitter<KParticleEmitter>();
-	KParticleEmitter *emitter = particleSystem.GetEmitter(firstEmitter);
-	emitter->SetBillboardType(Spherical);
-	emitter->SetTexture(particleTexture);*/
 	
+	waterPlane = AddModel<Floor>();
+	waterPlane->CreateFloor(20, 2.25);
+
+	_material1.create(ColorT::black(), ColorT(0.9f,0.9f,0.9f,1.0f));
+	_material2.create(ColorT::black(), ColorT(0.7f,0.7f,0.7f,0.5f));
+	_material3.create(ColorT::black(), ColorT::black(), ColorT::yellow());
+
+	// setup some lights (ambient is turned off on all lights)
+	_light1.create(0, ColorT::black(), ColorT(0.5f,0.5f,0.5f,1.0f)); 
+	_light2.create(1, ColorT::black(), ColorT(0.5f,0.5f,0.5f,1.0f)); 
+	_light3.create(2, ColorT::black(), ColorT(0.5f,0.5f,0.0f,1.0f));
+	_light4.create(3, ColorT::black(), ColorT(0.5f,0.5f,0.5f,1.0f)); 
+	_light5.create(4, ColorT::black(), ColorT(0.5f,0.5f,0.5f,1.0f)); 
+
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ColorT::black().rgba());
+
+	_light3.setPosition(Vector4f(0.0,5.0,-3.0,1.0));
+	// Turn on the lights
+	_light1.apply();
+	_light2.apply();
+	_light3.apply();
+	_light4.apply();
+	_light5.apply();
+
+	mtt1 = texMan.LoadTextureFromFile("Data/Textures/bark.jpg");
+	mtt2 = texMan.LoadTextureFromFile("Data/Textures/checkerboard.jpg");
+
+	multiTextureShaderID = shaderMan.AddShader();
+	Shader *multitexshader = shaderMan.GetShader(multiTextureShaderID);
+	res = multitexshader->LoadShader("Data/Shaders/multitex.frag", "Data/Shaders/multitex.vert");
+	if(!res)
+	{
+		multitexshader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
+		multitexshader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
+		multitexshader->PrintProgramLog(std::cout);
+	}
+
 	return true;
 };
 
@@ -198,16 +209,216 @@ void World::Shutdown()
 
 f32 angle=0; const f32 rotationSpeed = 50.0f;
 f32 inc=0;
+
+void cube()
+{
+		// Front Face
+	glBegin(GL_QUADS);
+	glNormal3f(0.0f,0.0f,1.0f);
+	glTexCoord2d(0.0, 0.0);		glVertex3d(-1.0, -1.0,  1.0);
+	glTexCoord2d(1.0, 0.0);		glVertex3d( 1.0, -1.0,  1.0);
+	glTexCoord2d(1.0, 1.0);		glVertex3d( 1.0,  1.0,  1.0);
+	glTexCoord2d(0.0, 1.0);		glVertex3d(-1.0,  1.0,  1.0);
+	glEnd();
+	// Back Face
+	glBegin(GL_QUADS);
+	glNormal3f(0.0f,0.0f,-1.0f);
+	glTexCoord2d(1.0, 0.0);		glVertex3d(-1.0, -1.0, -1.0);
+	glTexCoord2d(1.0, 1.0);		glVertex3d(-1.0,  1.0, -1.0);
+	glTexCoord2d(0.0, 1.0);		glVertex3d( 1.0,  1.0, -1.0);
+	glTexCoord2d(0.0, 0.0);		glVertex3d( 1.0, -1.0, -1.0);
+	glEnd();
+	// Top Face
+	glBegin(GL_QUADS);
+	glNormal3f(0.0f,1.0f,0.0f);
+	glTexCoord2d(0.0, 1.0);		glVertex3d(-1.0,  1.0, -1.0);
+	glTexCoord2d(0.0, 0.0);		glVertex3d(-1.0,  1.0,  1.0);
+	glTexCoord2d(1.0, 0.0);		glVertex3d( 1.0,  1.0,  1.0);
+	glTexCoord2d(1.0, 1.0);		glVertex3d( 1.0,  1.0, -1.0);
+	glEnd();
+	// Bottom Face
+	glBegin(GL_QUADS);
+	glNormal3f(0.0f,-1.0f,0.0f);
+	glTexCoord2d(1.0, 1.0);		glVertex3d(-1.0, -1.0, -1.0);
+	glTexCoord2d(0.0, 1.0);		glVertex3d( 1.0, -1.0, -1.0);
+	glTexCoord2d(0.0, 0.0);		glVertex3d( 1.0, -1.0,  1.0);
+	glTexCoord2d(1.0, 0.0);		glVertex3d(-1.0, -1.0,  1.0);
+	glEnd();
+	// Right face
+	glBegin(GL_QUADS);
+	glNormal3f(1.0f,0.0f,0.0f);
+	glTexCoord2d(1.0, 0.0);		glVertex3d( 1.0, -1.0, -1.0);
+	glTexCoord2d(1.0, 1.0);		glVertex3d( 1.0,  1.0, -1.0);
+	glTexCoord2d(0.0, 1.0);		glVertex3d( 1.0,  1.0,  1.0);
+	glTexCoord2d(0.0, 0.0);		glVertex3d( 1.0, -1.0,  1.0);
+	glEnd();
+	// Left Face
+	glBegin(GL_QUADS);
+	glNormal3f(-1.0f,0.0f,0.0f);
+	glTexCoord2d(0.0, 0.0);		glVertex3d(-1.0, -1.0, -1.0);
+	glTexCoord2d(1.0, 0.0);		glVertex3d(-1.0, -1.0,  1.0);
+	glTexCoord2d(1.0, 1.0);		glVertex3d(-1.0,  1.0,  1.0);
+	glTexCoord2d(0.0, 1.0);		glVertex3d(-1.0,  1.0, -1.0);
+	glEnd();
+};
+void texcube(Texture &t)
+{
+	glEnable(GL_TEXTURE_2D);
+	t.Activate();
+	cube();
+	t.Deactivate();
+	glDisable(GL_TEXTURE_2D);
+}
+void floor()
+{
+	glPushMatrix();
+	//glScalef(0.5,0.5,0.5);
+
+	glBegin(GL_QUADS);
+	glNormal3f(0.0f, 1.0f, 0.0f);
+
+	glTexCoord2f(0,0);
+	glVertex3f(-10.0f,0.0f,10.0f);
+
+	glTexCoord2f(1,0);
+	glVertex3f(10.0f,0.0f,10.0f);
+
+	glTexCoord2f(1,1);
+	glVertex3f(10.0f,0.0f,-10.0f);
+
+	glTexCoord2f(0,1);
+	glVertex3f(-10.0f,0.0f,-10.0f);
+	glEnd();
+
+	glPopMatrix();
+}
+
+void World::reflective_draw(const GameTime &gameTime)
+{
+	glDisable(GL_DEPTH_TEST);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	glDisable(GL_LIGHTING);
+	glEnable(GL_STENCIL_TEST);
+	glStencilFunc(GL_ALWAYS, 1, 1);
+	glStencilOp(GL_REPLACE,GL_REPLACE,GL_REPLACE);
+
+	glPushMatrix(); floor(); glPopMatrix(); //floor, pushpop
+	
+	glEnable(GL_LIGHTING);
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glEnable(GL_DEPTH_TEST);
+	glStencilFunc(GL_EQUAL, 1, 1);
+	glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
+
+	glPushMatrix(); // scale push
+	glScalef(1.0, -1.0, 1.0);
+
+	glEnable(GL_NORMALIZE);
+	glCullFace(GL_FRONT);
+	_light1.setPosition(Vector4f(5.0,5.0,5.0,1.0));
+	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
+	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
+	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
+
+	glPushMatrix(); // tree push
+	((Model*)tree2->GetBranchModel())->SetDrawMode(polygonMode);
+	barkTexture->Activate();
+	glTranslatef(2.5f,0,0.2f);
+	tree2->Draw(gameTime.GetDeltaTime());
+	barkTexture->Deactivate();
+	glPopMatrix(); // tree pop
+
+	glPushMatrix(); // floor push
+	_material1.apply();
+	floor();
+	glPopMatrix(); // floor pop
+
+	glDisable(GL_NORMALIZE);
+	glCullFace(GL_BACK);
+
+	glPopMatrix(); // scale pop
+
+	glDisable(GL_STENCIL_TEST);
+
+	// put the lights back
+	_light1.setPosition(Vector4f(5.0,5.0,5.0,1.0));
+	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
+	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
+	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
+
+	// make the floor semi-transparent
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	_material2.apply();
+	floor();
+	glDisable(GL_BLEND);
+
+	// now draw the floor again from below but with no blending
+	// switch meaning of front face from anti-clockwise to clockwise
+	glFrontFace(GL_CW);
+	floor();
+	// undo the meaning of front face
+	glFrontFace(GL_CCW);
+
+	glPushMatrix(); // tree push
+	_material1.apply();
+	((Model*)tree2->GetBranchModel())->SetDrawMode(polygonMode);
+	barkTexture->Activate();
+	glTranslatef(2.5f,0,0.2f);
+	tree2->Draw(gameTime.GetDeltaTime());
+	barkTexture->Deactivate();
+	glPopMatrix(); // tree pop
+	
+	glPopMatrix();
+};
+
+void World::multi_texturing_test()
+{
+	FGLCaller caller; // instance REQUIRED!
+
+	glPushMatrix();
+
+	glEnable(GL_TEXTURE_2D);
+
+	Shader* mtshader = shaderMan.GetShader(multiTextureShaderID);
+	mtshader->Activate();
+
+	oglcall.glActiveTexture(GL_TEXTURE0_ARB);
+	oglcall.glBindTextureEXT(GL_TEXTURE_2D, mtt1->GetID());
+
+	oglcall.glActiveTexture(GL_TEXTURE1_ARB);
+	oglcall.glBindTextureEXT(GL_TEXTURE_2D, mtt2->GetID());
+
+	mtshader->SetUniform("TextureA", 0);
+	mtshader->SetUniform("TextureB", 1);
+
+	cube();
+
+	mtshader->Deactivate();
+	/*mtt1->SetTextureSlot(SLOT_GL_TEXTURE_0);
+	mtt2->SetTextureSlot(SLOT_GL_TEXTURE_1);
+
+	Shader* mtshader = shaderMan.GetShader(multiTextureShaderID);
+	oglcall.glActiveTexture(GL_TEXTURE0);
+	mtshader->Activate();
+	mtt1->Activate();
+	mtshader->SetUniform("TextureA", (i32)mtt1->GetTextureSlotIndex());
+
+	mtt2->Activate();
+	oglcall.glActiveTexture(GL_TEXTURE1);
+	mtshader->SetUniform("TextureB", (i32)mtt2->GetTextureSlotIndex());
+
+	cube();
+	mtshader->Deactivate();*/
+	glPopMatrix();
+};
+
 void World::Draw(const GameTime &gameTime)
 {
-	glClearColor(0,0,0,1);
+	//glClearColor(0,0,0,1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
 	glDisable(GL_LIGHTING);
-	//glEnable(GL_LIGHTING);
-
-	//_light1.create(0, Color::black(), Color(0.5f,0.5f,0.5f,1.0f)); 
-
 	glEnable(GL_TEXTURE_2D);
 	
 	glLoadIdentity();
@@ -219,7 +430,16 @@ void World::Draw(const GameTime &gameTime)
 	glRotatef(_cameraRotation, 0.0, 1.0, 0.0);
 	glTranslatef(0.0f, -1.0f,0.0f);
 
-	//cam.Update();
+	multi_texturing_test();
+	glPopMatrix();
+	return;
+	
+	//// Uncomment this code to draw the reflective scene test
+	//glEnable(GL_LIGHTING);
+	//reflective_draw(gameTime);
+	//glPopMatrix();
+	//return;
+	
 
 	glRotatef(angle, 0, 1, 0);
 
@@ -236,6 +456,12 @@ void World::Draw(const GameTime &gameTime)
 	grasstexture->Deactivate();
 	glPopMatrix();
 	
+	glPushMatrix();
+	glRotatef(90,1,0,0);
+	glTranslatef(3.8, 4.2, 0.6);
+	waterPlane->Draw();
+	glPopMatrix();
+
 	// Base
 	Shader *phongShader = shaderMan.GetShader(phongShaderID);
 	phongShader->Activate();
@@ -275,7 +501,7 @@ void World::Draw(const GameTime &gameTime)
 	float3 lightPos(0, 5 , 5);
 	phongShader->SetUniform("lightPosition", lightPos);
 	phongShader->SetUniform("fAmbient", Color::BLACK);
-	phongShader->SetUniform("fDiffuse",Color::WHITE);
+	phongShader->SetUniform("fDiffuse", Color::WHITE);
 	phongShader->SetUniform("baseMap", *houseTexture);
 	phongShader->SetUniform("applyTexture", true);
 	houseTexture->Activate();

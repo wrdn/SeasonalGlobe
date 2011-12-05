@@ -4,7 +4,6 @@ using namespace gxbase;
 
 TextureManager::TextureManager(void)
 {
-	glex::Load();
 }
 
 TextureManager::~TextureManager(void)
@@ -27,7 +26,7 @@ void TextureManager::Cleanup()
 	textures.clear();
 };
 
-Texture* TextureManager::LoadTextureFromFile(const c8* const _filename, const u32 slot)
+Texture* TextureManager::LoadTextureFromFile(const c8* const _filename)
 {
 	Image tex;
 	bool loaded = tex.Load(_filename);
@@ -45,11 +44,11 @@ Texture* TextureManager::LoadTextureFromFile(const c8* const _filename, const u3
 
 			textureObject.Activate();
 
-			glActiveTexture(slot);
 			tex.gluBuild2DMipmaps();
-			textureObject.Deactivate();
 			tex.Free();
 			
+			textureObject.Deactivate();
+
 			textures[id] = textureObject;
 			return &textures[id];
 		}

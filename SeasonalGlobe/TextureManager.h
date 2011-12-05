@@ -2,9 +2,8 @@
 
 #include "Texture.h"
 #include <map>
-#include <GXBase.h>
 
-class TextureManager : public glex
+class TextureManager
 {
 private:
 	std::map<u32, Texture> textures;
@@ -15,8 +14,7 @@ public:
 	// Return NULL on error. These functions use GXBase to load the image
 	// and will automatically build mipmaps. The image from GXBase will then
 	// be destroyed as it is no longer required.
-	// The parameter slot is required so we can call the appropriate glActiveTexture() function
-	Texture* LoadTextureFromFile(const c8* const _filename, const u32 slot);
+	Texture* LoadTextureFromFile(const c8* const _filename);
 
 	// Expects data in RGBA GL_UNSIGNED_BYTE format
 	Texture* LoadTextureFromMemory(const u32* const _mem, const u32 _width, const u32 _height, const u32 format);

@@ -13,6 +13,15 @@
 #include "AppConfig.h"
 #include "ParticleSystem.h"
 
+
+class FGLCaller : public glex
+{
+public:
+	FGLCaller()
+	{
+	};
+};
+
 class World
 {
 private:
@@ -28,6 +37,7 @@ private:
 	u32 phongShaderID;
 	u32 globeShaderID;
 	u32 gradientMapShaderID;
+	u32 multiTextureShaderID;
 
 	Texture *grasstexture, *houseTexture, *barkTexture;
 	OBJFile *houseModel;
@@ -45,6 +55,8 @@ private:
 	bool AutoRotate;
 	GLenum polygonMode;
 
+	Floor *waterPlane;
+
 	std::vector<Model*> models;
 
 	template<class T>
@@ -55,7 +67,16 @@ private:
 	World& operator= (World const& other);
 
 public:
+	FGLCaller oglcall;
+
+	f32 waterx, watery, waterz;
+	
 	f32 scaleX, scaleZ;
+
+	void reflective_draw(const GameTime &gameTime);
+
+	void multi_texturing_test();
+	Texture *mtt1, *mtt2; // multi texturing test texture 1 and 2
 
 	const bool GetAutoRotate() const { return AutoRotate; };
 	void SetAutoRotate(const bool b) { AutoRotate = b; };

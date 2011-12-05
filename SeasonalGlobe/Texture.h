@@ -32,7 +32,7 @@ public:
 	const u32 GetID() const;
 	void SetID(const u32 _id);
 
-	void Activate() const;
+	void Activate();
 	void Deactivate() const;
 
 	// http://www.opengl.org/sdk/docs/man/xhtml/glTexParameter.xml

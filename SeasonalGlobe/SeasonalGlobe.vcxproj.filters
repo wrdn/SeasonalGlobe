@@ -332,6 +332,9 @@
     <ClInclude Include="HemiSphericalParticleEmitter.h">
       <Filter>Header Files\Particles\NewParticleEngine</Filter>
     </ClInclude>
+    <ClInclude Include="tutorialcodeheaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Object Include="Data\TexturedCube.obj">

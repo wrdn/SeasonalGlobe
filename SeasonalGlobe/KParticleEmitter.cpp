@@ -11,7 +11,7 @@ KParticleEmitter::~KParticleEmitter()
 
 void KParticleEmitter::Draw()
 {
-	emitterTexture->Activate();
+	((Texture*)emitterTexture)->Activate();
 
 	for(u32 i=0;i<maxEmitterParticles;++i)
 	{

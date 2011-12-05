@@ -10,6 +10,7 @@ SeasonalWindow::SeasonalWindow() : clearColor(Color::BLACK), _leftDown(false), _
 
 	SetSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	SetDepthBits(24);
+	SetStencilBits(16);
 	SetTitle(DEFAULT_WINDOW_TITLE);
 };
 
@@ -111,16 +112,22 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 	switch(tolower(key))
 	{
 	case 'y':
-		scn.scaleX += 0.01f;
+		scn.waterx -= 0.1f;
 		break;
 	case 'u':
-		scn.scaleZ += 0.01f;
+		scn.waterx += 0.1f;
 		break;
 	case 'h':
-		scn.scaleX -= 0.01f;
+		scn.watery -= 0.1f;
 		break;
 	case 'j':
-		scn.scaleZ -= 0.01f;
+		scn.watery += 0.1f;
+		break;
+	case 'n':
+		scn.waterz -= 0.1f;
+		break;
+	case 'm':
+		scn.waterz += 0.1f;
 		break;
 
 		case 'a': 
