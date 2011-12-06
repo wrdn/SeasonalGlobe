@@ -5,6 +5,7 @@ ParticleEmitter::ParticleEmitter() : model(0), emitterShader(0), applyForces(fal
 	sourceAlphaBlendFunction(GL_ONE), rateOfEmission(20), billboardType(Spherical),
 	localParticleMaximum(GLOBAL_MAX_PARTICLES_PER_EMITTER), doUpdate(true), doDraw(true), doEmit(true)
 {
+	glex::Load();
 };
 
 ParticleEmitter::~ParticleEmitter()
@@ -64,6 +65,8 @@ void ParticleEmitter::Draw(const GameTime &gameTime)
 		glColor4fv(currentColor); // restore colour
 	}
 	alphaMap.Deactivate();
+	
+	glActiveTexture(GL_TEXTURE0);
 };
 
 void ParticleEmitter::Update(const GameTime &gameTime)
@@ -169,7 +172,11 @@ const std::vector<float3>& ParticleEmitter::GetForces() const { return forceVect
 void ParticleEmitter::SetShader(const Shader *shader) { emitterShader = (Shader*)shader; };
 const Shader* ParticleEmitter::GetShader() const { return emitterShader; };
 
-void ParticleEmitter::SetAlphaMap(const Texture t) { alphaMap = t; };
+void ParticleEmitter::SetAlphaMap(const Texture t)
+{
+	alphaMap = t;
+	alphaMap.SetTextureSlot(SLOT_GL_TEXTURE_0);
+};
 const Texture& ParticleEmitter::GetAlphaMap() const { return alphaMap; };
 
 void ParticleEmitter::SetSourceAlphaBlendFunction(const GLenum blendfunc) { sourceAlphaBlendFunction = blendfunc; };

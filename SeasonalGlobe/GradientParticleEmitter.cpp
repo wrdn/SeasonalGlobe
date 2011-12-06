@@ -2,6 +2,7 @@
 
 GradientParticleEmitter::GradientParticleEmitter() : particleSpread(5)
 {
+	glex::Load();
 };
 
 GradientParticleEmitter::~GradientParticleEmitter()
@@ -25,13 +26,18 @@ void GradientParticleEmitter::Emit(Particle &p, void *gdata)
 
 void GradientParticleEmitter::UpdateShader(const GameTime &gameTime)
 {
-	//gradientMap.Activate();
-	//GetAlphaMap().Activate();
-	//Shader* gradientShader = (Shader*)GetShader();
-	//std::cout << gradientShader->GetUnformLocation("t") << ": " << dt << std::endl;
-	//gradientShader->Activate();
-	//gradientShader->SetUniform("t", fract(K));
-	//gradientShader->SetUniform("GradientMap", (const GLint)gradientMap.GetTextureSlotIndex());
-	//gradientShader->SetUniform("AlphaMap", (const GLint)GetAlphaMap().GetTextureSlotIndex());
-	//gradientShader->Deactivate();
+	glEnable(GL_TEXTURE_2D);
+
+	Shader *shader = (Shader*)GetShader();
+
+	Texture &shaderAlphaMap = (Texture&)GetAlphaMap();
+	glActiveTexture(shaderAlphaMap.GetTextureSlot());
+	shaderAlphaMap.Activate();
+
+	glActiveTexture(gradientMap.GetTextureSlot());
+	gradientMap.Activate();
+
+	shader->SetUniform("AlphaMap", 0);
+	shader->SetUniform("GradientMap", 1);
+	shader->SetUniform("Time", gameTime.GetRunningTime());
 };

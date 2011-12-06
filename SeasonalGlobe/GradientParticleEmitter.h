@@ -14,8 +14,9 @@ private:
 
 	Color4f startColor, endColor;
 
-	void Emit(Particle &p, void *gdata);
-	void UpdateShader(const GameTime &gameTime);
+	void Emit(Particle &p, void *gdata); // emit particles from a point
+
+	void UpdateShader(const GameTime &gameTime); // update the shader to set the textures
 
 public:
 	GradientParticleEmitter();

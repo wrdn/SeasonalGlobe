@@ -112,14 +112,16 @@ bool World::Load()
 	
 	tree2->BuildTree();
 	
-	Texture *particleTexture = texMan.LoadTextureFromFile("Data/Textures/particleTexture.tga");
+	particleTexture = texMan.LoadTextureFromFile("Data/Textures/particleTexture.tga");
 	particleTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	particleTexture->SetMagFilter(GL_LINEAR);
+	particleTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
 
-	Texture *gradientMap = texMan.LoadTextureFromFile("Data/Textures/gradientMap.tga");
-	gradientMap->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
-	gradientMap->SetMagFilter(GL_LINEAR);
-
+	gradientMapTexture = texMan.LoadTextureFromFile("Data/Textures/gradientMap.tga");
+	gradientMapTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
+	gradientMapTexture->SetMagFilter(GL_LINEAR);
+	gradientMapTexture->SetTextureSlot(SLOT_GL_TEXTURE_1);
+	
 	phongShaderID = shaderMan.AddShader();
 	Shader* phongShader = shaderMan.GetShader(phongShaderID);
 	phongShader->LoadShader("Data/Shaders/phong.frag", "Data/Shaders/phong.vert");
@@ -139,7 +141,7 @@ bool World::Load()
 	emitter->SetRateOfEmission(1);
 	emitter->SetModel(billboardModel);
 	emitter->SetAlphaMap(*particleTexture);
-	emitter->SetGradientMap(*gradientMap);
+	emitter->SetGradientMap(*gradientMapTexture);
 	emitter->SetLocalParticleMaximum(80);
 	emitter->SetEmitterOrigin(float3(-5.56f, 3.67f, 0.5f));
 	emitter->ApplyForces(true);
@@ -156,6 +158,7 @@ bool World::Load()
 	}
 	//emitter->SetShader(gradientMapShader);
 	
+
 	_material1.create(ColorT::black(), ColorT(0.9f,0.9f,0.9f,1.0f));
 	_material2.create(ColorT::black(), ColorT(0.7f,0.7f,0.7f,0.5f));
 	_material3.create(ColorT::black(), ColorT::black(), ColorT::yellow());
@@ -389,9 +392,33 @@ void World::reflective_draw(const GameTime &gameTime)
 	glPopMatrix();
 };
 
-void World::multi_texturing_test()
+void World::multi_texturing_test(const GameTime &gameTime)
 {
-	FGLCaller caller; // instance REQUIRED!
+	// Trying the gradient map shader
+	glEnable(GL_TEXTURE_2D);
+
+	Shader *shader = shaderMan.GetShader(gradientMapShaderID);
+	FGLCaller caller;
+
+	particleTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
+	gradientMapTexture->SetTextureSlot(SLOT_GL_TEXTURE_1);
+
+	shader->Activate();
+
+	caller.glActiveTexture(GL_TEXTURE0_ARB);
+	particleTexture->Activate();
+
+	caller.glActiveTexture(GL_TEXTURE1_ARB);
+	gradientMapTexture->Activate();
+
+	shader->SetUniform("AlphaMap", 0);
+	shader->SetUniform("GradientMap",1);
+	shader->SetUniform("Time", gameTime.GetRunningTime());
+
+	cube();
+	shader->Deactivate();
+
+	/*FGLCaller caller; // instance REQUIRED!
 
 	glPushMatrix();
 
@@ -411,7 +438,8 @@ void World::multi_texturing_test()
 
 	cube();
 
-	mtshader->Deactivate();
+	mtshader->Deactivate();*/
+
 	/*mtt1->SetTextureSlot(SLOT_GL_TEXTURE_0);
 	mtt2->SetTextureSlot(SLOT_GL_TEXTURE_1);
 
@@ -447,15 +475,9 @@ void World::Draw(const GameTime &gameTime)
 	glRotatef(_cameraRotation, 0.0, 1.0, 0.0);
 	glTranslatef(0.0f, -1.0f,0.0f);
 
-	//multi_texturing_test();
+	//multi_texturing_test(gameTime);
 	//glPopMatrix();
 	//return;
-	
-	// Uncomment this code to draw the reflective scene test
-	/*glEnable(GL_LIGHTING);
-	reflective_draw(gameTime);
-	glPopMatrix();
-	return;*/
 	
 	glRotatef(angle, 0, 1, 0);
 
@@ -464,7 +486,6 @@ void World::Draw(const GameTime &gameTime)
 
 	glEnable(GL_LIGHTING);
 	glPushMatrix();
-	//glTranslatef(0, -0.1,0);
 	reflective_draw(gameTime);
 	glPopMatrix();
 	glDisable(GL_LIGHTING);
@@ -478,12 +499,6 @@ void World::Draw(const GameTime &gameTime)
 	terrain->Draw();
 	grasstexture->Deactivate();
 	glPopMatrix();
-	
-	/*glPushMatrix();
-	glRotatef(90,1,0,0);
-	glTranslatef(3.8f, 4.2f, 0.6f);
-	waterPlane->Draw();
-	glPopMatrix();*/
 
 	// Base
 	Shader *phongShader = shaderMan.GetShader(phongShaderID);

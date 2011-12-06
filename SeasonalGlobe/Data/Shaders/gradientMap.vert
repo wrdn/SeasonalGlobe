@@ -1,6 +1,6 @@
 varying vec2 TexCoord;
-uniform float t;
-varying float HT;
+varying float k;
+uniform float Time;
 
 void main()
 {
@@ -15,10 +15,11 @@ void main()
 	modMVM[2][1] = 0.0;
 	
 	vec4 pos = gl_ProjectionMatrix * modMVM * gl_Vertex;
-	
 	gl_Position = pos;
-	TexCoord = gl_MultiTexCoord0.xy;
 	
-	float p = fract(gl_Vertex.y + 0.48 * t);
-	HT = 1-p;
+	vec4 translatedPos = gl_ModelViewMatrix * gl_Vertex;
+	
+	TexCoord = gl_Vertex.xy;
+	float t = fract(translatedPos.z + 0.4 * Time);
+	k = 1.0 - t;
 };

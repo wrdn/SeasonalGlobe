@@ -38,7 +38,9 @@ private:
 	u32 gradientMapShaderID;
 	u32 multiTextureShaderID;
 
-	Texture *grasstexture, *houseTexture, *barkTexture;
+	Texture *grasstexture, *houseTexture, *barkTexture, *particleTexture,
+		*gradientMapTexture;
+
 	OBJFile *houseModel;
 	Sphere *sphere;
 	Cylinder *globeBase;
@@ -72,7 +74,7 @@ public:
 
 	void reflective_draw(const GameTime &gameTime);
 
-	void multi_texturing_test();
+	void multi_texturing_test(const GameTime &gameTime);
 	Texture *mtt1, *mtt2; // multi texturing test texture 1 and 2
 
 	const bool GetAutoRotate() const { return AutoRotate; };

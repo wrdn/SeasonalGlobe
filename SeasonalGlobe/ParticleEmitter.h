@@ -10,7 +10,7 @@ const u32 GLOBAL_MAX_PARTICLES_PER_EMITTER = 1000;
 
 enum BillboardType { Spherical, Cylindrical };
 
-class ParticleEmitter // base abstract emitter class
+class ParticleEmitter : public glex // base abstract emitter class
 {
 private:
 	Particle particles[GLOBAL_MAX_PARTICLES_PER_EMITTER]; // particles
