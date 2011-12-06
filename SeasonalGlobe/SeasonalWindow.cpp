@@ -59,10 +59,14 @@ const bool SeasonalWindow::IsFullScreen() const
 void SeasonalWindow::OnDisplay()
 {
 	gameTime.Update();
+
+	glDisable(GL_LIGHTING);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_DEPTH_TEST);
 	
-	clearColor = Color::GREY;
-	glClearColor(clearColor.r(), clearColor.g(), clearColor.b(), clearColor.a());
-	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0,0,0,1);
+
 	scn.Draw(gameTime);
 
 	SwapBuffers();

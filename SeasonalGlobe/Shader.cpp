@@ -278,3 +278,8 @@ void Shader::PrintActiveUniforms(std::ostream &out)
 	};
 	out << std::endl;
 };
+
+const bool Shader::Valid() const
+{
+	return (vertexShaderID && fragmentShaderID && shaderProgramID);
+};

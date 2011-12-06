@@ -104,7 +104,9 @@
     <ClCompile Include="Disk.cpp" />
     <ClCompile Include="FractalTree.cpp" />
     <ClCompile Include="GameTime.cpp" />
-    <ClCompile Include="GradientParticleEmitter.cpp" />
+    <ClCompile Include="GradientParticleEmitter.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="HemiSphericalParticleEmitter.cpp" />
     <ClCompile Include="KParticleEmitter.cpp" />
     <ClCompile Include="KParticleSystem.cpp" />
@@ -120,6 +122,7 @@
     <ClCompile Include="ParticleEmitter.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PerfTimer.cpp" />
+    <ClCompile Include="PointBasedParticleEmitter.cpp" />
     <ClCompile Include="SeasonalWindow.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
@@ -164,7 +167,10 @@
     <ClInclude Include="ParticleEmitter.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PerfTimer.h" />
-    <ClInclude Include="GradientParticleEmitter.h" />
+    <ClInclude Include="GradientParticleEmitter.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="PointBasedParticleEmitter.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SeasonalWindow.h" />
     <ClInclude Include="Shader.h" />

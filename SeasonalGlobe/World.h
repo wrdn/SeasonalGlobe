@@ -38,6 +38,8 @@ private:
 	u32 gradientMapShaderID;
 	u32 multiTextureShaderID;
 
+	u32 particleSystemBaseShaderID;
+
 	Texture *grasstexture, *houseTexture, *barkTexture, *particleTexture,
 		*gradientMapTexture;
 

@@ -47,6 +47,8 @@ public:
 
 	const u32 GetLastError() const;
 
+	const bool Valid() const; // returns true if vertexShaderID, fragmentShaderID and shaderProgramID != 0
+
 	void SetActive(bool active);
 	const bool IsActive() const;
 

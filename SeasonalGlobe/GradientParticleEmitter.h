@@ -36,4 +36,8 @@ public:
 
 	const Color4f& GetEndColor() const { return endColor; };
 	void SetEndColor(const Color4f &c) { endColor = c; };
+
+	void UpdateParticle(Particle &p, const GameTime &gameTime)
+	{
+	};
 };

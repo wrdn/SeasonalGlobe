@@ -2,7 +2,8 @@
 #include "strutils.h"
 #include "Color.h"
 #include "PerfTimer.h"
-#include "GradientParticleEmitter.h"
+#include "PointBasedParticleEmitter.h"
+#include "HemiSphericalParticleEmitter.h"
 #include "tutorialcodeheaders.h"
 
 World::World(void)
@@ -82,7 +83,7 @@ bool World::Load()
 	houseTexture = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg");
 
 	sphere = AddModel<Sphere>();
-	f32 radius=11;
+	f32 radius=11.3;
 	conf.GetFloat("GlobeRadius",radius);
 	sphere->CreateSphere(radius, 40, 40);
 
@@ -134,8 +135,40 @@ bool World::Load()
 	//cam.Init(45, 1.333f, 0.3f, 100, float3(0,1, -3), float3(0,0,1), float3(0,1,0));
 
 	Model *billboardModel = CreateBillboardModel();
+	particleSystem.SetDefaultModel(billboardModel);
 
-	u32 gradientEmitter = particleSystem.AddEmitter<GradientParticleEmitter>();
+	particleSystemBaseShaderID = shaderMan.AddShader();
+	Shader *psysbase = shaderMan.GetShader(particleSystemBaseShaderID);
+	if(!psysbase->LoadShader("Data/Shaders/particlesystembase.frag", "Data/Shaders/particlesystembase.vert"))
+	{
+		psysbase->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
+		psysbase->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
+		psysbase->PrintProgramLog(std::cout);
+	}
+	u32 pointBasedEmitter = particleSystem.AddEmitter<PointBasedParticleEmitter>();
+	PointBasedParticleEmitter *emitter = (PointBasedParticleEmitter*)particleSystem.GetEmitter(pointBasedEmitter);
+	emitter->SetParticleSpread(0.35f);
+	emitter->SetRateOfEmission(2);
+	emitter->SetAlphaMap(*particleTexture);
+	i32 maxsmokeparticles=80; conf.GetInt("MaxSmokeParticles", maxsmokeparticles);
+	emitter->SetLocalParticleMaximum(abs(maxsmokeparticles));
+	emitter->SetStartingColor(Color4f(0.2, 0.2, 0.2, 0.75));
+	emitter->SetEndingColor(Color4f(0.2, 0.2, 0.2, 0.1));
+	emitter->SetEmitterOrigin(float3(-5.75f, 3.67f, 0.5f));
+	emitter->SetShader(psysbase);
+	emitter->SetBillboardType(Spherical);
+
+	u32 snowEmitterID = particleSystem.AddEmitter<HemiSphericalParticleEmitter>();
+	HemiSphericalParticleEmitter *snowEmitter = (HemiSphericalParticleEmitter*)particleSystem.GetEmitter(snowEmitterID);
+	snowEmitter->SetAlphaMap(*particleTexture);
+	i32 maxsnowparticles=150; conf.GetInt("MaxSnowParticles", maxsnowparticles);
+	snowEmitter->SetLocalParticleMaximum(abs(maxsnowparticles));
+	snowEmitter->SetHemiSphereRadius(sphere->GetRadius() - (sphere->GetRadius() * 0.08f));
+	snowEmitter->SetEmitterOrigin(float3(0,5,0));
+	snowEmitter->SetShader(psysbase);
+	snowEmitter->SetBillboardType(Spherical);
+
+	/*u32 gradientEmitter = particleSystem.AddEmitter<GradientParticleEmitter>();
 	GradientParticleEmitter *emitter = (GradientParticleEmitter*)particleSystem.GetEmitter(gradientEmitter);
 	emitter->SetParticleSpread(0.35f);
 	emitter->SetRateOfEmission(1);
@@ -157,7 +190,9 @@ bool World::Load()
 		gradientMapShader->PrintProgramLog(std::cout);
 	}
 	//emitter->SetShader(gradientMapShader);
-	
+	*/
+
+
 
 	_material1.create(ColorT::black(), ColorT(0.9f,0.9f,0.9f,1.0f));
 	_material2.create(ColorT::black(), ColorT(0.7f,0.7f,0.7f,0.5f));
@@ -185,7 +220,7 @@ bool World::Load()
 
 	multiTextureShaderID = shaderMan.AddShader();
 	Shader *multitexshader = shaderMan.GetShader(multiTextureShaderID);
-	res = multitexshader->LoadShader("Data/Shaders/multitex.frag", "Data/Shaders/multitex.vert");
+	bool res = multitexshader->LoadShader("Data/Shaders/multitex.frag", "Data/Shaders/multitex.vert");
 	if(!res)
 	{
 		multitexshader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
@@ -350,7 +385,7 @@ void World::reflective_draw(const GameTime &gameTime)
 	glPopMatrix(); // scale pop
 
 	glDisable(GL_STENCIL_TEST);
-
+	
 	// put the lights back
 	_light1.setPosition(Vector4f(5.0,5.0,5.0,1.0));
 	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
@@ -460,12 +495,6 @@ void World::multi_texturing_test(const GameTime &gameTime)
 
 void World::Draw(const GameTime &gameTime)
 {
-	//glClearColor(0,0,0,1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glDisable(GL_LIGHTING);
-	glEnable(GL_TEXTURE_2D);
-	
 	glLoadIdentity();
 
 	glPushMatrix();
@@ -473,22 +502,16 @@ void World::Draw(const GameTime &gameTime)
 	glTranslatef(0.0f, 0.0f,_cameraPosition);
 	glRotatef(_cameraAngle, 1.0,0.0,0.0);
 	glRotatef(_cameraRotation, 0.0, 1.0, 0.0);
-	glTranslatef(0.0f, -1.0f,0.0f);
+	//glTranslatef(0.0f, -1.0f,0.0f);
 
-	//multi_texturing_test(gameTime);
-	//glPopMatrix();
-	//return;
-	
 	glRotatef(angle, 0, 1, 0);
-
-	inc += 0.0001f;
-	if(inc > 20) inc=0;
 
 	glEnable(GL_LIGHTING);
 	glPushMatrix();
 	reflective_draw(gameTime);
 	glPopMatrix();
 	glDisable(GL_LIGHTING);
+	glDisable(GL_STENCIL_TEST);
 
 	// Terrain (floor)
 	glPushMatrix();
@@ -500,8 +523,28 @@ void World::Draw(const GameTime &gameTime)
 	grasstexture->Deactivate();
 	glPopMatrix();
 
-	// Base
+	// House
+	glPushMatrix();
 	Shader *phongShader = shaderMan.GetShader(phongShaderID);
+	phongShader->Activate();
+	float3 lightPos(0, 5 , 5);
+	phongShader->SetUniform("lightPosition", lightPos);
+	phongShader->SetUniform("fAmbient", Color::BLACK);
+	phongShader->SetUniform("fDiffuse", Color::WHITE);
+	phongShader->SetUniform("baseMap", *houseTexture);
+	phongShader->SetUniform("applyTexture", true);
+	houseTexture->Activate();
+	glPushMatrix();
+	glTranslatef(-5.5,0,0.5);
+	glScalef(.05f,.05f,.05f);
+	((Model*)houseModel->GetModels())->SetDrawMode(polygonMode);
+	houseModel->Draw();
+	glPopMatrix();
+	houseTexture->Deactivate();
+	phongShader->Deactivate();
+	glPopMatrix();
+
+	// Base
 	phongShader->Activate();
 	{
 		float3 lightPos(0, 5 , 5);
@@ -523,38 +566,6 @@ void World::Draw(const GameTime &gameTime)
 	barkTexture->Deactivate();
 	phongShader->Deactivate();
 
-	// Tree
-	/*glPushMatrix();
-	((Model*)tree2->GetBranchModel())->SetDrawMode(polygonMode);
-	barkTexture->Activate();
-	glTranslatef(2.5f,0,0.2f);
-	tree2->Draw(gameTime.GetDeltaTime());
-	barkTexture->Deactivate();
-	glPopMatrix();*/
-
-
-	// House
-	glPushMatrix();
-
-	phongShader->Activate();
-	float3 lightPos(0, 5 , 5);
-	phongShader->SetUniform("lightPosition", lightPos);
-	phongShader->SetUniform("fAmbient", Color::BLACK);
-	phongShader->SetUniform("fDiffuse", Color::WHITE);
-	phongShader->SetUniform("baseMap", *houseTexture);
-	phongShader->SetUniform("applyTexture", true);
-	houseTexture->Activate();
-	glPushMatrix();
-	glTranslatef(-5.5,0,0.5);
-	glScalef(.05f,.05f,.05f);
-	((Model*)houseModel->GetModels())->SetDrawMode(polygonMode);
-	houseModel->Draw();
-	glPopMatrix();
-	houseTexture->Deactivate();
-	phongShader->Deactivate();
-
-	glPopMatrix();
-
 	// Particle system
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
@@ -569,7 +580,7 @@ void World::Draw(const GameTime &gameTime)
 	glDisable(GL_BLEND);
 
 	// Globe
-	/*Shader* globeShader = shaderMan.GetShader(globeShaderID);
+	Shader* globeShader = shaderMan.GetShader(globeShaderID);
 	globeShader->Activate();
 	globeShader->SetUniform("eyePos", cam.GetPosition());
 	glPushMatrix();
@@ -578,7 +589,7 @@ void World::Draw(const GameTime &gameTime)
 	glClipPlane(GL_CLIP_PLANE0, eq);
 	glDisable(GL_TEXTURE_2D);
 	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE);//GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE);
 	//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glColor4f(1.0f,1.0f,1.0f,0.25f);
 	//sphere->SetDrawMode(polygonMode);
@@ -586,7 +597,7 @@ void World::Draw(const GameTime &gameTime)
 	glDisable(GL_BLEND);
 	glDisable(GL_CLIP_PLANE0);
 	glPopMatrix();
-	globeShader->Deactivate();*/
+	globeShader->Deactivate();
 
 	glPopMatrix();
 

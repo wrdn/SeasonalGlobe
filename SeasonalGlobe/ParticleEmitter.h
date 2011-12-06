@@ -8,7 +8,7 @@
 
 const u32 GLOBAL_MAX_PARTICLES_PER_EMITTER = 1000;
 
-enum BillboardType { Spherical, Cylindrical };
+enum BillboardType { Cylindrical = 0, Spherical = 1 };
 
 class ParticleEmitter : public glex // base abstract emitter class
 {
@@ -26,8 +26,10 @@ private:
 	bool doUpdate, doDraw, doEmit; // can turn off specific emitter functionality
 	u32 rateOfEmission;
 
+	// could be used when emitting particles to set their life
+	f32 minLife, maxLife;
+
 	// Forces
-	bool applyForces; // false by default i.e. only add velocity, dont apply a force to it
 	std::vector<float3> forceVectors;
 
 	// Drawing data
@@ -36,9 +38,6 @@ private:
 	GLenum sourceAlphaBlendFunction; // e.g. GL_ONE, GL_ONE_MINUS_SRC_ALPHA
 
 	// NOTE: the matrix trick for spherical/cylindrical billboarding should be done in the shader
-	// In order to perform the adjustment in the shader, either write 2 shaders, or the derived
-	// particle emitter could set a uniform variable in the shader (e.g. uniform bool billboardingSpherical)
-	// These functions are used if a shader is not employed.
 	void CylindricalBillboardAdjust();
 	void SphericalBillboardAdjust();
 
@@ -47,13 +46,25 @@ private:
 	// the emit function.
 	virtual void Emit(Particle &p, void *gdata)=0;
 
-	// this is called from Draw(dt) before the particles are drawn
-	virtual void UpdateShader(const GameTime &gameTime)=0;
+	// called before drawing particles
+	// if needed, you should set the uniform variables here
+	// defaults to activating the shader and setting a uniform called "AlphaMap"
+	virtual void ActivateShader(const GameTime &gameTime);
+
+	// Do any post-draw deactivations. By default, the alpha map is deactivated
+	// the shader is deactivated and the active texture is set to GL_TEXTURE0
+	virtual void DeactivateShader();
+
+	// Called in the update function. Use this function to update for example, particle colours.
+	// The velocity and forces will be applied always, so do not apply them in this function.
+	virtual void UpdateParticleProperties(Particle &p, const GameTime &gameTime)=0;
+
 
 protected:
 	// Only emitters need access to particles. This protected function allows derived
 	// emitters to get the particle array. No other code needs it, so it is protected
 	Particle * const GetParticles() const { return (Particle*)particles; };
+
 public:
 
 	ParticleEmitter();
@@ -61,9 +72,9 @@ public:
 
 	// Activates the shader, then drawing each particle in turn (up to localParticleMaximum)
 	// If emitterShader is NULL, it will set the colour using fixed function functions and draw particles
-	virtual void Draw(const GameTime &gameTime);
+	void Draw(const GameTime &gameTime);
 
-	virtual void Update(const GameTime &gameTime); // Defaults to applying forces (or just adding velocity is applyForces=false)
+	void Update(const GameTime &gameTime); // Defaults to applying forces (or just adding velocity is applyForces=false)
 
 	#pragma region Accessors and Mutators
 	void SetBillboardType(const BillboardType btype);
@@ -85,8 +96,11 @@ public:
 	void SetRateOfEmission(const u32 rate);
 	const u32 GetRateOfEmission() const;
 
-	void ApplyForces(const bool shouldApplyForces);
-	const bool ApplyForces() const;
+	void SetMaxParticleLife(const f32 maxLifeInSeconds);
+	const f32 GetMaxParticleLife() const;
+	void SetMinParticleLife(const f32 minLifeInSeconds);
+	const f32 GetMinParticleLife() const;
+
 	void ClearForces();
 	void AddForce(const float3 &f);
 	const std::vector<float3>& GetForces() const;
