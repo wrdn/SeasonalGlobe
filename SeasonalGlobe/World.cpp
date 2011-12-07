@@ -66,12 +66,15 @@ Materials _material1, _material2, _material3;
 
 bool World::Load()
 {
-	oglcall.Load();
-
 	conf.ParseConfigFile("Data/ConfigFile.txt");
 
 	grasstexture = texMan.LoadTextureFromFile("Data/Textures/Grass2.jpg");
-	
+	grasstexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR );
+	grasstexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR );
+	grasstexture->SetWrapS(GL_REPEAT);
+	grasstexture->SetWrapT(GL_REPEAT);
+
+
 	//barkTexture = texMan.LoadTextureFromFile("Data/Textures/checkerboard_Test.jpg");
 	barkTexture = texMan.LoadTextureFromFile("Data/Textures/bark.jpg");
 	//barkTexture->SetWrapS(GL_REPEAT);
@@ -90,8 +93,8 @@ bool World::Load()
 	baseModel = new OBJFile();
 	baseModel->ParseOBJFile("Data/base2.obj");
 	baseModel->BuildModelVBOs();
-	scaleX = 2.1f; // scale for x and z on globe (height not scaled)
-	scaleZ = 2.1f;
+	scaleX = 2.0f; // scale for x and z on globe (height not scaled)
+	scaleZ = 2.0f;
 
 	terrain = AddModel<TerrainDisk>();
 	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
@@ -105,7 +108,7 @@ bool World::Load()
 	tree2->SetInitialString("FFF[A][^^^^^^A]");
 	tree2->SetInitialString("A");
 	tree2->AddProductionRule('A', "F[^B][^^^^^^^B]");
-	tree2->AddProductionRule('B', "F^[-B]^B");
+	tree2->AddProductionRule('B', "F^[-BL]^B");
 
 	i32 _gen = 8;
 	conf.GetInt("LSystemGenerations", _gen);
@@ -115,7 +118,7 @@ bool World::Load()
 	
 	particleTexture = texMan.LoadTextureFromFile("Data/Textures/particleTexture.tga");
 	particleTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
-	particleTexture->SetMagFilter(GL_LINEAR);
+	particleTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR);
 	particleTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
 
 	gradientMapTexture = texMan.LoadTextureFromFile("Data/Textures/gradientMap.tga");
@@ -157,6 +160,8 @@ bool World::Load()
 	emitter->SetEmitterOrigin(float3(-5.75f, 3.67f, 0.5f));
 	emitter->SetShader(psysbase);
 	emitter->SetBillboardType(Spherical);
+	emitter->AddForce(float3(1,0,0));
+	emitter->AddForce(float3(-1,0.2,0.43));
 
 	u32 snowEmitterID = particleSystem.AddEmitter<HemiSphericalParticleEmitter>();
 	HemiSphericalParticleEmitter *snowEmitter = (HemiSphericalParticleEmitter*)particleSystem.GetEmitter(snowEmitterID);
@@ -215,10 +220,10 @@ bool World::Load()
 	_light4.apply();
 	_light5.apply();
 
-	mtt1 = texMan.LoadTextureFromFile("Data/Textures/bark.jpg");
-	mtt2 = texMan.LoadTextureFromFile("Data/Textures/checkerboard.jpg");
+	//mtt1 = texMan.LoadTextureFromFile("Data/Textures/bark.jpg");
+	//mtt2 = texMan.LoadTextureFromFile("Data/Textures/checkerboard.jpg");
 
-	multiTextureShaderID = shaderMan.AddShader();
+	/*multiTextureShaderID = shaderMan.AddShader();
 	Shader *multitexshader = shaderMan.GetShader(multiTextureShaderID);
 	bool res = multitexshader->LoadShader("Data/Shaders/multitex.frag", "Data/Shaders/multitex.vert");
 	if(!res)
@@ -226,7 +231,7 @@ bool World::Load()
 		multitexshader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
 		multitexshader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
 		multitexshader->PrintProgramLog(std::cout);
-	}
+	}*/
 
 	return true;
 };
@@ -332,23 +337,94 @@ void floor()
 
 void World::reflective_draw(const GameTime &gameTime)
 {
-	float3 floorScale(0.3f, 0.3f, 0.3f);
-	float3 floorPos(3.5f, -0.35f, 3.6f);
+	//tree2->SetAnimationLevel(-1);
 
 	glDisable(GL_DEPTH_TEST);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glDisable(GL_LIGHTING);
 	glEnable(GL_STENCIL_TEST);
+	
+	glStencilFunc(GL_ALWAYS, 1, 1);
+	glStencilOp(GL_REPLACE,GL_REPLACE,GL_REPLACE);
+
+	floor(); // draw floor into stencil
+
+	glEnable(GL_LIGHTING);
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glEnable(GL_DEPTH_TEST);
+
+	glStencilFunc(GL_EQUAL, 1, 1);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+	glPushMatrix();
+	glScalef(1,-1,1);
+
+	glCullFace(GL_FRONT);
+	glEnable(GL_NORMALIZE);
+
+	_light1.setPosition(Vector4f(5.0,5.0,5.0,1.0));
+	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
+	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
+	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
+
+	glPushMatrix();
+	barkTexture->Activate();
+	tree2->Draw(gameTime.GetDeltaTime()); // draw reflected tree
+	barkTexture->Deactivate();
+	glPopMatrix();
+
+	glDisable(GL_NORMALIZE);
+	glCullFace(GL_BACK);
+
+	glPopMatrix();
+
+	glDisable(GL_STENCIL_TEST);
+
+	_light1.setPosition(Vector4f(5.0,5.0,5.0,1.0));
+	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
+	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
+	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	_material2.apply();
+	floor();
+	glDisable(GL_BLEND);
+
+	glEnable(GL_BLEND);
+	glFrontFace(GL_CW);
+	floor();
+	glFrontFace(GL_CCW);
+	glDisable(GL_BLEND);
+
+	glPushMatrix();
+	_material1.apply();
+	barkTexture->Activate();
+	tree2->Draw(gameTime.GetDeltaTime());
+	barkTexture->Deactivate();
+	glPopMatrix();
+
+
+	//float3 floorScale(0.3f, 0.3f, 0.3f);
+	//float3 floorPos(3.5f, -0.35f, 3.6f);
+	//float3 floorScale(0.3,1,0.3);
+	//float3 floorPos(3.5f, -0.35f, 3.6f);
+
+	//glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_LIGHTING);
+	/*glEnable(GL_STENCIL_TEST);
+	glClearStencil(1);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glStencilFunc(GL_ALWAYS, 1, 1);
 	glStencilOp(GL_REPLACE,GL_REPLACE,GL_REPLACE);
 
 	glPushMatrix();
-	glTranslatef(floorPos.x(), floorPos.y(), floorPos.z());
 	glScalef(floorScale.x(), floorScale.y(), floorScale.z());
+	glTranslatef(floorPos.x(), floorPos.y(), floorPos.z());
 	floor();
 	glPopMatrix(); //floor, pushpop
 	
-	glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHTING);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glEnable(GL_DEPTH_TEST);
 	glStencilFunc(GL_EQUAL, 1, 1);
@@ -359,6 +435,7 @@ void World::reflective_draw(const GameTime &gameTime)
 
 	glEnable(GL_NORMALIZE);
 	glCullFace(GL_FRONT);
+
 	_light1.setPosition(Vector4f(5.0,5.0,5.0,1.0));
 	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
 	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
@@ -369,10 +446,11 @@ void World::reflective_draw(const GameTime &gameTime)
 	barkTexture->Activate();
 	glTranslatef(2.5f,0,0.2f);
 	tree2->Draw(gameTime.GetDeltaTime());
+	tree2->DrawLeaves();
 	barkTexture->Deactivate();
 	glPopMatrix(); // tree pop
 
-	glPushMatrix(); // floor push
+	/*glPushMatrix(); // floor push
 	_material1.apply();
 	glTranslatef(floorPos.x(), floorPos.y(), floorPos.z());
 	glScalef(floorScale.x(), floorScale.y(), floorScale.z());
@@ -385,7 +463,9 @@ void World::reflective_draw(const GameTime &gameTime)
 	glPopMatrix(); // scale pop
 
 	glDisable(GL_STENCIL_TEST);
-	
+	glPopMatrix();
+	return;
+
 	// put the lights back
 	_light1.setPosition(Vector4f(5.0,5.0,5.0,1.0));
 	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
@@ -421,10 +501,11 @@ void World::reflective_draw(const GameTime &gameTime)
 	glTranslatef(2.5f,0,0.2f);
 	glScalef(1,1,1);
 	tree2->Draw(gameTime.GetDeltaTime());
+	tree2->DrawLeaves();
 	barkTexture->Deactivate();
 	glPopMatrix(); // tree pop
 	
-	glPopMatrix();
+	glPopMatrix();*/
 };
 
 void World::multi_texturing_test(const GameTime &gameTime)
@@ -502,7 +583,7 @@ void World::Draw(const GameTime &gameTime)
 	glTranslatef(0.0f, 0.0f,_cameraPosition);
 	glRotatef(_cameraAngle, 1.0,0.0,0.0);
 	glRotatef(_cameraRotation, 0.0, 1.0, 0.0);
-	//glTranslatef(0.0f, -1.0f,0.0f);
+	glTranslatef(0.0f, -1.0f,0.0f);
 
 	glRotatef(angle, 0, 1, 0);
 
@@ -511,7 +592,15 @@ void World::Draw(const GameTime &gameTime)
 	reflective_draw(gameTime);
 	glPopMatrix();
 	glDisable(GL_LIGHTING);
-	glDisable(GL_STENCIL_TEST);
+
+	/*glPushMatrix();
+	barkTexture->Activate();
+	tree2->Draw(gameTime.GetDeltaTime());
+	barkTexture->Deactivate();
+	glPopMatrix();*/
+
+	glPopMatrix();
+	return;
 
 	// Terrain (floor)
 	glPushMatrix();
@@ -522,6 +611,8 @@ void World::Draw(const GameTime &gameTime)
 	terrain->Draw();
 	grasstexture->Deactivate();
 	glPopMatrix();
+
+
 
 	// House
 	glPushMatrix();
@@ -560,7 +651,8 @@ void World::Draw(const GameTime &gameTime)
 	barkTexture->SetWrapT(GL_REPEAT);
 	barkTexture->Activate();
 	glPushMatrix();
-	glScalef(scaleX,1,scaleZ);;
+	glScalef(scaleX,0.8f,scaleZ);
+	glTranslatef(0, 0.2f, 0);
 	baseModel->Draw();
 	glPopMatrix();
 	barkTexture->Deactivate();

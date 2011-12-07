@@ -29,7 +29,6 @@ void ParticleEmitter::Draw(const GameTime &gameTime)
 		glPushMatrix();
 
 		glColor4fv(p.color.GetVec());
-		glScalef(p.size.x(), p.size.y(), p.size.z());
 		glTranslatef(p.pos.x(), p.pos.y(), p.pos.z());
 
 		if(billboardType == Spherical)
@@ -37,6 +36,7 @@ void ParticleEmitter::Draw(const GameTime &gameTime)
 		else
 			CylindricalBillboardAdjust();
 
+		glScalef(p.size.x(), p.size.y(), p.size.z());
 		model->Draw();
 
 		glPopMatrix();

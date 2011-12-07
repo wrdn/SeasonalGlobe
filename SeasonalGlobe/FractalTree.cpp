@@ -6,7 +6,7 @@ using namespace std;
 
 FractalTree::FractalTree() : branchRadius(_GetDefaultBranchRadius()), branchRadiusReduction(_GetDefaultBranchRadiusReduction()),
 	branchLength(_GetDefaultBranchLength()), transformationMatricesArraySize(0), transformationMatrices(0), 
-	currentScale(0), lastTime(0), AnimationLevel(0), drawLevel(0), loop_growth(false)
+	currentScale(0), lastTime(0), AnimationLevel(0), drawLevel(0), loop_growth(false), leafMatrixCount(0), leafMatrices(0)
 {
 	rotationAngles[0] = rotationAngles[1] = rotationAngles[2] = DefaultAngle;
 	BuildRotationMatrices();
@@ -55,6 +55,8 @@ FractalTree::~FractalTree()
 {
 	if(transformationMatrices)
 		_aligned_free(transformationMatrices);
+	if(leafMatrices)
+		_aligned_free(leafMatrices);
 };
 
 void FractalTree::Reset()
@@ -106,7 +108,8 @@ void FractalTree::CalculateTreeDepth()
 	// matrix count at each 'depth' in the tree, max depth is matrixCounts.size()
 	std::vector<u32> matrixCounts;
 	u32 currentDepth = 0, i=0;
-
+	leafMatrixCount = 0;
+	
 	for( std::string::const_iterator it = lsysTree.GetEvaluatedString().begin();
 		it < lsysTree.GetEvaluatedString().end(); ++it, ++i)
 	{
@@ -129,7 +132,15 @@ void FractalTree::CalculateTreeDepth()
 		{
 			--currentDepth;
 		}
+		else if(*it == DRAW_LEAF)
+		{
+			++leafMatrixCount;
+		}
 	}
+
+	if(leafMatrices) { _aligned_free(leafMatrices); leafMatrices = 0; }
+	leafMatrices = (Mat44*)_aligned_malloc(sizeof(Mat44) * leafMatrixCount, 16);
+	memset(leafMatrices, 0, sizeof(Mat44)*leafMatrixCount);
 
 	if(matrixCounts.size())
 	{
@@ -152,10 +163,41 @@ void FractalTree::CalculateTreeDepth()
 	}
 };
 
+void FractalTree::PruneTree()
+{
+	for(std::vector<BranchDepth>::iterator it = treeBranchSegments.begin(); it != treeBranchSegments.end(); ++it)
+	{
+		for(u32 i=0;i<it->segments.size();++i)
+		{
+			u32 len = it->segments[i].end - it->segments[i].end;
+			if(len == 0)
+			{
+				it->segments.erase( it->segments.begin() + i);
+				i = max(0, i-1);
+			}
+		}
+		//// Remove segments with no branches
+		//for(std::vector<BranchSegment>::iterator seg = it->segments.begin(); seg != it->segments.end(); ++seg)
+		//{
+		//	u32 len = seg->end - seg->start;
+		//	if(len == 0)
+		//	{
+		//		it->segments.erase(seg);
+		//	}
+		//}
+	}
+};
+
 void FractalTree::BuildTree()
 {
 	if(!gbranch.Valid())
+	{
 		gbranch.Create(0.05f, 0.05f, branchLength, 7,7);
+	}
+	if(!leafModel.Valid())
+	{
+		leafModel.CreateSphere(0.05f, 10,10);
+	}
 
 	lsysTree.Evaluate();
 	CalculateTreeDepth();
@@ -164,6 +206,8 @@ void FractalTree::BuildTree()
 	// required to ensure we don't overwrite a previous matrix in that depth
 	std::vector<u32> MatricesCalculatedPerDepth(levels.size(), 0);
 	u32 currentDepth = 0;
+
+	u32 currentLeaf=0;
 
 	treeBranchSegments.resize(levels.size(), BranchDepth(0));
 	for(u32 i=0;i<treeBranchSegments.size();++i) treeBranchSegments[i].depth = i;
@@ -296,12 +340,18 @@ void FractalTree::BuildTree()
 				glPopMatrix();
 			}
 		}
+		else if(*it == DRAW_LEAF)
+		{
+			leafMatrices[currentLeaf++] = matrixStack.top();
+		}
 
 		glPopMatrix();
 	}
 	glPopMatrix();
 
 	treeBranchSegments[0].segments.push_back(BranchSegment(0, MatricesCalculatedPerDepth[0]));
+
+	//PruneTree(); // THIS FUNCTION CAUSES TREE GROWTH TO BREAK, FIX OR LEAVE COMMENTED
 };
 
 void FractalTree::DrawBranch(const Mat44 &transformationMatrix, const Mat44 &scaleMatrix)
@@ -321,6 +371,18 @@ void FractalTree::DrawBranch(const Mat44 &transformationMatrix)
 	glPopMatrix();
 };
 
+void FractalTree::DrawLeaves()
+{
+	for(u32 i=0;i<leafMatrixCount;++i)
+	{
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glMultMatrixf(leafMatrices[i].GetMatrix());
+		leafModel.Draw();
+		glPopMatrix();
+	}
+};
+
 void FractalTree::Draw(const f32 dt)
 {
 	stack<Mat44> matrixStack;
@@ -329,6 +391,7 @@ void FractalTree::Draw(const f32 dt)
 	glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)ma.GetMatrix());
 	matrixStack.push(ma); glPopMatrix();
 
+	// Static draw
 	if(AnimationLevel < 0)
 	{
 		for(u32 i=0; i < transformationMatricesArraySize; ++i)
@@ -338,13 +401,15 @@ void FractalTree::Draw(const f32 dt)
 		return;
 	}
 
+	// Draw levels we aren't animating
 	for(u32 i=0; i < levels[AnimationLevel]; ++i)
 	{
 		DrawBranch(transformationMatrices[i]);
 	}
 
+
 	currentScale += dt;
-	if(currentScale >= 1.0f)
+	if(currentScale >= (1.0 - EPSILON))
 	{
 		AnimationLevel++;
 		if((u32)AnimationLevel >= levels.size())
@@ -369,17 +434,26 @@ void FractalTree::Draw(const f32 dt)
 
 		BranchSegment &seg = treeBranchSegments[AnimationLevel].segments[i];
 
-		f32 timetb=3; // time to build each segment
+		f32 timetb = 3.0f; // time to build each segment
 		f32 rate = 1.0f / timetb;
 		t += dt * rate;
-		if(t>=1.0f) t=0;
+		if(t >= (1.0f - EPSILON))
+		{
+			t = 0;
+		}
 
 		u32 len = seg.end - seg.start;
+
+		// Don't draw the empty segments (causes graphical glitches)
+		if(len == 0) { continue; }
+
 		f32 K = lerp(0, (f32)len, t);
 		u32 branchToDisplay = (u32)K;
 
-		for(u32 i=seg.start;i<seg.start+branchToDisplay;++i)
-			DrawBranch(transformationMatrices[i]);
+		for(u32 j=seg.start;j<seg.start+branchToDisplay;++j)
+		{
+			DrawBranch(transformationMatrices[j]);
+		}
 
 		Mat44 scaleMatrix = Mat44::BuildScaleMatrix(1, fract(K), 1);
 		DrawBranch(transformationMatrices[seg.start+branchToDisplay], scaleMatrix);

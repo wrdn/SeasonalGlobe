@@ -40,6 +40,8 @@ void HemiSphericalParticleEmitter::Emit(Particle &p, void *data)
 	p.velocity.z( randflt(0.4, -0.4));
 	
 	p.velocity.normalize();
+
+	p.size.set(0.25, 0.25, 0.25);
 };
 
 void HemiSphericalParticleEmitter::UpdateParticleProperties(Particle &p, const GameTime &gameTime)

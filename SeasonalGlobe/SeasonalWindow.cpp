@@ -65,7 +65,7 @@ void SeasonalWindow::OnDisplay()
 	glEnable(GL_DEPTH_TEST);
 	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0,0,0,1);
+	glClearColor(0.4,0.4,0.4,1);
 
 	scn.Draw(gameTime);
 
@@ -248,19 +248,17 @@ void SeasonalWindow::OnCreate()
 	GLWindowEx::OnCreate();
 	
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
-	scn.Load();
-
-	gameTime.Init();
-
 	SetTitle(DEFAULT_WINDOW_TITLE);
 	SetWindowResolution(windowRes[0], windowRes[1]);
 
 	//glEnable(GL_LIGHTING);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D);    
+	glEnable(GL_TEXTURE_2D); 
 
+	scn.Load();
+
+	gameTime.Init();
 };
 
 void SeasonalWindow::OnDestroy()

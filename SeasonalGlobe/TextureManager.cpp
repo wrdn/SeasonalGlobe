@@ -45,6 +45,7 @@ Texture* TextureManager::LoadTextureFromFile(const c8* const _filename)
 			textureObject.Activate();
 
 			tex.gluBuild2DMipmaps();
+
 			tex.Free();
 			
 			textureObject.Deactivate();

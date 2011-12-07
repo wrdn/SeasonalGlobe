@@ -1,5 +1,5 @@
 # Put configuration values in this file in the format Parameter Name = Value
 LSystemGenerations=8
-GlobeRadius=11.3
-MaxSnowParticles=400
-MaxSmokeParticles=120
+GlobeRadius=10.55
+MaxSnowParticles=600
+MaxSmokeParticles=100

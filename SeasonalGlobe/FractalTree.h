@@ -2,10 +2,9 @@
 
 #include "LSystem.h"
 #include "Cylinder.h"
+#include "Sphere.h"
 #include "Mat44.h"
 
-// Usage:
-// * 
 class FractalTree
 {
 private:
@@ -19,7 +18,8 @@ private:
 		ROTATE_UP_Y = '^',
 		ROTATE_DOWN_Y = 'V',
 		ROTATE_LEFT_Z = '<',
-		ROTATE_RIGHT_Z = '>'
+		ROTATE_RIGHT_Z = '>',
+		DRAW_LEAF = 'L'
 	};
 	enum RotationMatrixIndex
 	{
@@ -69,6 +69,7 @@ private:
 	// single cylinder to be drawn many times
 	// created once only (in BuildTree())
 	Cylinder gbranch;
+	Sphere leafModel;
 
 	// This holds the index of the first matrix per level of the tree
 	// For 0 to levels.size()-1, the number of matrices in the level of
@@ -86,6 +87,9 @@ private:
 	// to perform translation/rotations/scaling each frame
 	u32 transformationMatricesArraySize;
 	Mat44 *transformationMatrices;
+
+	u32 leafMatrixCount;
+	Mat44 *leafMatrices;
 
 	f32 currentScale; // used to make branches grow, update by dt, range 0<=currentScale<=1
 	f32 lastTime;
@@ -115,6 +119,9 @@ private:
 	void DrawBranch(const Mat44 &transformationMatrix);
 
 	void DeepCopy(const FractalTree *dstp) const; // copy data in "this" into "out"
+
+	void PruneTree(); // This is called at the end of BuildTree() and removes all the empty branch segments
+
 public:
 
 	void SetAnimationLevel(i32 v)
@@ -167,6 +174,7 @@ public:
 	void BuildTree();
 
 	void Draw(const f32 dt);
+	void DrawLeaves();
 
 	#pragma region Accessors and Mutators
 	const Cylinder* GetBranchModel() { return &gbranch; };
