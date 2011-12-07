@@ -42,7 +42,7 @@ private:
 	u32 leafParticleEmitterID;
 	
 	Texture *grasstexture, *houseTexture, *barkTexture, *particleTexture,
-		*gradientMapTexture;
+		*gradientMapTexture, *leafTexture;
 
 	OBJFile *houseModel;
 	Sphere *globeSphere;

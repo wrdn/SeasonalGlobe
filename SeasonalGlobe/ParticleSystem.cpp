@@ -50,8 +50,15 @@ void ParticleSystem::Update(const GameTime &gameTime)
 
 void ParticleSystem::Draw(const GameTime &gameTime)
 {
+	glEnable(GL_BLEND);
+	glDepthMask(GL_FALSE);
+
 	for(std::vector<ParticleEmitter*>::const_iterator it = emitterSet.begin(); it != emitterSet.end(); ++it)
 	{
+		glBlendFunc(GL_SRC_ALPHA, (*it)->GetSourceAlphaBlendFunction());
 		(*it)->Draw(gameTime);
 	}
+
+	glDepthMask(GL_TRUE);
+	glDisable(GL_BLEND);
 };

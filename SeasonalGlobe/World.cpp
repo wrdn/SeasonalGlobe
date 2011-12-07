@@ -82,12 +82,17 @@ bool World::LoadTextures()
 	particleTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR);
 	particleTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
 
+	leafTexture = texMan.LoadTextureFromFile("Data/Textures/leaf.tga");
+	leafTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
+	leafTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR);
+	leafTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
+
 	gradientMapTexture = texMan.LoadTextureFromFile("Data/Textures/gradientMap.tga");
 	gradientMapTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	gradientMapTexture->SetMagFilter(GL_LINEAR);
 	gradientMapTexture->SetTextureSlot(SLOT_GL_TEXTURE_1);
 
-	return grasstexture && barkTexture && particleTexture && gradientMapTexture;
+	return grasstexture && barkTexture && particleTexture && leafTexture && gradientMapTexture;
 };
 
 bool World::LoadShaders()
@@ -132,14 +137,35 @@ bool World::LoadParticles()
 
 	Shader *psysbase = shaderMan.GetShader(particleSystemBaseShaderID);
 
+	const u32 LEAF_PARTICLES_PER_LEAF_MATRIX = 3;
 	leafParticleEmitterID = particleSystem.AddEmitter<StaticParticleEmitter>();
 	StaticParticleEmitter *leafEmitter = (StaticParticleEmitter*)particleSystem.GetEmitter(leafParticleEmitterID);
-	leafEmitter->SetLocalParticleMaximum(tree->GetLeafCount());
+	leafEmitter->SetLocalParticleMaximum(tree->GetLeafCount() * LEAF_PARTICLES_PER_LEAF_MATRIX);
 	leafEmitter->SetParticlesStaticState(true);
-	leafEmitter->SetAlphaMap(*particleTexture);
+	leafEmitter->SetAlphaMap(*leafTexture);
 	leafEmitter->SetShader(psysbase);
+	leafEmitter->SetEmitterOrigin(treePos);
+	leafEmitter->SetBillboardType(Cylindrical);
+	leafEmitter->SetSourceAlphaBlendFunction(GL_ONE_MINUS_SRC_ALPHA);
+	const Mat44 *LeafMatrices = tree->GetLeafMatrices();
+	const u32 LeafCount = tree->GetLeafCount();
+	for(u32 i=0;i<LeafCount;++i)
+	{
+		glMatrixMode(GL_MODELVIEW);
 
-	u32 pointBasedEmitter = particleSystem.AddEmitter<PointBasedParticleEmitter>();
+		Particle p;
+		const f32 *leafMat = LeafMatrices[i].GetMatrix();
+		p.pos = float3(leafMat[12], leafMat[13], leafMat[14]);
+
+		for(u32 j=0;j<LEAF_PARTICLES_PER_LEAF_MATRIX;++j)
+		{
+			p.rotation.z( randflt(360, 0) );
+			p.size = float3(0.25f);
+			leafEmitter->AddParticle(p);
+		}
+	}
+
+	/*u32 pointBasedEmitter = particleSystem.AddEmitter<PointBasedParticleEmitter>();
 	PointBasedParticleEmitter *emitter = (PointBasedParticleEmitter*)particleSystem.GetEmitter(pointBasedEmitter);
 	emitter->SetParticleSpread(0.35f);
 	emitter->SetRateOfEmission(2);
@@ -152,9 +178,9 @@ bool World::LoadParticles()
 	emitter->SetShader(psysbase);
 	emitter->SetBillboardType(Spherical);
 	emitter->AddForce(float3(1.0f,0,0));
-	emitter->AddForce(float3(-1.0f,0.2f,0.43f));
+	emitter->AddForce(float3(-1.0f,0.2f,0.43f));*/
 
-	u32 snowEmitterID = particleSystem.AddEmitter<HemiSphericalParticleEmitter>();
+	/*u32 snowEmitterID = particleSystem.AddEmitter<HemiSphericalParticleEmitter>();
 	HemiSphericalParticleEmitter *snowEmitter = (HemiSphericalParticleEmitter*)particleSystem.GetEmitter(snowEmitterID);
 	snowEmitter->SetAlphaMap(*particleTexture);
 	i32 maxsnowparticles=150; conf.GetInt("MaxSnowParticles", maxsnowparticles);
@@ -162,7 +188,7 @@ bool World::LoadParticles()
 	snowEmitter->SetHemiSphereRadius(globeSphere->GetRadius() - (globeSphere->GetRadius() * 0.02f));
 	snowEmitter->SetEmitterOrigin(float3(0,5,0));
 	snowEmitter->SetShader(psysbase);
-	snowEmitter->SetBillboardType(Spherical);
+	snowEmitter->SetBillboardType(Spherical);*/
 
 	return true;
 };
@@ -201,7 +227,7 @@ bool World::LoadGeometry()
 	tree->SetInitialString("FFF[A][^^^^^^A]");
 	tree->SetInitialString("A");
 	tree->AddProductionRule('A', "F[^B][^^^^^^^B]");
-	tree->AddProductionRule('B', "F^[-BL]^B");
+	tree->AddProductionRule('B', "F^[L-BL]^B");
 
 	i32 _gen = 8;
 	conf.GetInt("LSystemGenerations", _gen);
@@ -391,7 +417,6 @@ void World::reflective_draw(const GameTime &gameTime)
 	glTranslatef(treePos.x(), treePos.y(), treePos.z());
 	barkTexture->Activate();
 	tree->Draw(gameTime.GetDeltaTime()); // draw reflected tree
-	tree->DrawLeaves();
 	barkTexture->Deactivate();
 	glPopMatrix();
 
@@ -428,7 +453,6 @@ void World::reflective_draw(const GameTime &gameTime)
 	_material1.apply();
 	barkTexture->Activate();
 	tree->Draw(gameTime.GetDeltaTime());
-	tree->DrawLeaves();
 	barkTexture->Deactivate();
 	glPopMatrix();
 
@@ -487,7 +511,6 @@ void World::Draw(const GameTime &gameTime)
 	glTranslatef(treePos.x(), treePos.y(), treePos.z());
 	barkTexture->Activate();
 	tree->Draw(gameTime.GetDeltaTime());
-	tree->DrawLeaves();
 	barkTexture->Deactivate();
 	glPopMatrix();
 
@@ -544,32 +567,25 @@ void World::Draw(const GameTime &gameTime)
 	phongShader->Deactivate();
 
 	// Particle system
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	glDepthMask(GL_FALSE);
-	glPushMatrix();
 	particleSystem.Update(gameTime);
 	particleSystem.Draw(gameTime);
-	glPopMatrix();
-	glDepthMask(GL_TRUE);
-	glDisable(GL_BLEND);
 
 	// Globe
 	Shader* globeShader = shaderMan.GetShader(globeShaderID);
 	globeShader->Activate();
 	globeShader->SetUniform("eyePos", cam.GetPosition());
-	glPushMatrix();
 	glEnable(GL_CLIP_PLANE0); // use clip plane to cut bottom half
 	GLdouble eq[] = { 0, 1, 0, 0 };
 	glClipPlane(GL_CLIP_PLANE0, eq);
 	glDisable(GL_TEXTURE_2D);
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE);
+	glPushMatrix();
+	glTranslatef(0.3f,0,0);
 	globeSphere->Draw();
+	glPopMatrix();
 	glDisable(GL_BLEND);
 	glDisable(GL_CLIP_PLANE0);
-	glPopMatrix();
 	globeShader->Deactivate();
 
 	glPopMatrix();

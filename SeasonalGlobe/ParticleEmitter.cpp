@@ -21,6 +21,9 @@ void ParticleEmitter::Draw(const GameTime &gameTime)
 	if(!emitterShader || !emitterShader->Valid()) return;
 
 	ActivateShader(gameTime);
+	glPushMatrix();
+
+	glTranslatef(emitterOrigin.x(), emitterOrigin.y(), emitterOrigin.z());
 
 	for(u32 i=0;i<GetLocalParticleMaximum();++i)
 	{
@@ -32,21 +35,22 @@ void ParticleEmitter::Draw(const GameTime &gameTime)
 		
 		glTranslatef(p.pos.x(), p.pos.y(), p.pos.z());
 
+		glRotatef(p.rotation.x(), 1, 0, 0);
+		glRotatef(p.rotation.y(), 0, 1, 0);
+
 		if(billboardType == Spherical)
 			SphericalBillboardAdjust();
 		else
 			CylindricalBillboardAdjust();
 
-		glRotatef(p.rotation.x(), 1, 0, 0);
-		glRotatef(p.rotation.y(), 0, 1, 0);
 		glRotatef(p.rotation.z(), 0, 0, 1);
-		
 		glScalef(p.size.x(), p.size.y(), p.size.z());
 		model->Draw();
 
 		glPopMatrix();
 	}
 
+	glPopMatrix();
 	DeactivateShader();
 
 	glColor4f(1,1,1,1);
@@ -126,7 +130,10 @@ void ParticleEmitter::SetModel(const Model *m) { model = (Model*)m; };
 void ParticleEmitter::SetEmitterOrigin(const float3& f) { emitterOrigin = f; };
 const float3& ParticleEmitter::GetEmitterOrigin() const { return emitterOrigin; };
 
-void ParticleEmitter::SetLocalParticleMaximum(const u32 localMax) { localParticleMaximum = localMax; };
+void ParticleEmitter::SetLocalParticleMaximum(const u32 localMax)
+{
+	localParticleMaximum = min(localMax, GLOBAL_MAX_PARTICLES_PER_EMITTER);
+};
 const u32 ParticleEmitter::GetLocalParticleMaximum() const { return localParticleMaximum; };
 
 void ParticleEmitter::DoUpdate(const bool shouldUpdate) { doUpdate = shouldUpdate; };
