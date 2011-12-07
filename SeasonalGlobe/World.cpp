@@ -165,8 +165,8 @@ bool World::LoadParticles()
 		}
 	}
 
-	/*u32 pointBasedEmitter = particleSystem.AddEmitter<PointBasedParticleEmitter>();
-	PointBasedParticleEmitter *emitter = (PointBasedParticleEmitter*)particleSystem.GetEmitter(pointBasedEmitter);
+	smokeEmitter = particleSystem.AddEmitter<PointBasedParticleEmitter>();
+	PointBasedParticleEmitter *emitter = (PointBasedParticleEmitter*)particleSystem.GetEmitter(smokeEmitter);
 	emitter->SetParticleSpread(0.35f);
 	emitter->SetRateOfEmission(2);
 	emitter->SetAlphaMap(*particleTexture);
@@ -174,21 +174,21 @@ bool World::LoadParticles()
 	emitter->SetLocalParticleMaximum(abs(maxsmokeparticles));
 	emitter->SetStartingColor(Color4f(0.2f, 0.2f, 0.2f, 0.75f));
 	emitter->SetEndingColor(Color4f(0.2f, 0.2f, 0.2f, 0.1f));
-	emitter->SetEmitterOrigin(float3(-5.75f, 3.67f, 0.5f));
+	emitter->SetEmitterOrigin(float3(-3.0, 1, 0.5f));
 	emitter->SetShader(psysbase);
 	emitter->SetBillboardType(Spherical);
 	emitter->AddForce(float3(1.0f,0,0));
-	emitter->AddForce(float3(-1.0f,0.2f,0.43f));*/
+	emitter->AddForce(float3(-1.0f,0.2f,0.43f));
 
-	/*u32 snowEmitterID = particleSystem.AddEmitter<HemiSphericalParticleEmitter>();
+	u32 snowEmitterID = particleSystem.AddEmitter<HemiSphericalParticleEmitter>();
 	HemiSphericalParticleEmitter *snowEmitter = (HemiSphericalParticleEmitter*)particleSystem.GetEmitter(snowEmitterID);
 	snowEmitter->SetAlphaMap(*particleTexture);
 	i32 maxsnowparticles=150; conf.GetInt("MaxSnowParticles", maxsnowparticles);
 	snowEmitter->SetLocalParticleMaximum(abs(maxsnowparticles));
 	snowEmitter->SetHemiSphereRadius(globeSphere->GetRadius() - (globeSphere->GetRadius() * 0.02f));
-	snowEmitter->SetEmitterOrigin(float3(0,5,0));
+	snowEmitter->SetEmitterOrigin(float3(0,0,0));
 	snowEmitter->SetShader(psysbase);
-	snowEmitter->SetBillboardType(Spherical);*/
+	snowEmitter->SetBillboardType(Spherical);
 
 	return true;
 };
@@ -501,11 +501,11 @@ void World::Draw(const GameTime &gameTime)
 
 	glRotatef(angle, 0, 1, 0);
 
-	glEnable(GL_LIGHTING);
+	/*glEnable(GL_LIGHTING);
 	glPushMatrix();
 	reflective_draw(gameTime);
 	glPopMatrix();
-	glDisable(GL_LIGHTING);
+	glDisable(GL_LIGHTING);*/
 
 	// Terrain (floor)
 	glPushMatrix();
@@ -517,7 +517,6 @@ void World::Draw(const GameTime &gameTime)
 	glPopMatrix();
 
 	// House
-	glPushMatrix();
 	Shader *phongShader = shaderMan.GetShader(phongShaderID);
 	phongShader->Activate();
 	float3 lightPos(0, 5 , 5);
@@ -534,7 +533,6 @@ void World::Draw(const GameTime &gameTime)
 	glPopMatrix();
 	houseTexture->Deactivate();
 	phongShader->Deactivate();
-	glPopMatrix();
 
 	// Base
 	phongShader->Activate();

@@ -31,8 +31,6 @@ private:
 	TextureManager texMan;
 	ShaderManager shaderMan;
 
-	ParticleSystem particleSystem;
-
 	u32 phongShaderID;
 	u32 globeShaderID;
 	u32 gradientMapShaderID;
@@ -78,8 +76,10 @@ public:
 	FGLCaller oglcall;
 
 	f32 waterx, watery, waterz;
-	
 	f32 scaleX, scaleZ;
+	
+	u32 smokeEmitter;
+	ParticleSystem particleSystem;
 
 	void reflective_draw(const GameTime &gameTime);
 

@@ -1,4 +1,5 @@
 #include "SeasonalWindow.h"
+#include "PointBasedParticleEmitter.h"
 #include <WinUser.h>
 
 const c8* SeasonalWindow::DEFAULT_WINDOW_TITLE = "Seasonal Globe";
@@ -63,7 +64,7 @@ void SeasonalWindow::OnDisplay()
 	glDisable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_DEPTH_TEST);
-	
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0,0,0,1);
 
@@ -113,86 +114,101 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		}
 	}
 
+	PointBasedParticleEmitter *smokeEmitter = (PointBasedParticleEmitter*)scn.particleSystem.GetEmitter(scn.smokeEmitter);
+	float3 emitterOrigin = smokeEmitter->GetEmitterOrigin();
+
 	switch(tolower(key))
 	{
 	case 'y':
-		scn.waterx -= 0.1f;
-		break;
+		{
+			emitterOrigin.x ( emitterOrigin.x() + 0.01f);
+			smokeEmitter->SetEmitterOrigin(emitterOrigin);
+		} break;
 	case 'u':
-		scn.waterx += 0.1f;
-		break;
+		{
+			emitterOrigin.x ( emitterOrigin.x() - 0.01f);
+			smokeEmitter->SetEmitterOrigin(emitterOrigin);
+		} break;
+	case 'i':
+		{
+			emitterOrigin.y ( emitterOrigin.y() + 0.01f);
+			smokeEmitter->SetEmitterOrigin(emitterOrigin);
+		} break;
+	case 'k':
+		{
+			emitterOrigin.y ( emitterOrigin.y() - 0.01f);
+			smokeEmitter->SetEmitterOrigin(emitterOrigin);
+		} break;
 	case 'h':
-		scn.watery -= 0.1f;
-		break;
+		{
+			emitterOrigin.z ( emitterOrigin.z() + 0.01f);
+			smokeEmitter->SetEmitterOrigin(emitterOrigin);
+		} break;
 	case 'j':
-		scn.watery += 0.1f;
-		break;
-	case 'n':
-		scn.waterz -= 0.1f;
-		break;
-	case 'm':
-		scn.waterz += 0.1f;
-		break;
+		{
+			emitterOrigin.z ( emitterOrigin.z() - 0.01f);
+			smokeEmitter->SetEmitterOrigin(emitterOrigin);
+		} break;
 
-		case 'a': 
-			//scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(5, 1,0,0));
-			//scn.SetCameraRotation(scn.GetCameraRotation() + 5.0f);
-			scn.SetCameraAngle(scn.GetCameraAngle() + 5.0f);
-			break;
-		case 'z':
-			scn.SetCameraAngle(scn.GetCameraAngle() - 5.0f);
-			//scn.SetCameraRotation(scn.GetCameraRotation() - 5.0f);
-			//scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(-5, 1,0,0));
-			break;
-		case 't':
+	case 'a': 
+		//scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(5, 1,0,0));
+		//scn.SetCameraRotation(scn.GetCameraRotation() + 5.0f);
+		scn.SetCameraAngle(scn.GetCameraAngle() + 5.0f);
+		break;
+	case 'z':
+		scn.SetCameraAngle(scn.GetCameraAngle() - 5.0f);
+		//scn.SetCameraRotation(scn.GetCameraRotation() - 5.0f);
+		//scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(-5, 1,0,0));
+		break;
+	case 't':
+		{
+			if(!down)
 			{
-				if(!down)
+				if(scn.GetPolygonMode() == GL_LINE)
 				{
-					if(scn.GetPolygonMode() == GL_LINE)
-					{
-						scn.SetPolygonMode(GL_FILL);
-					}
-					else
-					{
-						scn.SetPolygonMode(GL_LINE);
-					}
+					scn.SetPolygonMode(GL_FILL);
 				}
-			} break;
-		case 'c':
-			{
-				if(!down)
+				else
 				{
-					if(glIsEnabled(GL_CULL_FACE))
-						glDisable(GL_CULL_FACE);
-					else
-						glEnable(GL_CULL_FACE);
-				}
-			} break;
-		case 'r':
-			{
-				if(!down)
-				{
-					scn.SetAutoRotate(!scn.GetAutoRotate());
-				}
-			} break;
-		case 'q':
-			{
-				if(!down)
-					scn.GetTree()->SetDrawLevel(scn.GetTree()->GetDrawLevel()-1);
-			} break;
-		case 'w':
-			{
-				if(!down)
-					scn.GetTree()->SetDrawLevel(scn.GetTree()->GetDrawLevel()+1);
-			} break;
-		case 'b':
-			{
-				if(!down)
-				{
-					scn.GetTree()->runtime = 0;
-					//scn.GetTree()->SetAnimationLevel(0);
+					scn.SetPolygonMode(GL_LINE);
 				}
 			}
+		} break;
+	case 'c':
+		{
+			if(!down)
+			{
+				if(glIsEnabled(GL_CULL_FACE))
+					glDisable(GL_CULL_FACE);
+				else
+					glEnable(GL_CULL_FACE);
+			}
+		} break;
+	case 'r':
+		{
+			if(!down)
+			{
+				scn.SetAutoRotate(!scn.GetAutoRotate());
+			}
+		} break;
+	case 'q':
+		{
+			if(!down)
+				scn.GetTree()->SetDrawLevel(scn.GetTree()->GetDrawLevel()-1);
+		} break;
+	case 'w':
+		{
+			if(!down)
+				scn.GetTree()->SetDrawLevel(scn.GetTree()->GetDrawLevel()+1);
+		} break;
+	case 'b':
+		{
+			if(!down)
+			{
+				scn.GetTree()->runtime = 0;
+				//scn.GetTree()->SetAnimationLevel(0);
+			}
+		}
 	}
 };
 
@@ -249,7 +265,7 @@ void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 void SeasonalWindow::OnCreate()
 {
 	GLWindowEx::OnCreate();
-	
+
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	SetTitle(DEFAULT_WINDOW_TITLE);
 	SetWindowResolution(windowRes[0], windowRes[1]);

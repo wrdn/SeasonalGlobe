@@ -20,9 +20,10 @@ void ParticleEmitter::Draw(const GameTime &gameTime)
 {
 	if(!emitterShader || !emitterShader->Valid()) return;
 
-	ActivateShader(gameTime);
 	glPushMatrix();
 
+	ActivateShader(gameTime);
+	
 	glTranslatef(emitterOrigin.x(), emitterOrigin.y(), emitterOrigin.z());
 
 	for(u32 i=0;i<GetLocalParticleMaximum();++i)
@@ -50,8 +51,9 @@ void ParticleEmitter::Draw(const GameTime &gameTime)
 		glPopMatrix();
 	}
 
-	glPopMatrix();
 	DeactivateShader();
+
+	glPopMatrix();
 
 	glColor4f(1,1,1,1);
 };
