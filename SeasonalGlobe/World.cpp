@@ -224,7 +224,7 @@ bool World::LoadGeometry()
 	tree->SetBranchRadiusReduction(0.1f);
 	tree->SetBranchLength(0.6f);
 	tree->SetBranchRotationAngles(30);
-	tree->SetInitialString("FFF[A][^^^^^^A]");
+	//tree->SetInitialString("FFF[A][^^^^^^A]");
 	tree->SetInitialString("A");
 	tree->AddProductionRule('A', "F[^B][^^^^^^^B]");
 	tree->AddProductionRule('B', "F^[L-BL]^B");
@@ -418,6 +418,7 @@ void World::reflective_draw(const GameTime &gameTime)
 	barkTexture->Activate();
 	tree->Draw(gameTime.GetDeltaTime()); // draw reflected tree
 	barkTexture->Deactivate();
+	//glTranslatef(-treePos.x(), -treePos.y(), -treePos.z());
 	glPopMatrix();
 
 	glDisable(GL_NORMALIZE);
@@ -454,8 +455,7 @@ void World::reflective_draw(const GameTime &gameTime)
 	barkTexture->Activate();
 	tree->Draw(gameTime.GetDeltaTime());
 	barkTexture->Deactivate();
-	glPopMatrix();
-
+	//glTranslatef(-treePos.x(), -treePos.y(), -treePos.z());
 	glPopMatrix();
 };
 
@@ -501,18 +501,11 @@ void World::Draw(const GameTime &gameTime)
 
 	glRotatef(angle, 0, 1, 0);
 
-	/*glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHTING);
 	glPushMatrix();
 	reflective_draw(gameTime);
 	glPopMatrix();
-	glDisable(GL_LIGHTING);*/
-	
-	glPushMatrix();
-	glTranslatef(treePos.x(), treePos.y(), treePos.z());
-	barkTexture->Activate();
-	tree->Draw(gameTime.GetDeltaTime());
-	barkTexture->Deactivate();
-	glPopMatrix();
+	glDisable(GL_LIGHTING);
 
 	// Terrain (floor)
 	glPushMatrix();

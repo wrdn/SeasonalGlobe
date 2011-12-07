@@ -124,6 +124,9 @@ private:
 
 public:
 
+	f32 runtime;
+	f32 buildTime;
+
 	void SetAnimationLevel(i32 v)
 	{
 		AnimationLevel = v;
@@ -173,7 +176,7 @@ public:
 	// depth (with branches per level), and create the matrices used for drawing
 	void BuildTree();
 
-	void Draw(const f32 dt);
+	void Draw(f32 dt);
 	void DrawLeaves();
 
 	#pragma region Accessors and Mutators

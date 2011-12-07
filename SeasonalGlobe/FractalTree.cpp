@@ -10,6 +10,9 @@ FractalTree::FractalTree() : branchRadius(_GetDefaultBranchRadius()), branchRadi
 {
 	rotationAngles[0] = rotationAngles[1] = rotationAngles[2] = DefaultAngle;
 	BuildRotationMatrices();
+
+	runtime=0;
+	buildTime = 15;
 };
 
 FractalTree::FractalTree(FractalTree const& t)
@@ -399,79 +402,64 @@ void FractalTree::DrawLeaves()
 	}
 };
 
-void FractalTree::Draw(const f32 dt)
+void FractalTree::Draw(f32 dt)
 {
-	stack<Mat44> matrixStack;
-	glMatrixMode(GL_MODELVIEW); glPushMatrix();
+	stack<Mat44> matrixStack; glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
 	Mat44 ma; glPushMatrix(); glLoadIdentity();
-	glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)ma.GetMatrix());
-	matrixStack.push(ma); glPopMatrix();
+	glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)ma.GetMatrix()); matrixStack.push(ma);
+	glPopMatrix();
 
-	// Static draw
-	if(AnimationLevel < 0)
+	if(runtime < 0)
 	{
-		for(u32 i=0; i < transformationMatricesArraySize; ++i)
-		{
-			DrawBranch(transformationMatrices[i]);
-		}
+		for(u32 i=0; i < levels[levels.size()-1]; ++i) { DrawBranch(transformationMatrices[i]); }
+		glPopMatrix();
 		return;
 	}
 
-	// Draw levels we aren't animating
-	for(u32 i=0; i < levels[AnimationLevel]; ++i)
+	runtime += dt;
+	if(runtime >= buildTime) // Finished drawing tree, reset runtime (rebuild tree) or make it static (-1)
 	{
-		DrawBranch(transformationMatrices[i]);
+		if(loop_growth) { runtime=0; }
+		else { runtime = -1; }
+		for(u32 i=0; i < levels[levels.size()-1]; ++i) { DrawBranch(transformationMatrices[i]); }
+		glPopMatrix();
+		return;
 	}
 
+	// Animation Level Calculation
+	f32 K = (1.0f / buildTime) * runtime;
+	f32 lerp_anim_level = lerp(0, (f32)(treeBranchSegments.size()-1), K);
+	i32 anim_level = (i32)lerp_anim_level;
 
-	currentScale += dt;
-	if(currentScale >= (1.0 - EPSILON))
+	// Draw everything under the animation level
+	for(u32 i=0; i < levels[anim_level]; ++i) { DrawBranch(transformationMatrices[i]); }
+
+	// Tree has uniform depth build time (i.e. first depth takes the same amount of time as the last etc)
+	// currentModTime is a varible in the range 0 to N, where N is (buildTime/TreeDepth)
+	f32 TimePerDepth = buildTime / (levels.size()-1);
+	f32 currentModTime = runtime - (anim_level * TimePerDepth);
+
+	// for each branch segment at the current animation level, scale the appropriate branch (and draw the non-scaled ones)
+	for(u32 i=0;i<treeBranchSegments[anim_level].segments.size();++i)
 	{
-		AnimationLevel++;
-		if((u32)AnimationLevel >= levels.size())
-		{
-			if(loop_growth)
-			{
-				AnimationLevel = 0;
-			}
-			else
-			{
-				AnimationLevel = -1;
-				return;
-			}
-		}
+		BranchSegment &segment = treeBranchSegments[anim_level].segments[i];
+		u32 segmentLength = segment.end - segment.start;
+		if(segmentLength == 0) { continue; }
 
-		currentScale=0;
+		f32 LerpFactor = (1.0f / TimePerDepth) * currentModTime ; //e.g. 1.0 / (3 seconds) * 1.5 = 0.5
+		f32 LerpBranchSeg = lerp(0, (f32)segmentLength, LerpFactor);
+		u32 BranchToScale = (u32)LerpBranchSeg;
+		f32 ScaleFactor = fract(LerpBranchSeg);
+
+		// draw non scaled branches
+		for(u32 j=segment.start;j<segment.start+BranchToScale;++j) { DrawBranch(transformationMatrices[j]); }
+
+		// draw scaled branch
+		Mat44 scaleMatrix = Mat44::BuildScaleMatrix(1, ScaleFactor, 1);
+		DrawBranch(transformationMatrices[segment.start+BranchToScale], scaleMatrix);
 	}
 
-	for(u32 i = 0; i < treeBranchSegments[AnimationLevel].segments.size(); ++i)
-	{
-		f32 t = currentScale;
-
-		BranchSegment &seg = treeBranchSegments[AnimationLevel].segments[i];
-
-		f32 timetb = 3.0f; // time to build each segment
-		f32 rate = 1.0f / timetb;
-		t += dt * rate;
-		if(t >= (1.0f - EPSILON))
-		{
-			t = 0;
-		}
-
-		u32 len = seg.end - seg.start;
-
-		// Don't draw the empty segments (causes graphical glitches)
-		if(len == 0) { continue; }
-
-		f32 K = lerp(0, (f32)len, t);
-		u32 branchToDisplay = (u32)K;
-
-		for(u32 j=seg.start;j<seg.start+branchToDisplay;++j)
-		{
-			DrawBranch(transformationMatrices[j]);
-		}
-
-		Mat44 scaleMatrix = Mat44::BuildScaleMatrix(1, fract(K), 1);
-		DrawBranch(transformationMatrices[seg.start+branchToDisplay], scaleMatrix);
-	}
+	glPopMatrix();
+	return;
 };

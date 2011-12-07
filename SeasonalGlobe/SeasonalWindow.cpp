@@ -188,7 +188,10 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		case 'b':
 			{
 				if(!down)
-					scn.GetTree()->SetAnimationLevel(0);
+				{
+					scn.GetTree()->runtime = 0;
+					//scn.GetTree()->SetAnimationLevel(0);
+				}
 			}
 	}
 };
