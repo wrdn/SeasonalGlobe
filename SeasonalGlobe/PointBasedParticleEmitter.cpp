@@ -8,13 +8,13 @@ PointBasedParticleEmitter::~PointBasedParticleEmitter()
 {
 };
 
-void PointBasedParticleEmitter::Emit(Particle &p, void *gdata)
+void PointBasedParticleEmitter::Emit(Particle &p)
 {
 	p.pos = GetEmitterOrigin();
 	p.color = startColor;
 
 	p.energy = randflt(GetMaxParticleLife(), GetMinParticleLife());
-	p.originalEnergy = p.energy;
+	//p.originalEnergy = p.energy;
 
 	p.velocity.x( randflt(-particleSpread, particleSpread));
 	p.velocity.y(1.0f);

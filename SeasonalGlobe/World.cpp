@@ -4,14 +4,15 @@
 #include "PerfTimer.h"
 #include "PointBasedParticleEmitter.h"
 #include "HemiSphericalParticleEmitter.h"
+#include "StaticParticleEmitter.h"
 #include "tutorialcodeheaders.h"
 
 World::World(void)
 	: grasstexture(0), houseTexture(0), barkTexture(0),
 	  houseModel(0),
-	  sphere(0),
+	  globeSphere(0),
 	  terrain(0),
-	  tree2(0),
+	  tree(0),
 	  sceneRotationAxis(0,1,0),
 	  _cameraPosition(-23.2f),
 	  _cameraAngle(30.0f),
@@ -22,6 +23,8 @@ World::World(void)
 	waterx=3;
 	watery=0;
 	waterz=0;
+
+	treePos = float3(2.5f,0, 0.2f);
 }
 
 World::~World(void)
@@ -64,58 +67,16 @@ Model* CreateBillboardModel()
 Lights _light1, _light2, _light3, _light4, _light5;
 Materials _material1, _material2, _material3;
 
-bool World::Load()
+bool World::LoadTextures()
 {
-	conf.ParseConfigFile("Data/ConfigFile.txt");
-
 	grasstexture = texMan.LoadTextureFromFile("Data/Textures/Grass2.jpg");
 	grasstexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR );
 	grasstexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR );
 	grasstexture->SetWrapS(GL_REPEAT);
 	grasstexture->SetWrapT(GL_REPEAT);
 
-
-	//barkTexture = texMan.LoadTextureFromFile("Data/Textures/checkerboard_Test.jpg");
 	barkTexture = texMan.LoadTextureFromFile("Data/Textures/bark.jpg");
-	//barkTexture->SetWrapS(GL_REPEAT);
-	//barkTexture->SetWrapT(GL_REPEAT);
 
-	houseModel = new OBJFile();
-	houseModel->ParseOBJFile("Data/House/Haus20.obj");
-	houseModel->BuildModelVBOs();
-	houseTexture = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg");
-
-	sphere = AddModel<Sphere>();
-	f32 radius=11.3;
-	conf.GetFloat("GlobeRadius",radius);
-	sphere->CreateSphere(radius, 40, 40);
-
-	baseModel = new OBJFile();
-	baseModel->ParseOBJFile("Data/base2.obj");
-	baseModel->BuildModelVBOs();
-	scaleX = 2.0f; // scale for x and z on globe (height not scaled)
-	scaleZ = 2.0f;
-
-	terrain = AddModel<TerrainDisk>();
-	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
-
-	// http://www.geekyblogger.com/2008/04/tree-and-l-system.html
-	tree2 = new FractalTree();
-	tree2->SetBranchRadius(1.0f);
-	tree2->SetBranchRadiusReduction(0.1f);
-	tree2->SetBranchLength(0.6f);
-	tree2->SetBranchRotationAngles(30);
-	tree2->SetInitialString("FFF[A][^^^^^^A]");
-	tree2->SetInitialString("A");
-	tree2->AddProductionRule('A', "F[^B][^^^^^^^B]");
-	tree2->AddProductionRule('B', "F^[-BL]^B");
-
-	i32 _gen = 8;
-	conf.GetInt("LSystemGenerations", _gen);
-	tree2->SetGenerations(_gen);
-	
-	tree2->BuildTree();
-	
 	particleTexture = texMan.LoadTextureFromFile("Data/Textures/particleTexture.tga");
 	particleTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	particleTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR);
@@ -125,21 +86,12 @@ bool World::Load()
 	gradientMapTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	gradientMapTexture->SetMagFilter(GL_LINEAR);
 	gradientMapTexture->SetTextureSlot(SLOT_GL_TEXTURE_1);
-	
-	phongShaderID = shaderMan.AddShader();
-	Shader* phongShader = shaderMan.GetShader(phongShaderID);
-	phongShader->LoadShader("Data/Shaders/phong.frag", "Data/Shaders/phong.vert");
 
-	globeShaderID = shaderMan.AddShader();
-	Shader* globeShader = shaderMan.GetShader(globeShaderID);
-	globeShader->LoadShader("Data/Shaders/globe.frag", "Data/Shaders/globe.vert");
+	return grasstexture && barkTexture && particleTexture && gradientMapTexture;
+};
 
-
-	//cam.Init(45, 1.333f, 0.3f, 100, float3(0,1, -3), float3(0,0,1), float3(0,1,0));
-
-	Model *billboardModel = CreateBillboardModel();
-	particleSystem.SetDefaultModel(billboardModel);
-
+bool World::LoadShaders()
+{
 	particleSystemBaseShaderID = shaderMan.AddShader();
 	Shader *psysbase = shaderMan.GetShader(particleSystemBaseShaderID);
 	if(!psysbase->LoadShader("Data/Shaders/particlesystembase.frag", "Data/Shaders/particlesystembase.vert"))
@@ -147,7 +99,46 @@ bool World::Load()
 		psysbase->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
 		psysbase->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
 		psysbase->PrintProgramLog(std::cout);
+		return false;
 	}
+
+	phongShaderID = shaderMan.AddShader();
+	Shader* phongShader = shaderMan.GetShader(phongShaderID);
+	if(!phongShader->LoadShader("Data/Shaders/phong.frag", "Data/Shaders/phong.vert"))
+	{
+		phongShader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
+		phongShader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
+		phongShader->PrintProgramLog(std::cout);
+		return false;
+	}
+
+	globeShaderID = shaderMan.AddShader();
+	Shader* globeShader = shaderMan.GetShader(globeShaderID);
+	if(!globeShader->LoadShader("Data/Shaders/globe.frag", "Data/Shaders/globe.vert"))
+	{
+		globeShader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
+		globeShader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
+		globeShader->PrintProgramLog(std::cout);
+		return false;
+	}
+
+	return true;
+};
+
+bool World::LoadParticles()
+{
+	Model *billboardModel = CreateBillboardModel();
+	particleSystem.SetDefaultModel(billboardModel);
+
+	Shader *psysbase = shaderMan.GetShader(particleSystemBaseShaderID);
+
+	leafParticleEmitterID = particleSystem.AddEmitter<StaticParticleEmitter>();
+	StaticParticleEmitter *leafEmitter = (StaticParticleEmitter*)particleSystem.GetEmitter(leafParticleEmitterID);
+	leafEmitter->SetLocalParticleMaximum(tree->GetLeafCount());
+	leafEmitter->SetParticlesStaticState(true);
+	leafEmitter->SetAlphaMap(*particleTexture);
+	leafEmitter->SetShader(psysbase);
+
 	u32 pointBasedEmitter = particleSystem.AddEmitter<PointBasedParticleEmitter>();
 	PointBasedParticleEmitter *emitter = (PointBasedParticleEmitter*)particleSystem.GetEmitter(pointBasedEmitter);
 	emitter->SetParticleSpread(0.35f);
@@ -155,55 +146,88 @@ bool World::Load()
 	emitter->SetAlphaMap(*particleTexture);
 	i32 maxsmokeparticles=80; conf.GetInt("MaxSmokeParticles", maxsmokeparticles);
 	emitter->SetLocalParticleMaximum(abs(maxsmokeparticles));
-	emitter->SetStartingColor(Color4f(0.2, 0.2, 0.2, 0.75));
-	emitter->SetEndingColor(Color4f(0.2, 0.2, 0.2, 0.1));
+	emitter->SetStartingColor(Color4f(0.2f, 0.2f, 0.2f, 0.75f));
+	emitter->SetEndingColor(Color4f(0.2f, 0.2f, 0.2f, 0.1f));
 	emitter->SetEmitterOrigin(float3(-5.75f, 3.67f, 0.5f));
 	emitter->SetShader(psysbase);
 	emitter->SetBillboardType(Spherical);
-	emitter->AddForce(float3(1,0,0));
-	emitter->AddForce(float3(-1,0.2,0.43));
+	emitter->AddForce(float3(1.0f,0,0));
+	emitter->AddForce(float3(-1.0f,0.2f,0.43f));
 
 	u32 snowEmitterID = particleSystem.AddEmitter<HemiSphericalParticleEmitter>();
 	HemiSphericalParticleEmitter *snowEmitter = (HemiSphericalParticleEmitter*)particleSystem.GetEmitter(snowEmitterID);
 	snowEmitter->SetAlphaMap(*particleTexture);
 	i32 maxsnowparticles=150; conf.GetInt("MaxSnowParticles", maxsnowparticles);
 	snowEmitter->SetLocalParticleMaximum(abs(maxsnowparticles));
-	snowEmitter->SetHemiSphereRadius(sphere->GetRadius() - (sphere->GetRadius() * 0.08f));
+	snowEmitter->SetHemiSphereRadius(globeSphere->GetRadius() - (globeSphere->GetRadius() * 0.02f));
 	snowEmitter->SetEmitterOrigin(float3(0,5,0));
 	snowEmitter->SetShader(psysbase);
 	snowEmitter->SetBillboardType(Spherical);
 
-	/*u32 gradientEmitter = particleSystem.AddEmitter<GradientParticleEmitter>();
-	GradientParticleEmitter *emitter = (GradientParticleEmitter*)particleSystem.GetEmitter(gradientEmitter);
-	emitter->SetParticleSpread(0.35f);
-	emitter->SetRateOfEmission(1);
-	emitter->SetModel(billboardModel);
-	emitter->SetAlphaMap(*particleTexture);
-	emitter->SetGradientMap(*gradientMapTexture);
-	emitter->SetLocalParticleMaximum(80);
-	emitter->SetEmitterOrigin(float3(-5.56f, 3.67f, 0.5f));
-	emitter->ApplyForces(true);
-	emitter->AddForce(float3(-0.2f,0.3f,0));
+	return true;
+};
 
-	gradientMapShaderID = shaderMan.AddShader();
-	Shader* gradientMapShader = shaderMan.GetShader(gradientMapShaderID);
-	bool res = gradientMapShader->LoadShader("Data/Shaders/gradientMap.frag", "Data/Shaders/gradientMap.vert");
-	if(!res)
-	{
-		gradientMapShader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
-		gradientMapShader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
-		gradientMapShader->PrintProgramLog(std::cout);
-	}
-	//emitter->SetShader(gradientMapShader);
-	*/
+bool World::LoadGeometry()
+{
+	// Load house model
+	houseModel = new OBJFile();
+	houseModel->ParseOBJFile("Data/House/Haus20.obj");
+	houseModel->BuildModelVBOs();
+	houseTexture = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg");
+
+	// Load globe
+	globeSphere = AddModel<Sphere>();
+	f32 radius=11.3f;
+	conf.GetFloat("GlobeRadius",radius);
+	globeSphere->CreateSphere(radius, 40, 40);
+
+	// Load globe base
+	baseModel = new OBJFile();
+	baseModel->ParseOBJFile("Data/base2.obj");
+	baseModel->BuildModelVBOs();
+	scaleX = 2.0f; // scale for x and z on globe (height not scaled)
+	scaleZ = 2.0f;
+
+	// Load terrain
+	terrain = AddModel<TerrainDisk>();
+	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
+
+	// Load tree
+	tree = new FractalTree();
+	tree->SetBranchRadius(1.0f);
+	tree->SetBranchRadiusReduction(0.1f);
+	tree->SetBranchLength(0.6f);
+	tree->SetBranchRotationAngles(30);
+	tree->SetInitialString("FFF[A][^^^^^^A]");
+	tree->SetInitialString("A");
+	tree->AddProductionRule('A', "F[^B][^^^^^^^B]");
+	tree->AddProductionRule('B', "F^[-BL]^B");
+
+	i32 _gen = 8;
+	conf.GetInt("LSystemGenerations", _gen);
+	tree->SetGenerations(_gen);
+	
+	tree->BuildTree();
+
+	return true;
+};
+
+bool World::Load()
+{
+	conf.ParseConfigFile("Data/ConfigFile.txt"); // load configuration file
+	
+	LoadTextures();
+	LoadGeometry();
+	LoadShaders();
+	LoadParticles();
 
 
-
+	// NOTE: THIS IS ALL CODE FROM TUTORIALS THAT SHOULD LATER BE REMOVED
+	// Load materials
 	_material1.create(ColorT::black(), ColorT(0.9f,0.9f,0.9f,1.0f));
 	_material2.create(ColorT::black(), ColorT(0.7f,0.7f,0.7f,0.5f));
 	_material3.create(ColorT::black(), ColorT::black(), ColorT::yellow());
 
-	// setup some lights (ambient is turned off on all lights)
 	_light1.create(0, ColorT::black(), ColorT(0.5f,0.5f,0.5f,1.0f)); 
 	_light2.create(1, ColorT::black(), ColorT(0.5f,0.5f,0.5f,1.0f)); 
 	_light3.create(2, ColorT::black(), ColorT(0.5f,0.5f,0.0f,1.0f));
@@ -213,25 +237,11 @@ bool World::Load()
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ColorT::black().rgba());
 
 	_light3.setPosition(Vector4f(0.0,5.0,-3.0,1.0));
-	// Turn on the lights
 	_light1.apply();
 	_light2.apply();
 	_light3.apply();
 	_light4.apply();
 	_light5.apply();
-
-	//mtt1 = texMan.LoadTextureFromFile("Data/Textures/bark.jpg");
-	//mtt2 = texMan.LoadTextureFromFile("Data/Textures/checkerboard.jpg");
-
-	/*multiTextureShaderID = shaderMan.AddShader();
-	Shader *multitexshader = shaderMan.GetShader(multiTextureShaderID);
-	bool res = multitexshader->LoadShader("Data/Shaders/multitex.frag", "Data/Shaders/multitex.vert");
-	if(!res)
-	{
-		multitexshader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
-		multitexshader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
-		multitexshader->PrintProgramLog(std::cout);
-	}*/
 
 	return true;
 };
@@ -246,7 +256,7 @@ void World::Shutdown()
 		SAFE_DELETE(*it);
 	}
 	delete houseModel;
-	delete tree2;
+	delete tree;
 };
 
 f32 angle=0; const f32 rotationSpeed = 50.0f;
@@ -335,9 +345,17 @@ void floor()
 	glPopMatrix();
 }
 
+void DrawFloor(const float3 &floorPos, const float3 &floorScale)
+{
+	glTranslatef(floorPos.x(), floorPos.y(), floorPos.z());
+	glScalef(floorScale.x(), floorScale.y(), floorScale.z());
+	floor(); // draw floor into stencil
+};
+
 void World::reflective_draw(const GameTime &gameTime)
 {
-	//tree2->SetAnimationLevel(-1);
+	float3 floorScale(0.3f, 0.3f, 0.3f);
+	float3 floorPos(3.5f, -0.35f, 3.6f);
 
 	glDisable(GL_DEPTH_TEST);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -347,7 +365,9 @@ void World::reflective_draw(const GameTime &gameTime)
 	glStencilFunc(GL_ALWAYS, 1, 1);
 	glStencilOp(GL_REPLACE,GL_REPLACE,GL_REPLACE);
 
-	floor(); // draw floor into stencil
+	glPushMatrix();
+	DrawFloor(floorPos, floorScale);
+	glPopMatrix();
 
 	glEnable(GL_LIGHTING);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -368,8 +388,10 @@ void World::reflective_draw(const GameTime &gameTime)
 	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
 
 	glPushMatrix();
+	glTranslatef(treePos.x(), treePos.y(), treePos.z());
 	barkTexture->Activate();
-	tree2->Draw(gameTime.GetDeltaTime()); // draw reflected tree
+	tree->Draw(gameTime.GetDeltaTime()); // draw reflected tree
+	tree->DrawLeaves();
 	barkTexture->Deactivate();
 	glPopMatrix();
 
@@ -388,124 +410,29 @@ void World::reflective_draw(const GameTime &gameTime)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	_material2.apply();
-	floor();
+	glPushMatrix();
+	DrawFloor(floorPos, floorScale);
+	glPopMatrix();
 	glDisable(GL_BLEND);
 
 	glEnable(GL_BLEND);
 	glFrontFace(GL_CW);
-	floor();
+	glPushMatrix();
+	DrawFloor(floorPos, floorScale);
+	glPopMatrix();
 	glFrontFace(GL_CCW);
 	glDisable(GL_BLEND);
 
 	glPushMatrix();
+	glTranslatef(treePos.x(), treePos.y(), treePos.z());
 	_material1.apply();
 	barkTexture->Activate();
-	tree2->Draw(gameTime.GetDeltaTime());
+	tree->Draw(gameTime.GetDeltaTime());
+	tree->DrawLeaves();
 	barkTexture->Deactivate();
 	glPopMatrix();
 
-
-	//float3 floorScale(0.3f, 0.3f, 0.3f);
-	//float3 floorPos(3.5f, -0.35f, 3.6f);
-	//float3 floorScale(0.3,1,0.3);
-	//float3 floorPos(3.5f, -0.35f, 3.6f);
-
-	//glDisable(GL_DEPTH_TEST);
-	//glDisable(GL_LIGHTING);
-	/*glEnable(GL_STENCIL_TEST);
-	glClearStencil(1);
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-	glStencilFunc(GL_ALWAYS, 1, 1);
-	glStencilOp(GL_REPLACE,GL_REPLACE,GL_REPLACE);
-
-	glPushMatrix();
-	glScalef(floorScale.x(), floorScale.y(), floorScale.z());
-	glTranslatef(floorPos.x(), floorPos.y(), floorPos.z());
-	floor();
-	glPopMatrix(); //floor, pushpop
-	
-	//glEnable(GL_LIGHTING);
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-	glEnable(GL_DEPTH_TEST);
-	glStencilFunc(GL_EQUAL, 1, 1);
-	glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
-
-	glPushMatrix(); // scale push
-	glScalef(1.0, -1.0, 1.0);
-
-	glEnable(GL_NORMALIZE);
-	glCullFace(GL_FRONT);
-
-	_light1.setPosition(Vector4f(5.0,5.0,5.0,1.0));
-	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
-	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
-	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
-
-	glPushMatrix(); // tree push
-	((Model*)tree2->GetBranchModel())->SetDrawMode(polygonMode);
-	barkTexture->Activate();
-	glTranslatef(2.5f,0,0.2f);
-	tree2->Draw(gameTime.GetDeltaTime());
-	tree2->DrawLeaves();
-	barkTexture->Deactivate();
-	glPopMatrix(); // tree pop
-
-	/*glPushMatrix(); // floor push
-	_material1.apply();
-	glTranslatef(floorPos.x(), floorPos.y(), floorPos.z());
-	glScalef(floorScale.x(), floorScale.y(), floorScale.z());
-	floor();
-	glPopMatrix(); // floor pop
-
-	glDisable(GL_NORMALIZE);
-	glCullFace(GL_BACK);
-
-	glPopMatrix(); // scale pop
-
-	glDisable(GL_STENCIL_TEST);
 	glPopMatrix();
-	return;
-
-	// put the lights back
-	_light1.setPosition(Vector4f(5.0,5.0,5.0,1.0));
-	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
-	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
-	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
-
-	// make the floor semi-transparent
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	_material2.apply();
-	glPushMatrix();
-	glTranslatef(floorPos.x(), floorPos.y(), floorPos.z());
-	glScalef(floorScale.x(), floorScale.y(), floorScale.z());
-	floor();
-	glPopMatrix();
-	glDisable(GL_BLEND);
-
-	// now draw the floor again from below but with no blending
-	// switch meaning of front face from anti-clockwise to clockwise
-	glFrontFace(GL_CW);
-	glPushMatrix();
-	glTranslatef(floorPos.x(), floorPos.y(), floorPos.z());
-	glScalef(floorScale.x(), floorScale.y(), floorScale.z());
-	floor();
-	glPopMatrix();
-	// undo the meaning of front face
-	glFrontFace(GL_CCW);
-
-	glPushMatrix(); // tree push
-	_material1.apply();
-	((Model*)tree2->GetBranchModel())->SetDrawMode(polygonMode);
-	barkTexture->Activate();
-	glTranslatef(2.5f,0,0.2f);
-	glScalef(1,1,1);
-	tree2->Draw(gameTime.GetDeltaTime());
-	tree2->DrawLeaves();
-	barkTexture->Deactivate();
-	glPopMatrix(); // tree pop
-	
-	glPopMatrix();*/
 };
 
 void World::multi_texturing_test(const GameTime &gameTime)
@@ -533,44 +460,7 @@ void World::multi_texturing_test(const GameTime &gameTime)
 
 	cube();
 	shader->Deactivate();
-
-	/*FGLCaller caller; // instance REQUIRED!
-
-	glPushMatrix();
-
-	glEnable(GL_TEXTURE_2D);
-
-	Shader* mtshader = shaderMan.GetShader(multiTextureShaderID);
-	mtshader->Activate();
-
-	oglcall.glActiveTexture(GL_TEXTURE0_ARB);
-	oglcall.glBindTextureEXT(GL_TEXTURE_2D, mtt1->GetID());
-
-	oglcall.glActiveTexture(GL_TEXTURE1_ARB);
-	oglcall.glBindTextureEXT(GL_TEXTURE_2D, mtt2->GetID());
-
-	mtshader->SetUniform("TextureA", 0);
-	mtshader->SetUniform("TextureB", 1);
-
-	cube();
-
-	mtshader->Deactivate();*/
-
-	/*mtt1->SetTextureSlot(SLOT_GL_TEXTURE_0);
-	mtt2->SetTextureSlot(SLOT_GL_TEXTURE_1);
-
-	Shader* mtshader = shaderMan.GetShader(multiTextureShaderID);
-	oglcall.glActiveTexture(GL_TEXTURE0);
-	mtshader->Activate();
-	mtt1->Activate();
-	mtshader->SetUniform("TextureA", (i32)mtt1->GetTextureSlotIndex());
-
-	mtt2->Activate();
-	oglcall.glActiveTexture(GL_TEXTURE1);
-	mtshader->SetUniform("TextureB", (i32)mtt2->GetTextureSlotIndex());
-
-	cube();
-	mtshader->Deactivate();*/
+	
 	glPopMatrix();
 };
 
@@ -587,32 +477,28 @@ void World::Draw(const GameTime &gameTime)
 
 	glRotatef(angle, 0, 1, 0);
 
-	glEnable(GL_LIGHTING);
+	/*glEnable(GL_LIGHTING);
 	glPushMatrix();
 	reflective_draw(gameTime);
 	glPopMatrix();
-	glDisable(GL_LIGHTING);
-
-	/*glPushMatrix();
+	glDisable(GL_LIGHTING);*/
+	
+	glPushMatrix();
+	glTranslatef(treePos.x(), treePos.y(), treePos.z());
 	barkTexture->Activate();
-	tree2->Draw(gameTime.GetDeltaTime());
+	tree->Draw(gameTime.GetDeltaTime());
+	tree->DrawLeaves();
 	barkTexture->Deactivate();
-	glPopMatrix();*/
-
 	glPopMatrix();
-	return;
 
 	// Terrain (floor)
 	glPushMatrix();
 	grasstexture->Activate();
 	glRotatef(90, 1,0,0);
 	glScalef(5.48f,5.48f,5.48f);
-	terrain->SetDrawMode(polygonMode);
 	terrain->Draw();
 	grasstexture->Deactivate();
 	glPopMatrix();
-
-
 
 	// House
 	glPushMatrix();
@@ -628,7 +514,6 @@ void World::Draw(const GameTime &gameTime)
 	glPushMatrix();
 	glTranslatef(-5.5,0,0.5);
 	glScalef(.05f,.05f,.05f);
-	((Model*)houseModel->GetModels())->SetDrawMode(polygonMode);
 	houseModel->Draw();
 	glPopMatrix();
 	houseTexture->Deactivate();
@@ -651,7 +536,7 @@ void World::Draw(const GameTime &gameTime)
 	barkTexture->SetWrapT(GL_REPEAT);
 	barkTexture->Activate();
 	glPushMatrix();
-	glScalef(scaleX,0.8f,scaleZ);
+	glScalef(scaleX,0.83f,scaleZ);
 	glTranslatef(0, 0.2f, 0);
 	baseModel->Draw();
 	glPopMatrix();
@@ -664,7 +549,6 @@ void World::Draw(const GameTime &gameTime)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	glDepthMask(GL_FALSE);
 	glPushMatrix();
-	glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
 	particleSystem.Update(gameTime);
 	particleSystem.Draw(gameTime);
 	glPopMatrix();
@@ -682,10 +566,7 @@ void World::Draw(const GameTime &gameTime)
 	glDisable(GL_TEXTURE_2D);
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE);
-	//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glColor4f(1.0f,1.0f,1.0f,0.25f);
-	//sphere->SetDrawMode(polygonMode);
-	sphere->Draw();
+	globeSphere->Draw();
 	glDisable(GL_BLEND);
 	glDisable(GL_CLIP_PLANE0);
 	glPopMatrix();

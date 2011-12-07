@@ -8,7 +8,7 @@ private:
 	f32 particleSpread;
 	Color4f startColor, endColor;
 
-	void Emit(Particle &p, void *gdata);
+	void Emit(Particle &p);
 
 	void UpdateParticleProperties(Particle &p, const GameTime &gameTime);
 

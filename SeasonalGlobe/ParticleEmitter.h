@@ -44,7 +44,9 @@ private:
 	// Derived classes need to inherit this function which is used to set the data on new
 	// particles. If required by the class, gdata could be used to pass information into
 	// the emit function.
-	virtual void Emit(Particle &p, void *gdata)=0;
+	
+	//virtual void Emit(Particle &p, void *gdata)=0;
+	virtual void Emit(Particle &p)=0;
 
 	// called before drawing particles
 	// if needed, you should set the uniform variables here

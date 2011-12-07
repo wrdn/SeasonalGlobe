@@ -8,7 +8,7 @@ private:
 	// min and max angles on the hemisphere where particles will be generated
 	f32 minAngle, maxAngle;
 
-	void Emit(Particle &p, void *data);
+	void Emit(Particle &p);
 	void UpdateParticleProperties(Particle &p, const GameTime &gameTime);
 
 public:

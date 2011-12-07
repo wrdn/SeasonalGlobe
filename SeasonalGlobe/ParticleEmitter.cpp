@@ -29,6 +29,7 @@ void ParticleEmitter::Draw(const GameTime &gameTime)
 		glPushMatrix();
 
 		glColor4fv(p.color.GetVec());
+		
 		glTranslatef(p.pos.x(), p.pos.y(), p.pos.z());
 
 		if(billboardType == Spherical)
@@ -36,6 +37,10 @@ void ParticleEmitter::Draw(const GameTime &gameTime)
 		else
 			CylindricalBillboardAdjust();
 
+		glRotatef(p.rotation.x(), 1, 0, 0);
+		glRotatef(p.rotation.y(), 0, 1, 0);
+		glRotatef(p.rotation.z(), 0, 0, 1);
+		
 		glScalef(p.size.x(), p.size.y(), p.size.z());
 		model->Draw();
 
@@ -68,7 +73,7 @@ void ParticleEmitter::Update(const GameTime &gameTime)
 
 		if(p.energy < 0 && emittedThisFrame > 0 )
 		{
-			Emit(p, (void*)&dt);
+			Emit(p);
 			--emittedThisFrame;
 			continue;
 		}

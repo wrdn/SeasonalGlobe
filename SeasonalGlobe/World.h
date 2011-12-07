@@ -39,18 +39,18 @@ private:
 	u32 multiTextureShaderID;
 
 	u32 particleSystemBaseShaderID;
-
+	u32 leafParticleEmitterID;
+	
 	Texture *grasstexture, *houseTexture, *barkTexture, *particleTexture,
 		*gradientMapTexture;
 
 	OBJFile *houseModel;
-	Sphere *sphere;
-	Cylinder *globeBase;
+	Sphere *globeSphere;
 
 	OBJFile *baseModel;
 
 	TerrainDisk *terrain;
-	FractalTree *tree2;
+	FractalTree *tree;
 	float3 sceneRotationAxis;
 	f32 _cameraAngle;
 	f32 _cameraPosition;
@@ -67,6 +67,13 @@ private:
 	World(World const& w);
 	World& operator= (World const& other);
 
+	float3 treePos;
+
+	bool LoadTextures();
+	bool LoadShaders();
+	bool LoadParticles();
+	bool LoadGeometry();
+
 public:
 	FGLCaller oglcall;
 
@@ -82,9 +89,18 @@ public:
 	const bool GetAutoRotate() const { return AutoRotate; };
 	void SetAutoRotate(const bool b) { AutoRotate = b; };
 
-	FractalTree * GetTree() const { return tree2; };
+	FractalTree * GetTree() const { return tree; };
 	const GLenum GetPolygonMode() const { return polygonMode; };
-	void SetPolygonMode(const GLenum polyMode) { polygonMode = polyMode; };
+	void SetPolygonMode(const GLenum polyMode)
+	{
+		polygonMode = polyMode;
+
+		((Model*)houseModel->GetModels())->SetDrawMode(polyMode);
+		globeSphere->SetDrawMode(polyMode);
+		terrain->SetDrawMode(polyMode);
+		((Model*)baseModel->GetModels())->SetDrawMode(polyMode);
+		((Model*)tree->GetBranchModel())->SetDrawMode(polyMode);
+	};
 	
 	const f32 GetCameraAngle() const { return _cameraAngle; };
 	const f32 GetCameraPosition() const { return _cameraPosition; };

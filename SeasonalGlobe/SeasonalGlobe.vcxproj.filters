@@ -201,6 +201,9 @@
     <ClCompile Include="PointBasedParticleEmitter.cpp">
       <Filter>Source Files\Particles\NewParticleEngine</Filter>
     </ClCompile>
+    <ClCompile Include="StaticParticleEmitter.cpp">
+      <Filter>Source Files\Particles\NewParticleEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="float2.h">
@@ -339,6 +342,9 @@
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="PointBasedParticleEmitter.h">
+      <Filter>Header Files\Particles\NewParticleEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticParticleEmitter.h">
       <Filter>Header Files\Particles\NewParticleEngine</Filter>
     </ClInclude>
   </ItemGroup>

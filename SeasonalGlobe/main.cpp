@@ -1,4 +1,5 @@
 #include "MyApp.h"
+//#include <vld.h>
 
 static MyApp seasonalGlobe;
 

@@ -9,7 +9,7 @@ HemiSphericalParticleEmitter::~HemiSphericalParticleEmitter()
 {
 };
 
-void HemiSphericalParticleEmitter::Emit(Particle &p, void *data)
+void HemiSphericalParticleEmitter::Emit(Particle &p)
 {
 	/*SphericalCamera scam;
 	scam.spherical_coords[0] = 11;
@@ -35,13 +35,13 @@ void HemiSphericalParticleEmitter::Emit(Particle &p, void *data)
 	//p.energy = randflt(1.5f, 3.5f);
 	//p.originalEnergy = p.energy;
 	
-	p.velocity.x( randflt(0.4,-0.4));
+	p.velocity.x( randflt(0.4f,-0.4f));
 	p.velocity.y(-1.0f);
-	p.velocity.z( randflt(0.4, -0.4));
+	p.velocity.z( randflt(0.4f, -0.4f));
 	
 	p.velocity.normalize();
 
-	p.size.set(0.25, 0.25, 0.25);
+	p.size.set(0.25f, 0.25f, 0.25f);
 };
 
 void HemiSphericalParticleEmitter::UpdateParticleProperties(Particle &p, const GameTime &gameTime)

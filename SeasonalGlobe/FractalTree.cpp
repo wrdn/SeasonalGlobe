@@ -373,11 +373,27 @@ void FractalTree::DrawBranch(const Mat44 &transformationMatrix)
 
 void FractalTree::DrawLeaves()
 {
+	// Get the model view matrix and invert it (to get the Model matrix)
+	//Mat44 mvm;
+	//glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)mvm.GetMatrix());
+	//mvm = mvm.Inverse();
+
 	for(u32 i=0;i<leafMatrixCount;++i)
 	{
 		glMatrixMode(GL_MODELVIEW);
+		
 		glPushMatrix();
-		glMultMatrixf(leafMatrices[i].GetMatrix());
+		//glMultMatrixf(leafMatrices[i].GetMatrix());
+		//Mat44 finmat = mvm.Mult(leafMatrices[i]);
+		//glLoadMatrixf(finmat.GetMatrix());
+
+		Mat44 &mat = leafMatrices[i]; // get position directly from matrix for leaf (elements 12, 13 and 14)
+		f32 xpos = mat.GetMatrix()[12];
+		f32 ypos = mat.GetMatrix()[13];
+		f32 zpos = mat.GetMatrix()[14];
+
+		glTranslatef(xpos, ypos, zpos);
+
 		leafModel.Draw();
 		glPopMatrix();
 	}

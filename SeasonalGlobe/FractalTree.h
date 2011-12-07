@@ -208,6 +208,9 @@ public:
 	const f32 GetBranchLength() const { return branchLength; };
 	void SetBranchLength(const f32 length) { branchLength = length; };
 
+	const u32 GetLeafCount() const { return leafMatrixCount; };
+	const Mat44* GetLeafMatrices() const { return leafMatrices; };
+
 	// Constants (default radius, etc)
 	static const f32 _GetDefaultBranchRadius() { return 1.0f; };
 	static const f32 _GetDefaultBranchRadiusReduction() { return 0.0f; };
