@@ -1,7 +1,7 @@
 #include "HemiSphericalParticleEmitter.h"
 #include "SphericalCamera.h"
 
-HemiSphericalParticleEmitter::HemiSphericalParticleEmitter() : hemisphere_radius(2)
+HemiSphericalParticleEmitter::HemiSphericalParticleEmitter() : hemisphere_radius(2), minAngle(0), maxAngle(0)
 {
 };
 

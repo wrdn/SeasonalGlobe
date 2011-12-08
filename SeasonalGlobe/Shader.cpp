@@ -10,16 +10,20 @@ Shader::Shader() : isActive(true),
 
 Shader::~Shader()
 {
-	// TODO: Cleanup the OpenGL shader objects here
-	glUseProgram(0);
-	glDetachObjectARB(shaderProgramID, vertexShaderID);
-	glDetachObjectARB(shaderProgramID, fragmentShaderID);
-	glDeleteShader(vertexShaderID);
-	glDeleteShader(fragmentShaderID);
-	glDeleteProgram(shaderProgramID);
+	try
+	{
+		// TODO: Cleanup the OpenGL shader objects here
+		glUseProgram(0);
+		glDetachObjectARB(shaderProgramID, vertexShaderID);
+		glDetachObjectARB(shaderProgramID, fragmentShaderID);
+		glDeleteShader(vertexShaderID);
+		glDeleteShader(fragmentShaderID);
+		glDeleteProgram(shaderProgramID);
 
-	// invalidate shader IDs
-	vertexShaderID = fragmentShaderID = shaderProgramID = 0;
+		// invalidate shader IDs
+		vertexShaderID = fragmentShaderID = shaderProgramID = 0;
+	}
+	catch(...) { }
 };
 
 const u32 Shader::GetLastError() const

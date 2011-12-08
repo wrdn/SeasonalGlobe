@@ -21,7 +21,7 @@ const u32 Texture::GetID() const { return id; };
 
 void Texture::SetID(const u32 _id) { id=_id; };
 
-void Texture::Activate()
+void Texture::Activate() const
 {
 	//glActiveTexture(GetTextureSlot());
 

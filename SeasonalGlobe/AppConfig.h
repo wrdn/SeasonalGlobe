@@ -34,7 +34,7 @@ public:
 	bool ParseConfigFile(const std::string &filename);
 
 	// returns true if configMap contains the key param
-	bool ConfigParameterExists(const std::string &param);
+	const bool ConfigParameterExists(const std::string &param) const;
 
 	// Returns false if key param does not exist, otherwise returns the value in map associated with param
 	bool GetString(const std::string &param, std::string &out);

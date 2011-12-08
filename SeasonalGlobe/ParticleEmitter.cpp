@@ -1,10 +1,9 @@
 #include "ParticleEmitter.h"
 
 // Constructors / Destructors
-ParticleEmitter::ParticleEmitter() : model(0), emitterShader(0),
-	sourceAlphaBlendFunction(GL_ONE), rateOfEmission(20), billboardType(Spherical),
-	localParticleMaximum(GLOBAL_MAX_PARTICLES_PER_EMITTER), doUpdate(true), doDraw(true), doEmit(true),
-	minLife(1.5f), maxLife(3.5f)
+ParticleEmitter::ParticleEmitter() : billboardType(Spherical), model(0), localParticleMaximum(GLOBAL_MAX_PARTICLES_PER_EMITTER),
+	doUpdate(true), doDraw(true), doEmit(true), rateOfEmission(20), minLife(1.5f), maxLife(3.5f),
+	emitterShader(0), sourceAlphaBlendFunction(GL_ONE)
 {
 	glex::Load();
 };
@@ -16,13 +15,13 @@ ParticleEmitter::~ParticleEmitter()
 	emitterShader = 0;
 };
 
-void ParticleEmitter::Draw(const GameTime &gameTime)
+void ParticleEmitter::Draw(/*const GameTime &gameTime*/)
 {
 	if(!emitterShader || !emitterShader->Valid()) return;
 
 	glPushMatrix();
 
-	ActivateShader(gameTime);
+	ActivateShader();
 	
 	glTranslatef(emitterOrigin.x(), emitterOrigin.y(), emitterOrigin.z());
 
@@ -86,7 +85,7 @@ void ParticleEmitter::Update(const GameTime &gameTime)
 	}
 };
 
-void ParticleEmitter::ActivateShader(const GameTime &gameTime)
+void ParticleEmitter::ActivateShader(/*const GameTime &gameTime*/)
 {
 	emitterShader->Activate();
 	glActiveTexture(GL_TEXTURE0);
@@ -103,7 +102,7 @@ void ParticleEmitter::DeactivateShader()
 };
 
 // Matrix billboard adjustments (These should be done in the shader)
-void ParticleEmitter::CylindricalBillboardAdjust()
+void ParticleEmitter::CylindricalBillboardAdjust() const
 {
 	f32 mat[16];
 	glGetFloatv(GL_MODELVIEW_MATRIX, mat);
@@ -114,7 +113,7 @@ void ParticleEmitter::CylindricalBillboardAdjust()
 	glLoadMatrixf(mat);
 };
 
-void ParticleEmitter::SphericalBillboardAdjust()
+void ParticleEmitter::SphericalBillboardAdjust() const
 {
 	f32 mat[16];
 	glGetFloatv(GL_MODELVIEW_MATRIX, mat);

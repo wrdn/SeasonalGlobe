@@ -29,6 +29,7 @@ public:
 		fov = 45;
 		nearplane = 0.3f;
 		farplane = 100.0f;
+		aspect = 1.333333f;
 	};
 	~Camera(void)
 	{
@@ -52,7 +53,7 @@ public:
 	void SetNear(const f32 _nearplane) { nearplane = _nearplane; };
 	void SetFar(const f32 _farplane) { farplane = _farplane; };
 
-	void Update()
+	void Update() const
 	{
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();

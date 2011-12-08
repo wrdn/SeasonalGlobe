@@ -13,7 +13,7 @@ private:
 	public:
 		ParticleEmitter * emitter;
 		EmitterHandle() : emitter(0) { };
-		EmitterHandle(ParticleEmitter *p) : emitter(p) { };
+		explicit EmitterHandle(ParticleEmitter *p) : emitter(p) { };
 	};
 
 	std::vector<ParticleEmitter*> emitterSet;
@@ -37,7 +37,15 @@ public:
 	bool RemoveEmitter(u32 index);
 
 	// Don't call "delete" on the pointer returned by this. Use RemoveEmitter(id) instead
-	ParticleEmitter * const GetEmitter(u32 id);
+	template<class T>
+	T * const GetEmitter(u32 id)
+	{
+		if(id < handles.size())
+		{
+			return (T*)handles[id].emitter;
+		}
+		return 0;
+	};
 
 	void SetDefaultModel(Model * m) { defaultModel = m; };
 
@@ -45,5 +53,5 @@ public:
 	void Clean();
 
 	void Update(const GameTime &gameTime);
-	void Draw(const GameTime &gameTime);
+	void Draw(/*const GameTime &gameTime*/);
 };

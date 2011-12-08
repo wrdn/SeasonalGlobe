@@ -12,7 +12,7 @@ private:
 		Shader *shader;
 
 		ShaderHandle() : shader(0) { };
-		ShaderHandle(Shader *sh) : shader(sh) { };
+		explicit ShaderHandle(Shader *sh) : shader(sh) { };
 	};
 
 	std::vector<Shader*> shaders;

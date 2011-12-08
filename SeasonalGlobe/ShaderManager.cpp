@@ -6,7 +6,11 @@ ShaderManager::ShaderManager()
 
 ShaderManager::~ShaderManager()
 {
-	Clean();
+	try
+	{
+		Clean();
+	}
+	catch(...) { }
 };
 
 u32 ShaderManager::AddShader()

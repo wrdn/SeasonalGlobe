@@ -67,18 +67,6 @@
     <Filter Include="Header Files\Misc">
       <UniqueIdentifier>{10f49e84-8b3e-4b28-9469-8bb586094396}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Particles\NewParticleEngine">
-      <UniqueIdentifier>{000b118c-544e-40c2-be02-6d5e5086b197}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Particles\NewParticleEngine">
-      <UniqueIdentifier>{ecdf1bef-3c10-46ad-8d10-39a75cc9a2b7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Particles\OldParticleEngine">
-      <UniqueIdentifier>{5992628a-8d91-4ef3-8a63-5560c1a9b6b3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Particles\OldParticleEngine">
-      <UniqueIdentifier>{517e5db6-f1cd-462e-a701-c43ad8669207}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="float2.cpp">
@@ -171,41 +159,35 @@
     <ClCompile Include="AppConfig.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="Particle.cpp">
-      <Filter>Source Files\Particles\NewParticleEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleSystem.cpp">
-      <Filter>Source Files\Particles\NewParticleEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleEmitter.cpp">
-      <Filter>Source Files\Particles\NewParticleEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="KParticleEmitter.cpp">
-      <Filter>Source Files\Particles\OldParticleEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="KParticleSystem.cpp">
-      <Filter>Source Files\Particles\OldParticleEngine</Filter>
-    </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
       <Filter>Source Files\Shading</Filter>
-    </ClCompile>
-    <ClCompile Include="GradientParticleEmitter.cpp">
-      <Filter>Source Files\Particles\NewParticleEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="HemiSphericalParticleEmitter.cpp">
-      <Filter>Source Files\Particles\NewParticleEngine</Filter>
     </ClCompile>
     <ClCompile Include="Disk.cpp">
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
+    <ClCompile Include="CylindricalParticleEmitter.cpp">
+      <Filter>Source Files\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="GradientParticleEmitter.cpp">
+      <Filter>Source Files\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="HemiSphericalParticleEmitter.cpp">
+      <Filter>Source Files\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Source Files\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleEmitter.cpp">
+      <Filter>Source Files\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Source Files\Particles</Filter>
+    </ClCompile>
     <ClCompile Include="PointBasedParticleEmitter.cpp">
-      <Filter>Source Files\Particles\NewParticleEngine</Filter>
+      <Filter>Source Files\Particles</Filter>
     </ClCompile>
     <ClCompile Include="StaticParticleEmitter.cpp">
-      <Filter>Source Files\Particles\NewParticleEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="CylindricalParticleEmitter.cpp">
-      <Filter>Source Files\Particles\NewParticleEngine</Filter>
+      <Filter>Source Files\Particles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -308,35 +290,8 @@
     <ClInclude Include="AppConfig.h">
       <Filter>Header Files\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="Particle.h">
-      <Filter>Header Files\Particles\NewParticleEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleSystem.h">
-      <Filter>Header Files\Particles\NewParticleEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleEmitter.h">
-      <Filter>Header Files\Particles\NewParticleEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="KParticle.h">
-      <Filter>Header Files\Particles\OldParticleEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="KParticleEmitter.h">
-      <Filter>Header Files\Particles\OldParticleEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="KParticleSystem.h">
-      <Filter>Header Files\Particles\OldParticleEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="GradientParticleEmitter.h">
-      <Filter>Header Files\Particles\NewParticleEngine</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderManager.h">
       <Filter>Header Files\Shading</Filter>
-    </ClInclude>
-    <ClInclude Include="KPointParticleEmitter.h">
-      <Filter>Header Files\Particles\OldParticleEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="HemiSphericalParticleEmitter.h">
-      <Filter>Header Files\Particles\NewParticleEngine</Filter>
     </ClInclude>
     <ClInclude Include="tutorialcodeheaders.h">
       <Filter>Header Files</Filter>
@@ -344,14 +299,29 @@
     <ClInclude Include="Disk.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="CylindricalParticleEmitter.h">
+      <Filter>Header Files\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="GradientParticleEmitter.h">
+      <Filter>Header Files\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="HemiSphericalParticleEmitter.h">
+      <Filter>Header Files\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleEmitter.h">
+      <Filter>Header Files\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Header Files\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Header Files\Particles</Filter>
+    </ClInclude>
     <ClInclude Include="PointBasedParticleEmitter.h">
-      <Filter>Header Files\Particles\NewParticleEngine</Filter>
+      <Filter>Header Files\Particles</Filter>
     </ClInclude>
     <ClInclude Include="StaticParticleEmitter.h">
-      <Filter>Header Files\Particles\NewParticleEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="CylindricalParticleEmitter.h">
-      <Filter>Header Files\Particles\NewParticleEngine</Filter>
+      <Filter>Header Files\Particles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

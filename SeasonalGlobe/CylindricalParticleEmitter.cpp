@@ -19,7 +19,7 @@ void CylindricalParticleEmitter::Emit(Particle &p)
 		sin(Angle) * radius,
 		randflt(0, height));
 
-	p.velocity = float3(0.2, randflt(0, 1), 0.2);
+	p.velocity = float3(0.2f, randflt(0, 1), 0.2f);
 	p.velocity.normalize();
 
 	//p.velocity = float3(randflt(-0.4, 0.4), randflt(0,1), randflt(-0.4, 0.4));
@@ -35,7 +35,7 @@ void CylindricalParticleEmitter::Emit(Particle &p)
 void CylindricalParticleEmitter::UpdateParticleProperties(Particle &p, const GameTime &gameTime)
 {
 	float4 startColor(1,0,0,1);
-	float4 endColor(1,0.28,0,0.8);
+	float4 endColor(1,0.28f,0,0.8f);
 
 	f32 lR = lerp(startColor.r(), endColor.r(), 1.0f / p.energy);
 	f32 lG = lerp(startColor.g(), endColor.g(), 1.0f / p.energy);

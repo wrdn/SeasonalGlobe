@@ -5,17 +5,15 @@
 using namespace std;
 
 FractalTree::FractalTree() : branchRadius(_GetDefaultBranchRadius()), branchRadiusReduction(_GetDefaultBranchRadiusReduction()),
-	branchLength(_GetDefaultBranchLength()), transformationMatricesArraySize(0), transformationMatrices(0), 
-	currentScale(0), lastTime(0), AnimationLevel(0), drawLevel(0), loop_growth(false), leafMatrixCount(0), leafMatrices(0)
+	branchLength(_GetDefaultBranchLength()), transformationMatricesArraySize(0), transformationMatrices(0),
+	leafMatrixCount(0), leafMatrices(0), currentScale(0), lastTime(0), AnimationLevel(0), drawLevel(0), loop_growth(false),
+	runtime(0), buildTime(15)
 {
 	rotationAngles[0] = rotationAngles[1] = rotationAngles[2] = DefaultAngle;
 	BuildRotationMatrices();
-
-	runtime=0;
-	buildTime = 15;
 };
 
-FractalTree::FractalTree(FractalTree const& t)
+FractalTree::FractalTree(FractalTree const& t) : transformationMatrices(0)
 {
 	t.DeepCopy(this);
 
@@ -24,9 +22,10 @@ FractalTree::FractalTree(FractalTree const& t)
 		transformationMatrices = (Mat44*)_aligned_malloc(sizeof(Mat44) * transformationMatricesArraySize, 16);
 		memcpy(transformationMatrices, &t.transformationMatrices, sizeof(Mat44) * transformationMatricesArraySize);
 	}
-	else
+	if(leafMatrixCount)
 	{
-		transformationMatrices = 0;
+		leafMatrices = (Mat44*)_aligned_malloc(sizeof(Mat44) * leafMatrixCount, 16);
+		memcpy(leafMatrices, &t.leafMatrices, sizeof(Mat44)*leafMatrixCount);
 	}
 };
 
@@ -52,6 +51,10 @@ void FractalTree::DeepCopy(const FractalTree *dstp) const
 	dst.AnimationLevel = AnimationLevel;
 	dst.drawLevel = drawLevel;
 	dst.loop_growth = loop_growth;
+
+	dst.leafMatrixCount = leafMatrixCount;
+	dst.runtime = runtime;
+	dst.buildTime = buildTime;
 };
 
 FractalTree::~FractalTree()
@@ -390,10 +393,10 @@ void FractalTree::DrawLeaves()
 		//Mat44 finmat = mvm.Mult(leafMatrices[i]);
 		//glLoadMatrixf(finmat.GetMatrix());
 
-		Mat44 &mat = leafMatrices[i]; // get position directly from matrix for leaf (elements 12, 13 and 14)
-		f32 xpos = mat.GetMatrix()[12];
-		f32 ypos = mat.GetMatrix()[13];
-		f32 zpos = mat.GetMatrix()[14];
+		Mat44 *mat = &leafMatrices[i]; // get position directly from matrix for leaf (elements 12, 13 and 14)
+		f32 xpos = mat->GetMatrix()[12];
+		f32 ypos = mat->GetMatrix()[13];
+		f32 zpos = mat->GetMatrix()[14];
 
 		glTranslatef(xpos, ypos, zpos);
 

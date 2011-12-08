@@ -96,6 +96,9 @@ private:
 	i32 AnimationLevel; // which level of the tree are we drawing?
 	u32 drawLevel;
 	bool loop_growth;
+	
+	f32 runtime;
+	f32 buildTime;
 
 	#pragma endregion
 
@@ -124,8 +127,10 @@ private:
 
 public:
 
-	f32 runtime;
-	f32 buildTime;
+	void SetRuntime(f32 r) { runtime = r; };
+	void SetBuildTime(f32 b) { buildTime = b; };
+	const f32 GetRuntime() const { return runtime; };
+	const f32 GetBuildTime() const { return buildTime; };
 
 	void SetAnimationLevel(i32 v)
 	{

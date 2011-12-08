@@ -114,7 +114,8 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		}
 	}
 
-	PointBasedParticleEmitter *smokeEmitter = (PointBasedParticleEmitter*)scn.particleSystem.GetEmitter(scn.smokeEmitter);
+	//PointBasedParticleEmitter *smokeEmitter = (PointBasedParticleEmitter*)scn.GetParticleSystem().GetEmitter(scn.GetSmokeEmitterID());
+	PointBasedParticleEmitter *smokeEmitter = scn.GetParticleSystem().GetEmitter<PointBasedParticleEmitter>(scn.GetSmokeEmitterID());
 	float3 emitterOrigin = smokeEmitter->GetEmitterOrigin();
 
 	switch(tolower(key))
@@ -205,7 +206,8 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		{
 			if(!down)
 			{
-				scn.GetTree()->runtime = 0;
+				scn.GetTree()->SetRuntime(0);
+				//scn.GetTree()->runtime = 0;
 				//scn.GetTree()->SetAnimationLevel(0);
 			}
 		}

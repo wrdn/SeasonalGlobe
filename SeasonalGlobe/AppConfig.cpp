@@ -58,7 +58,7 @@ bool AppConfig::ParseConfigFile(const std::string &filename)
 	return true;
 };
 
-bool AppConfig::ConfigParameterExists(const std::string &param)
+const bool AppConfig::ConfigParameterExists(const std::string &param) const
 {
 	return configMap.count(param) > 0;
 };

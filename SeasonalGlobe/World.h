@@ -77,19 +77,22 @@ private:
 
 	Cylinder testFireCylinder;
 
-public:
 	FGLCaller oglcall;
-
 	f32 waterx, watery, waterz;
 	f32 scaleX, scaleZ;
-	
 	u32 smokeEmitter;
 	ParticleSystem particleSystem;
+	Texture *mtt1, *mtt2; // multi texturing test texture 1 and 2
+
+
+public:
+	
+	ParticleSystem &GetParticleSystem() { return particleSystem; };
+	const u32 GetSmokeEmitterID() const { return smokeEmitter; };
 
 	void reflective_draw(const GameTime &gameTime);
 
 	void multi_texturing_test(const GameTime &gameTime);
-	Texture *mtt1, *mtt2; // multi texturing test texture 1 and 2
 
 	const bool GetAutoRotate() const { return AutoRotate; };
 	void SetAutoRotate(const bool b) { AutoRotate = b; };
@@ -115,7 +118,7 @@ public:
 	void SetCameraPosition(f32 v) { _cameraPosition = v; };
 	void SetCameraRotation(f32 v) { _cameraRotation = v; };
 
-	Camera &GetCamera() { return cam; };
+	const Camera &GetCamera() { return cam; };
 
 	World(void);
 	~World(void);

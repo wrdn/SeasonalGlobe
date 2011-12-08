@@ -38,8 +38,8 @@ private:
 	GLenum sourceAlphaBlendFunction; // e.g. GL_ONE, GL_ONE_MINUS_SRC_ALPHA
 
 	// NOTE: the matrix trick for spherical/cylindrical billboarding should be done in the shader
-	void CylindricalBillboardAdjust();
-	void SphericalBillboardAdjust();
+	void CylindricalBillboardAdjust() const;
+	void SphericalBillboardAdjust() const;
 
 	// Derived classes need to inherit this function which is used to set the data on new
 	// particles. If required by the class, gdata could be used to pass information into
@@ -51,7 +51,7 @@ private:
 	// called before drawing particles
 	// if needed, you should set the uniform variables here
 	// defaults to activating the shader and setting a uniform called "AlphaMap"
-	virtual void ActivateShader(const GameTime &gameTime);
+	virtual void ActivateShader(/*const GameTime &gameTime*/);
 
 	// Do any post-draw deactivations. By default, the alpha map is deactivated
 	// the shader is deactivated and the active texture is set to GL_TEXTURE0
@@ -74,7 +74,7 @@ public:
 
 	// Activates the shader, then drawing each particle in turn (up to localParticleMaximum)
 	// If emitterShader is NULL, it will set the colour using fixed function functions and draw particles
-	void Draw(const GameTime &gameTime);
+	void Draw(/*const GameTime &gameTime*/);
 
 	void Update(const GameTime &gameTime); // Defaults to applying forces (or just adding velocity is applyForces=false)
 

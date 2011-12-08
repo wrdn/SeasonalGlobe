@@ -13,7 +13,7 @@ private:
 	f32 runningTime;
 
 public:
-	GameTime() : currentTime(0), deltaTime(0), runningTime(0) { };
+	GameTime() : currentTime(0), oldTime(0), deltaTime(0), FrameRate(0), runningTime(0) { };
 
 	const f32 GetCurrentTime() const;
 	const f32 GetDeltaTime() const;

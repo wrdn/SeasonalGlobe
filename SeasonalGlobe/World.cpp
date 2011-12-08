@@ -19,13 +19,14 @@ World::World(void)
 	  _cameraAngle(30.0f),
 	  _cameraRotation(-357.0f),
 	   AutoRotate(false),
-	   polygonMode(GL_FILL)
+	   polygonMode(GL_FILL),
+	   phongShaderID(0), globeShaderID(0), multiTextureShaderID(0),
+	   particleSystemBaseShaderID(0), leafParticleEmitterID(0),
+	   cylindricalParticleEmitterID(0), snowEmitterID(0), smokeEmitter(0),
+	   gradientMapShaderID(0), fireEmitter(0), particleTexture(0), gradientMapTexture(0),
+	   leafTexture(0), baseModel(0), scaleX(0), scaleZ(0), mtt1(0), mtt2(0),
+	   waterx(3), watery(0), waterz(0), treePos(2.5f, 0, 0.2f)
 {
-	waterx=3;
-	watery=0;
-	waterz=0;
-
-	treePos = float3(2.5f,0, 0.2f);
 }
 
 World::~World(void)
@@ -140,7 +141,8 @@ bool World::LoadParticles()
 
 	const u32 LEAF_PARTICLES_PER_LEAF_MATRIX = 3;
 	leafParticleEmitterID = particleSystem.AddEmitter<StaticParticleEmitter>();
-	StaticParticleEmitter *leafEmitter = (StaticParticleEmitter*)particleSystem.GetEmitter(leafParticleEmitterID);
+	//StaticParticleEmitter *leafEmitter = (StaticParticleEmitter*)particleSystem.GetEmitter(leafParticleEmitterID);
+	StaticParticleEmitter *leafEmitter = particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID);
 	leafEmitter->SetLocalParticleMaximum(tree->GetLeafCount() * LEAF_PARTICLES_PER_LEAF_MATRIX);
 	leafEmitter->SetParticlesStaticState(true);
 	leafEmitter->SetAlphaMap(*leafTexture);
@@ -167,7 +169,8 @@ bool World::LoadParticles()
 	}
 
 	smokeEmitter = particleSystem.AddEmitter<PointBasedParticleEmitter>();
-	PointBasedParticleEmitter *smokeParticleEmitter = (PointBasedParticleEmitter*)particleSystem.GetEmitter(smokeEmitter);
+	//PointBasedParticleEmitter *smokeParticleEmitter = (PointBasedParticleEmitter*)particleSystem.GetEmitter(smokeEmitter);
+	PointBasedParticleEmitter *smokeParticleEmitter = particleSystem.GetEmitter<PointBasedParticleEmitter>(smokeEmitter);
 	smokeParticleEmitter->SetParticleSpread(0.35f);
 	smokeParticleEmitter->SetRateOfEmission(2);
 	smokeParticleEmitter->SetAlphaMap(*particleTexture);
@@ -175,14 +178,15 @@ bool World::LoadParticles()
 	smokeParticleEmitter->SetLocalParticleMaximum(abs(maxsmokeparticles));
 	smokeParticleEmitter->SetStartingColor(Color4f(0.2f, 0.2f, 0.2f, 0.75f));
 	smokeParticleEmitter->SetEndingColor(Color4f(0.2f, 0.2f, 0.2f, 0.1f));
-	smokeParticleEmitter->SetEmitterOrigin(float3(-2.8, 1.98, 0.2f));
+	smokeParticleEmitter->SetEmitterOrigin(float3(-2.8f, 1.98f, 0.2f));
 	smokeParticleEmitter->SetShader(psysbase);
 	smokeParticleEmitter->SetBillboardType(Spherical);
 	smokeParticleEmitter->AddForce(float3(1.0f,0,0));
 	smokeParticleEmitter->AddForce(float3(-1.0f,0.2f,0.43f));
 
 	snowEmitterID = particleSystem.AddEmitter<HemiSphericalParticleEmitter>();
-	HemiSphericalParticleEmitter *snowEmitter = (HemiSphericalParticleEmitter*)particleSystem.GetEmitter(snowEmitterID);
+	//HemiSphericalParticleEmitter *snowEmitter = (HemiSphericalParticleEmitter*)particleSystem.GetEmitter(snowEmitterID);
+	HemiSphericalParticleEmitter *snowEmitter = particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID);
 	snowEmitter->SetAlphaMap(*particleTexture);
 	i32 maxsnowparticles=150; conf.GetInt("MaxSnowParticles", maxsnowparticles);
 	snowEmitter->SetLocalParticleMaximum(abs(maxsnowparticles));
@@ -192,12 +196,13 @@ bool World::LoadParticles()
 	snowEmitter->SetBillboardType(Spherical);
 
 	cylindricalParticleEmitterID = particleSystem.AddEmitter<CylindricalParticleEmitter>();
-	fireEmitter = (CylindricalParticleEmitter*)particleSystem.GetEmitter(cylindricalParticleEmitterID);
+	//fireEmitter = (CylindricalParticleEmitter*)particleSystem.GetEmitter(cylindricalParticleEmitterID);
+	fireEmitter = particleSystem.GetEmitter<CylindricalParticleEmitter>(cylindricalParticleEmitterID);
 	fireEmitter->SetLocalParticleMaximum(100);
 	fireEmitter->SetAlphaMap(*particleTexture);
 	fireEmitter->SetShader(psysbase);
 	fireEmitter->SetBillboardType(Spherical);
-	fireEmitter->AddForce(float3(0.3, 0.8, 0.24));
+	fireEmitter->AddForce(float3(0.3f, 0.8f, 0.24f));
 	//fireEmitter->SetEmitterOrigin(float3(0,3,0));
 
 	return true;
@@ -296,6 +301,7 @@ void World::Shutdown()
 		SAFE_DELETE(*it);
 	}
 	delete houseModel;
+	delete baseModel;
 	delete tree;
 };
 
@@ -528,7 +534,7 @@ void World::Draw(const GameTime &gameTime)
 	glDepthMask(GL_FALSE);
 	glBlendFunc(GL_SRC_ALPHA, fireEmitter->GetSourceAlphaBlendFunction());
 	fireEmitter->Update(gameTime);
-	fireEmitter->Draw(gameTime);
+	fireEmitter->Draw();
 	glDepthMask(GL_TRUE);
 	glEnable(GL_BLEND);
 	glPopMatrix();
@@ -605,7 +611,7 @@ void World::Draw(const GameTime &gameTime)
 
 	// Particle system
 	particleSystem.Update(gameTime);
-	particleSystem.Draw(gameTime);
+	particleSystem.Draw();
 
 	// Globe
 	Shader* globeShader = shaderMan.GetShader(globeShaderID);
