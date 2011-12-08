@@ -99,6 +99,7 @@
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Cylinder.cpp" />
     <ClCompile Include="CylindricalParticleEmitter.cpp" />
+    <ClCompile Include="FireParticleEmitter.cpp" />
     <ClCompile Include="float2.cpp" />
     <ClCompile Include="float3.cpp" />
     <ClCompile Include="float4.cpp" />

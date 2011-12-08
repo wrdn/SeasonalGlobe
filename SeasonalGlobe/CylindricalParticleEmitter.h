@@ -10,6 +10,8 @@ private:
 	float3 startPos, endPos,
 		direction; // direction recalculated whenever SetStartPosition or SetEndPosition called
 
+	Color4f startColor, endColor;
+
 	void Emit(Particle &p);
 	void UpdateParticleProperties(Particle &p, const GameTime &gameTime);
 public:
@@ -29,4 +31,9 @@ public:
 
 	const float3& GetStartPosition() const { return startPos; };
 	const float3& GetEndPosition() const { return endPos; };
+
+	void SetStartColor(const Color4f &startcol) { startColor = startcol; };
+	void SetEndColor(const Color4f &endcol) { endColor = endcol; };
+	const Color4f& GetStartColor() const { return startColor; };
+	const Color4f& GetEndColor() const { return endColor; };
 };

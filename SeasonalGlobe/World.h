@@ -12,6 +12,7 @@
 #include "AppConfig.h"
 #include "ParticleSystem.h"
 #include "CylindricalParticleEmitter.h"
+#include "FireParticleEmitter.h"
 
 class FGLCaller : public glex
 {
@@ -41,6 +42,9 @@ private:
 	u32 cylindricalParticleEmitterID;
 	u32 snowEmitterID;
 	CylindricalParticleEmitter *fireEmitter;
+
+	FireParticleEmitter *fireParticleEmitter;
+
 
 	Texture *grasstexture, *houseTexture, *barkTexture, *particleTexture,
 		*gradientMapTexture, *leafTexture;

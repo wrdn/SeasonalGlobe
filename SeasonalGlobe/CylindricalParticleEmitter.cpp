@@ -1,6 +1,7 @@
 #include "CylindricalParticleEmitter.h"
 
 CylindricalParticleEmitter::CylindricalParticleEmitter()
+	: startPos(), endPos(), direction(), startColor(1,0,0,1), endColor(1, 0.28f, 0, 0.8f)
 {
 };
 
@@ -49,9 +50,6 @@ void CylindricalParticleEmitter::Emit(Particle &p)
 
 void CylindricalParticleEmitter::UpdateParticleProperties(Particle &p, const GameTime &gameTime)
 {
-	float4 startColor(1,0,0,1);
-	float4 endColor(1,0.28f,0,0.8f);
-
 	f32 lR = lerp(startColor.r(), endColor.r(), 1.0f / p.energy);
 	f32 lG = lerp(startColor.g(), endColor.g(), 1.0f / p.energy);
 	f32 lB = lerp(startColor.b(), endColor.b(), 1.0f / p.energy);
