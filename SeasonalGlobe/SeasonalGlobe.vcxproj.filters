@@ -323,6 +323,9 @@
     <ClInclude Include="StaticParticleEmitter.h">
       <Filter>Header Files\Particles</Filter>
     </ClInclude>
+    <ClInclude Include="FireParticleEmitter.h">
+      <Filter>Header Files\Particles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Object Include="Data\TexturedCube.obj">

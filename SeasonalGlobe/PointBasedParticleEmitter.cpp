@@ -11,7 +11,9 @@ PointBasedParticleEmitter::~PointBasedParticleEmitter()
 void PointBasedParticleEmitter::Emit(Particle &p)
 {
 	p.pos = GetEmitterOrigin();
+	
 	p.color = startColor;
+	//p.col.SetColor(startColor.x(), startColor.y(), startColor.z(), startColor.a());
 
 	p.energy = randflt(GetMinParticleLife(), GetMaxParticleLife());
 	//p.originalEnergy = p.energy;

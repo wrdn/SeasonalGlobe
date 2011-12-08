@@ -10,7 +10,22 @@ CylindricalParticleEmitter::~CylindricalParticleEmitter()
 
 void CylindricalParticleEmitter::Emit(Particle &p)
 {
-	f32 Angle = DEGTORAD( randflt(0, 360) );
+	// Emit particles along the line startpos + (t * direction), for 0<=t<=1
+	
+	f32 t = randflt(0.0f , 1.0f);
+
+	p.pos = this->startPos + (t * this->direction);
+
+	p.velocity = float3(0.2f, randflt(0, 1), 0.2f);
+	p.velocity.normalize();
+
+	p.size.setall(0.5f);
+
+	p.color = Color4f(1,0,0,1);
+
+	p.energy = randflt(0, 1.0);
+
+	/*f32 Angle = DEGTORAD( randflt(0, 360) );
 	f32 radius = 0.08f;
 	f32 height = 2.0f;
 
@@ -29,7 +44,7 @@ void CylindricalParticleEmitter::Emit(Particle &p)
 	p.color = Color4f(1,0,0,1);
 	p.energy = randflt(0, 1.0);
 
-	p.rotation.setall(-90);
+	p.rotation.setall(-90);*/
 };
 
 void CylindricalParticleEmitter::UpdateParticleProperties(Particle &p, const GameTime &gameTime)

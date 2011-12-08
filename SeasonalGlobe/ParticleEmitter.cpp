@@ -2,7 +2,7 @@
 
 // Constructors / Destructors
 ParticleEmitter::ParticleEmitter() : billboardType(Spherical), model(0), localParticleMaximum(GLOBAL_MAX_PARTICLES_PER_EMITTER),
-	doUpdate(true), doDraw(true), doEmit(true), rateOfEmission(20), minLife(1.5f), maxLife(3.5f),
+	doUpdate(true), doDraw(true), doEmit(true), rateOfEmission(20), applyRotations(true), minLife(1.5f), maxLife(3.5f),
 	emitterShader(0), sourceAlphaBlendFunction(GL_ONE)
 {
 	glex::Load();
@@ -33,17 +33,18 @@ void ParticleEmitter::Draw(/*const GameTime &gameTime*/)
 
 		glColor4fv(p.color.GetVec());
 		
-		glRotatef(p.rotation.x(), 1, 0, 0);
-		glRotatef(p.rotation.y(), 0, 1, 0);
-		
 		glTranslatef(p.pos.x(), p.pos.y(), p.pos.z());
 
 		if(billboardType == Spherical)
+		{
 			SphericalBillboardAdjust();
+		}
 		else
+		{
 			CylindricalBillboardAdjust();
+		}
 
-		glRotatef(p.rotation.z(), 0, 0, 1);
+		glRotatef(p.rotation_z, 0,0,1);
 		glScalef(p.size.x(), p.size.y(), p.size.z());
 		model->Draw();
 
@@ -106,7 +107,7 @@ void ParticleEmitter::CylindricalBillboardAdjust() const
 {
 	f32 mat[16];
 	glGetFloatv(GL_MODELVIEW_MATRIX, mat);
-	mat[0] = mat[10] = mat[5] = 1.0f;
+	mat[0] = mat[10] = 1.0f;
 	mat[1] = mat[2] = mat[3] = mat[4] = 
 		mat[6] = mat[7] = mat[8] = mat[9] =
 		mat[11] = 0.0f;

@@ -26,6 +26,11 @@ private:
 	bool doUpdate, doDraw, doEmit; // can turn off specific emitter functionality
 	u32 rateOfEmission;
 
+	// True by default, used to specify if rotations will occur
+	// This variable was added to allow you to reuse the rotation vector
+	// in a particle if rotations are not required
+	bool applyRotations;
+
 	// could be used when emitting particles to set their life
 	f32 minLife, maxLife;
 

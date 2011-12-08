@@ -162,7 +162,8 @@ bool World::LoadParticles()
 
 		for(u32 j=0;j<LEAF_PARTICLES_PER_LEAF_MATRIX;++j)
 		{
-			p.rotation.z( randflt(0, 360) );
+			p.rotation_z = randflt(0, 360);
+
 			p.size = float3(0.25f);
 			leafEmitter->AddParticle(p);
 		}
@@ -198,11 +199,12 @@ bool World::LoadParticles()
 	cylindricalParticleEmitterID = particleSystem.AddEmitter<CylindricalParticleEmitter>();
 	//fireEmitter = (CylindricalParticleEmitter*)particleSystem.GetEmitter(cylindricalParticleEmitterID);
 	fireEmitter = particleSystem.GetEmitter<CylindricalParticleEmitter>(cylindricalParticleEmitterID);
-	fireEmitter->SetLocalParticleMaximum(100);
+	fireEmitter->SetLocalParticleMaximum(250);
 	fireEmitter->SetAlphaMap(*particleTexture);
 	fireEmitter->SetShader(psysbase);
 	fireEmitter->SetBillboardType(Spherical);
-	fireEmitter->AddForce(float3(0.3f, 0.8f, 0.24f));
+	fireEmitter->SetEmitterOrigin(treePos);
+	//fireEmitter->AddForce(float3(0.3f, 0.8f, 0.24f));
 	//fireEmitter->SetEmitterOrigin(float3(0,3,0));
 
 	return true;
@@ -265,8 +267,7 @@ bool World::Load()
 	LoadGeometry();
 	LoadShaders();
 	LoadParticles();
-
-
+	
 	// NOTE: THIS IS ALL CODE FROM TUTORIALS THAT SHOULD LATER BE REMOVED
 	// Load materials
 	_material1.create(ColorT::black(), ColorT(0.9f,0.9f,0.9f,1.0f));
@@ -521,15 +522,19 @@ void World::Draw(const GameTime &gameTime)
 
 	glRotatef(angle, 0, 1, 0);
 
-	glPushMatrix();
-	glRotatef(90, 1,0,0);
-	glRotatef(90, 0,0,1);
-	barkTexture->Activate();
-	testFireCylinder.Draw();
-	barkTexture->Deactivate();
-	glPopMatrix();
+	//// Testing fire
+	//glPushMatrix();
+	//glRotatef(90, 1,0,0);
+	//glRotatef(90, 0,0,1);
+	//barkTexture->Activate();
+	//testFireCylinder.Draw();
+	//barkTexture->Deactivate();
+	//glPopMatrix();
+
+	fireEmitter->SetStartPosition(float3(0,0,0));
+	fireEmitter->SetEndPosition(float3(0,2,0));
 	
-	glPushMatrix();
+	/*glPushMatrix();
 	glEnable(GL_BLEND);
 	glDepthMask(GL_FALSE);
 	glBlendFunc(GL_SRC_ALPHA, fireEmitter->GetSourceAlphaBlendFunction());
@@ -539,8 +544,18 @@ void World::Draw(const GameTime &gameTime)
 	glEnable(GL_BLEND);
 	glPopMatrix();
 	
-	/*glPopMatrix();
-	return;*/
+	glPushMatrix();
+	barkTexture->Activate();
+	tree->Draw(gameTime.GetDeltaTime());
+	barkTexture->Deactivate();
+	glPopMatrix();*/
+
+	/*glPushMatrix();
+	glTranslatef(treePos.x(), treePos.y(), treePos.z());
+	barkTexture->Activate();
+	tree->DrawLeaves();
+	barkTexture->Deactivate();
+	glPopMatrix();*/
 
 	glEnable(GL_LIGHTING);
 	glPushMatrix();

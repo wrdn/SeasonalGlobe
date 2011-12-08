@@ -384,7 +384,7 @@ void FractalTree::DrawLeaves()
 	//glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)mvm.GetMatrix());
 	//mvm = mvm.Inverse();
 
-	for(u32 i=0;i<leafMatrixCount;++i)
+	/*for(u32 i=0;i<leafMatrixCount;++i)
 	{
 		glMatrixMode(GL_MODELVIEW);
 		
@@ -400,6 +400,34 @@ void FractalTree::DrawLeaves()
 
 		glTranslatef(xpos, ypos, zpos);
 
+		leafModel.Draw();
+		glPopMatrix();
+	}*/
+
+	// Proof of concept code (draw spheres at the start and end of the lines defined by the cylinders)
+
+	for(int i=0;i<transformationMatricesArraySize;++i)
+	{
+		Mat44 &startMatrix = transformationMatrices[i]; Mat44 endMatrix;
+		float3 startPos( startMatrix.GetMatrix()[12], startMatrix.GetMatrix()[13], startMatrix.GetMatrix()[14] ); // position of start of line (first sphere)
+
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		glMultMatrixf(startMatrix.GetMatrix());
+		glTranslatef(0, branchLength, 0);
+		glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)endMatrix.GetMatrix());
+		glPopMatrix();
+
+		float3 endPos( endMatrix.GetMatrix()[12], endMatrix.GetMatrix()[13], endMatrix.GetMatrix()[14] ); // position of end of line (second sphere)
+
+		glPushMatrix();
+		glTranslatef(startPos.x(), startPos.y(), startPos.z());
+		leafModel.Draw();
+		glPopMatrix();
+
+		glPushMatrix();
+		glTranslatef(endPos.x(), endPos.y(), endPos.z());
 		leafModel.Draw();
 		glPopMatrix();
 	}

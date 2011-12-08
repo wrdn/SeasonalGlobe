@@ -145,6 +145,7 @@
     <ClInclude Include="ctypes.h" />
     <ClInclude Include="Cylinder.h" />
     <ClInclude Include="CylindricalParticleEmitter.h" />
+    <ClInclude Include="FireParticleEmitter.h" />
     <ClInclude Include="float2.h" />
     <ClInclude Include="float3.h" />
     <ClInclude Include="float4.h" />
