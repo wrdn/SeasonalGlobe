@@ -167,19 +167,19 @@ bool World::LoadParticles()
 	}
 
 	smokeEmitter = particleSystem.AddEmitter<PointBasedParticleEmitter>();
-	PointBasedParticleEmitter *emitter = (PointBasedParticleEmitter*)particleSystem.GetEmitter(smokeEmitter);
-	emitter->SetParticleSpread(0.35f);
-	emitter->SetRateOfEmission(2);
-	emitter->SetAlphaMap(*particleTexture);
+	PointBasedParticleEmitter *smokeParticleEmitter = (PointBasedParticleEmitter*)particleSystem.GetEmitter(smokeEmitter);
+	smokeParticleEmitter->SetParticleSpread(0.35f);
+	smokeParticleEmitter->SetRateOfEmission(2);
+	smokeParticleEmitter->SetAlphaMap(*particleTexture);
 	i32 maxsmokeparticles=80; conf.GetInt("MaxSmokeParticles", maxsmokeparticles);
-	emitter->SetLocalParticleMaximum(abs(maxsmokeparticles));
-	emitter->SetStartingColor(Color4f(0.2f, 0.2f, 0.2f, 0.75f));
-	emitter->SetEndingColor(Color4f(0.2f, 0.2f, 0.2f, 0.1f));
-	emitter->SetEmitterOrigin(float3(-3.0, 1, 0.5f));
-	emitter->SetShader(psysbase);
-	emitter->SetBillboardType(Spherical);
-	emitter->AddForce(float3(1.0f,0,0));
-	emitter->AddForce(float3(-1.0f,0.2f,0.43f));
+	smokeParticleEmitter->SetLocalParticleMaximum(abs(maxsmokeparticles));
+	smokeParticleEmitter->SetStartingColor(Color4f(0.2f, 0.2f, 0.2f, 0.75f));
+	smokeParticleEmitter->SetEndingColor(Color4f(0.2f, 0.2f, 0.2f, 0.1f));
+	smokeParticleEmitter->SetEmitterOrigin(float3(-2.8, 1.98, 0.2f));
+	smokeParticleEmitter->SetShader(psysbase);
+	smokeParticleEmitter->SetBillboardType(Spherical);
+	smokeParticleEmitter->AddForce(float3(1.0f,0,0));
+	smokeParticleEmitter->AddForce(float3(-1.0f,0.2f,0.43f));
 
 	snowEmitterID = particleSystem.AddEmitter<HemiSphericalParticleEmitter>();
 	HemiSphericalParticleEmitter *snowEmitter = (HemiSphericalParticleEmitter*)particleSystem.GetEmitter(snowEmitterID);

@@ -423,6 +423,18 @@
     <None Include="Data\Shaders\gradientMap.vert">
       <Filter>Resource Files\Data\Shaders</Filter>
     </None>
+    <None Include="Data\Shaders\multitex.frag">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\multitex.vert">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\particlesystembase.frag">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\particlesystembase.vert">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SeasonalGlobe.rc">

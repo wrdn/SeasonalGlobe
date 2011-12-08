@@ -16,7 +16,7 @@ void CylindricalParticleEmitter::Emit(Particle &p)
 
 	p.pos.set(
 		cos(Angle) * radius,
-		sin(Angle) * radius - 0.3,
+		sin(Angle) * radius,
 		randflt(0, height));
 
 	p.velocity = float3(0.2, randflt(0, 1), 0.2);
