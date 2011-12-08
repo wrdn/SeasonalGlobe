@@ -49,6 +49,8 @@ private:
 	Texture *grasstexture, *houseTexture, *barkTexture, *particleTexture,
 		*gradientMapTexture, *leafTexture;
 
+	Model *defaultBillboardModel;
+
 	OBJFile *houseModel;
 	Sphere *globeSphere;
 
@@ -62,11 +64,6 @@ private:
 	f32 _cameraRotation;
 	bool AutoRotate;
 	GLenum polygonMode;
-
-	std::vector<Model*> models;
-
-	template<class T>
-	T* AddModel();
 
 	// Prevent copying
 	World(World const& w);
@@ -90,7 +87,6 @@ private:
 
 
 public:
-	
 	ParticleSystem &GetParticleSystem() { return particleSystem; };
 	const u32 GetSmokeEmitterID() const { return smokeEmitter; };
 

@@ -151,8 +151,17 @@ bool TerrainDisk::CreateTerrainDisk(const c8 * const heightmap_filename)
 		}	
 	}
 
-	SetVertexArray((VERTEX*)&_vertices[0], _vertices.size());
-	SetIndicesArray((u32*)&_indices[0], _indices.size());
+	VERTEX *vertex_data = new VERTEX[_vertices.size()];
+	memcpy(vertex_data, &_vertices[0], sizeof(VERTEX)*_vertices.size());
+
+	u32 *index_data = new u32[_indices.size()];
+	memcpy(index_data, &_indices[0], sizeof(u32)*_indices.size());
+
+	SetVertexArray(vertex_data, _vertices.size());
+	SetIndicesArray(index_data, _indices.size());
+
+	//SetVertexArray((VERTEX*)&_vertices[0], _vertices.size());
+	//SetIndicesArray((u32*)&_indices[0], _indices.size());
 
 	return BuildVBO();
 };

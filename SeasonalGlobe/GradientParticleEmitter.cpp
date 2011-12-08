@@ -15,7 +15,7 @@ void GradientParticleEmitter::Emit(Particle &p, void *gdata)
 	p.color = Color::GREY;
 
 	p.energy = randflt(1.5f, 3.5f);
-	p.originalEnergy = p.energy;
+	//p.originalEnergy = p.energy;
 
 	p.velocity.x( randflt(-particleSpread, particleSpread));
 	p.velocity.y(1.0f);

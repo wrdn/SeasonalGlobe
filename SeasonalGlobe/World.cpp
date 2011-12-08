@@ -38,29 +38,32 @@ World::~World(void)
 	catch(...) { };
 }
 
-// adds the model to models vector, templated to ensure constructor gets called properly
-// example: Sphere *s = AddModel<Sphere>();
-template<class T>
-T* World::AddModel()
-{
-	T *n = new T();
-	models.push_back(n);
-	return n;
-};
-
 Model* CreateBillboardModel()
 {
 	// Billboard model (textured quad)
 	Model *billboardModel = new Model();
-	VERTEX billboardVertices[] = 
+	/*VERTEX billboardVertices[] = 
 	{
 		VERTEX(float3(-0.5f,1,0), float3(0,0,1), float2(0,1)),
 		VERTEX(float3(0.5,1,0),   float3(0,0,1), float2(1,1)),
 		VERTEX(float3(-0.5f,0,0), float3(0,0,1), float2(0,0)),
 		VERTEX(float3(0.5f,0,0),  float3(0,0,1), float2(1,0))
-	};
+	};*/
+	VERTEX *billboardVertices = new VERTEX[4];
+	billboardVertices[0] = VERTEX(float3(-0.5f,1,0), float3(0,0,1), float2(0,1));
+	billboardVertices[1] = VERTEX(float3(0.5,1,0),   float3(0,0,1), float2(1,1));
+	billboardVertices[2] = VERTEX(float3(-0.5f,0,0), float3(0,0,1), float2(0,0));
+	billboardVertices[3] = VERTEX(float3(0.5f,0,0),  float3(0,0,1), float2(1,0));
 	billboardModel->SetVertexArray(billboardVertices, 4);
-	u32 billboardIndices[] = { 0,2,3, 0,3,1 };
+
+	//u32 billboardIndices[] = { 0,2,3, 0,3,1 };
+	u32 *billboardIndices = new u32[6];
+	billboardIndices[0] = 0;
+	billboardIndices[1] = 2;
+	billboardIndices[2] = 3;
+	billboardIndices[3] = 0;
+	billboardIndices[4] = 3;
+	billboardIndices[5] = 1;
 	billboardModel->SetIndicesArray(billboardIndices, 6);
 	billboardModel->BuildVBO();
 	return billboardModel;
@@ -134,8 +137,8 @@ bool World::LoadShaders()
 
 bool World::LoadParticles()
 {
-	Model *billboardModel = CreateBillboardModel();
-	particleSystem.SetDefaultModel(billboardModel);
+	defaultBillboardModel = CreateBillboardModel();
+	particleSystem.SetDefaultModel(defaultBillboardModel);
 
 	Shader *psysbase = shaderMan.GetShader(particleSystemBaseShaderID);
 
@@ -196,16 +199,6 @@ bool World::LoadParticles()
 	snowEmitter->SetShader(psysbase);
 	snowEmitter->SetBillboardType(Spherical);
 
-	/*cylindricalParticleEmitterID = particleSystem.AddEmitter<CylindricalParticleEmitter>();
-	//fireEmitter = (CylindricalParticleEmitter*)particleSystem.GetEmitter(cylindricalParticleEmitterID);
-	fireEmitter = particleSystem.GetEmitter<CylindricalParticleEmitter>(cylindricalParticleEmitterID);
-	fireEmitter->SetLocalParticleMaximum(250);
-	fireEmitter->SetAlphaMap(*particleTexture);
-	fireEmitter->SetShader(psysbase);
-	fireEmitter->SetBillboardType(Spherical);
-	fireEmitter->SetEmitterOrigin(treePos);
-	//fireEmitter->AddForce(float3(0.3f, 0.8f, 0.24f));
-	//fireEmitter->SetEmitterOrigin(float3(0,3,0));*/
 	u32 fireParticleEmitterID = particleSystem.AddEmitter<FireParticleEmitter>();
 	fireParticleEmitter = particleSystem.GetEmitter<FireParticleEmitter>(fireParticleEmitterID);
 	fireParticleEmitter->SetLocalParticleMaximum(30000);
@@ -213,7 +206,8 @@ bool World::LoadParticles()
 	fireParticleEmitter->SetShader(psysbase);
 	fireParticleEmitter->SetBillboardType(Spherical);
 	fireParticleEmitter->SetEmitterOrigin(treePos);
-	
+	fireParticleEmitter->SetRateOfEmission(1000);
+
 	std::vector<ParticleLine> fire_particle_lines;
 	tree->CalculateParticleLines(fire_particle_lines);
 
@@ -245,7 +239,7 @@ bool World::LoadGeometry()
 	houseTexture = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg");
 
 	// Load globe
-	globeSphere = AddModel<Sphere>();
+	globeSphere = new Sphere();
 	f32 radius=11.3f;
 	conf.GetFloat("GlobeRadius",radius);
 	globeSphere->CreateSphere(radius, 40, 40);
@@ -258,7 +252,7 @@ bool World::LoadGeometry()
 	scaleZ = 2.0f;
 
 	// Load terrain
-	terrain = AddModel<TerrainDisk>();
+	terrain = new TerrainDisk();
 	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
 
 	// Load tree
@@ -323,13 +317,12 @@ void World::Shutdown()
 	texMan.Cleanup();
 	shaderMan.Clean();
 
-	for(std::vector<Model*>::iterator it = models.begin(); it != models.end(); ++it)
-	{
-		SAFE_DELETE(*it);
-	}
 	delete houseModel;
 	delete baseModel;
+	delete globeSphere;
 	delete tree;
+	delete terrain; // crash
+	delete defaultBillboardModel; // crash
 };
 
 f32 angle=0; const f32 rotationSpeed = 50.0f;

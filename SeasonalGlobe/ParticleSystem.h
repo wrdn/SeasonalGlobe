@@ -48,6 +48,7 @@ public:
 	};
 
 	void SetDefaultModel(Model * m) { defaultModel = m; };
+	Model* GetDefaultModel() const { return defaultModel; };
 
 	// Remove all the emitters (doesn't alter defaultModel)
 	void Clean();
