@@ -47,7 +47,7 @@ private:
 
 
 	Texture *grasstexture, *houseTexture, *barkTexture, *particleTexture,
-		*gradientMapTexture, *leafTexture;
+		*gradientMapTexture, *leafTexture, *baseTexture;
 
 	Model *defaultBillboardModel;
 

@@ -97,7 +97,9 @@ bool World::LoadTextures()
 	gradientMapTexture->SetMagFilter(GL_LINEAR);
 	gradientMapTexture->SetTextureSlot(SLOT_GL_TEXTURE_1);
 
-	return grasstexture && barkTexture && particleTexture && leafTexture && gradientMapTexture;
+	baseTexture = texMan.LoadTextureFromFile("Data/Textures/wood.jpg");
+
+	return grasstexture && barkTexture && particleTexture && leafTexture && gradientMapTexture && baseTexture;
 };
 
 bool World::LoadShaders()
@@ -622,25 +624,27 @@ void World::Draw(const GameTime &gameTime)
 
 	// Base
 	phongShader->Activate();
-	{
-		float3 lightPos(0, 5 , 5);
-		phongShader->SetUniform("lightPosition", lightPos);
-	}
+	lightPos = float3(0, 0 , 10);
+	phongShader->SetUniform("lightPosition", lightPos);
 	phongShader->SetUniform("fAmbient", Color::BLACK);
 	phongShader->SetUniform("fDiffuse",Color::GREY);
-	phongShader->SetUniform("baseMap", *barkTexture);
+	phongShader->SetUniform("baseMap", *baseTexture);
 	phongShader->SetUniform("applyTexture", true);
-	barkTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
-	barkTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR);
-	barkTexture->SetWrapS(GL_REPEAT);
-	barkTexture->SetWrapT(GL_REPEAT);
-	barkTexture->Activate();
+	//barkTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
+	//barkTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR);
+	//barkTexture->SetWrapS(GL_REPEAT);
+	//barkTexture->SetWrapT(GL_REPEAT);
+	//barkTexture->Activate();
 	glPushMatrix();
+	baseTexture->Activate();
+	baseTexture->SetWrapS(GL_REPEAT);
+	baseTexture->SetWrapT(GL_REPEAT);
 	glScalef(scaleX,0.83f,scaleZ);
 	glTranslatef(0, 0.2f, 0);
 	baseModel->Draw();
+	baseTexture->Deactivate();
 	glPopMatrix();
-	barkTexture->Deactivate();
+	//barkTexture->Deactivate();
 	phongShader->Deactivate();
 
 	// Particle system
