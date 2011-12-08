@@ -13,7 +13,7 @@ void PointBasedParticleEmitter::Emit(Particle &p)
 	p.pos = GetEmitterOrigin();
 	p.color = startColor;
 
-	p.energy = randflt(GetMaxParticleLife(), GetMinParticleLife());
+	p.energy = randflt(GetMinParticleLife(), GetMaxParticleLife());
 	//p.originalEnergy = p.energy;
 
 	p.velocity.x( randflt(-particleSpread, particleSpread));

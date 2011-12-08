@@ -95,7 +95,7 @@ const bool file_exists(const c8 *filename)
 	return (stat(filename,&f) == 0); // 0 if file exists
 }
 
-f32 randflt(f32 max, f32 min)
+f32 randflt(f32 min, f32 max)
 {
     f32 random = ((f32) rand()) / (f32) RAND_MAX;
 

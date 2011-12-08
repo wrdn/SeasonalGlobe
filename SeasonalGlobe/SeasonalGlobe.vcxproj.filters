@@ -204,6 +204,9 @@
     <ClCompile Include="StaticParticleEmitter.cpp">
       <Filter>Source Files\Particles\NewParticleEngine</Filter>
     </ClCompile>
+    <ClCompile Include="CylindricalParticleEmitter.cpp">
+      <Filter>Source Files\Particles\NewParticleEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="float2.h">
@@ -345,6 +348,9 @@
       <Filter>Header Files\Particles\NewParticleEngine</Filter>
     </ClInclude>
     <ClInclude Include="StaticParticleEmitter.h">
+      <Filter>Header Files\Particles\NewParticleEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="CylindricalParticleEmitter.h">
       <Filter>Header Files\Particles\NewParticleEngine</Filter>
     </ClInclude>
   </ItemGroup>

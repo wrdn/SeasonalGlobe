@@ -66,7 +66,7 @@ bool TerrainDisk::CreateTerrainDisk(const c8 * const heightmap_filename)
 					-2.0f + 4.0f * tx.y(),
 					(f32)rowptr[p1x * bpp]/255.0f);
 
-				VERTEX v(vpos, (float3&)float3::ZERO, tx);
+				VERTEX v(vpos, float3(0,1,0), tx);
 				_vertices.push_back(v);
 
 				++p1x;

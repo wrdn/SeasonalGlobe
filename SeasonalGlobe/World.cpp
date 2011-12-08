@@ -5,6 +5,7 @@
 #include "PointBasedParticleEmitter.h"
 #include "HemiSphericalParticleEmitter.h"
 #include "StaticParticleEmitter.h"
+#include "CylindricalParticleEmitter.h"
 #include "tutorialcodeheaders.h"
 
 World::World(void)
@@ -159,7 +160,7 @@ bool World::LoadParticles()
 
 		for(u32 j=0;j<LEAF_PARTICLES_PER_LEAF_MATRIX;++j)
 		{
-			p.rotation.z( randflt(360, 0) );
+			p.rotation.z( randflt(0, 360) );
 			p.size = float3(0.25f);
 			leafEmitter->AddParticle(p);
 		}
@@ -180,7 +181,7 @@ bool World::LoadParticles()
 	emitter->AddForce(float3(1.0f,0,0));
 	emitter->AddForce(float3(-1.0f,0.2f,0.43f));
 
-	u32 snowEmitterID = particleSystem.AddEmitter<HemiSphericalParticleEmitter>();
+	snowEmitterID = particleSystem.AddEmitter<HemiSphericalParticleEmitter>();
 	HemiSphericalParticleEmitter *snowEmitter = (HemiSphericalParticleEmitter*)particleSystem.GetEmitter(snowEmitterID);
 	snowEmitter->SetAlphaMap(*particleTexture);
 	i32 maxsnowparticles=150; conf.GetInt("MaxSnowParticles", maxsnowparticles);
@@ -189,6 +190,15 @@ bool World::LoadParticles()
 	snowEmitter->SetEmitterOrigin(float3(0,0,0));
 	snowEmitter->SetShader(psysbase);
 	snowEmitter->SetBillboardType(Spherical);
+
+	cylindricalParticleEmitterID = particleSystem.AddEmitter<CylindricalParticleEmitter>();
+	fireEmitter = (CylindricalParticleEmitter*)particleSystem.GetEmitter(cylindricalParticleEmitterID);
+	fireEmitter->SetLocalParticleMaximum(100);
+	fireEmitter->SetAlphaMap(*particleTexture);
+	fireEmitter->SetShader(psysbase);
+	fireEmitter->SetBillboardType(Spherical);
+	fireEmitter->AddForce(float3(0.3, 0.8, 0.24));
+	//fireEmitter->SetEmitterOrigin(float3(0,3,0));
 
 	return true;
 };
@@ -234,6 +244,10 @@ bool World::LoadGeometry()
 	tree->SetGenerations(_gen);
 	
 	tree->BuildTree();
+
+	//testFireCylinder.Create(0.5, 0.5, 3, 20, 20);
+	testFireCylinder.Load();
+	testFireCylinder.Create(0.05f, 0.05f, 2, 7,7);
 
 	return true;
 };
@@ -501,13 +515,44 @@ void World::Draw(const GameTime &gameTime)
 
 	glRotatef(angle, 0, 1, 0);
 
-	/*glEnable(GL_LIGHTING);
+	glPushMatrix();
+	glRotatef(90, 1,0,0);
+	glRotatef(90, 0,0,1);
+	barkTexture->Activate();
+	testFireCylinder.Draw();
+	barkTexture->Deactivate();
+	glPopMatrix();
+	
+	glPushMatrix();
+	glEnable(GL_BLEND);
+	glDepthMask(GL_FALSE);
+	glBlendFunc(GL_SRC_ALPHA, fireEmitter->GetSourceAlphaBlendFunction());
+	fireEmitter->Update(gameTime);
+	fireEmitter->Draw(gameTime);
+	glDepthMask(GL_TRUE);
+	glEnable(GL_BLEND);
+	glPopMatrix();
+	
+	/*glPopMatrix();
+	return;*/
+
+	glEnable(GL_LIGHTING);
 	glPushMatrix();
 	reflective_draw(gameTime);
 	glPopMatrix();
-	glDisable(GL_LIGHTING);*/
+	//glDisable(GL_LIGHTING);
+
+	/*_light1.setPosition(Vector4f(5.0,5.0,5.0,1.0));
+	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
+	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
+	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));*/
+	_light1.setPosition(Vector4f(5.0,5.0, 10.0, 1.0));
+	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
+	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
+	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
 
 	// Terrain (floor)
+	glEnable(GL_NORMALIZE);
 	glPushMatrix();
 	grasstexture->Activate();
 	glRotatef(90, 1,0,0);
@@ -515,6 +560,7 @@ void World::Draw(const GameTime &gameTime)
 	terrain->Draw();
 	grasstexture->Deactivate();
 	glPopMatrix();
+	glDisable(GL_NORMALIZE);
 
 	// House
 	Shader *phongShader = shaderMan.GetShader(phongShaderID);

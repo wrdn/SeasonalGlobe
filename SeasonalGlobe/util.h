@@ -38,6 +38,6 @@ f32 lerp(f32 min, f32 max, f32 t);
 
 const bool file_exists(const c8 *filename);
 
-f32 randflt(f32 max, f32 min);
+f32 randflt(f32 min, f32 max);
 
 #endif

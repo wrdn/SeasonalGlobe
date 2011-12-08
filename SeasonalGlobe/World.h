@@ -11,7 +11,7 @@
 #include "FractalTree.h"
 #include "AppConfig.h"
 #include "ParticleSystem.h"
-
+#include "CylindricalParticleEmitter.h"
 
 class FGLCaller : public glex
 {
@@ -38,7 +38,10 @@ private:
 
 	u32 particleSystemBaseShaderID;
 	u32 leafParticleEmitterID;
-	
+	u32 cylindricalParticleEmitterID;
+	u32 snowEmitterID;
+	CylindricalParticleEmitter *fireEmitter;
+
 	Texture *grasstexture, *houseTexture, *barkTexture, *particleTexture,
 		*gradientMapTexture, *leafTexture;
 
@@ -71,6 +74,8 @@ private:
 	bool LoadShaders();
 	bool LoadParticles();
 	bool LoadGeometry();
+
+	Cylinder testFireCylinder;
 
 public:
 	FGLCaller oglcall;

@@ -34,10 +34,10 @@ void ParticleEmitter::Draw(const GameTime &gameTime)
 
 		glColor4fv(p.color.GetVec());
 		
-		glTranslatef(p.pos.x(), p.pos.y(), p.pos.z());
-
 		glRotatef(p.rotation.x(), 1, 0, 0);
 		glRotatef(p.rotation.y(), 0, 1, 0);
+		
+		glTranslatef(p.pos.x(), p.pos.y(), p.pos.z());
 
 		if(billboardType == Spherical)
 			SphericalBillboardAdjust();
