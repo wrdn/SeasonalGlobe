@@ -143,7 +143,7 @@ bool World::LoadParticles()
 	leafParticleEmitterID = particleSystem.AddEmitter<StaticParticleEmitter>();
 	//StaticParticleEmitter *leafEmitter = (StaticParticleEmitter*)particleSystem.GetEmitter(leafParticleEmitterID);
 	StaticParticleEmitter *leafEmitter = particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID);
-	leafEmitter->SetLocalParticleMaximum(tree->GetLeafCount() * LEAF_PARTICLES_PER_LEAF_MATRIX);
+	/*leafEmitter->SetLocalParticleMaximum(tree->GetLeafCount() * LEAF_PARTICLES_PER_LEAF_MATRIX);
 	leafEmitter->SetParticlesStaticState(true);
 	leafEmitter->SetAlphaMap(*leafTexture);
 	leafEmitter->SetShader(psysbase);
@@ -167,7 +167,7 @@ bool World::LoadParticles()
 			p.size = float3(0.25f);
 			leafEmitter->AddParticle(p);
 		}
-	}
+	}*/
 
 	smokeEmitter = particleSystem.AddEmitter<PointBasedParticleEmitter>();
 	//PointBasedParticleEmitter *smokeParticleEmitter = (PointBasedParticleEmitter*)particleSystem.GetEmitter(smokeEmitter);
@@ -196,7 +196,7 @@ bool World::LoadParticles()
 	snowEmitter->SetShader(psysbase);
 	snowEmitter->SetBillboardType(Spherical);
 
-	cylindricalParticleEmitterID = particleSystem.AddEmitter<CylindricalParticleEmitter>();
+	/*cylindricalParticleEmitterID = particleSystem.AddEmitter<CylindricalParticleEmitter>();
 	//fireEmitter = (CylindricalParticleEmitter*)particleSystem.GetEmitter(cylindricalParticleEmitterID);
 	fireEmitter = particleSystem.GetEmitter<CylindricalParticleEmitter>(cylindricalParticleEmitterID);
 	fireEmitter->SetLocalParticleMaximum(250);
@@ -205,8 +205,34 @@ bool World::LoadParticles()
 	fireEmitter->SetBillboardType(Spherical);
 	fireEmitter->SetEmitterOrigin(treePos);
 	//fireEmitter->AddForce(float3(0.3f, 0.8f, 0.24f));
-	//fireEmitter->SetEmitterOrigin(float3(0,3,0));
+	//fireEmitter->SetEmitterOrigin(float3(0,3,0));*/
+	u32 fireParticleEmitterID = particleSystem.AddEmitter<FireParticleEmitter>();
+	fireParticleEmitter = particleSystem.GetEmitter<FireParticleEmitter>(fireParticleEmitterID);
+	fireParticleEmitter->SetLocalParticleMaximum(30000);
+	fireParticleEmitter->SetAlphaMap(*particleTexture);
+	fireParticleEmitter->SetShader(psysbase);
+	fireParticleEmitter->SetBillboardType(Spherical);
+	fireParticleEmitter->SetEmitterOrigin(treePos);
+	
+	std::vector<ParticleLine> fire_particle_lines;
+	tree->CalculateParticleLines(fire_particle_lines);
 
+	for(int i=0;i<fire_particle_lines.size();++i)
+	{
+		fireParticleEmitter->AddLine(fire_particle_lines[i]);
+	}
+
+	/*ParticleLine pline;
+	pline.SetStartPosition(float3(2,0,0));
+	pline.SetEndPosition(float3(2,2,0));
+	fireParticleEmitter->AddLine(pline);
+
+	pline.SetStartPosition(float3(4,0,0));
+	pline.SetEndPosition(float3(4,2,0));
+	fireParticleEmitter->AddLine(pline);*/
+
+	/*fireEmitter->SetStartPosition(float3(0,0,0));
+	//fireEmitter->SetEndPosition(float3(0,2,0));*/
 	return true;
 };
 
@@ -531,8 +557,8 @@ void World::Draw(const GameTime &gameTime)
 	//barkTexture->Deactivate();
 	//glPopMatrix();
 
-	fireEmitter->SetStartPosition(float3(0,0,0));
-	fireEmitter->SetEndPosition(float3(0,2,0));
+	//fireEmitter->SetStartPosition(float3(0,0,0));
+	//fireEmitter->SetEndPosition(float3(0,2,0));
 	
 	/*glPushMatrix();
 	glEnable(GL_BLEND);

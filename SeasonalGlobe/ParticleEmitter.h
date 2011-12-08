@@ -6,7 +6,7 @@
 #include "Shader.h"
 #include <vector>
 
-const u32 GLOBAL_MAX_PARTICLES_PER_EMITTER = 2500;
+const u32 GLOBAL_MAX_PARTICLES_PER_EMITTER = 40000;
 
 enum BillboardType { Cylindrical = 0, Spherical = 1 };
 

@@ -4,7 +4,7 @@
 #include <iostream>
 
 class float4;
-
+class float3;
 
 enum Mat44Index
 {
@@ -102,6 +102,8 @@ public:
 
 	// modifies only the elements for the scale matrix (assumes rest is identity)
 	static void BuildScaleMatrix(f32 xscale, f32 yscale, f32 zscale, Mat44 &out);
+
+	const float3 GetTranslationFromMatrix() const;
 };
 
 std::ostream& operator<<(std::ostream &out, Mat44 &m);

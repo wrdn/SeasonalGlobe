@@ -543,3 +543,8 @@ void Mat44::BuildScaleMatrix(f32 xscale, f32 yscale, f32 zscale, Mat44 &out)
 	out.mat[m22] = yscale;
 	out.mat[m33] = zscale;
 };
+
+const float3 Mat44::GetTranslationFromMatrix() const
+{
+	return float3( mat[12], mat[13], mat[14] );
+};

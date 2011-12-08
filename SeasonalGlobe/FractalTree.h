@@ -4,6 +4,7 @@
 #include "Cylinder.h"
 #include "Sphere.h"
 #include "Mat44.h"
+#include "FireParticleEmitter.h"
 
 class FractalTree
 {
@@ -183,6 +184,9 @@ public:
 
 	void Draw(f32 dt);
 	void DrawLeaves();
+
+	// Adds lines for each branch segment in depth order
+	void CalculateParticleLines(std::vector<ParticleLine> &plines);
 
 	#pragma region Accessors and Mutators
 	const Cylinder* GetBranchModel() { return &gbranch; };

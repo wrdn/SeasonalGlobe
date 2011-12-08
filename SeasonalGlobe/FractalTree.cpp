@@ -494,3 +494,48 @@ void FractalTree::Draw(f32 dt)
 	glPopMatrix();
 	return;
 };
+
+void FractalTree::CalculateParticleLines(std::vector<ParticleLine> &plines)
+{
+	for(std::vector<BranchDepth>::const_iterator td = treeBranchSegments.begin(); td != treeBranchSegments.end(); ++td)
+	{
+		for(std::vector<BranchSegment>::const_iterator it = td->segments.begin(); it != td->segments.end(); ++it)
+		{
+			//u32 len = it->end - it->start;
+			for(u32 i=it->start;i<it->end;++i)
+			{
+				Mat44 &startMatrix = transformationMatrices[i], endMatrix;
+				glMatrixMode(GL_MODELVIEW); glPushMatrix(); glLoadIdentity();
+				glMultMatrixf(startMatrix.GetMatrix()); glTranslatef(0, branchLength, 0);
+				glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)endMatrix.GetMatrix()); glPopMatrix();
+
+				plines.push_back(ParticleLine(startMatrix.GetTranslationFromMatrix(), endMatrix.GetTranslationFromMatrix()));
+			}
+		}
+	}
+	/*	for(int i=0;i<transformationMatricesArraySize;++i)
+	{
+		Mat44 &startMatrix = transformationMatrices[i]; Mat44 endMatrix;
+		float3 startPos( startMatrix.GetMatrix()[12], startMatrix.GetMatrix()[13], startMatrix.GetMatrix()[14] ); // position of start of line (first sphere)
+
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		glMultMatrixf(startMatrix.GetMatrix());
+		glTranslatef(0, branchLength, 0);
+		glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)endMatrix.GetMatrix());
+		glPopMatrix();
+
+		float3 endPos( endMatrix.GetMatrix()[12], endMatrix.GetMatrix()[13], endMatrix.GetMatrix()[14] ); // position of end of line (second sphere)
+
+		glPushMatrix();
+		glTranslatef(startPos.x(), startPos.y(), startPos.z());
+		leafModel.Draw();
+		glPopMatrix();
+
+		glPushMatrix();
+		glTranslatef(endPos.x(), endPos.y(), endPos.z());
+		leafModel.Draw();
+		glPopMatrix();
+	}*/
+};

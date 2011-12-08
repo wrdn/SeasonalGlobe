@@ -12,21 +12,22 @@ private:
 	// may be useful if we want to fade by depth
 	u32 lineDepth;
 
-	void CalculateDirection() { direction = endPos - startPos; };
 public:
 	ParticleLine() : startPos(), endPos(), direction() { };
+	ParticleLine(const float3 &start, const float3 &end) : startPos(start), endPos(end),
+		direction(endPos-startPos) { };
 	~ParticleLine() { };
 
 	void SetLineDepth(u32 d) { lineDepth = d; };
 	void SetStartPosition(const float3 &start)
 	{
 		startPos = start;
-		CalculateDirection();
+		direction = endPos - startPos;
 	};
 	void SetEndPosition(const float3 &end)
 	{
 		endPos = end;
-		CalculateDirection();
+		direction = endPos - startPos;
 	};
 	const u32 GetLineDepth() const { return lineDepth; };
 	const float3& GetStartPosition() const { return startPos; };
