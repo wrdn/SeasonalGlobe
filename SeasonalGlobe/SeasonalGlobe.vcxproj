@@ -63,7 +63,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>.\..\Libraries\GXBase\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>gxbasemd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(ProjectDir)Data $(OutDir)Data /I /E /C /H /Y /Q</Command>
@@ -85,7 +85,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>.\..\Libraries\GXBase\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>gxbasem.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(ProjectDir)Data $(OutDir)Data /I /E /C /H /Y /Q</Command>
@@ -95,6 +95,7 @@
   <ItemGroup>
     <ClCompile Include="AppConfig.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Camera2.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Cylinder.cpp" />
@@ -140,6 +141,7 @@
   <ItemGroup>
     <ClInclude Include="AppConfig.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Camera2.h" />
     <ClInclude Include="Circle.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Color.h" />
@@ -154,6 +156,7 @@
     <ClInclude Include="FractalTree.h" />
     <ClInclude Include="GameTime.h" />
     <ClInclude Include="HemiSphericalParticleEmitter.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="LSystem.h" />

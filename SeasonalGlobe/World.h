@@ -13,6 +13,7 @@
 #include "ParticleSystem.h"
 #include "CylindricalParticleEmitter.h"
 #include "FireParticleEmitter.h"
+#include "SphericalCamera.h"
 
 class FGLCaller : public glex
 {
@@ -27,7 +28,8 @@ class World
 private:
 	AppConfig conf;
 
-	Camera cam;
+	SphericalCamera cam;
+	//Camera cam;
 
 	TextureManager texMan;
 	ShaderManager shaderMan;
@@ -118,7 +120,8 @@ public:
 	void SetCameraPosition(f32 v) { _cameraPosition = v; };
 	void SetCameraRotation(f32 v) { _cameraRotation = v; };
 
-	const Camera &GetCamera() { return cam; };
+	SphericalCamera &GetCamera() { return cam; };
+	//Camera &GetCamera() { return cam; };
 
 	World(void);
 	~World(void);

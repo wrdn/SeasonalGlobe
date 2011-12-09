@@ -3,6 +3,18 @@
 #include "ctypes.h"
 #include "Color.h"
 
+struct Material
+{
+public:
+	Color4f ambient, diffuse, specular;
+
+	Material() { };
+	Material(Color4f &amb, Color4f &diff, Color4f &spec)
+		: ambient(amb), diffuse(diff), specular(spec) { };
+	~Material() { };
+};
+
+/*
 class Material
 {
 private:
@@ -33,4 +45,4 @@ public:
 
 	void SetEmissive(const u32 ke);
 	void SetEmissive(const Color4f &c);
-};
+};*/

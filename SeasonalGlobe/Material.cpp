@@ -1,5 +1,5 @@
 #include "Material.h"
-
+/*
 const u32 Material::GetAmbientInteger() const
 {
 	return ka;
@@ -75,3 +75,4 @@ void Material::SetEmissive(const Color4f &c)
 {
 	ke = Color::ToInt(c);
 };
+*/

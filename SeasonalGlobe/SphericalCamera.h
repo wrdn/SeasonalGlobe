@@ -2,14 +2,55 @@
 #define __SPHERICAL_CAMERA_H__
 
 #include "ctypes.h"
+#include "float3.h"
+#include <GXBase.h>
 
+class SphericalCamera
+{
+private:
+	f32 radius, azimuth, theta;
+	float3 pos, dir;
+
+	// convert the spherical coordinates into cartesian coordinates
+	void RecalculatePos()
+	{
+		pos.set (
+			radius*sin(theta)*cos(azimuth),
+			radius*sin(theta)*sin(azimuth),
+			radius*cos(theta));
+		//dir = -pos;
+		dir.set(-pos.x(), -pos.y(), -pos.z());
+	};
+
+public:
+	const f32 GetRadius() const { return radius; };
+	const f32 GetAzimuth() const { return azimuth; };
+	const f32 GetTheta() const { return theta; };
+
+	void SetRadius(f32 _radius) { radius = _radius; RecalculatePos(); };
+	void SetTheta(f32 _theta) { theta = _theta; RecalculatePos(); };
+	void SetAzimuth(f32 _azimuth) { azimuth = _azimuth; RecalculatePos(); };
+
+	const float3& GetPosition() const { return pos; }
+	const float3& GetDirection() const { return dir; };
+
+	void Update()
+	{
+		gluLookAt(pos.x(), pos.y(), pos.z(), dir.x(), dir.y(), dir.z(), 0,1,0);
+	};
+};
+
+
+/*
 enum SphericalCoordIndex
 {
 	RADIUS=0,
 	THETA=1,
 	AZIMUTH=2,
 };
+*/
 
+/*
 // A data structure describing spherical coordinates. By default, all variables are set to 0, but you
 // can pass r (radius), theta (inclination angle), and azimuth (x-y plane) seperately. The structure functions
 // assume Z=UP. No conversions may occur within constructors.
@@ -46,5 +87,6 @@ public:
 	// in the array could change. 
 	f32 spherical_coords[3];
 };
+*/
 
 #endif

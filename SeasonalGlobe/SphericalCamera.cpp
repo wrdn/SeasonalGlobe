@@ -1,6 +1,7 @@
 #include "SphericalCamera.h"
 #include <math.h>
 
+/*
 SphericalCamera::SphericalCamera()
 {
 	spherical_coords[RADIUS] = 0;
@@ -65,3 +66,4 @@ SphericalCamera SphericalCamera::CartesianToSpherical_s(f32 x,f32 y,f32 z)
 	f32 r = sqrt((x*x)+(y*y)+(z*z));
 	return SphericalCamera(r, acos(z/r), atan(y/x));
 };
+*/

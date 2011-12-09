@@ -144,7 +144,7 @@ bool World::LoadParticles()
 
 	Shader *psysbase = shaderMan.GetShader(particleSystemBaseShaderID);
 
-	const u32 LEAF_PARTICLES_PER_LEAF_MATRIX = 3;
+	/*const u32 LEAF_PARTICLES_PER_LEAF_MATRIX = 3;
 	leafParticleEmitterID = particleSystem.AddEmitter<StaticParticleEmitter>();
 	StaticParticleEmitter *leafEmitter = particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID);
 	leafEmitter->SetLocalParticleMaximum(tree->GetLeafCount() * LEAF_PARTICLES_PER_LEAF_MATRIX);
@@ -171,10 +171,10 @@ bool World::LoadParticles()
 			p.size = float3(0.25f);
 			leafEmitter->AddParticle(p);
 		}
-	}
+	}*/
 
 
-	/*smokeEmitter = particleSystem.AddEmitter<PointBasedParticleEmitter>();
+	smokeEmitter = particleSystem.AddEmitter<PointBasedParticleEmitter>();
 	//PointBasedParticleEmitter *smokeParticleEmitter = (PointBasedParticleEmitter*)particleSystem.GetEmitter(smokeEmitter);
 	PointBasedParticleEmitter *smokeParticleEmitter = particleSystem.GetEmitter<PointBasedParticleEmitter>(smokeEmitter);
 	smokeParticleEmitter->SetParticleSpread(0.35f);
@@ -217,7 +217,7 @@ bool World::LoadParticles()
 	{
 		fireParticleEmitter->AddLine(fire_particle_lines[i]);
 	}
-	*/
+	
 	return true;
 };
 
@@ -274,6 +274,12 @@ bool World::Load()
 {
 	conf.ParseConfigFile("Data/ConfigFile.txt"); // load configuration file
 	
+	cam.SetRadius(28.0f);
+	cam.SetAzimuth(20);
+	cam.Update();
+
+	//cam.Init(45, 1.333f, 0.3f, 100, float3(0,1, -28), float3(0,1,1), float3(0,1,0));
+
 	LoadTextures();
 	LoadGeometry();
 	LoadShaders();
@@ -305,8 +311,8 @@ bool World::Load()
 
 void World::Shutdown()
 {
-	texMan.Cleanup();
 	shaderMan.Clean();
+	texMan.Cleanup();
 
 	delete houseModel;
 	delete baseModel;
@@ -534,7 +540,7 @@ void World::Draw(const GameTime &gameTime)
 	glRotatef(_cameraAngle, 1.0,0.0,0.0);
 	glRotatef(_cameraRotation, 0.0, 1.0, 0.0);
 	glTranslatef(0.0f, -1.0f,0.0f);
-
+	
 	glRotatef(angle, 0, 1, 0);
 
 	//// Testing fire
