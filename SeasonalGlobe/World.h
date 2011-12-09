@@ -14,6 +14,9 @@
 #include "CylindricalParticleEmitter.h"
 #include "FireParticleEmitter.h"
 #include "SphericalCamera.h"
+#include "Camera2.h"
+#include "Light.h"
+#include "Disk.h"
 
 class FGLCaller : public glex
 {
@@ -26,71 +29,60 @@ public:
 class World
 {
 private:
+	// Application configuration
 	AppConfig conf;
 
-	SphericalCamera cam;
-	//Camera cam;
-
+	// Managers
 	TextureManager texMan;
 	ShaderManager shaderMan;
+	ParticleSystem particleSystem;
 
-	u32 phongShaderID;
-	u32 globeShaderID;
-	u32 gradientMapShaderID;
-	u32 multiTextureShaderID;
+	// Camera
+	Camera2 cam;
+	float3 sceneRotationAxis;
+	f32 _cameraAngle, _cameraPosition, _cameraRotation;
+	bool AutoRotate;
 
-	u32 particleSystemBaseShaderID;
-	u32 leafParticleEmitterID;
-	u32 cylindricalParticleEmitterID;
-	u32 snowEmitterID;
-	CylindricalParticleEmitter *fireEmitter;
-
-	FireParticleEmitter *fireParticleEmitter;
-
-
-	Texture *grasstexture, *houseTexture, *barkTexture, *particleTexture,
-		*gradientMapTexture, *leafTexture, *baseTexture;
-
-	Model *defaultBillboardModel;
-
-	OBJFile *houseModel;
-	Sphere *globeSphere;
-
-	OBJFile *baseModel;
-
+	// Geometry
 	TerrainDisk *terrain;
 	FractalTree *tree;
-	float3 sceneRotationAxis;
-	f32 _cameraAngle;
-	f32 _cameraPosition;
-	f32 _cameraRotation;
-	bool AutoRotate;
+	Sphere *globeSphere;
+	OBJFile *houseModel;
+	OBJFile *baseModel;
+	Model *defaultBillboardModel;
 	GLenum polygonMode;
 
-	// Prevent copying
-	World(World const& w);
-	World& operator= (World const& other);
+	// Shaders
+	u32 phongShaderID, particleSystemBaseShaderID,
+		globeShaderID, directionalLightShaderID;
+	Shader *directionalLightShader;
 
-	float3 treePos;
+	// Texture IDs
+	Texture *grassTexture, *houseTexture, *barkTexture, *particleTexture,
+		*leafTexture, *baseTexture;
 
+	// Particle emitters
+	u32 leafParticleEmitterID;
+	u32 snowEmitterID;
+	u32 smokeEmitterID;
+	FireParticleEmitter *fireParticleEmitter;
+
+	// Lights
+	DirectionalLight directionalLight;
+
+	// Load functions
 	bool LoadTextures();
 	bool LoadShaders();
 	bool LoadParticles();
 	bool LoadGeometry();
 
-	Cylinder testFireCylinder;
-
-	FGLCaller oglcall;
-	f32 waterx, watery, waterz;
-	f32 scaleX, scaleZ;
-	u32 smokeEmitter;
-	ParticleSystem particleSystem;
-	Texture *mtt1, *mtt2; // multi texturing test texture 1 and 2
-
+	// Prevent copying
+	World(World const& w);
+	World& operator= (World const& other);
 
 public:
 	ParticleSystem &GetParticleSystem() { return particleSystem; };
-	const u32 GetSmokeEmitterID() const { return smokeEmitter; };
+	const u32 GetSmokeEmitterID() const { return smokeEmitterID; };
 
 	void reflective_draw(const GameTime &gameTime);
 
@@ -120,8 +112,7 @@ public:
 	void SetCameraPosition(f32 v) { _cameraPosition = v; };
 	void SetCameraRotation(f32 v) { _cameraRotation = v; };
 
-	SphericalCamera &GetCamera() { return cam; };
-	//Camera &GetCamera() { return cam; };
+	Camera2 &GetCamera() { return cam; };
 
 	World(void);
 	~World(void);

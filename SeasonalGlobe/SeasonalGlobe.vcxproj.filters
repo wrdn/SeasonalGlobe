@@ -58,14 +58,14 @@
     <Filter Include="Source Files\World">
       <UniqueIdentifier>{049b4b6d-827f-45d1-a51a-d9b56402407e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\LSystem">
-      <UniqueIdentifier>{b9fb3536-9827-44fa-94d6-2c39935a92c5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\LSystem">
       <UniqueIdentifier>{ed3fc31c-79ee-44a0-8d97-40d4e9850035}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Misc">
       <UniqueIdentifier>{10f49e84-8b3e-4b28-9469-8bb586094396}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Geometry\LSystem">
+      <UniqueIdentifier>{b9fb3536-9827-44fa-94d6-2c39935a92c5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -195,6 +195,9 @@
     <ClCompile Include="Camera2.cpp">
       <Filter>Source Files\World</Filter>
     </ClCompile>
+    <ClCompile Include="GraphicsObject.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="float2.h">
@@ -285,13 +288,13 @@
       <Filter>Header Files\World</Filter>
     </ClInclude>
     <ClInclude Include="LSystem.h">
-      <Filter>Header Files\LSystem</Filter>
+      <Filter>Header Files\Geometry\LSystem</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FractalTree.h">
-      <Filter>Header Files\LSystem</Filter>
+      <Filter>Header Files\Geometry\LSystem</Filter>
     </ClInclude>
     <ClInclude Include="AppConfig.h">
       <Filter>Header Files\Misc</Filter>
@@ -337,6 +340,9 @@
     </ClInclude>
     <ClInclude Include="Light.h">
       <Filter>Header Files\Shading</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsObject.h">
+      <Filter>Header Files\Geometry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -418,6 +424,12 @@
       <Filter>Resource Files\Data\Shaders</Filter>
     </None>
     <None Include="Data\Shaders\particlesystembase.vert">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\directionalLight.frag">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\directionalLight.vert">
       <Filter>Resource Files\Data\Shaders</Filter>
     </None>
   </ItemGroup>

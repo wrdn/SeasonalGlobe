@@ -196,13 +196,9 @@ void FractalTree::PruneTree()
 
 void FractalTree::BuildTree()
 {
-	if(!gbranch.Valid())
+	if(!gbranch.GetModel().Valid())
 	{
 		gbranch.Create(0.05f, 0.05f, branchLength, 7,7);
-	}
-	if(!leafModel.Valid())
-	{
-		leafModel.CreateSphere(0.05f, 10,10);
 	}
 
 	lsysTree.Evaluate();
@@ -365,7 +361,8 @@ void FractalTree::DrawBranch(const Mat44 &transformationMatrix, const Mat44 &sca
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glMultMatrixf(scaleMatrix.Mult(transformationMatrix).GetMatrix());
-	gbranch.Draw();
+	//gbranch.Draw();
+	gbranch.DrawSimple();
 	glPopMatrix();
 };
 void FractalTree::DrawBranch(const Mat44 &transformationMatrix)
@@ -373,64 +370,9 @@ void FractalTree::DrawBranch(const Mat44 &transformationMatrix)
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glMultMatrixf(((Mat44&)transformationMatrix).GetMatrix());
-	gbranch.Draw();
+	//gbranch.Draw();
+	gbranch.DrawSimple();
 	glPopMatrix();
-};
-
-void FractalTree::DrawLeaves()
-{
-	// Get the model view matrix and invert it (to get the Model matrix)
-	//Mat44 mvm;
-	//glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)mvm.GetMatrix());
-	//mvm = mvm.Inverse();
-
-	/*for(u32 i=0;i<leafMatrixCount;++i)
-	{
-		glMatrixMode(GL_MODELVIEW);
-		
-		glPushMatrix();
-		//glMultMatrixf(leafMatrices[i].GetMatrix());
-		//Mat44 finmat = mvm.Mult(leafMatrices[i]);
-		//glLoadMatrixf(finmat.GetMatrix());
-
-		Mat44 *mat = &leafMatrices[i]; // get position directly from matrix for leaf (elements 12, 13 and 14)
-		f32 xpos = mat->GetMatrix()[12];
-		f32 ypos = mat->GetMatrix()[13];
-		f32 zpos = mat->GetMatrix()[14];
-
-		glTranslatef(xpos, ypos, zpos);
-
-		leafModel.Draw();
-		glPopMatrix();
-	}*/
-
-	// Proof of concept code (draw spheres at the start and end of the lines defined by the cylinders)
-
-	for(int i=0;i<transformationMatricesArraySize;++i)
-	{
-		Mat44 &startMatrix = transformationMatrices[i]; Mat44 endMatrix;
-		float3 startPos( startMatrix.GetMatrix()[12], startMatrix.GetMatrix()[13], startMatrix.GetMatrix()[14] ); // position of start of line (first sphere)
-
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glLoadIdentity();
-		glMultMatrixf(startMatrix.GetMatrix());
-		glTranslatef(0, branchLength, 0);
-		glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)endMatrix.GetMatrix());
-		glPopMatrix();
-
-		float3 endPos( endMatrix.GetMatrix()[12], endMatrix.GetMatrix()[13], endMatrix.GetMatrix()[14] ); // position of end of line (second sphere)
-
-		glPushMatrix();
-		glTranslatef(startPos.x(), startPos.y(), startPos.z());
-		leafModel.Draw();
-		glPopMatrix();
-
-		glPushMatrix();
-		glTranslatef(endPos.x(), endPos.y(), endPos.z());
-		leafModel.Draw();
-		glPopMatrix();
-	}
 };
 
 void FractalTree::Draw(f32 dt)
@@ -441,10 +383,16 @@ void FractalTree::Draw(f32 dt)
 	glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)ma.GetMatrix()); matrixStack.push(ma);
 	glPopMatrix();
 
+	tex->Activate();
+
+	glTranslatef(treePos.x(), treePos.y(), treePos.z());
+
 	if(runtime < 0)
 	{
 		for(u32 i=0; i < levels[levels.size()-1]; ++i) { DrawBranch(transformationMatrices[i]); }
 		glPopMatrix();
+
+		tex->Deactivate();
 		return;
 	}
 
@@ -455,6 +403,8 @@ void FractalTree::Draw(f32 dt)
 		else { runtime = -1; }
 		for(u32 i=0; i < levels[levels.size()-1]; ++i) { DrawBranch(transformationMatrices[i]); }
 		glPopMatrix();
+
+		tex->Deactivate();
 		return;
 	}
 
@@ -492,6 +442,7 @@ void FractalTree::Draw(f32 dt)
 	}
 
 	glPopMatrix();
+	tex->Deactivate();
 	return;
 };
 

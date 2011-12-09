@@ -1,9 +1,10 @@
 #pragma once
 
 #include "Model.h"
+#include "GraphicsObject.h"
 
 // disc with grass (etc) on it
-class Disk : public Model
+class Disk : public GraphicsObject
 {
 private:
 	f32 radius; u32 slices;
@@ -16,4 +17,3 @@ public:
 
 	bool Create(u32 slices, f32 radius);
 };
-

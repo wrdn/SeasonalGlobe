@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Model.h"
+#include "GraphicsObject.h"
 
-class Sphere : public Model
+class Sphere : public GraphicsObject
 {
 private:
 	f32 radius;

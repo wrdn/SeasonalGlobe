@@ -110,6 +110,7 @@
     <ClCompile Include="GradientParticleEmitter.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GraphicsObject.cpp" />
     <ClCompile Include="HemiSphericalParticleEmitter.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="LSystem.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="Disk.h" />
     <ClInclude Include="FractalTree.h" />
     <ClInclude Include="GameTime.h" />
+    <ClInclude Include="GraphicsObject.h" />
     <ClInclude Include="HemiSphericalParticleEmitter.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Line.h" />
@@ -222,6 +224,12 @@
     </None>
     <None Include="Data\House\Haus_020_unwrap_SPEC.jpg">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="Data\Shaders\directionalLight.frag">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="Data\Shaders\directionalLight.vert">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </None>
     <None Include="Data\Shaders\globe.frag">

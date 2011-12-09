@@ -1,9 +1,9 @@
 #pragma once
 
 #include <vector>
-#include "Model.h"
+#include "GraphicsObject.h"
 
-class TerrainDisk : public Model
+class TerrainDisk : public GraphicsObject
 {
 private:
 	std::vector<VERTEX> _vertices;

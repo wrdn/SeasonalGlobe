@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Model.h"
+#include "GraphicsObject.h"
 
 // Origin of cylinder is its centre
-class Cylinder : public Model
+class Cylinder : public GraphicsObject
 {
 private:
 	f32 topRadius,

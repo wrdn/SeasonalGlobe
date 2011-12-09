@@ -38,13 +38,16 @@ void SeasonalWindow::SetWindowResolution(const u32 width, const u32 height)
 	ResetPerspective();
 };
 
-void SeasonalWindow::ResetPerspective() const
+void SeasonalWindow::ResetPerspective()
 {
 	glViewport(0,0,windowRes[0],windowRes[1]);
-	glMatrixMode(GL_PROJECTION);
+	
+	scn.GetCamera().UpdateProjection(60, (f32)windowRes[0] / (f32)windowRes[1], 0.3f, 100.0f);
+
+	/*glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(60, (double)windowRes[0] / (double)windowRes[1],0.3f,200.0);
-	glMatrixMode(GL_MODELVIEW);
+	glMatrixMode(GL_MODELVIEW);*/
 };
 
 void SeasonalWindow::SwitchFullscreen()
@@ -246,8 +249,21 @@ void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 {
 	static i32 temp_x, temp_y;
 	if(_leftDown) {
-		scn.SetCameraPosition(scn.GetCameraPosition() + (y-temp_y)*0.05f);
 
+		Camera2 &cam = scn.GetCamera();
+		f32 ychange = y-temp_y;
+
+		Mat44 rotationMatrix = Mat44::BuildRotationMatrix(ychange, cam.right.x(), cam.right.y(), cam.right.z());
+		cam.dir = rotationMatrix.Mult(cam.dir.ToFloat4()).ToFloat3();
+		cam.up = rotationMatrix.Mult(cam.up.ToFloat4()).ToFloat3();
+
+		//Mat44 m = Mat44::BuildRotationMatrix( changeInY, 0, 1, 0);
+		//cam.dir = m.Mult(cam.dir.ToFloat4()).ToFloat3();
+		//cam.up = m.Mult(cam.up.ToFloat4()).ToFloat3();
+
+
+		scn.SetCameraPosition(scn.GetCameraPosition() + (y-temp_y)*0.05f);
+		
 		//scn.GetCamera().Translate( scn.GetCamera().GetDirection() * ((f32)y-(f32)temp_y)*gameTime.GetDeltaTime() );
 		//const f32 speed = 0.1f;
 		//const f32 d = ((f32)y-(f32)temp_y);
@@ -263,9 +279,12 @@ void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 
 	}
 	if(_rightDown) {
+
+		Camera2 &cam = scn.GetCamera();
+
+
 		scn.SetCameraRotation(scn.GetCameraRotation()+(x-temp_x)*0.5f);
-
-
+		
 		//const f32 d = ((f32)x - (f32)temp_x);
 		//scn.GetCamera().SetTheta ( scn.GetCamera().GetTheta() + d*0.1f );
 		//scn.GetCamera().Rotate( Mat44::BuildRotationMatrix( (x-temp_x)*0.5f, 0,1,0 ) );

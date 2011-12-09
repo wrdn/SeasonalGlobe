@@ -4,9 +4,7 @@
 
 Sphere::Sphere() : radius(0), slices(0), stacks(0) { };
 
-Sphere::~Sphere()
-{
-};
+Sphere::~Sphere() { };
 
 bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 {
@@ -65,8 +63,8 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 		++vertexCount;
 	}
 
-	this->SetVertexArray(verts, vertexCount);
-	
+	this->GetModel().SetVertexArray(verts, vertexCount);
+
 	indexCount = 0;
 	vertexCount = 2;
 	
@@ -110,6 +108,6 @@ bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
 		indicesArray[index++] = vertexCount+slices-j-1;
 	}
 
-	this->SetIndicesArray(indicesArray, indicesArraySz);
-	return this->BuildVBO();
+	this->GetModel().SetIndicesArray(indicesArray, indicesArraySz);
+	return this->GetModel().BuildVBO();
 };

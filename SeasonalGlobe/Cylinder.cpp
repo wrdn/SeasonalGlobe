@@ -1,16 +1,9 @@
 #include "Cylinder.h"
-
-
-Cylinder::Cylinder(void) : topRadius(0), bottomRadius(0), height(0), slices(0), stacks(0)
-{
-}
-
-Cylinder::~Cylinder(void)
-{
-}
-
 #include <vector>
 using namespace std;
+
+Cylinder::Cylinder(void)  : topRadius(0), bottomRadius(0), height(0), slices(0), stacks(0) { };
+Cylinder::~Cylinder(void) { };
 
 bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slices, u32 _stacks)
 {
@@ -33,7 +26,7 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 
 	// Top (centre)
 	vertexArray[vertexInsertionPos++] = VERTEX(float3(0,height,0), float3(0,1,0), float2(0.5, 0.5));
-	
+
 	// Bottom (centre)
 	vertexArray[vertexInsertionPos++] = VERTEX(float3(0,0,0), float3(0,-1,0), float2(0.5, 0.5));
 
@@ -61,13 +54,13 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 	f32 currentRadius = topRadius;
 	f32 v=1;
 	f32 vincrement = 1.0f / (f32)(stacks-1);
-	
+
 	for ( u32 currStack = 0; currStack < stacks; ++currStack )
 	{
 		// Replicate first vertex (this will be connected to the last vertex with correct UVs)
 		vertexArray[vertexInsertionPos++] = VERTEX(
-				float3(currentRadius*cos(angle), current_height, -currentRadius*sin(angle)),
-				float3(cos(angle), 0, -sin(angle)), float2( 1.0f , v ));
+			float3(currentRadius*cos(angle), current_height, -currentRadius*sin(angle)),
+			float3(cos(angle), 0, -sin(angle)), float2( 1.0f , v ));
 
 		for (u32 currSlice = 0; currSlice < slices; ++currSlice )
 		{
@@ -76,7 +69,7 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 			vertexArray[vertexInsertionPos++] = VERTEX(
 				float3(currentRadius*cos(angle), current_height, -currentRadius*sin(angle)),
 				float3(cos(angle), 0, -sin(angle)), float2( u , v ));
-			
+
 			angle += sliceincrement;
 		}
 		current_height -= stack_increment;
@@ -158,7 +151,8 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 		vertexIndex += 2; // move over the replicated vertex
 	}
 
-	this->SetVertexArray(vertexArray, VertexArraySize);
-	this->SetIndicesArray(indexArray, indexArraySize);
-	return this->BuildVBO();
+	Model &m = this->GetModel();
+	m.SetVertexArray(vertexArray, VertexArraySize);
+	m.SetIndicesArray(indexArray, indexArraySize);
+	return m.BuildVBO();
 };

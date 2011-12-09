@@ -9,7 +9,7 @@
 #include "tutorialcodeheaders.h"
 
 World::World(void)
-	: grasstexture(0), houseTexture(0), barkTexture(0),
+	/*: grasstexture(0), houseTexture(0), barkTexture(0),
 	  houseModel(0),
 	  globeSphere(0),
 	  terrain(0),
@@ -25,7 +25,7 @@ World::World(void)
 	   cylindricalParticleEmitterID(0), snowEmitterID(0), smokeEmitter(0),
 	   gradientMapShaderID(0), fireEmitter(0), particleTexture(0), gradientMapTexture(0),
 	   leafTexture(0), baseModel(0), scaleX(0), scaleZ(0), mtt1(0), mtt2(0),
-	   waterx(3), watery(0), waterz(0), treePos(2.5f, 0, 0.2f)
+	   waterx(3), watery(0), waterz(0), */
 {
 }
 
@@ -42,13 +42,6 @@ Model* CreateBillboardModel()
 {
 	// Billboard model (textured quad)
 	Model *billboardModel = new Model();
-	/*VERTEX billboardVertices[] = 
-	{
-		VERTEX(float3(-0.5f,1,0), float3(0,0,1), float2(0,1)),
-		VERTEX(float3(0.5,1,0),   float3(0,0,1), float2(1,1)),
-		VERTEX(float3(-0.5f,0,0), float3(0,0,1), float2(0,0)),
-		VERTEX(float3(0.5f,0,0),  float3(0,0,1), float2(1,0))
-	};*/
 	VERTEX *billboardVertices = new VERTEX[4];
 	billboardVertices[0] = VERTEX(float3(-0.5f,1,0), float3(0,0,1), float2(0,1));
 	billboardVertices[1] = VERTEX(float3(0.5,1,0),   float3(0,0,1), float2(1,1));
@@ -56,7 +49,6 @@ Model* CreateBillboardModel()
 	billboardVertices[3] = VERTEX(float3(0.5f,0,0),  float3(0,0,1), float2(1,0));
 	billboardModel->SetVertexArray(billboardVertices, 4);
 
-	//u32 billboardIndices[] = { 0,2,3, 0,3,1 };
 	u32 *billboardIndices = new u32[6];
 	billboardIndices[0] = 0;
 	billboardIndices[1] = 2;
@@ -74,11 +66,11 @@ Materials _material1, _material2, _material3;
 
 bool World::LoadTextures()
 {
-	grasstexture = texMan.LoadTextureFromFile("Data/Textures/Grass2.jpg");
-	grasstexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR );
-	grasstexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR );
-	grasstexture->SetWrapS(GL_REPEAT);
-	grasstexture->SetWrapT(GL_REPEAT);
+	grassTexture = texMan.LoadTextureFromFile("Data/Textures/Grass2.jpg");
+	grassTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR );
+	grassTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR );
+	grassTexture->SetWrapS(GL_REPEAT);
+	grassTexture->SetWrapT(GL_REPEAT);
 
 	barkTexture = texMan.LoadTextureFromFile("Data/Textures/bark.jpg");
 
@@ -92,14 +84,9 @@ bool World::LoadTextures()
 	leafTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR);
 	leafTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
 
-	gradientMapTexture = texMan.LoadTextureFromFile("Data/Textures/gradientMap.tga");
-	gradientMapTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
-	gradientMapTexture->SetMagFilter(GL_LINEAR);
-	gradientMapTexture->SetTextureSlot(SLOT_GL_TEXTURE_1);
-
 	baseTexture = texMan.LoadTextureFromFile("Data/Textures/wood.jpg");
 
-	return grasstexture && barkTexture && particleTexture && leafTexture && gradientMapTexture && baseTexture;
+	return grassTexture && barkTexture && particleTexture && leafTexture && baseTexture;
 };
 
 bool World::LoadShaders()
@@ -131,6 +118,16 @@ bool World::LoadShaders()
 		globeShader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
 		globeShader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
 		globeShader->PrintProgramLog(std::cout);
+		return false;
+	}
+
+	directionalLightShaderID = shaderMan.AddShader();
+	directionalLightShader = shaderMan.GetShader(directionalLightShaderID);
+	if(!directionalLightShader->LoadShader("Data/Shaders/directionalLight.frag", "Data/Shaders/directionalLight.vert"))
+	{
+		directionalLightShader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
+		directionalLightShader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
+		directionalLightShader->PrintProgramLog(std::cout);
 		return false;
 	}
 
@@ -174,9 +171,8 @@ bool World::LoadParticles()
 	}*/
 
 
-	smokeEmitter = particleSystem.AddEmitter<PointBasedParticleEmitter>();
-	//PointBasedParticleEmitter *smokeParticleEmitter = (PointBasedParticleEmitter*)particleSystem.GetEmitter(smokeEmitter);
-	PointBasedParticleEmitter *smokeParticleEmitter = particleSystem.GetEmitter<PointBasedParticleEmitter>(smokeEmitter);
+	smokeEmitterID = particleSystem.AddEmitter<PointBasedParticleEmitter>();
+	PointBasedParticleEmitter *smokeParticleEmitter = particleSystem.GetEmitter<PointBasedParticleEmitter>(smokeEmitterID);
 	smokeParticleEmitter->SetParticleSpread(0.35f);
 	smokeParticleEmitter->SetRateOfEmission(2);
 	smokeParticleEmitter->SetAlphaMap(*particleTexture);
@@ -191,7 +187,6 @@ bool World::LoadParticles()
 	smokeParticleEmitter->AddForce(float3(-1.0f,0.2f,0.43f));
 
 	snowEmitterID = particleSystem.AddEmitter<HemiSphericalParticleEmitter>();
-	//HemiSphericalParticleEmitter *snowEmitter = (HemiSphericalParticleEmitter*)particleSystem.GetEmitter(snowEmitterID);
 	HemiSphericalParticleEmitter *snowEmitter = particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID);
 	snowEmitter->SetAlphaMap(*particleTexture);
 	i32 maxsnowparticles=150; conf.GetInt("MaxSnowParticles", maxsnowparticles);
@@ -207,7 +202,7 @@ bool World::LoadParticles()
 	fireParticleEmitter->SetAlphaMap(*particleTexture);
 	fireParticleEmitter->SetShader(psysbase);
 	fireParticleEmitter->SetBillboardType(Spherical);
-	fireParticleEmitter->SetEmitterOrigin(treePos);
+	fireParticleEmitter->SetEmitterOrigin(tree->GetPosition());
 	fireParticleEmitter->SetRateOfEmission(1000);
 
 	std::vector<ParticleLine> fire_particle_lines;
@@ -231,23 +226,27 @@ bool World::LoadGeometry()
 
 	// Load globe
 	globeSphere = new Sphere();
-	f32 radius=11.3f;
-	conf.GetFloat("GlobeRadius",radius);
+	f32 radius=11.3f; conf.GetFloat("GlobeRadius",radius);
 	globeSphere->CreateSphere(radius, 40, 40);
+	globeSphere->SetPosition(float3(0.3f,0,0));
+	globeSphere->SetShader(shaderMan.GetShader(globeShaderID));
 
 	// Load globe base
 	baseModel = new OBJFile();
 	baseModel->ParseOBJFile("Data/base2.obj");
 	baseModel->BuildModelVBOs();
-	scaleX = 2.0f; // scale for x and z on globe (height not scaled)
-	scaleZ = 2.0f;
 
 	// Load terrain
 	terrain = new TerrainDisk();
 	terrain->CreateTerrainDisk("Data/Textures/ground_heightmap.bmp");
+	terrain->SetTexture(grassTexture);
+	terrain->SetXRotation(90);
+	terrain->SetScale(float3(5.48f,5.48f,5.48f));
 
 	// Load tree
 	tree = new FractalTree();
+	tree->SetPosition(float3(2.5f, 0, 0.2f));
+	tree->SetTexture(barkTexture);
 	tree->SetBranchRadius(1.0f);
 	tree->SetBranchRadiusReduction(0.1f);
 	tree->SetBranchLength(0.6f);
@@ -256,16 +255,9 @@ bool World::LoadGeometry()
 	tree->SetInitialString("A");
 	tree->AddProductionRule('A', "F[^B][^^^^^^^B]");
 	tree->AddProductionRule('B', "F^[L-BL]^B");
-
-	i32 _gen = 8;
-	conf.GetInt("LSystemGenerations", _gen);
-	tree->SetGenerations(_gen);
-	
+	i32 gen = 8; conf.GetInt("LSystemGenerations", gen);
+	tree->SetGenerations(gen);
 	tree->BuildTree();
-
-	//testFireCylinder.Create(0.5, 0.5, 3, 20, 20);
-	testFireCylinder.Load();
-	testFireCylinder.Create(0.05f, 0.05f, 2, 7,7);
 
 	return true;
 };
@@ -274,15 +266,19 @@ bool World::Load()
 {
 	conf.ParseConfigFile("Data/ConfigFile.txt"); // load configuration file
 	
-	cam.SetRadius(28.0f);
-	cam.SetAzimuth(20);
-	cam.Update();
+	//cam.SetRadius(28.0f);
+	//cam.SetAzimuth(20);
+	//cam.Update();
 
 	//cam.Init(45, 1.333f, 0.3f, 100, float3(0,1, -28), float3(0,1,1), float3(0,1,0));
 
+	cam.Init(float3(0,6,25), float3(0,6,25), float3(0,1,0));
+
+	directionalLight = DirectionalLight(float3(), Color4f(0.3f,0.3f,0.3f,1), Color4f(0.75f,0.75f,0.75f,1), Color4f(1,1,1,1));
+
 	LoadTextures();
-	LoadGeometry();
 	LoadShaders();
+	LoadGeometry();
 	LoadParticles();
 	
 	// NOTE: THIS IS ALL CODE FROM TUTORIALS THAT SHOULD LATER BE REMOVED
@@ -450,13 +446,7 @@ void World::reflective_draw(const GameTime &gameTime)
 	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
 	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
 
-	glPushMatrix();
-	glTranslatef(treePos.x(), treePos.y(), treePos.z());
-	barkTexture->Activate();
-	tree->Draw(gameTime.GetDeltaTime()); // draw reflected tree
-	barkTexture->Deactivate();
-	//glTranslatef(-treePos.x(), -treePos.y(), -treePos.z());
-	glPopMatrix();
+	tree->Draw(gameTime.GetDeltaTime());
 
 	glDisable(GL_NORMALIZE);
 	glCullFace(GL_BACK);
@@ -486,18 +476,14 @@ void World::reflective_draw(const GameTime &gameTime)
 	glFrontFace(GL_CCW);
 	glDisable(GL_BLEND);
 
-	glPushMatrix();
-	glTranslatef(treePos.x(), treePos.y(), treePos.z());
-	_material1.apply();
-	barkTexture->Activate();
 	tree->Draw(gameTime.GetDeltaTime());
-	barkTexture->Deactivate();
-	//glTranslatef(-treePos.x(), -treePos.y(), -treePos.z());
-	glPopMatrix();
+
+	glDisable(GL_LIGHTING);
 };
 
 void World::multi_texturing_test(const GameTime &gameTime)
 {
+	/*
 	// Trying the gradient map shader
 	glEnable(GL_TEXTURE_2D);
 
@@ -505,7 +491,7 @@ void World::multi_texturing_test(const GameTime &gameTime)
 	FGLCaller caller;
 
 	particleTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
-	gradientMapTexture->SetTextureSlot(SLOT_GL_TEXTURE_1);
+	//gradientMapTexture->SetTextureSlot(SLOT_GL_TEXTURE_1);
 
 	shader->Activate();
 
@@ -513,7 +499,7 @@ void World::multi_texturing_test(const GameTime &gameTime)
 	particleTexture->Activate();
 
 	caller.glActiveTexture(GL_TEXTURE1_ARB);
-	gradientMapTexture->Activate();
+	//gradientMapTexture->Activate();
 
 	shader->SetUniform("AlphaMap", 0);
 	shader->SetUniform("GradientMap",1);
@@ -523,6 +509,7 @@ void World::multi_texturing_test(const GameTime &gameTime)
 	shader->Deactivate();
 	
 	glPopMatrix();
+	*/
 };
 
 void World::Update(GameTime &gameTime)
@@ -530,78 +517,41 @@ void World::Update(GameTime &gameTime)
 	particleSystem.Update(gameTime);
 };
 
+float xrot=0, yrot=0, radius=3.0f;
+float ra=0;
 void World::Draw(const GameTime &gameTime)
 {
 	glLoadIdentity();
 
 	glPushMatrix();
 
+	// This translates everything else in the scene, objects move, not the camera
 	glTranslatef(0.0f, 0.0f,_cameraPosition);
 	glRotatef(_cameraAngle, 1.0,0.0,0.0);
 	glRotatef(_cameraRotation, 0.0, 1.0, 0.0);
 	glTranslatef(0.0f, -1.0f,0.0f);
-	
+
 	glRotatef(angle, 0, 1, 0);
 
-	//// Testing fire
-	//glPushMatrix();
-	//glRotatef(90, 1,0,0);
-	//glRotatef(90, 0,0,1);
-	//barkTexture->Activate();
-	//testFireCylinder.Draw();
-	//barkTexture->Deactivate();
-	//glPopMatrix();
-
-	//fireEmitter->SetStartPosition(float3(0,0,0));
-	//fireEmitter->SetEndPosition(float3(0,2,0));
-	
-	/*glPushMatrix();
-	glEnable(GL_BLEND);
-	glDepthMask(GL_FALSE);
-	glBlendFunc(GL_SRC_ALPHA, fireEmitter->GetSourceAlphaBlendFunction());
-	fireEmitter->Update(gameTime);
-	fireEmitter->Draw();
-	glDepthMask(GL_TRUE);
-	glEnable(GL_BLEND);
-	glPopMatrix();
-	
-	glPushMatrix();
-	barkTexture->Activate();
-	tree->Draw(gameTime.GetDeltaTime());
-	barkTexture->Deactivate();
-	glPopMatrix();*/
-
-	/*glPushMatrix();
-	glTranslatef(treePos.x(), treePos.y(), treePos.z());
-	barkTexture->Activate();
-	tree->DrawLeaves();
-	barkTexture->Deactivate();
-	glPopMatrix();*/
-
-	glEnable(GL_LIGHTING);
 	glPushMatrix();
 	reflective_draw(gameTime);
 	glPopMatrix();
-	//glDisable(GL_LIGHTING);
 
-	/*_light1.setPosition(Vector4f(5.0,5.0,5.0,1.0));
-	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
-	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
-	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));*/
 	_light1.setPosition(Vector4f(5.0,5.0, 10.0, 1.0));
 	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
 	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
 	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
+	
+	/*
+	directionalLightShader->Activate();
+	directionalLightShader->SetUniform("lightAmbient", directionalLight.ambient);
+	directionalLightShader->SetUniform("lightDiffuse", directionalLight.diffuse);
+	directionalLightShader->Deactivate();
+	*/
 
 	// Terrain (floor)
 	glEnable(GL_NORMALIZE);
-	glPushMatrix();
-	grasstexture->Activate();
-	glRotatef(90, 1,0,0);
-	glScalef(5.48f,5.48f,5.48f);
 	terrain->Draw();
-	grasstexture->Deactivate();
-	glPopMatrix();
 	glDisable(GL_NORMALIZE);
 
 	// House
@@ -630,16 +580,11 @@ void World::Draw(const GameTime &gameTime)
 	phongShader->SetUniform("fDiffuse",Color::GREY);
 	phongShader->SetUniform("baseMap", *baseTexture);
 	phongShader->SetUniform("applyTexture", true);
-	//barkTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
-	//barkTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR);
-	//barkTexture->SetWrapS(GL_REPEAT);
-	//barkTexture->SetWrapT(GL_REPEAT);
-	//barkTexture->Activate();
 	glPushMatrix();
 	baseTexture->Activate();
 	baseTexture->SetWrapS(GL_REPEAT);
 	baseTexture->SetWrapT(GL_REPEAT);
-	glScalef(scaleX,0.83f,scaleZ);
+	glScalef(2.0f,0.83f,2.0f);
 	glTranslatef(0, 0.2f, 0);
 	baseModel->Draw();
 	baseTexture->Deactivate();
@@ -648,26 +593,25 @@ void World::Draw(const GameTime &gameTime)
 	phongShader->Deactivate();
 
 	// Particle system
-	//particleSystem.Update(gameTime);
 	particleSystem.Draw();
 
 	// Globe
-	Shader* globeShader = shaderMan.GetShader(globeShaderID);
-	globeShader->Activate();
+	//Shader* globeShader = shaderMan.GetShader(globeShaderID);
+	//globeShader->Activate();
 	//globeShader->SetUniform("eyePos", cam.GetPosition());
+	
 	glEnable(GL_CLIP_PLANE0); // use clip plane to cut bottom half
 	GLdouble eq[] = { 0, 1, 0, 0 };
 	glClipPlane(GL_CLIP_PLANE0, eq);
-	glDisable(GL_TEXTURE_2D);
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE);
-	glPushMatrix();
-	glTranslatef(0.3f,0,0);
+	//glPushMatrix();
+	//glTranslatef(0.3f,0,0);
 	globeSphere->Draw();
-	glPopMatrix();
+	//glPopMatrix();
 	glDisable(GL_BLEND);
 	glDisable(GL_CLIP_PLANE0);
-	globeShader->Deactivate();
+	//globeShader->Deactivate();
 
 	glPopMatrix();
 

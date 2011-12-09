@@ -7,10 +7,12 @@ struct Material
 {
 public:
 	Color4f ambient, diffuse, specular;
+	f32 shininess; // used in Phong shading
 
-	Material() { };
-	Material(Color4f &amb, Color4f &diff, Color4f &spec)
-		: ambient(amb), diffuse(diff), specular(spec) { };
+	Material() : ambient(Color4f(0.3f,0.3f,0.3f,1)), diffuse(Color4f(0.75f,0.75f,0.75f,1)), specular(Color4f(0.8f,0.8f,0.8f,1)), shininess(30)
+	{};
+	Material(Color4f &amb, Color4f &diff, Color4f &spec, f32 _shininess)
+		: ambient(amb), diffuse(diff), specular(spec), shininess(_shininess) { };
 	~Material() { };
 };
 

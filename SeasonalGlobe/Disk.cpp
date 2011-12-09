@@ -42,9 +42,7 @@ bool Disk::Create(u32 _slices, f32 _radius)
 	indexArray[indexipos] = i;
 	indexArray[indexipos+1] = 1;
 
-	//Model &floorModel = GetModel();
-	this->SetVertexArray(floorVerts, vertexCount);
-	this->SetIndicesArray(indexArray, slices*3);
-
-	return this->BuildVBO();
+	this->GetModel().SetVertexArray(floorVerts, vertexCount);
+	this->GetModel().SetIndicesArray(indexArray, slices*3);
+	return this->GetModel().BuildVBO();
 };

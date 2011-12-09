@@ -57,16 +57,16 @@ public:
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		
-		gluLookAt(position.x(), position.y(), position.z(),
+		/*gluLookAt(position.x(), position.y(), position.z(),
 			direction.x(), direction.y(), direction.z(),
-			up.x(), up.y(), up.z());
+			up.x(), up.y(), up.z());*/
 
 		/*gluLookAt(position.x(), position.y(), position.z(),
 			direction.x(), direction.y(), direction.z(),
 			up.x(), up.y(), up.z());*/
 
 		// build projection matrix
-		/*f32 mat[16];
+		f32 mat[16];
 		
 		mat[m11] = right.x();
 		mat[m12] = up.x();
@@ -86,9 +86,9 @@ public:
 		mat[m41] = -right.dot(position);
 		mat[m42] = -up.dot(position);
 		mat[m43] = direction.dot(position);
-		mat[m44] = 1.0f;*/
+		mat[m44] = 1.0f;
 
-		//glMultMatrixf(mat);
+		glMultMatrixf(mat);
 
 	};
 

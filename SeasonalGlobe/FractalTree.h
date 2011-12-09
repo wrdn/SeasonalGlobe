@@ -5,6 +5,7 @@
 #include "Sphere.h"
 #include "Mat44.h"
 #include "FireParticleEmitter.h"
+#include "Texture.h"
 
 class FractalTree
 {
@@ -70,7 +71,6 @@ private:
 	// single cylinder to be drawn many times
 	// created once only (in BuildTree())
 	Cylinder gbranch;
-	Sphere leafModel;
 
 	// This holds the index of the first matrix per level of the tree
 	// For 0 to levels.size()-1, the number of matrices in the level of
@@ -100,6 +100,9 @@ private:
 	
 	f32 runtime;
 	f32 buildTime;
+
+	float3 treePos;
+	Texture *tex;
 
 	#pragma endregion
 
@@ -183,7 +186,6 @@ public:
 	void BuildTree();
 
 	void Draw(f32 dt);
-	void DrawLeaves();
 
 	// Adds lines for each branch segment in depth order
 	void CalculateParticleLines(std::vector<ParticleLine> &plines);
@@ -222,6 +224,12 @@ public:
 
 	const u32 GetLeafCount() const { return leafMatrixCount; };
 	const Mat44* GetLeafMatrices() const { return leafMatrices; };
+
+	void SetPosition(const float3& f) { treePos = f; };
+	const float3& GetPosition() const { return treePos; }
+
+	void SetTexture(Texture *t) { tex = t; };
+	Texture* GetTexture() const { return tex; };
 
 	// Constants (default radius, etc)
 	static const f32 _GetDefaultBranchRadius() { return 1.0f; };

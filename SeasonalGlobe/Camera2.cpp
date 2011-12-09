@@ -16,7 +16,9 @@ void Camera2::Init(const float3 &camPos, const float3& camDir, const float3& cam
 	dir = camDir.normalize();
 	up = camUp.normalize();
 	right = dir ^ up; right.normalize();
-
+	
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 	gluLookAt(pos.x(), pos.y(), pos.z(), dir.x(), dir.y(), dir.z(), up.x(), up.y(), up.z());
 };
 
