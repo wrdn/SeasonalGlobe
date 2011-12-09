@@ -26,6 +26,7 @@ void StaticParticleEmitter::Emit(Particle &p)
 void StaticParticleEmitter::UpdateParticleProperties(Particle &p, const GameTime &gameTime)
 {
 	p.energy = 1000;
+	p.color = Color4f(0.8, 0.35, 0.35, 1);
 };
 
 const bool StaticParticleEmitter::AddParticle(const Particle &p)

@@ -1,6 +1,6 @@
 #include "FireParticleEmitter.h"
 
-FireParticleEmitter::FireParticleEmitter() : currentParticleAdditionIndex(0), maxParticlesPerLine(15),
+FireParticleEmitter::FireParticleEmitter() : currentParticleAdditionIndex(0), maxParticlesPerLine(20),
 	startColor(1,0.2,0,1), endColor(1, 0.28f, 0, 0.8f)
 {
 };

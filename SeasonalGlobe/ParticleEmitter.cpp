@@ -25,7 +25,38 @@ void ParticleEmitter::Draw(/*const GameTime &gameTime*/)
 	
 	glTranslatef(emitterOrigin.x(), emitterOrigin.y(), emitterOrigin.z());
 
-	for(u32 i=0;i<GetLocalParticleMaximum();++i)
+	if(billboardType == Spherical) // only need 1 check, so duplicate most of the drawing code
+	{
+		for(u32 i=0;i<GetLocalParticleMaximum();++i)
+		{
+			Particle &p = particles[i];
+			glPushMatrix();
+			glColor4fv(p.color.GetVec());
+			glTranslatef(p.pos.x(), p.pos.y(), p.pos.z());
+			SphericalBillboardAdjust();
+			glRotatef(p.rotation_z, 0,0,1);
+			glScalef(p.size.x(), p.size.y(), p.size.z());
+			model->Draw();
+			glPopMatrix();
+		}
+	}
+	else
+	{
+		for(u32 i=0;i<GetLocalParticleMaximum();++i)
+		{
+			Particle &p = particles[i];
+			glPushMatrix();
+			glColor4fv(p.color.GetVec());
+			glTranslatef(p.pos.x(), p.pos.y(), p.pos.z());
+			CylindricalBillboardAdjust();
+			glRotatef(p.rotation_z, 0,0,1);
+			glScalef(p.size.x(), p.size.y(), p.size.z());
+			model->Draw();
+			glPopMatrix();
+		}
+	}
+	
+	/*for(u32 i=0;i<GetLocalParticleMaximum();++i)
 	{
 		Particle &p = particles[i];
 
@@ -49,7 +80,7 @@ void ParticleEmitter::Draw(/*const GameTime &gameTime*/)
 		model->Draw();
 
 		glPopMatrix();
-	}
+	}*/
 
 	DeactivateShader();
 

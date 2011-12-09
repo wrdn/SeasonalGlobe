@@ -75,6 +75,7 @@ void SeasonalWindow::OnDisplay()
 
 void SeasonalWindow::OnIdle()
 {
+	scn.Update(gameTime);
 	Redraw();
 };
 

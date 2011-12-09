@@ -146,9 +146,8 @@ bool World::LoadParticles()
 
 	const u32 LEAF_PARTICLES_PER_LEAF_MATRIX = 3;
 	leafParticleEmitterID = particleSystem.AddEmitter<StaticParticleEmitter>();
-	//StaticParticleEmitter *leafEmitter = (StaticParticleEmitter*)particleSystem.GetEmitter(leafParticleEmitterID);
 	StaticParticleEmitter *leafEmitter = particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID);
-	/*leafEmitter->SetLocalParticleMaximum(tree->GetLeafCount() * LEAF_PARTICLES_PER_LEAF_MATRIX);
+	leafEmitter->SetLocalParticleMaximum(tree->GetLeafCount() * LEAF_PARTICLES_PER_LEAF_MATRIX);
 	leafEmitter->SetParticlesStaticState(true);
 	leafEmitter->SetAlphaMap(*leafTexture);
 	leafEmitter->SetShader(psysbase);
@@ -172,9 +171,10 @@ bool World::LoadParticles()
 			p.size = float3(0.25f);
 			leafEmitter->AddParticle(p);
 		}
-	}*/
+	}
 
-	smokeEmitter = particleSystem.AddEmitter<PointBasedParticleEmitter>();
+
+	/*smokeEmitter = particleSystem.AddEmitter<PointBasedParticleEmitter>();
 	//PointBasedParticleEmitter *smokeParticleEmitter = (PointBasedParticleEmitter*)particleSystem.GetEmitter(smokeEmitter);
 	PointBasedParticleEmitter *smokeParticleEmitter = particleSystem.GetEmitter<PointBasedParticleEmitter>(smokeEmitter);
 	smokeParticleEmitter->SetParticleSpread(0.35f);
@@ -217,18 +217,7 @@ bool World::LoadParticles()
 	{
 		fireParticleEmitter->AddLine(fire_particle_lines[i]);
 	}
-
-	/*ParticleLine pline;
-	pline.SetStartPosition(float3(2,0,0));
-	pline.SetEndPosition(float3(2,2,0));
-	fireParticleEmitter->AddLine(pline);
-
-	pline.SetStartPosition(float3(4,0,0));
-	pline.SetEndPosition(float3(4,2,0));
-	fireParticleEmitter->AddLine(pline);*/
-
-	/*fireEmitter->SetStartPosition(float3(0,0,0));
-	//fireEmitter->SetEndPosition(float3(0,2,0));*/
+	*/
 	return true;
 };
 
@@ -530,6 +519,11 @@ void World::multi_texturing_test(const GameTime &gameTime)
 	glPopMatrix();
 };
 
+void World::Update(GameTime &gameTime)
+{
+	particleSystem.Update(gameTime);
+};
+
 void World::Draw(const GameTime &gameTime)
 {
 	glLoadIdentity();
@@ -648,13 +642,13 @@ void World::Draw(const GameTime &gameTime)
 	phongShader->Deactivate();
 
 	// Particle system
-	particleSystem.Update(gameTime);
+	//particleSystem.Update(gameTime);
 	particleSystem.Draw();
 
 	// Globe
 	Shader* globeShader = shaderMan.GetShader(globeShaderID);
 	globeShader->Activate();
-	globeShader->SetUniform("eyePos", cam.GetPosition());
+	//globeShader->SetUniform("eyePos", cam.GetPosition());
 	glEnable(GL_CLIP_PLANE0); // use clip plane to cut bottom half
 	GLdouble eq[] = { 0, 1, 0, 0 };
 	glClipPlane(GL_CLIP_PLANE0, eq);

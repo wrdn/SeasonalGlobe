@@ -126,6 +126,7 @@ public:
 	bool Load();
 	void Shutdown();
 
+	void Update(GameTime &gameTime);
 	void Draw(const GameTime &gameTime);
 };
 
