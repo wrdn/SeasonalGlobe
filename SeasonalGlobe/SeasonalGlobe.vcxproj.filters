@@ -64,7 +64,7 @@
     <Filter Include="Header Files\Misc">
       <UniqueIdentifier>{10f49e84-8b3e-4b28-9469-8bb586094396}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Geometry\LSystem">
+    <Filter Include="Header Files\LSystem">
       <UniqueIdentifier>{b9fb3536-9827-44fa-94d6-2c39935a92c5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -168,9 +168,6 @@
     <ClCompile Include="CylindricalParticleEmitter.cpp">
       <Filter>Source Files\Particles</Filter>
     </ClCompile>
-    <ClCompile Include="GradientParticleEmitter.cpp">
-      <Filter>Source Files\Particles</Filter>
-    </ClCompile>
     <ClCompile Include="HemiSphericalParticleEmitter.cpp">
       <Filter>Source Files\Particles</Filter>
     </ClCompile>
@@ -211,12 +208,6 @@
     </ClInclude>
     <ClInclude Include="Mat44.h">
       <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Circle.h">
-      <Filter>Header Files\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Line.h">
-      <Filter>Header Files\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="Sphere.h">
       <Filter>Header Files\Geometry</Filter>
@@ -288,13 +279,13 @@
       <Filter>Header Files\World</Filter>
     </ClInclude>
     <ClInclude Include="LSystem.h">
-      <Filter>Header Files\Geometry\LSystem</Filter>
+      <Filter>Header Files\LSystem</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FractalTree.h">
-      <Filter>Header Files\Geometry\LSystem</Filter>
+      <Filter>Header Files\LSystem</Filter>
     </ClInclude>
     <ClInclude Include="AppConfig.h">
       <Filter>Header Files\Misc</Filter>
@@ -309,9 +300,6 @@
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="CylindricalParticleEmitter.h">
-      <Filter>Header Files\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="GradientParticleEmitter.h">
       <Filter>Header Files\Particles</Filter>
     </ClInclude>
     <ClInclude Include="HemiSphericalParticleEmitter.h">
@@ -343,6 +331,12 @@
     </ClInclude>
     <ClInclude Include="GraphicsObject.h">
       <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Circle.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Line.h">
+      <Filter>Header Files\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

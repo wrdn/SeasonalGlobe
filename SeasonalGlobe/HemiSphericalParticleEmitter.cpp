@@ -30,7 +30,7 @@ void HemiSphericalParticleEmitter::Emit(Particle &p)
 	p.size.set(0.25f, 0.25f, 0.25f);
 };
 
-void HemiSphericalParticleEmitter::UpdateParticleProperties(Particle &p, const GameTime &gameTime)
+void HemiSphericalParticleEmitter::UpdateParticleProperties(Particle &p/*, const GameTime &gameTime*/)
 {
 	if(p.pos.y() > EPSILON)
 		p.energy = 100;

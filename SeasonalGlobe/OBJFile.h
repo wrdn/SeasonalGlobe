@@ -1,7 +1,7 @@
 #ifndef __OBJFILE_H__
 #define __OBJFILE_H__
 
-#include "Model.h"
+#include "GraphicsObject.h"
 #include <vector>
 
 // OBJFile loader (creates and fills Model objects). The loader loads only what is neccessary and nothing else. It does not recalculate normals, or build the
@@ -11,26 +11,15 @@
 class OBJFile
 {
 private:
-	Model **models;
-	u32 modelCount;
-
-	// No copying
+	// No construction (static class)
 	OBJFile(OBJFile const& other);
 	OBJFile& operator= (OBJFile const& other);
-
-public:
 	OBJFile();
 	~OBJFile();
 
-	bool ParseOBJFile(const c8* filename);
-	
-	bool ParseOBJFile(const std::vector<c8*> &objFile);
-
-	const Model* GetModels() const { return *models; }
-
-	void Draw();
-
-	void BuildModelVBOs();
+	static std::vector<GraphicsObject*> ParseFile(const std::vector<c8*> &objFile);
+public:
+	static std::vector<GraphicsObject*> ParseFile(const c8* filename);
 };
 
 #endif

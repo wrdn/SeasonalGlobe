@@ -48,7 +48,7 @@ void CylindricalParticleEmitter::Emit(Particle &p)
 	p.rotation.setall(-90);*/
 };
 
-void CylindricalParticleEmitter::UpdateParticleProperties(Particle &p, const GameTime &gameTime)
+void CylindricalParticleEmitter::UpdateParticleProperties(Particle &p/*, const GameTime &gameTime*/)
 {
 	f32 lR = lerp(startColor.r(), endColor.r(), 1.0f / p.energy);
 	f32 lG = lerp(startColor.g(), endColor.g(), 1.0f / p.energy);

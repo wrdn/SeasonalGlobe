@@ -106,7 +106,7 @@ void ParticleEmitter::Update(const GameTime &gameTime)
 				p.pos += (*it) * dt;
 
 		// Called before check for death. Feel free to use this function to kill a particle (by setting energy to < 0)
-		UpdateParticleProperties(p, gameTime);
+		UpdateParticleProperties(p/*, gameTime*/);
 
 		if(p.energy <= 0/* && emittedThisFrame > 0*/ )
 		{

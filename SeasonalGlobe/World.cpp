@@ -9,23 +9,23 @@
 #include "tutorialcodeheaders.h"
 
 World::World(void)
-	/*: grasstexture(0), houseTexture(0), barkTexture(0),
-	  houseModel(0),
-	  globeSphere(0),
-	  terrain(0),
-	  tree(0),
-	  sceneRotationAxis(0,1,0),
-	  _cameraPosition(-23.2f),
-	  _cameraAngle(30.0f),
-	  _cameraRotation(-357.0f),
-	   AutoRotate(false),
-	   polygonMode(GL_FILL),
-	   phongShaderID(0), globeShaderID(0), multiTextureShaderID(0),
-	   particleSystemBaseShaderID(0), leafParticleEmitterID(0),
-	   cylindricalParticleEmitterID(0), snowEmitterID(0), smokeEmitter(0),
-	   gradientMapShaderID(0), fireEmitter(0), particleTexture(0), gradientMapTexture(0),
-	   leafTexture(0), baseModel(0), scaleX(0), scaleZ(0), mtt1(0), mtt2(0),
-	   waterx(3), watery(0), waterz(0), */
+	: conf(), // Application configuration
+
+	texMan(), shaderMan(), particleSystem(), // Managers
+
+	cam(), sceneRotationAxis(0,1,0), _cameraAngle(30.0f), _cameraPosition(-23.2f), // Camera
+	_cameraRotation(-357.0f), AutoRotate(false),
+
+	terrain(0), tree(0), globeSphere(0), houseModel(0), baseModel(0), // Geometry
+	defaultBillboardModel(0), polygonMode(GL_FILL),
+
+	phongShaderID(0), particleSystemBaseShaderID(0), globeShaderID(0), directionalLightShaderID(0), // Shaders
+
+	grassTexture(0), houseTexture(0), barkTexture(0), particleTexture(0), leafTexture(0), baseTexture(0), // Textures
+
+	leafParticleEmitterID(0), snowEmitterID(0), smokeEmitterID(0), fireParticleEmitter(0), // Particle Emitters
+
+	directionalLight() // Lights
 {
 }
 
@@ -86,7 +86,9 @@ bool World::LoadTextures()
 
 	baseTexture = texMan.LoadTextureFromFile("Data/Textures/wood.jpg");
 
-	return grassTexture && barkTexture && particleTexture && leafTexture && baseTexture;
+	houseTexture = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg");
+
+	return grassTexture && barkTexture && particleTexture && leafTexture && baseTexture && houseTexture;
 };
 
 bool World::LoadShaders()
@@ -109,6 +111,17 @@ bool World::LoadShaders()
 		phongShader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
 		phongShader->PrintProgramLog(std::cout);
 		return false;
+	}
+	else
+	{
+		float3 lightPos(0, 5 , 5);
+		phongShader->Activate();
+		phongShader->SetUniform("lightPosition", lightPos);
+		phongShader->SetUniform("fAmbient", Color::BLACK);
+		phongShader->SetUniform("fDiffuse", Color::WHITE);
+		phongShader->SetUniform("baseMap", *houseTexture);
+		phongShader->SetUniform("applyTexture", true);
+		phongShader->Deactivate(); // initialise the shader uniforms
 	}
 
 	globeShaderID = shaderMan.AddShader();
@@ -208,7 +221,7 @@ bool World::LoadParticles()
 	std::vector<ParticleLine> fire_particle_lines;
 	tree->CalculateParticleLines(fire_particle_lines);
 
-	for(int i=0;i<fire_particle_lines.size();++i)
+	for(u32 i=0;i<fire_particle_lines.size();++i)
 	{
 		fireParticleEmitter->AddLine(fire_particle_lines[i]);
 	}
@@ -219,10 +232,20 @@ bool World::LoadParticles()
 bool World::LoadGeometry()
 {
 	// Load house model
-	houseModel = new OBJFile();
-	houseModel->ParseOBJFile("Data/House/Haus20.obj");
-	houseModel->BuildModelVBOs();
-	houseTexture = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg");
+	houseModel = OBJFile::ParseFile("Data/House/Haus20.obj")[0];
+	houseModel->GetModel().BuildVBO();
+	houseModel->SetShader(shaderMan.GetShader(phongShaderID));
+	houseModel->SetScale(float3(.05f,.05f,.05f));
+	houseModel->SetPosition(float3(-5.5,0,0.5));
+	houseModel->SetTexture(houseTexture);
+
+	// Load globe base
+	baseModel = OBJFile::ParseFile("Data/base2.obj")[0];
+	baseModel->GetModel().BuildVBO();
+	baseModel->SetShader(shaderMan.GetShader(phongShaderID));
+	baseModel->SetTexture(baseTexture);
+	baseModel->SetPosition(float3(0, 0.2f, 0));
+	baseModel->SetScale(float3(2.0f, 0.83f, 2.0f));
 
 	// Load globe
 	globeSphere = new Sphere();
@@ -230,11 +253,6 @@ bool World::LoadGeometry()
 	globeSphere->CreateSphere(radius, 40, 40);
 	globeSphere->SetPosition(float3(0.3f,0,0));
 	globeSphere->SetShader(shaderMan.GetShader(globeShaderID));
-
-	// Load globe base
-	baseModel = new OBJFile();
-	baseModel->ParseOBJFile("Data/base2.obj");
-	baseModel->BuildModelVBOs();
 
 	// Load terrain
 	terrain = new TerrainDisk();
@@ -274,7 +292,10 @@ bool World::Load()
 
 	cam.Init(float3(0,6,25), float3(0,6,25), float3(0,1,0));
 
-	directionalLight = DirectionalLight(float3(), Color4f(0.3f,0.3f,0.3f,1), Color4f(0.75f,0.75f,0.75f,1), Color4f(1,1,1,1));
+	Color4f directionalLightAmb(0.3f,0.3f,0.3f,1),
+		directionLightDiffuse(0.75f,0.75f,0.75f,1),
+		directionalLightSpecular(1,1,1,1);
+	directionalLight = DirectionalLight(float3(), directionalLightAmb, directionLightDiffuse, directionalLightSpecular);
 
 	LoadTextures();
 	LoadShaders();
@@ -481,9 +502,10 @@ void World::reflective_draw(const GameTime &gameTime)
 	glDisable(GL_LIGHTING);
 };
 
+/*
 void World::multi_texturing_test(const GameTime &gameTime)
 {
-	/*
+	
 	// Trying the gradient map shader
 	glEnable(GL_TEXTURE_2D);
 
@@ -509,8 +531,9 @@ void World::multi_texturing_test(const GameTime &gameTime)
 	shader->Deactivate();
 	
 	glPopMatrix();
-	*/
+	
 };
+*/
 
 void World::Update(GameTime &gameTime)
 {
@@ -555,42 +578,10 @@ void World::Draw(const GameTime &gameTime)
 	glDisable(GL_NORMALIZE);
 
 	// House
-	Shader *phongShader = shaderMan.GetShader(phongShaderID);
-	phongShader->Activate();
-	float3 lightPos(0, 5 , 5);
-	phongShader->SetUniform("lightPosition", lightPos);
-	phongShader->SetUniform("fAmbient", Color::BLACK);
-	phongShader->SetUniform("fDiffuse", Color::WHITE);
-	phongShader->SetUniform("baseMap", *houseTexture);
-	phongShader->SetUniform("applyTexture", true);
-	houseTexture->Activate();
-	glPushMatrix();
-	glTranslatef(-5.5,0,0.5);
-	glScalef(.05f,.05f,.05f);
 	houseModel->Draw();
-	glPopMatrix();
-	houseTexture->Deactivate();
-	phongShader->Deactivate();
 
 	// Base
-	phongShader->Activate();
-	lightPos = float3(0, 0 , 10);
-	phongShader->SetUniform("lightPosition", lightPos);
-	phongShader->SetUniform("fAmbient", Color::BLACK);
-	phongShader->SetUniform("fDiffuse",Color::GREY);
-	phongShader->SetUniform("baseMap", *baseTexture);
-	phongShader->SetUniform("applyTexture", true);
-	glPushMatrix();
-	baseTexture->Activate();
-	baseTexture->SetWrapS(GL_REPEAT);
-	baseTexture->SetWrapT(GL_REPEAT);
-	glScalef(2.0f,0.83f,2.0f);
-	glTranslatef(0, 0.2f, 0);
 	baseModel->Draw();
-	baseTexture->Deactivate();
-	glPopMatrix();
-	//barkTexture->Deactivate();
-	phongShader->Deactivate();
 
 	// Particle system
 	particleSystem.Draw();

@@ -1,16 +1,16 @@
 #pragma once
 
-#include "Color.h"
+#include "float4.h"
 #include "float3.h"
 
 struct DirectionalLight
 {
 public:
 	float3 position;
-	Color4f ambient, diffuse, specular;
+	float4 ambient, diffuse, specular;
 
 	DirectionalLight() { };
-	DirectionalLight(float3 &pos, Color4f &amb, Color4f &diff, Color4f &spec)
+	DirectionalLight(float3 pos, float4& amb, float4& diff, float4& spec)
 		: position(pos), ambient(amb), diffuse(diff), specular(spec) { };
 	~DirectionalLight() { };
 };

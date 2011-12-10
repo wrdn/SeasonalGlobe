@@ -10,7 +10,7 @@ private:
 
 	void Emit(Particle &p);
 
-	void UpdateParticleProperties(Particle &p, const GameTime &gameTime);
+	void UpdateParticleProperties(Particle &p/*, const GameTime &gameTime*/);
 
 public:
 	PointBasedParticleEmitter();

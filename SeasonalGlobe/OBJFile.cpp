@@ -6,56 +6,7 @@
 #include <sys/stat.h>
 using namespace std;
 
-OBJFile::OBJFile() : models(0), modelCount(0)
-{
-};
-
-OBJFile::~OBJFile()
-{
-	/*try
-	{
-		for(std::vector<Model*>::iterator i = models->begin(); i != models->end(); ++i)
-		{
-			if(*i)
-			{
-				delete *i;
-				*i = NULL;
-			}
-		}
-	}
-	catch(...) { }*/
-	//SAFE_DELETE_ARRAY(models);
-
-	if(models)
-	{
-		for(u32 i=0;i<modelCount;++i)
-			delete models[i];
-		
-		delete [] models;
-	}
-};
-
-void OBJFile::Draw()
-{
-	/*for(std::vector<Model*>::iterator i=models->begin(); i < models->end(); ++i)
-	{
-		(*i)->Draw();
-	}*/
-	for(u32 i=0;i<modelCount;++i)
-		models[i]->Draw();
-};
-
-void OBJFile::BuildModelVBOs()
-{
-	/*for(std::vector<Model*>::iterator i=models->begin();i<models->end();++i)
-	{
-		(*i)->BuildVBO();
-	}*/
-	for(u32 i=0;i<modelCount;++i)
-		models[i]->BuildVBO();
-};
-
-bool OBJFile::ParseOBJFile(const c8* filename)
+std::vector<GraphicsObject*> OBJFile::ParseFile(const c8* filename)
 {
 	if(file_exists(filename))
 	{
@@ -67,7 +18,7 @@ bool OBJFile::ParseOBJFile(const c8* filename)
 		u32 basicSz = st.st_size / 32;
 
 		std::vector<c8*> objData = read_src_to_vec(filename, false, basicSz);
-		bool ret = ParseOBJFile(objData);
+		std::vector<GraphicsObject*> k = ParseFile(objData);
 
 		for(std::vector<c8*>::iterator i = objData.begin(); i != objData.end(); ++i)
 		{
@@ -75,17 +26,19 @@ bool OBJFile::ParseOBJFile(const c8* filename)
 			*i = NULL;
 		}
 
-		return ret;
+		return k;
 	}
-	return false;
+	return std::vector<GraphicsObject*>();
 };
 
-// Revised object loader
-bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
+std::vector<GraphicsObject*> OBJFile::ParseFile(const std::vector<c8*> &objFile)
 {
-	if(!objFile.size()) { return false; }
+	std::vector<GraphicsObject*> out;
 
-	Model *activeModel = new Model();
+	if(!objFile.size()) { return out; }
+
+	GraphicsObject *activeGraphicsObject = new GraphicsObject();
+
 
 	/*****************************************************/
 	/**************** READ VERTICES **********************/
@@ -102,8 +55,8 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 	const u32 VERTEX_COUNT = pos-cp-commentCount;
 	if(!VERTEX_COUNT)
 	{
-		SAFE_DELETE(activeModel);
-		return false; // no verts
+		delete activeGraphicsObject;
+		return out;
 	}
 
 	f32* vertex_data = new f32[VERTEX_COUNT * 3];
@@ -203,8 +156,9 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 		SAFE_DELETE_ARRAY(vertex_data);
 		SAFE_DELETE_ARRAY(normal_data);
 		SAFE_DELETE_ARRAY(uv_data);
-		SAFE_DELETE(activeModel);
-		return false;
+		
+		delete activeGraphicsObject;
+		return out;
 	}
 
 	// Face reading logic dependant on what exists in the file and
@@ -262,8 +216,8 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 				}
 			} // end of index and vertex parsing loop
 		}
-		activeModel->SetVertexArray(vertexArray, vertexArrayInsertionPos);
-		activeModel->SetIndicesArray(indexArray, array_sz);
+		activeGraphicsObject->GetModel().SetVertexArray(vertexArray, vertexArrayInsertionPos);
+		activeGraphicsObject->GetModel().SetIndicesArray(indexArray, array_sz);
 	}
 #pragma endregion
 
@@ -313,8 +267,8 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 				}
 			} // end of index and vertex parsing loop
 		}
-		activeModel->SetIndicesArray(indexArray, array_sz);
-		activeModel->SetVertexArray(vertexArray, vertexArrayInsertionPos);
+		activeGraphicsObject->GetModel().SetVertexArray(vertexArray, vertexArrayInsertionPos);
+		activeGraphicsObject->GetModel().SetIndicesArray(indexArray, array_sz);
 	}
 #pragma endregion
 
@@ -328,25 +282,12 @@ bool OBJFile::ParseOBJFile(const std::vector<c8*> &objFile)
 	}
 
 	// Add the model
-	if(!models)
-	{
-		modelCount = 1;
-		models = new Model*[modelCount];
-		models[0] = activeModel;
-	}
-	else
-	{
-		Model **newModelSet =  new Model*[modelCount+1];
-		memcpy(newModelSet, models, modelCount);
-		SAFE_DELETE_ARRAY(models);
-		newModelSet[modelCount] = activeModel;
-		modelCount += 1;
-	}
+	out.push_back(activeGraphicsObject);
 
 	// Cleanup
 	SAFE_DELETE_ARRAY(vertex_data);
 	SAFE_DELETE_ARRAY(normal_data);
 	SAFE_DELETE_ARRAY(uv_data);
 
-	return true;
+	return out;
 };

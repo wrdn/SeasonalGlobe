@@ -64,7 +64,7 @@ private:
 
 	// Called in the update function. Use this function to update for example, particle colours.
 	// The velocity and forces will be applied always, so do not apply them in this function.
-	virtual void UpdateParticleProperties(Particle &p, const GameTime &gameTime)=0;
+	virtual void UpdateParticleProperties(Particle &p/*, const GameTime &gameTime*/)=0;
 
 
 protected:

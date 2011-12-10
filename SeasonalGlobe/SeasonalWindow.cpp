@@ -42,12 +42,10 @@ void SeasonalWindow::ResetPerspective()
 {
 	glViewport(0,0,windowRes[0],windowRes[1]);
 	
-	scn.GetCamera().UpdateProjection(60, (f32)windowRes[0] / (f32)windowRes[1], 0.3f, 100.0f);
-
-	/*glMatrixMode(GL_PROJECTION);
+	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(60, (double)windowRes[0] / (double)windowRes[1],0.3f,200.0);
-	glMatrixMode(GL_MODELVIEW);*/
+	glMatrixMode(GL_MODELVIEW);
 };
 
 void SeasonalWindow::SwitchFullscreen()
@@ -118,43 +116,8 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		}
 	}
 
-	//PointBasedParticleEmitter *smokeEmitter = (PointBasedParticleEmitter*)scn.GetParticleSystem().GetEmitter(scn.GetSmokeEmitterID());
-	PointBasedParticleEmitter *smokeEmitter = scn.GetParticleSystem().GetEmitter<PointBasedParticleEmitter>(scn.GetSmokeEmitterID());
-	float3 emitterOrigin = smokeEmitter->GetEmitterOrigin();
-
 	switch(tolower(key))
 	{
-	case 'y':
-		{
-			emitterOrigin.x ( emitterOrigin.x() + 0.01f);
-			smokeEmitter->SetEmitterOrigin(emitterOrigin);
-		} break;
-	case 'u':
-		{
-			emitterOrigin.x ( emitterOrigin.x() - 0.01f);
-			smokeEmitter->SetEmitterOrigin(emitterOrigin);
-		} break;
-	case 'i':
-		{
-			emitterOrigin.y ( emitterOrigin.y() + 0.01f);
-			smokeEmitter->SetEmitterOrigin(emitterOrigin);
-		} break;
-	case 'k':
-		{
-			emitterOrigin.y ( emitterOrigin.y() - 0.01f);
-			smokeEmitter->SetEmitterOrigin(emitterOrigin);
-		} break;
-	case 'h':
-		{
-			emitterOrigin.z ( emitterOrigin.z() + 0.01f);
-			smokeEmitter->SetEmitterOrigin(emitterOrigin);
-		} break;
-	case 'j':
-		{
-			emitterOrigin.z ( emitterOrigin.z() - 0.01f);
-			smokeEmitter->SetEmitterOrigin(emitterOrigin);
-		} break;
-
 	case 'a': 
 		//scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(5, 1,0,0));
 		//scn.SetCameraRotation(scn.GetCameraRotation() + 5.0f);
@@ -250,13 +213,13 @@ void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 	static i32 temp_x, temp_y;
 	if(_leftDown) {
 
-		Camera2 &cam = scn.GetCamera();
-		f32 ychange = y-temp_y;
+		/*Camera2 &cam = scn.GetCamera();
+		f32 ychange = (f32)y-(f32)temp_y;
 
 		Mat44 rotationMatrix = Mat44::BuildRotationMatrix(ychange, cam.right.x(), cam.right.y(), cam.right.z());
 		cam.dir = rotationMatrix.Mult(cam.dir.ToFloat4()).ToFloat3();
 		cam.up = rotationMatrix.Mult(cam.up.ToFloat4()).ToFloat3();
-
+		*/
 		//Mat44 m = Mat44::BuildRotationMatrix( changeInY, 0, 1, 0);
 		//cam.dir = m.Mult(cam.dir.ToFloat4()).ToFloat3();
 		//cam.up = m.Mult(cam.up.ToFloat4()).ToFloat3();
@@ -280,7 +243,7 @@ void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 	}
 	if(_rightDown) {
 
-		Camera2 &cam = scn.GetCamera();
+		//Camera2 &cam = scn.GetCamera();
 
 
 		scn.SetCameraRotation(scn.GetCameraRotation()+(x-temp_x)*0.5f);

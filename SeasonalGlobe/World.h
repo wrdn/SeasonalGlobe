@@ -18,14 +18,6 @@
 #include "Light.h"
 #include "Disk.h"
 
-class FGLCaller : public glex
-{
-public:
-	FGLCaller()
-	{
-	};
-};
-
 class World
 {
 private:
@@ -47,8 +39,7 @@ private:
 	TerrainDisk *terrain;
 	FractalTree *tree;
 	Sphere *globeSphere;
-	OBJFile *houseModel;
-	OBJFile *baseModel;
+	GraphicsObject *houseModel, *baseModel;
 	Model *defaultBillboardModel;
 	GLenum polygonMode;
 
@@ -57,7 +48,7 @@ private:
 		globeShaderID, directionalLightShaderID;
 	Shader *directionalLightShader;
 
-	// Texture IDs
+	// Textures
 	Texture *grassTexture, *houseTexture, *barkTexture, *particleTexture,
 		*leafTexture, *baseTexture;
 
@@ -80,14 +71,9 @@ private:
 	World(World const& w);
 	World& operator= (World const& other);
 
-public:
-	ParticleSystem &GetParticleSystem() { return particleSystem; };
-	const u32 GetSmokeEmitterID() const { return smokeEmitterID; };
-
 	void reflective_draw(const GameTime &gameTime);
-
 	void multi_texturing_test(const GameTime &gameTime);
-
+public:
 	const bool GetAutoRotate() const { return AutoRotate; };
 	void SetAutoRotate(const bool b) { AutoRotate = b; };
 
@@ -97,11 +83,11 @@ public:
 	{
 		polygonMode = polyMode;
 
-		((Model*)houseModel->GetModels())->SetDrawMode(polyMode);
+		houseModel->SetDrawMode(polyMode);
 		globeSphere->SetDrawMode(polyMode);
 		terrain->SetDrawMode(polyMode);
-		((Model*)baseModel->GetModels())->SetDrawMode(polyMode);
-		((Model*)tree->GetBranchModel())->SetDrawMode(polyMode);
+		baseModel->SetDrawMode(polyMode);
+		tree->SetDrawLevel(polyMode);
 	};
 	
 	const f32 GetCameraAngle() const { return _cameraAngle; };
@@ -112,7 +98,7 @@ public:
 	void SetCameraPosition(f32 v) { _cameraPosition = v; };
 	void SetCameraRotation(f32 v) { _cameraRotation = v; };
 
-	Camera2 &GetCamera() { return cam; };
+	//Camera2 &GetCamera() { return cam; };
 
 	World(void);
 	~World(void);

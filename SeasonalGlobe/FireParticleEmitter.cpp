@@ -1,7 +1,7 @@
 #include "FireParticleEmitter.h"
 
 FireParticleEmitter::FireParticleEmitter() : currentParticleAdditionIndex(0), maxParticlesPerLine(25),
-	startColor(1,0.2,0,1), endColor(1, 0.28f, 0, 0.8f)
+	startColor(1,0.2f,0,1), endColor(1, 0.28f, 0, 0.8f)
 {
 };
 
@@ -24,7 +24,7 @@ void FireParticleEmitter::Emit(Particle &p)
 		//p.pos.y( p.pos.y() + randflt(-0.1,0.1));
 		//p.pos.z( p.pos.z() + randflt(-0.1,0.1));
 
-		p.velocity = float3(0.2f, randflt(0,1), randflt(-0.3,0.3));
+		p.velocity = float3(0.2f, randflt(0,1), randflt(-0.3f,0.3f));
 		p.velocity.normalize();
 
 		p.size.setall(0.4f);
@@ -34,7 +34,7 @@ void FireParticleEmitter::Emit(Particle &p)
 	}
 };
 
-void FireParticleEmitter::UpdateParticleProperties(Particle &p, const GameTime &gameTime)
+void FireParticleEmitter::UpdateParticleProperties(Particle &p/*, const GameTime &gameTime*/)
 {
 	f32 lR = lerp(startColor.r(), endColor.r(), 1.0f / p.energy);
 	f32 lG = lerp(startColor.g(), endColor.g(), 1.0f / p.energy);
@@ -51,7 +51,7 @@ void FireParticleEmitter::AddLine(const ParticleLine &line)
 	
 	for(u32 i=currentParticleAdditionIndex; i < (currentParticleAdditionIndex + maxParticlesPerLine); ++i)
 	{
-		GetParticles()[i].pada = index;
+		GetParticles()[i].pada = (f32)index;
 	}
 	currentParticleAdditionIndex += maxParticlesPerLine;
 

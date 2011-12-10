@@ -231,6 +231,8 @@ public:
 	void SetTexture(Texture *t) { tex = t; };
 	Texture* GetTexture() const { return tex; };
 
+	void SetDrawMode(GLenum dmode) { gbranch.SetDrawMode(dmode); };
+
 	// Constants (default radius, etc)
 	static const f32 _GetDefaultBranchRadius() { return 1.0f; };
 	static const f32 _GetDefaultBranchRadiusReduction() { return 0.0f; };

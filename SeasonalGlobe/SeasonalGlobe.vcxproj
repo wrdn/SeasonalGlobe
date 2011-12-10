@@ -107,9 +107,6 @@
     <ClCompile Include="Disk.cpp" />
     <ClCompile Include="FractalTree.cpp" />
     <ClCompile Include="GameTime.cpp" />
-    <ClCompile Include="GradientParticleEmitter.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="GraphicsObject.cpp" />
     <ClCompile Include="HemiSphericalParticleEmitter.cpp" />
     <ClCompile Include="Log.cpp" />
@@ -171,9 +168,6 @@
     <ClInclude Include="ParticleEmitter.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PerfTimer.h" />
-    <ClInclude Include="GradientParticleEmitter.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="PointBasedParticleEmitter.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SeasonalWindow.h" />
