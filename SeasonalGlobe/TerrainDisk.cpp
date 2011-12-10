@@ -73,8 +73,8 @@ bool TerrainDisk::CreateTerrainDisk(const c8 * const heightmap_filename)
 				else { sourceImage.GetPixel1f(p1x, i ,sxa); };
 				if(p1x != 0) { sourceImage.GetPixel1f(p1x-1, i, sxb); }
 				else { sourceImage.GetPixel1f(p1x, i, sxb); }
-				sx = sxa - sxb;
-				if(p1x == 0 || p1x == sourceImage.Width()-1) { sx *= 2; }
+				sx = sxb - sxa;
+				//if(p1x == 0 || p1x == sourceImage.Width()-1) { sx *= 2; }
 
 				// Get top and bottom adjacent pixels
 				u32 topPixelIndex=0, bottomPixelIndex=0; f32 sy=0, sya=0,syb=0;
@@ -82,11 +82,12 @@ bool TerrainDisk::CreateTerrainDisk(const c8 * const heightmap_filename)
 				else { sourceImage.GetPixel1f(p1x, i, sya); }
 				if(i != 0) { sourceImage.GetPixel1f(p1x, i-1, syb); }
 				else { sourceImage.GetPixel1f(p1x, i, syb); }
-				sy = sya - syb;
-				if(i == 0 || i == sourceImage.Height()-1) { sy *= 2; }
+				sy = syb - sya;
+				//if(i == 0 || i == sourceImage.Height()-1) { sy *= 2; }
 
 				// Calculate normal from sx and sy values
-				float3 N(-sx * 2, 2*2, sy*2);
+				//float3 N(-2 + 4 * -sx, 2, sy);
+				float3 N(-sx, sy, 8.0f/(sourceImage.Width()-1));
 				N.normalize();
 
 				VERTEX v(vpos, N, tx);
@@ -179,6 +180,25 @@ bool TerrainDisk::CreateTerrainDisk(const c8 * const heightmap_filename)
 
 	u32 *index_data = new u32[_indices.size()];
 	memcpy(index_data, &_indices[0], sizeof(u32)*_indices.size());
+
+
+	/*
+	// Try and calculate the normals
+	for(int i=0;i<_indices.size();i+=3)
+	{
+		VERTEX &v1 = _vertices[_indices[i]];
+		VERTEX &v2 = _vertices[_indices[i+1]];
+		VERTEX &v3 = _vertices[_indices[i+2]];
+
+		const float3 v1p = v1.pos; v1p.normalize();
+		const float3 v2p = v2.pos; v2p.normalize();
+		const float3 v3p = v3.pos; v3p.normalize();
+		float3 A = v3p - v1p;
+		float3 B = v2p - v1p;
+		
+		v1.normal = v2.normal = v3.normal = N;
+	}
+	*/
 
 	this->GetModel().SetVertexArray(vertex_data, _vertices.size());
 	this->GetModel().SetIndicesArray(index_data, _indices.size());

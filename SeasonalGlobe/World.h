@@ -17,6 +17,7 @@
 #include "Camera2.h"
 #include "Light.h"
 #include "Disk.h"
+#include "TerrainLoader.h"
 
 class World
 {
@@ -57,6 +58,10 @@ private:
 	u32 snowEmitterID;
 	u32 smokeEmitterID;
 	FireParticleEmitter *fireParticleEmitter;
+
+	// Terrain stuff (tmp)
+	TerrainLoader *newTerrain;
+
 
 	// Lights
 	DirectionalLight directionalLight;

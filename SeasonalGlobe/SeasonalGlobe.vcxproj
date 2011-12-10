@@ -130,6 +130,7 @@
     <ClCompile Include="StaticParticleEmitter.cpp" />
     <ClCompile Include="strutils.cpp" />
     <ClCompile Include="TerrainDisk.cpp" />
+    <ClCompile Include="TerrainLoader.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="TimeInfo.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="StaticParticleEmitter.h" />
     <ClInclude Include="strutils.h" />
     <ClInclude Include="TerrainDisk.h" />
+    <ClInclude Include="TerrainLoader.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="TimeInfo.h" />

@@ -13,7 +13,7 @@ World::World(void)
 
 	texMan(), shaderMan(), particleSystem(), // Managers
 
-	cam(), sceneRotationAxis(0,1,0), _cameraAngle(30.0f), _cameraPosition(-23.2f), // Camera
+	cam(), sceneRotationAxis(0,1,0), _cameraAngle(30.0f), _cameraPosition(-30.0f), // Camera
 	_cameraRotation(-357.0f), AutoRotate(false),
 
 	terrain(0), tree(0), globeSphere(0), houseModel(0), baseModel(0), // Geometry
@@ -261,6 +261,9 @@ bool World::LoadGeometry()
 	terrain->SetXRotation(90);
 	terrain->SetScale(float3(5.48f,5.48f,5.48f));
 	terrain->SetShader(shaderMan.GetShader(phongShaderID));
+
+	newTerrain = new TerrainLoader();
+	newTerrain->Load("Data/Textures/ground_heightmap.bmp");
 
 	// Load tree
 	tree = new FractalTree();
@@ -556,6 +559,23 @@ void World::Draw(const GameTime &gameTime)
 	glTranslatef(0.0f, -1.0f,0.0f);
 
 	glRotatef(angle, 0, 1, 0);
+
+	shaderMan.GetShader(phongShaderID)->Activate();
+	glColor4f(1,1,1,1);
+	glDisable(GL_CULL_FACE);
+	glPushMatrix();
+	grassTexture->Activate();
+	glRotatef(90, 1,0,0);
+	glScalef(5.2,5.2,5.2);
+	glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
+	newTerrain->Draw();
+	grassTexture->Deactivate();
+	glPopMatrix();
+	shaderMan.GetShader(phongShaderID)->Deactivate();
+
+	ra += 0.25f * gameTime.GetDeltaTime();
+	glPopMatrix();
+	return;
 
 	glPushMatrix();
 	reflective_draw(gameTime);

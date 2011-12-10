@@ -17,7 +17,7 @@ void main()
 	
 	vec4 AmbResult = fAmbient * baseCol;
 	vec4 DiffResult = fDiffuse * ndotl * baseCol;
-	DiffResult.w = 1;
+	//DiffResult.w = 1;
 	gl_FragColor = AmbResult + DiffResult;
 	
 	/*}
