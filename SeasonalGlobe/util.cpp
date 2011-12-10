@@ -61,10 +61,15 @@ f32 InvSqrt(f32 x)
 unsigned long hash_djb2(const uc8 *str)
 {
 	unsigned long hash = 5381;
-	u32 c;
+	u32 c='a'; // give c a valid value so we can get into the loop
 
-	while (c = *str++)
-		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+	while(c) // rewrote this slightly to get rid of Parasoft and Visual Studio Release mode warning (assignment in conditional expression)
+	{
+		c = *str;
+		if(c==0) { break; }
+		hash = ((hash << 5) + hash) + c;
+		++str;
+	}
 
 	return hash;
 }

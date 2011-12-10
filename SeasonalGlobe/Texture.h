@@ -23,7 +23,6 @@ private:
 	u32 minFilter, magFilter, wrapS, wrapT; // automatically set on activation
 	u32 width, height;
 	OpenGLTextureSlot textureSlot; // GL_TEXTURE_0 to GL_TEXTURE_7, slots are at GL_TEXTURE_0+n
-
 public:
 	Texture(void);
 	explicit Texture(const u32 _id);

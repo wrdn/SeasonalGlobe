@@ -2,18 +2,34 @@
 
 #include "ctypes.h"
 #include "Color.h"
+#include <GXBase.h>
 
 struct Material
 {
 public:
-	Color4f ambient, diffuse, specular;
+	float4 ambient, diffuse, specular;
 	f32 shininess; // used in Phong shading
 
-	Material() : ambient(Color4f(0.3f,0.3f,0.3f,1)), diffuse(Color4f(0.75f,0.75f,0.75f,1)), specular(Color4f(0.8f,0.8f,0.8f,1)), shininess(30)
+	Material() : ambient(float4(0.5f,0.5f,0.5f,1)), diffuse(float4(1,1,1,1)), specular(float4(1,1,1,1)), shininess(30)
 	{};
-	Material(Color4f &amb, Color4f &diff, Color4f &spec, f32 _shininess)
+	Material(float4 &amb, float4 &diff, float4 &spec, f32 _shininess)
 		: ambient(amb), diffuse(diff), specular(spec), shininess(_shininess) { };
 	~Material() { };
+
+	// Set public variables to only change the object (and nothing else). Use the Set functions below to change
+	// the object and the OpenGL state
+	void SetAmbient(float4 &v) { ambient = v; glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient.GetVec()); }
+	void SetDiffuse(float4 &v) { diffuse = v; glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse.GetVec()); }
+	void SetSpecular(float4 &v) { specular = v; glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular.GetVec()); }
+	void SetShininess(float v) { shininess = v; glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess); }
+
+	void Activate()
+	{
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient.GetVec());
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse.GetVec());
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular.GetVec());
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+	};
 };
 
 /*

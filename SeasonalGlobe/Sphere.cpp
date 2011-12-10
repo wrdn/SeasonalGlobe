@@ -6,7 +6,7 @@ Sphere::Sphere() : radius(0), slices(0), stacks(0) { };
 
 Sphere::~Sphere() { };
 
-bool Sphere::CreateSphere(f32 _radius, u32 _slices, u32 _stacks)
+bool Sphere::Create(f32 _radius, u32 _slices, u32 _stacks)
 {
 	if( ( _stacks < 2 ) && ( _slices < 2 ) ) return false;
 

@@ -20,12 +20,13 @@ World::World(void)
 	defaultBillboardModel(0), polygonMode(GL_FILL),
 
 	phongShaderID(0), particleSystemBaseShaderID(0), globeShaderID(0), directionalLightShaderID(0), // Shaders
+	spotlightShaderID(0),
 
 	grassTexture(0), houseTexture(0), barkTexture(0), particleTexture(0), leafTexture(0), baseTexture(0), // Textures
 
 	leafParticleEmitterID(0), snowEmitterID(0), smokeEmitterID(0), fireParticleEmitter(0), // Particle Emitters
 
-	directionalLight() // Lights
+	directionalLight(), lightMode(Directional) // Lights
 {
 }
 
@@ -135,12 +136,32 @@ bool World::LoadShaders()
 	}
 
 	directionalLightShaderID = shaderMan.AddShader();
-	directionalLightShader = shaderMan.GetShader(directionalLightShaderID);
+	Shader* directionalLightShader = shaderMan.GetShader(directionalLightShaderID);
 	if(!directionalLightShader->LoadShader("Data/Shaders/directionalLight.frag", "Data/Shaders/directionalLight.vert"))
 	{
 		directionalLightShader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
 		directionalLightShader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
 		directionalLightShader->PrintProgramLog(std::cout);
+		return false;
+	}
+
+	spotlightShaderID = shaderMan.AddShader();
+	Shader* spotLightShader = shaderMan.GetShader(spotlightShaderID);
+	if(!spotLightShader->LoadShader("Data/Shaders/spotlight.frag", "Data/Shaders/spotlight.vert"))
+	{
+		spotLightShader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
+		spotLightShader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
+		spotLightShader->PrintProgramLog(std::cout);
+		return false;
+	}
+
+	multiTexturingSampleShaderID = shaderMan.AddShader();
+	Shader *multitex = shaderMan.GetShader(multiTexturingSampleShaderID);
+	if(!multitex->LoadShader("Data/Shaders/multitex.frag", "Data/Shaders/multitex.vert"))
+	{
+		multitex->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
+		multitex->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
+		multitex->PrintProgramLog(std::cout);
 		return false;
 	}
 
@@ -204,7 +225,7 @@ bool World::LoadParticles()
 	snowEmitter->SetAlphaMap(*particleTexture);
 	i32 maxsnowparticles=150; conf.GetInt("MaxSnowParticles", maxsnowparticles);
 	snowEmitter->SetLocalParticleMaximum(abs(maxsnowparticles));
-	snowEmitter->SetHemiSphereRadius(globeSphere->GetRadius() - (globeSphere->GetRadius() * 0.02f));
+	snowEmitter->SetHemiSphereRadius(globeSphere->GetRadius() - (globeSphere->GetRadius() * 0.075f));
 	snowEmitter->SetEmitterOrigin(float3(0,0,0));
 	snowEmitter->SetShader(psysbase);
 	snowEmitter->SetBillboardType(Spherical);
@@ -234,15 +255,15 @@ bool World::LoadGeometry()
 	// Load house model
 	houseModel = OBJFile::ParseFile("Data/House/Haus20.obj")[0];
 	houseModel->GetModel().BuildVBO();
-	houseModel->SetShader(shaderMan.GetShader(phongShaderID));
 	houseModel->SetScale(float3(.05f,.05f,.05f));
 	houseModel->SetPosition(float3(-5.5,0,0.5));
 	houseModel->SetTexture(houseTexture);
+	Material mat(float4(0.25f, 0.25f, 0.25f, 1), float4(1,0,0,1), float4(1,1,1,1), 100);
+	houseModel->SetMaterial(mat);
 
 	// Load globe base
 	baseModel = OBJFile::ParseFile("Data/base2.obj")[0];
 	baseModel->GetModel().BuildVBO();
-	baseModel->SetShader(shaderMan.GetShader(phongShaderID));
 	baseModel->SetTexture(baseTexture);
 	baseModel->SetPosition(float3(0, 0.2f, 0));
 	baseModel->SetScale(float3(2.0f, 0.83f, 2.0f));
@@ -250,9 +271,8 @@ bool World::LoadGeometry()
 	// Load globe
 	globeSphere = new Sphere();
 	f32 radius=11.3f; conf.GetFloat("GlobeRadius",radius);
-	globeSphere->CreateSphere(radius, 40, 40);
+	globeSphere->Create(radius, 40, 40);
 	globeSphere->SetPosition(float3(0.3f,0,0));
-	globeSphere->SetShader(shaderMan.GetShader(globeShaderID));
 
 	// Load terrain
 	terrain = new TerrainLoader();
@@ -261,7 +281,6 @@ bool World::LoadGeometry()
 	terrain->SetXRotation(-90);
 	terrain->SetZRotation(-90);
 	terrain->SetScale(float3(5.48f,5.48f,5.48f));
-	terrain->SetShader(shaderMan.GetShader(phongShaderID));
 
 	// Load tree
 	tree = new FractalTree();
@@ -279,6 +298,23 @@ bool World::LoadGeometry()
 	tree->SetGenerations(gen);
 	tree->BuildTree();
 
+
+	// Set the shader on each object (for lighting)
+	//Shader* directionalLightShader = shaderMan.GetShader(directionalLightShaderID);
+	Shader* directionalLightShader = shaderMan.GetShader(spotlightShaderID);
+	houseModel->SetShader(directionalLightShader);
+	baseModel->SetShader(directionalLightShader);
+	terrain->SetShader(directionalLightShader);
+
+	globeSphere->SetShader(shaderMan.GetShader(globeShaderID));
+
+	lightSphere = new Sphere();
+	lightSphere->Create(0.5,20,20);
+	lightSphere->SetTexture(barkTexture);
+
+	spotCone = new Cylinder();
+	spotCone->Create(0.1, 0.3, 0.45, 10, 10);
+
 	return true;
 };
 
@@ -294,17 +330,22 @@ bool World::Load()
 
 	cam.Init(float3(0,6,25), float3(0,6,25), float3(0,1,0));
 
-	Color4f directionalLightAmb(0.3f,0.3f,0.3f,1),
-		directionLightDiffuse(0.75f,0.75f,0.75f,1),
-		directionalLightSpecular(1,1,1,1);
-	directionalLight = DirectionalLight(float3(), directionalLightAmb, directionLightDiffuse, directionalLightSpecular);
+	float4 directionalLightAmb(1,1,1,1),
+		directionLightDiffuse(1,1,1,1),
+		directionalLightSpecular(1,1,1,1),
+		lightPosition;
+	directionalLight = Light(lightPosition,directionalLightAmb, directionLightDiffuse, directionalLightSpecular);
+
+	lightPosition = float4(0,5,0,0);
+	float4 spotDir = float4(0.2,-0.6,0,0);
+	spotlight = Light(lightPosition, spotDir, 20, directionalLightAmb,
+		float4(0,0,1,1), float4(1,1,1,1));
 
 	LoadTextures();
 	LoadShaders();
 	LoadGeometry();
 	LoadParticles();
 	
-	// NOTE: THIS IS ALL CODE FROM TUTORIALS THAT SHOULD LATER BE REMOVED
 	// Load materials
 	_material1.create(ColorT::black(), ColorT(0.9f,0.9f,0.9f,1.0f));
 	_material2.create(ColorT::black(), ColorT(0.7f,0.7f,0.7f,0.5f));
@@ -336,6 +377,7 @@ void World::Shutdown()
 	delete houseModel;
 	delete baseModel;
 	delete globeSphere;
+	delete lightSphere;
 	delete tree;
 	delete terrain; // crash
 	delete defaultBillboardModel; // crash
@@ -437,7 +479,7 @@ void DrawFloor(const float3 &floorPos, const float3 &floorScale)
 void World::reflective_draw(const GameTime &gameTime)
 {
 	float3 floorScale(0.3f, 0.3f, 0.3f);
-	float3 floorPos(3.5f, -0.35f, 3.6f);
+	float3 floorPos(3.5f, -0.45f, 3.6f);
 
 	glDisable(GL_DEPTH_TEST);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -504,30 +546,39 @@ void World::reflective_draw(const GameTime &gameTime)
 	glDisable(GL_LIGHTING);
 };
 
-/*
-void World::multi_texturing_test(const GameTime &gameTime)
+
+void World::multi_texturing_test(/*const GameTime &gameTime*/)
 {
 	
 	// Trying the gradient map shader
 	glEnable(GL_TEXTURE_2D);
 
-	Shader *shader = shaderMan.GetShader(gradientMapShaderID);
-	FGLCaller caller;
+	Shader *shader = shaderMan.GetShader(multiTexturingSampleShaderID);
+	glex g;
+	g.Load();
 
-	particleTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
+	//particleTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
 	//gradientMapTexture->SetTextureSlot(SLOT_GL_TEXTURE_1);
+	grassTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
+	houseTexture->SetTextureSlot(SLOT_GL_TEXTURE_1);
 
 	shader->Activate();
 
-	caller.glActiveTexture(GL_TEXTURE0_ARB);
-	particleTexture->Activate();
+	//g.glActiveTexture(GL_TEXTURE0_ARB);
+	//particleTexture->Activate();
 
-	caller.glActiveTexture(GL_TEXTURE1_ARB);
+	//g.glActiveTexture(GL_TEXTURE1_ARB);
 	//gradientMapTexture->Activate();
 
-	shader->SetUniform("AlphaMap", 0);
-	shader->SetUniform("GradientMap",1);
-	shader->SetUniform("Time", gameTime.GetRunningTime());
+	g.glActiveTexture(grassTexture->GetTextureSlot());
+	grassTexture->Activate();
+
+	g.glActiveTexture(houseTexture->GetTextureSlot());
+	houseTexture->Activate();
+	
+	shader->SetUniform("TextureA", *grassTexture);
+	shader->SetUniform("TextureB",*houseTexture);
+	//shader->SetUniform("Time", gameTime.GetRunningTime());
 
 	cube();
 	shader->Deactivate();
@@ -535,7 +586,6 @@ void World::multi_texturing_test(const GameTime &gameTime)
 	glPopMatrix();
 	
 };
-*/
 
 void World::Update(GameTime &gameTime)
 {
@@ -566,20 +616,33 @@ void World::Draw(const GameTime &gameTime)
 	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
 	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
 	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
-	
-	/*
-	directionalLightShader->Activate();
-	directionalLightShader->SetUniform("lightAmbient", directionalLight.ambient);
-	directionalLightShader->SetUniform("lightDiffuse", directionalLight.diffuse);
-	directionalLightShader->Deactivate();
-	*/
+
+
+	//directionalLight.Activate();
+	spotlight.Activate();
+	spotlight.SetPosition(float4(0,7.5,0,1));
+	spotlight.SetSpotLightDirection(float4(0,-1,0,1));
+	spotlight.SetSpotLightCutoffAngle(15);
+	spotlight.SetAmbient(float4(0.35,0.35,0.35,1));
+	spotlight.SetDiffuse(float4(1,0.66666,0.19607,1));
+
+	spotCone->SetPosition(spotlight.position.ToFloat3());
+	spotCone->SetTexture(baseTexture);
+	spotCone->Draw();
+
+	/*f32 radius = 13; float3 pos(0,0,0);
+	float3 newPos(pos.x()+radius*sin(ra), pos.y()+radius*cos(ra), pos.z());
+	lightSphere->SetPosition(newPos);
+	float4 lightSpherePos = lightSphere->GetPosition().ToFloat4();
+	directionalLight.SetPosition(lightSpherePos);*/
+
+	//lightSphere->Draw();
+	//ra += 0.5f * gameTime.GetDeltaTime();
 
 	// Terrain (floor)
-	//glEnable(GL_NORMALIZE);
 	glDisable(GL_CULL_FACE);
 	terrain->Draw();
 	glEnable(GL_CULL_FACE);
-	//glDisable(GL_NORMALIZE);
 
 	// House
 	houseModel->Draw();
@@ -591,12 +654,6 @@ void World::Draw(const GameTime &gameTime)
 	particleSystem.Draw();
 
 	// Globe
-	//Shader* globeShader = shaderMan.GetShader(globeShaderID);
-	//globeShader->Activate();
-	//globeShader->SetUniform("eyePos", cam.GetPosition());
-	
-	shaderMan.GetShader(phongShaderID)->Deactivate();
-
 	glEnable(GL_CLIP_PLANE0); // use clip plane to cut bottom half
 	GLdouble eq[] = { 0, 1, 0, 0 };
 	glClipPlane(GL_CLIP_PLANE0, eq);

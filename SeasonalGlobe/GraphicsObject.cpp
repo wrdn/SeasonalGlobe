@@ -18,10 +18,11 @@ void GraphicsObject::Draw()
 	if(objectShader)
 		objectShader->Activate();
 
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat.ambient.GetVec());
+	/*glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat.ambient.GetVec());
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat.diffuse.GetVec());
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat.specular.GetVec());
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, mat.shininess);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, mat.shininess);*/
+	mat.Activate(); // activate object material properties
 
 	glPushMatrix();
 

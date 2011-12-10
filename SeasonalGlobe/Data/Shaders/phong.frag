@@ -29,5 +29,5 @@ void main()
 		gl_FragColor = AmbResult + DiffResult;
 	}*/
 
-	//gl_FragColor = vec4(Normal,1);
+	gl_FragColor = vec4(Normal,1);
 };

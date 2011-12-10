@@ -18,6 +18,13 @@
 #include "Disk.h"
 #include "TerrainLoader.h"
 
+enum LightingMode
+{
+	Ambient,
+	Directional,
+	Spotlights,
+};
+
 class World
 {
 private:
@@ -45,8 +52,8 @@ private:
 
 	// Shaders
 	u32 phongShaderID, particleSystemBaseShaderID,
-		globeShaderID, directionalLightShaderID;
-	Shader *directionalLightShader;
+		globeShaderID, directionalLightShaderID,
+		multiTexturingSampleShaderID, spotlightShaderID;
 
 	// Textures
 	Texture *grassTexture, *houseTexture, *barkTexture, *particleTexture,
@@ -59,7 +66,10 @@ private:
 	FireParticleEmitter *fireParticleEmitter;
 
 	// Lights
-	DirectionalLight directionalLight;
+	Light directionalLight, spotlight;
+	LightingMode lightMode; // ACW-switch between Ambient, Directional and 4 spotlights
+	Sphere *lightSphere;
+	Cylinder *spotCone;
 
 	// Load functions
 	bool LoadTextures();
@@ -72,7 +82,7 @@ private:
 	World& operator= (World const& other);
 
 	void reflective_draw(const GameTime &gameTime);
-	void multi_texturing_test(const GameTime &gameTime);
+	void multi_texturing_test(/*const GameTime &gameTime*/);
 public:
 	const bool GetAutoRotate() const { return AutoRotate; };
 	void SetAutoRotate(const bool b) { AutoRotate = b; };
@@ -87,7 +97,7 @@ public:
 		globeSphere->SetDrawMode(polyMode);
 		terrain->SetDrawMode(polyMode);
 		baseModel->SetDrawMode(polyMode);
-		tree->SetDrawLevel(polyMode);
+		tree->SetDrawMode(polyMode);
 	};
 	
 	const f32 GetCameraAngle() const { return _cameraAngle; };

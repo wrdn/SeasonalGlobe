@@ -15,5 +15,5 @@ public:
 	const u32 GetSlices() const { return slices; };
 	const u32 GetStacks() const { return stacks; };
 
-	bool CreateSphere(f32 _radius, u32 _slices, u32 _stacks);
+	bool Create(f32 _radius, u32 _slices, u32 _stacks);
 };

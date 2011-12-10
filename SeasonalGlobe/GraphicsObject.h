@@ -40,13 +40,13 @@ public:
 	void SetShader(Shader *s) { objectShader = s; };
 	void SetTexture(Texture *t) { tex = t; };
 	void SetPosition(float3 pos) { position = pos; };
-
+	
 	void SetXRotation(f32 rot) { xrotation = rot; };
 	void SetYRotation(f32 rot) { yrotation = rot; };
 	void SetZRotation(f32 rot) { zrotation = rot; };
 
 	void SetScale(float3 sc) { scale = sc; };
-	void SetMaterial(Material &mat);
+	void SetMaterial(Material &_mat) { mat = _mat; }
 
 	void SetDrawMode(GLenum dmode) { gmodel.SetDrawMode(dmode); };
 
