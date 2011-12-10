@@ -6,7 +6,6 @@
 #include "TextureManager.h"
 #include "Sphere.h"
 #include "Cylinder.h"
-#include "TerrainDisk.h"
 #include "ShaderManager.h"
 #include "FractalTree.h"
 #include "AppConfig.h"
@@ -37,7 +36,7 @@ private:
 	bool AutoRotate;
 
 	// Geometry
-	TerrainDisk *terrain;
+	TerrainLoader *terrain;
 	FractalTree *tree;
 	Sphere *globeSphere;
 	GraphicsObject *houseModel, *baseModel;
@@ -58,10 +57,6 @@ private:
 	u32 snowEmitterID;
 	u32 smokeEmitterID;
 	FireParticleEmitter *fireParticleEmitter;
-
-	// Terrain stuff (tmp)
-	TerrainLoader *newTerrain;
-
 
 	// Lights
 	DirectionalLight directionalLight;

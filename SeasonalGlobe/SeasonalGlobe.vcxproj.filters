@@ -196,7 +196,7 @@
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="TerrainLoader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Geometry</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -342,7 +342,7 @@
       <Filter>Header Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="TerrainLoader.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Geometry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
