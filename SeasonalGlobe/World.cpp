@@ -114,10 +114,10 @@ bool World::LoadShaders()
 	}
 	else
 	{
-		float3 lightPos(0, 5 , 5);
+		float3 lightPos(0, 10 , 0);
 		phongShader->Activate();
 		phongShader->SetUniform("lightPosition", lightPos);
-		phongShader->SetUniform("fAmbient", Color::BLACK);
+		phongShader->SetUniform("fAmbient", Color::GREY);
 		phongShader->SetUniform("fDiffuse", Color::WHITE);
 		phongShader->SetUniform("baseMap", *houseTexture);
 		phongShader->SetUniform("applyTexture", true);
@@ -260,6 +260,7 @@ bool World::LoadGeometry()
 	terrain->SetTexture(grassTexture);
 	terrain->SetXRotation(90);
 	terrain->SetScale(float3(5.48f,5.48f,5.48f));
+	terrain->SetShader(shaderMan.GetShader(phongShaderID));
 
 	// Load tree
 	tree = new FractalTree();
@@ -573,9 +574,9 @@ void World::Draw(const GameTime &gameTime)
 	*/
 
 	// Terrain (floor)
-	glEnable(GL_NORMALIZE);
+	//glEnable(GL_NORMALIZE);
 	terrain->Draw();
-	glDisable(GL_NORMALIZE);
+	//glDisable(GL_NORMALIZE);
 
 	// House
 	houseModel->Draw();
@@ -591,6 +592,8 @@ void World::Draw(const GameTime &gameTime)
 	//globeShader->Activate();
 	//globeShader->SetUniform("eyePos", cam.GetPosition());
 	
+	shaderMan.GetShader(phongShaderID)->Deactivate();
+
 	glEnable(GL_CLIP_PLANE0); // use clip plane to cut bottom half
 	GLdouble eq[] = { 0, 1, 0, 0 };
 	glClipPlane(GL_CLIP_PLANE0, eq);

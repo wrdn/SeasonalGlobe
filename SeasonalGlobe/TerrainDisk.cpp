@@ -66,7 +66,30 @@ bool TerrainDisk::CreateTerrainDisk(const c8 * const heightmap_filename)
 					-2.0f + 4.0f * tx.y(),
 					(f32)rowptr[p1x * bpp]/255.0f);
 
-				VERTEX v(vpos, float3(0,1,0), tx);
+				// Normal calculation
+				// Get Left and Right adjecent pixels
+				f32 sx=0, sxa=0,sxb=0;
+				if(p1x < sourceImage.Width()-1) { sourceImage.GetPixel1f(p1x+1, i, sxa); }
+				else { sourceImage.GetPixel1f(p1x, i ,sxa); };
+				if(p1x != 0) { sourceImage.GetPixel1f(p1x-1, i, sxb); }
+				else { sourceImage.GetPixel1f(p1x, i, sxb); }
+				sx = sxa - sxb;
+				if(p1x == 0 || p1x == sourceImage.Width()-1) { sx *= 2; }
+
+				// Get top and bottom adjacent pixels
+				u32 topPixelIndex=0, bottomPixelIndex=0; f32 sy=0, sya=0,syb=0;
+				if(i < sourceImage.Height()-1) { sourceImage.GetPixel1f(p1x, i+1, sya); }
+				else { sourceImage.GetPixel1f(p1x, i, sya); }
+				if(i != 0) { sourceImage.GetPixel1f(p1x, i-1, syb); }
+				else { sourceImage.GetPixel1f(p1x, i, syb); }
+				sy = sya - syb;
+				if(i == 0 || i == sourceImage.Height()-1) { sy *= 2; }
+
+				// Calculate normal from sx and sy values
+				float3 N(-sx * 2, 2*2, sy*2);
+				N.normalize();
+
+				VERTEX v(vpos, N, tx);
 				_vertices.push_back(v);
 
 				++p1x;
