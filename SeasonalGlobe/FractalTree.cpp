@@ -4,9 +4,9 @@
 #include <iostream>
 using namespace std;
 
-FractalTree::FractalTree() : branchRadius(_GetDefaultBranchRadius()), branchRadiusReduction(_GetDefaultBranchRadiusReduction()),
-	branchLength(_GetDefaultBranchLength()), transformationMatricesArraySize(0), transformationMatrices(0),
-	leafMatrixCount(0), leafMatrices(0), currentScale(0), lastTime(0), AnimationLevel(0), drawLevel(0), loop_growth(false),
+FractalTree::FractalTree() : branchRadius(GetDefaultBranchRadius()), branchRadiusReduction(GetDefaultBranchRadiusReduction()),
+	branchLength(GetDefaultBranchLength()), transformationMatricesArraySize(0), transformationMatrices(0),
+	leafMatrixCount(0), leafMatrices(0), loop_growth(false),
 	runtime(0), buildTime(15)
 {
 	rotationAngles[0] = rotationAngles[1] = rotationAngles[2] = DefaultAngle;
@@ -45,13 +45,7 @@ void FractalTree::DeepCopy(const FractalTree *dstp) const
 	dst.levels = levels;
 	dst.treeBranchSegments = treeBranchSegments;
 	dst.transformationMatricesArraySize = transformationMatricesArraySize;
-
-	dst.currentScale = currentScale;
-	dst.lastTime = lastTime;
-	dst.AnimationLevel = AnimationLevel;
-	dst.drawLevel = drawLevel;
 	dst.loop_growth = loop_growth;
-
 	dst.leafMatrixCount = leafMatrixCount;
 	dst.runtime = runtime;
 	dst.buildTime = buildTime;
@@ -74,9 +68,9 @@ void FractalTree::Reset()
 	lsysTree.ClearProductionRules();
 	lsysTree.SetLSystemGenerations(0);
 
-	branchRadius = _GetDefaultBranchRadius();
-	branchRadiusReduction = _GetDefaultBranchRadiusReduction();
-	branchLength = _GetDefaultBranchLength();
+	branchRadius = GetDefaultBranchRadius();
+	branchRadiusReduction = GetDefaultBranchRadiusReduction();
+	branchLength = GetDefaultBranchLength();
 
 	// default angle = 25 degrees
 	rotationAngles[0] = rotationAngles[1] = rotationAngles[2] = DefaultAngle;
@@ -166,31 +160,6 @@ void FractalTree::CalculateTreeDepth()
 		// Set each matrix to the identity matrix
 		for(u32 i=0;i<transformationMatricesArraySize;++i)
 			transformationMatrices[i].Identity();
-	}
-};
-
-void FractalTree::PruneTree()
-{
-	for(std::vector<BranchDepth>::iterator it = treeBranchSegments.begin(); it != treeBranchSegments.end(); ++it)
-	{
-		for(u32 i=0;i<it->segments.size();++i)
-		{
-			u32 len = it->segments[i].end - it->segments[i].end;
-			if(len == 0)
-			{
-				it->segments.erase( it->segments.begin() + i);
-				i = max(0, i-1);
-			}
-		}
-		//// Remove segments with no branches
-		//for(std::vector<BranchSegment>::iterator seg = it->segments.begin(); seg != it->segments.end(); ++seg)
-		//{
-		//	u32 len = seg->end - seg->start;
-		//	if(len == 0)
-		//	{
-		//		it->segments.erase(seg);
-		//	}
-		//}
 	}
 };
 
@@ -352,8 +321,6 @@ void FractalTree::BuildTree()
 	glPopMatrix();
 
 	treeBranchSegments[0].segments.push_back(BranchSegment(0, MatricesCalculatedPerDepth[0]));
-
-	//PruneTree(); // THIS FUNCTION CAUSES TREE GROWTH TO BREAK, FIX OR LEAVE COMMENTED
 };
 
 void FractalTree::DrawBranch(const Mat44 &transformationMatrix, const Mat44 &scaleMatrix)
@@ -452,8 +419,7 @@ void FractalTree::CalculateParticleLines(std::vector<ParticleLine> &plines)
 	{
 		for(std::vector<BranchSegment>::const_iterator it = td->segments.begin(); it != td->segments.end(); ++it)
 		{
-			//u32 len = it->end - it->start;
-			for(u32 i=it->start;i<it->end;++i)
+			for(u32 i = it->start; i < it->end; ++i)
 			{
 				Mat44 &startMatrix = transformationMatrices[i], endMatrix;
 				glMatrixMode(GL_MODELVIEW); glPushMatrix(); glLoadIdentity();
@@ -464,29 +430,4 @@ void FractalTree::CalculateParticleLines(std::vector<ParticleLine> &plines)
 			}
 		}
 	}
-	/*	for(int i=0;i<transformationMatricesArraySize;++i)
-	{
-		Mat44 &startMatrix = transformationMatrices[i]; Mat44 endMatrix;
-		float3 startPos( startMatrix.GetMatrix()[12], startMatrix.GetMatrix()[13], startMatrix.GetMatrix()[14] ); // position of start of line (first sphere)
-
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glLoadIdentity();
-		glMultMatrixf(startMatrix.GetMatrix());
-		glTranslatef(0, branchLength, 0);
-		glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)endMatrix.GetMatrix());
-		glPopMatrix();
-
-		float3 endPos( endMatrix.GetMatrix()[12], endMatrix.GetMatrix()[13], endMatrix.GetMatrix()[14] ); // position of end of line (second sphere)
-
-		glPushMatrix();
-		glTranslatef(startPos.x(), startPos.y(), startPos.z());
-		leafModel.Draw();
-		glPopMatrix();
-
-		glPushMatrix();
-		glTranslatef(endPos.x(), endPos.y(), endPos.z());
-		leafModel.Draw();
-		glPopMatrix();
-	}*/
 };

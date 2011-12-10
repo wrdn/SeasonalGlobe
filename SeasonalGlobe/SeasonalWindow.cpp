@@ -159,16 +159,6 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 				scn.SetAutoRotate(!scn.GetAutoRotate());
 			}
 		} break;
-	case 'q':
-		{
-			if(!down)
-				scn.GetTree()->SetDrawLevel(scn.GetTree()->GetDrawLevel()-1);
-		} break;
-	case 'w':
-		{
-			if(!down)
-				scn.GetTree()->SetDrawLevel(scn.GetTree()->GetDrawLevel()+1);
-		} break;
 	case 'b':
 		{
 			if(!down)

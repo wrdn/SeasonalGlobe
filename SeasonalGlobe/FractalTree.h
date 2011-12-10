@@ -56,7 +56,6 @@ private:
 
 	static const u32 DefaultAngle = 25;
 
-	#pragma region Class Members
 	LSystem lsysTree;
 
 	// Rotation angles (on x y and z) will not change so only
@@ -67,11 +66,7 @@ private:
 	f32 branchRadius;
 	f32 branchRadiusReduction;
 	f32 branchLength;
-
-	// single cylinder to be drawn many times
-	// created once only (in BuildTree())
-	Cylinder gbranch;
-
+	
 	// This holds the index of the first matrix per level of the tree
 	// For 0 to levels.size()-1, the number of matrices in the level of
 	// the tree is K=(levels[i+1]-levels[i]). The indices for the level
@@ -92,19 +87,16 @@ private:
 	u32 leafMatrixCount;
 	Mat44 *leafMatrices;
 
-	f32 currentScale; // used to make branches grow, update by dt, range 0<=currentScale<=1
-	f32 lastTime;
-	i32 AnimationLevel; // which level of the tree are we drawing?
-	u32 drawLevel;
 	bool loop_growth;
 	
 	f32 runtime;
 	f32 buildTime;
 
+	// single cylinder to be drawn many times
+	// created once only (in BuildTree())
+	Cylinder gbranch;
 	float3 treePos;
 	Texture *tex;
-
-	#pragma endregion
 
 	// Builds each of the 6 matrices required for applying rotations
 	void BuildRotationMatrices();
@@ -113,42 +105,15 @@ private:
 	// and levels vector
 	void CalculateTreeDepth();
 
-	// used to update currentScale (0...1) and update the animation level 
-	// of the tree if neccessary
-	void CalculateAnimationLevel(const f32 dt)
-	{
-		lastTime += dt;
-		currentScale = fract(lastTime);
-		AnimationLevel = min(levels.size()-1, (u32)lastTime);
-	};
-
 	void DrawBranch(const Mat44 &transformationMatrix, const Mat44 &scaleMatrix);
 	void DrawBranch(const Mat44 &transformationMatrix);
 
 	void DeepCopy(const FractalTree *dstp) const; // copy data in "this" into "out"
-
-	void PruneTree(); // This is called at the end of BuildTree() and removes all the empty branch segments
-
 public:
-
 	void SetRuntime(f32 r) { runtime = r; };
 	void SetBuildTime(f32 b) { buildTime = b; };
 	const f32 GetRuntime() const { return runtime; };
 	const f32 GetBuildTime() const { return buildTime; };
-
-	void SetAnimationLevel(i32 v)
-	{
-		AnimationLevel = v;
-	};
-
-	const u32 GetDrawLevel() const { return drawLevel; };
-	void SetDrawLevel(const i32 dl)
-	{
-		if(dl < 0)
-			drawLevel = 0;
-		else
-			drawLevel = min(treeBranchSegments.size()-1, (u32)dl);
-	};
 
 	// Constructors / Destructors
 	FractalTree();
@@ -191,8 +156,6 @@ public:
 	void CalculateParticleLines(std::vector<ParticleLine> &plines);
 
 	#pragma region Accessors and Mutators
-	const Cylinder* GetBranchModel() { return &gbranch; };
-	
 	void SetGenerations(const u32 generations) { lsysTree.SetLSystemGenerations(generations); };
 	const u32 GetGenerations() const { return lsysTree.GetLSystemGenerations(); };
 	
@@ -225,17 +188,16 @@ public:
 	const u32 GetLeafCount() const { return leafMatrixCount; };
 	const Mat44* GetLeafMatrices() const { return leafMatrices; };
 
+	// INHERITS GRAPHICS OBJECT
 	void SetPosition(const float3& f) { treePos = f; };
 	const float3& GetPosition() const { return treePos; }
-
 	void SetTexture(Texture *t) { tex = t; };
 	Texture* GetTexture() const { return tex; };
-
 	void SetDrawMode(GLenum dmode) { gbranch.SetDrawMode(dmode); };
 
 	// Constants (default radius, etc)
-	static const f32 _GetDefaultBranchRadius() { return 1.0f; };
-	static const f32 _GetDefaultBranchRadiusReduction() { return 0.0f; };
-	static const f32 _GetDefaultBranchLength() { return 0.8f; };
+	static const f32 GetDefaultBranchRadius() { return 1.0f; };
+	static const f32 GetDefaultBranchRadiusReduction() { return 0.0f; };
+	static const f32 GetDefaultBranchLength() { return 0.8f; };
 	#pragma endregion
 };
