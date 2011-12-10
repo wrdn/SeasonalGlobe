@@ -53,7 +53,8 @@ private:
 	// Shaders
 	u32 phongShaderID, particleSystemBaseShaderID,
 		globeShaderID, directionalLightShaderID,
-		multiTexturingSampleShaderID, spotlightShaderID;
+		multiTexturingSampleShaderID, spotlightShaderID,
+		ambientLightShaderID;
 
 	// Textures
 	Texture *grassTexture, *houseTexture, *barkTexture, *particleTexture,
@@ -66,7 +67,8 @@ private:
 	FireParticleEmitter *fireParticleEmitter;
 
 	// Lights
-	Light directionalLight, spotlight;
+	Light directionalLight;
+	Light spotlights[4];
 	LightingMode lightMode; // ACW-switch between Ambient, Directional and 4 spotlights
 	Sphere *lightSphere;
 	Cylinder *spotCone;
@@ -76,6 +78,7 @@ private:
 	bool LoadShaders();
 	bool LoadParticles();
 	bool LoadGeometry();
+	void LoadLights();
 
 	// Prevent copying
 	World(World const& w);
@@ -84,6 +87,8 @@ private:
 	void reflective_draw(const GameTime &gameTime);
 	void multi_texturing_test(/*const GameTime &gameTime*/);
 public:
+	Sphere *posFinder;
+
 	const bool GetAutoRotate() const { return AutoRotate; };
 	void SetAutoRotate(const bool b) { AutoRotate = b; };
 
@@ -118,5 +123,33 @@ public:
 
 	void Update(GameTime &gameTime);
 	void Draw(const GameTime &gameTime);
+
+	LightingMode GetLightingMode() { return lightMode; }
+	void SetLightingMode(LightingMode m) // need to switch shaders when we change how the scene is lit
+	{
+		lightMode = m;
+
+		if(lightMode == Directional)
+		{
+			Shader* directionalLightShader = shaderMan.GetShader(directionalLightShaderID);
+			houseModel->SetShader(directionalLightShader);
+			baseModel->SetShader(directionalLightShader);
+			terrain->SetShader(directionalLightShader);
+		}
+		else if(lightMode == Spotlights)
+		{
+			Shader* spotShader = shaderMan.GetShader(spotlightShaderID);
+			houseModel->SetShader(spotShader);
+			baseModel->SetShader(spotShader);
+			terrain->SetShader(spotShader);
+		}
+		else if(lightMode == Ambient)
+		{
+			Shader* ambientShader = shaderMan.GetShader(ambientLightShaderID);
+			houseModel->SetShader(ambientShader);
+			baseModel->SetShader(ambientShader);
+			terrain->SetShader(ambientShader);
+		}
+	}
 };
 

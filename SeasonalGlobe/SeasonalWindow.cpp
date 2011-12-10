@@ -116,8 +116,17 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		}
 	}
 
+	float3 v = scn.posFinder->GetPosition();
 	switch(tolower(key))
 	{
+
+	case 'y': { v.z(v.z()+0.1); break; }
+	case 'h': { v.z(v.z()-0.1); break; }
+	case 'g': { v.x(v.x()-0.1); break; }
+	case 'j': { v.x(v.x()+0.1); break; }
+	case 't': { v.y(v.y()+0.1); break; }
+	case 'u': { v.y(v.y()-0.1); break; }
+
 	case 'a': 
 		//scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(5, 1,0,0));
 		//scn.SetCameraRotation(scn.GetCameraRotation() + 5.0f);
@@ -128,7 +137,7 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		//scn.SetCameraRotation(scn.GetCameraRotation() - 5.0f);
 		//scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(-5, 1,0,0));
 		break;
-	case 't':
+	case 'p':
 		{
 			if(!down)
 			{
@@ -177,8 +186,23 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 				//scn.GetTree()->runtime = 0;
 				//scn.GetTree()->SetAnimationLevel(0);
 			}
-		}
+		} break;
+	case 'l':
+		{
+			// Order: Directional - Spotlight - Ambient - Directional
+			if(!down)
+			{
+				const LightingMode lm = scn.GetLightingMode();
+				switch(lm)
+				{
+				case Directional: { scn.SetLightingMode(Spotlights); break; }
+				case Spotlights: { scn.SetLightingMode(Ambient); break; }
+				case Ambient: { scn.SetLightingMode(Directional); break; }
+				}
+			}
+		} break;
 	}
+	scn.posFinder->SetPosition(v);
 };
 
 void SeasonalWindow::OnMouseButton(MouseButton button, bool down)

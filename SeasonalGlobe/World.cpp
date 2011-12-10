@@ -20,7 +20,7 @@ World::World(void)
 	defaultBillboardModel(0), polygonMode(GL_FILL),
 
 	phongShaderID(0), particleSystemBaseShaderID(0), globeShaderID(0), directionalLightShaderID(0), // Shaders
-	spotlightShaderID(0),
+	spotlightShaderID(0), ambientLightShaderID(0),
 
 	grassTexture(0), houseTexture(0), barkTexture(0), particleTexture(0), leafTexture(0), baseTexture(0), // Textures
 
@@ -155,6 +155,16 @@ bool World::LoadShaders()
 		return false;
 	}
 
+	ambientLightShaderID = shaderMan.AddShader();
+	Shader* ambientLightShader = shaderMan.GetShader(ambientLightShaderID);
+	if(!ambientLightShader->LoadShader("Data/Shaders/ambientLight.frag", "Data/Shaders/ambientLight.vert"))
+	{
+		ambientLightShader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
+		ambientLightShader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
+		ambientLightShader->PrintProgramLog(std::cout);
+		return false;
+	}
+
 	multiTexturingSampleShaderID = shaderMan.AddShader();
 	Shader *multitex = shaderMan.GetShader(multiTexturingSampleShaderID);
 	if(!multitex->LoadShader("Data/Shaders/multitex.frag", "Data/Shaders/multitex.vert"))
@@ -252,14 +262,18 @@ bool World::LoadParticles()
 
 bool World::LoadGeometry()
 {
+	posFinder = new Sphere();
+	posFinder->Create(0.5,20,20);
+	posFinder->SetPosition(float3());
+
 	// Load house model
 	houseModel = OBJFile::ParseFile("Data/House/Haus20.obj")[0];
 	houseModel->GetModel().BuildVBO();
 	houseModel->SetScale(float3(.05f,.05f,.05f));
 	houseModel->SetPosition(float3(-5.5,0,0.5));
 	houseModel->SetTexture(houseTexture);
-	Material mat(float4(0.25f, 0.25f, 0.25f, 1), float4(1,0,0,1), float4(1,1,1,1), 100);
-	houseModel->SetMaterial(mat);
+	//Material mat(float4(0.25f, 0.25f, 0.25f, 1), float4(1,0,0,1), float4(1,1,1,1), 100);
+	//houseModel->SetMaterial(mat);
 
 	// Load globe base
 	baseModel = OBJFile::ParseFile("Data/base2.obj")[0];
@@ -301,10 +315,12 @@ bool World::LoadGeometry()
 
 	// Set the shader on each object (for lighting)
 	//Shader* directionalLightShader = shaderMan.GetShader(directionalLightShaderID);
-	Shader* directionalLightShader = shaderMan.GetShader(spotlightShaderID);
-	houseModel->SetShader(directionalLightShader);
-	baseModel->SetShader(directionalLightShader);
-	terrain->SetShader(directionalLightShader);
+	//Shader* directionalLightShader = shaderMan.GetShader(spotlightShaderID);
+	//houseModel->SetShader(directionalLightShader);
+	//baseModel->SetShader(directionalLightShader);
+	//terrain->SetShader(directionalLightShader);
+
+	SetLightingMode(Spotlights); // default to directional lights
 
 	globeSphere->SetShader(shaderMan.GetShader(globeShaderID));
 
@@ -314,33 +330,54 @@ bool World::LoadGeometry()
 
 	spotCone = new Cylinder();
 	spotCone->Create(0.1, 0.3, 0.45, 10, 10);
+	spotCone->SetTexture(baseTexture);
+	spotCone->SetPosition(spotlights[0].position.ToFloat3());
 
 	return true;
+};
+
+void World::LoadLights()
+{
+	// Directional Light
+	float4 directionalLightAmb(0.35f,0.35f,0.35f,1), directionLightDiffuse(1,0.66666f,0.19607f,1), directionalLightSpecular(1,1,1,1), lightPosition;
+	directionalLight = Light(lightPosition,directionalLightAmb, directionLightDiffuse, directionalLightSpecular);
+	directionalLight.SetLightID(GL_LIGHT0);
+
+	
+
+	// Spotlight 1
+	float4 spotDir;
+	lightPosition = float4(0,7.5f,0,1);
+	spotDir = float4(0,-1,0,1);
+	spotlights[0] = Light(lightPosition, spotDir, 10, float4(0.35f,0.35f,0.35f,1), float4(1,0.66666f,0.19607f,1), float4(1,1,1,1));
+	spotlights[0].SetLightID(GL_LIGHT0);
+
+	// Spotlight 2
+	lightPosition = float4(-5.3, 2, 9.6,1);
+	spotDir = float4(0,0,-1,1);
+	spotlights[1] = Light(lightPosition, spotDir, 10, float4(0,0,0,1), float4(1,1,1,1), float4(1,1,1,1));
+	spotlights[1].SetLightID(GL_LIGHT1);
+
+	// Spotlight 3
+	lightPosition = float4(4.4, 2, 10, 1);
+	spotDir = float4(0,0,-1,1);
+	spotlights[2] = Light(lightPosition, spotDir, 10, float4(0,0,0,1), float4(0.6,0.5,0.4,1), float4(1,1,1,1));
+	spotlights[2].SetLightID(GL_LIGHT2);
+
+	// Spotlight 4
+	lightPosition = float4(0,0.6,-11.2,1);
+	spotDir = float4(0,0,1,1);
+	spotlights[3] = Light(lightPosition, spotDir, 15, float4(0.35f,0.35f,0.35f,1), float4(1,0.66666f,0.19607f,1), float4(1,1,1,1));
+	spotlights[3].SetLightID(GL_LIGHT3);
 };
 
 bool World::Load()
 {
 	conf.ParseConfigFile("Data/ConfigFile.txt"); // load configuration file
 	
-	//cam.SetRadius(28.0f);
-	//cam.SetAzimuth(20);
-	//cam.Update();
+	//cam.Init(float3(0,6,25), float3(0,6,25), float3(0,1,0));
 
-	//cam.Init(45, 1.333f, 0.3f, 100, float3(0,1, -28), float3(0,1,1), float3(0,1,0));
-
-	cam.Init(float3(0,6,25), float3(0,6,25), float3(0,1,0));
-
-	float4 directionalLightAmb(1,1,1,1),
-		directionLightDiffuse(1,1,1,1),
-		directionalLightSpecular(1,1,1,1),
-		lightPosition;
-	directionalLight = Light(lightPosition,directionalLightAmb, directionLightDiffuse, directionalLightSpecular);
-
-	lightPosition = float4(0,5,0,0);
-	float4 spotDir = float4(0.2,-0.6,0,0);
-	spotlight = Light(lightPosition, spotDir, 20, directionalLightAmb,
-		float4(0,0,1,1), float4(1,1,1,1));
-
+	LoadLights();
 	LoadTextures();
 	LoadShaders();
 	LoadGeometry();
@@ -378,6 +415,7 @@ void World::Shutdown()
 	delete baseModel;
 	delete globeSphere;
 	delete lightSphere;
+	delete spotCone;
 	delete tree;
 	delete terrain; // crash
 	delete defaultBillboardModel; // crash
@@ -617,28 +655,43 @@ void World::Draw(const GameTime &gameTime)
 	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
 	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
 
+	posFinder->Draw();
 
-	//directionalLight.Activate();
-	spotlight.Activate();
-	spotlight.SetPosition(float4(0,7.5,0,1));
-	spotlight.SetSpotLightDirection(float4(0,-1,0,1));
-	spotlight.SetSpotLightCutoffAngle(15);
-	spotlight.SetAmbient(float4(0.35,0.35,0.35,1));
-	spotlight.SetDiffuse(float4(1,0.66666,0.19607,1));
+	if(lightMode == Spotlights)
+	{
+		spotlights[0].Activate();
+		spotCone->SetXRotation(0);
+		spotCone->SetPosition(spotlights[0].position.ToFloat3());
+		spotCone->Draw();
 
-	spotCone->SetPosition(spotlight.position.ToFloat3());
-	spotCone->SetTexture(baseTexture);
-	spotCone->Draw();
+		spotlights[1].Activate();
+		spotCone->SetXRotation(90);
+		spotCone->SetPosition(float3(-5.3, 1.7, 9.6));
+		spotCone->Draw();
 
-	/*f32 radius = 13; float3 pos(0,0,0);
-	float3 newPos(pos.x()+radius*sin(ra), pos.y()+radius*cos(ra), pos.z());
-	lightSphere->SetPosition(newPos);
-	float4 lightSpherePos = lightSphere->GetPosition().ToFloat4();
-	directionalLight.SetPosition(lightSpherePos);*/
+		spotlights[2].Activate();
+		spotCone->SetPosition(float3(4.4, 1.7, 10));
+		spotCone->Draw();
 
-	//lightSphere->Draw();
-	//ra += 0.5f * gameTime.GetDeltaTime();
-
+		spotlights[3].Activate();
+		spotCone->SetPosition(spotlights[3].position.ToFloat3());
+		spotCone->SetZRotation(180);
+		spotCone->Draw();
+		spotCone->SetZRotation(0);
+	}
+	else if(lightMode == Directional)
+	{
+		// Directional Light
+		directionalLight.Activate();
+		f32 radius = 13; float3 pos(0,0,0);
+		float3 newPos(pos.x()+radius*sin(ra), pos.y()+radius*cos(ra), pos.z());
+		lightSphere->SetPosition(newPos);
+		float4 lightSpherePos = lightSphere->GetPosition().ToFloat4();
+		directionalLight.SetPosition(lightSpherePos);
+		ra += 0.5f * gameTime.GetDeltaTime();
+	}
+	lightSphere->Draw();
+	
 	// Terrain (floor)
 	glDisable(GL_CULL_FACE);
 	terrain->Draw();

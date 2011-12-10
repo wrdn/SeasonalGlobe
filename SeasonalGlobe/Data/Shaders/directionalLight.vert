@@ -8,7 +8,8 @@ void main()
 	TextureCoordinate = gl_MultiTexCoord0.xy;
 	Normal = gl_NormalMatrix * gl_Normal;
 	
-	vec4 lightPos = gl_LightSource[0].position;
+	// 0 in w component denotes a directional light (affine)
+	vec4 lightPos = vec4(gl_LightSource[0].position.xyz,0.0);
 	
 	LightDirection = normalize(lightPos.xyz);
 }
