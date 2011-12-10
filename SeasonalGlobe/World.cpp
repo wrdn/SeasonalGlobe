@@ -262,10 +262,6 @@ bool World::LoadParticles()
 
 bool World::LoadGeometry()
 {
-	posFinder = new Sphere();
-	posFinder->Create(0.5,20,20);
-	posFinder->SetPosition(float3());
-
 	// Load house model
 	houseModel = OBJFile::ParseFile("Data/House/Haus20.obj")[0];
 	houseModel->GetModel().BuildVBO();
@@ -329,7 +325,7 @@ bool World::LoadGeometry()
 	lightSphere->SetTexture(barkTexture);
 
 	spotCone = new Cylinder();
-	spotCone->Create(0.1, 0.3, 0.45, 10, 10);
+	spotCone->Create(0.1f, 0.3f, 0.45f, 10, 10);
 	spotCone->SetTexture(baseTexture);
 	spotCone->SetPosition(spotlights[0].position.ToFloat3());
 
@@ -344,30 +340,29 @@ void World::LoadLights()
 	directionalLight.SetLightID(GL_LIGHT0);
 
 	
+	float4 spotAmb(0.35f,0.35f,0.35f,1);
+	float4 spotDiff(1,0.66666f,0.19607f,1);
+	float4 spotSpec(1,1,1,1); float4 spotDir;
 
 	// Spotlight 1
-	float4 spotDir;
-	lightPosition = float4(0,7.5f,0,1);
-	spotDir = float4(0,-1,0,1);
-	spotlights[0] = Light(lightPosition, spotDir, 10, float4(0.35f,0.35f,0.35f,1), float4(1,0.66666f,0.19607f,1), float4(1,1,1,1));
+	lightPosition = float4(0,7.5f,0,1); spotDir = float4(0,-1,0,1);
+	spotlights[0] = Light(lightPosition, spotDir, 10, spotAmb, spotDiff, spotSpec);
 	spotlights[0].SetLightID(GL_LIGHT0);
 
 	// Spotlight 2
-	lightPosition = float4(-5.3, 2, 9.6,1);
-	spotDir = float4(0,0,-1,1);
-	spotlights[1] = Light(lightPosition, spotDir, 10, float4(0,0,0,1), float4(1,1,1,1), float4(1,1,1,1));
+	lightPosition = float4(-5.3f, 2, 9.6f,1); spotDir = float4(0,0,-1,1); spotAmb = float4(0,0,0,1); spotDiff = float4(1,1,1,1);
+	spotlights[1] = Light(lightPosition, spotDir, 10, spotAmb, spotDiff, spotSpec);
 	spotlights[1].SetLightID(GL_LIGHT1);
 
 	// Spotlight 3
-	lightPosition = float4(4.4, 2, 10, 1);
-	spotDir = float4(0,0,-1,1);
-	spotlights[2] = Light(lightPosition, spotDir, 10, float4(0,0,0,1), float4(0.6,0.5,0.4,1), float4(1,1,1,1));
+	lightPosition = float4(4.4f, 2, 10, 1); spotDir = float4(0,0,-1,1); spotDiff = float4(0.6f,0.5f,0.4f,1);
+	spotlights[2] = Light(lightPosition, spotDir, 10, spotAmb, spotDiff, spotSpec);
 	spotlights[2].SetLightID(GL_LIGHT2);
 
 	// Spotlight 4
-	lightPosition = float4(0,0.6,-11.2,1);
-	spotDir = float4(0,0,1,1);
-	spotlights[3] = Light(lightPosition, spotDir, 15, float4(0.35f,0.35f,0.35f,1), float4(1,0.66666f,0.19607f,1), float4(1,1,1,1));
+	lightPosition = float4(0,0.6f,-11.2f,1); spotDir = float4(0,0,1,1); spotAmb = float4(0.35f,0.35f,0.35f,1);
+	spotDiff = float4(1,0.66666f,0.19607f,1);
+	spotlights[3] = Light(lightPosition, spotDir, 15, spotAmb, spotDiff, spotSpec);
 	spotlights[3].SetLightID(GL_LIGHT3);
 };
 
@@ -655,8 +650,6 @@ void World::Draw(const GameTime &gameTime)
 	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
 	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
 
-	posFinder->Draw();
-
 	if(lightMode == Spotlights)
 	{
 		spotlights[0].Activate();
@@ -666,11 +659,11 @@ void World::Draw(const GameTime &gameTime)
 
 		spotlights[1].Activate();
 		spotCone->SetXRotation(90);
-		spotCone->SetPosition(float3(-5.3, 1.7, 9.6));
+		spotCone->SetPosition(float3(-5.3f, 1.7f, 9.6f));
 		spotCone->Draw();
 
 		spotlights[2].Activate();
-		spotCone->SetPosition(float3(4.4, 1.7, 10));
+		spotCone->SetPosition(float3(4.4f, 1.7f, 10));
 		spotCone->Draw();
 
 		spotlights[3].Activate();
@@ -689,8 +682,8 @@ void World::Draw(const GameTime &gameTime)
 		float4 lightSpherePos = lightSphere->GetPosition().ToFloat4();
 		directionalLight.SetPosition(lightSpherePos);
 		ra += 0.5f * gameTime.GetDeltaTime();
+		lightSphere->Draw();
 	}
-	lightSphere->Draw();
 	
 	// Terrain (floor)
 	glDisable(GL_CULL_FACE);

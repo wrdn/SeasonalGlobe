@@ -116,17 +116,8 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		}
 	}
 
-	float3 v = scn.posFinder->GetPosition();
 	switch(tolower(key))
 	{
-
-	case 'y': { v.z(v.z()+0.1); break; }
-	case 'h': { v.z(v.z()-0.1); break; }
-	case 'g': { v.x(v.x()-0.1); break; }
-	case 'j': { v.x(v.x()+0.1); break; }
-	case 't': { v.y(v.y()+0.1); break; }
-	case 'u': { v.y(v.y()-0.1); break; }
-
 	case 'a': 
 		//scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(5, 1,0,0));
 		//scn.SetCameraRotation(scn.GetCameraRotation() + 5.0f);
@@ -201,8 +192,17 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 				}
 			}
 		} break;
+	case 't':
+		{
+			if(!down)
+			{
+				if(scn.GetPolygonMode() == GL_LINE)
+					scn.SetPolygonMode(GL_FILL);
+				else
+					scn.SetPolygonMode(GL_LINE);
+			}
+		} break;
 	}
-	scn.posFinder->SetPosition(v);
 };
 
 void SeasonalWindow::OnMouseButton(MouseButton button, bool down)

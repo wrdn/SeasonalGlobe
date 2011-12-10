@@ -70,6 +70,7 @@ private:
 	Light directionalLight;
 	Light spotlights[4];
 	LightingMode lightMode; // ACW-switch between Ambient, Directional and 4 spotlights
+	
 	Sphere *lightSphere;
 	Cylinder *spotCone;
 
@@ -87,8 +88,6 @@ private:
 	void reflective_draw(const GameTime &gameTime);
 	void multi_texturing_test(/*const GameTime &gameTime*/);
 public:
-	Sphere *posFinder;
-
 	const bool GetAutoRotate() const { return AutoRotate; };
 	void SetAutoRotate(const bool b) { AutoRotate = b; };
 
