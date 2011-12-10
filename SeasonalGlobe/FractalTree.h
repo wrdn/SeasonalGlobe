@@ -6,6 +6,8 @@
 #include "Mat44.h"
 #include "FireParticleEmitter.h"
 #include "Texture.h"
+#include "Material.h"
+#include "Shader.h"
 
 class FractalTree
 {
@@ -97,6 +99,8 @@ private:
 	Cylinder gbranch;
 	float3 treePos;
 	Texture *tex;
+	Material mat;
+	Shader *treeShader;
 
 	// Builds each of the 6 matrices required for applying rotations
 	void BuildRotationMatrices();
@@ -194,6 +198,12 @@ public:
 	void SetTexture(Texture *t) { tex = t; };
 	Texture* GetTexture() const { return tex; };
 	void SetDrawMode(GLenum dmode) { gbranch.SetDrawMode(dmode); };
+
+	const Material& GetTreeMaterial() const { return mat; }
+	void SetMaterial(Material &m) { mat = m; }
+
+	Shader* GetTreeShader() const { return treeShader; }
+	void SetShader(Shader *s) { treeShader = s; }
 
 	// Constants (default radius, etc)
 	static const f32 GetDefaultBranchRadius() { return 1.0f; };

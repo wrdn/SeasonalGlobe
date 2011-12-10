@@ -240,7 +240,7 @@ bool World::LoadParticles()
 	snowEmitter->SetShader(psysbase);
 	snowEmitter->SetBillboardType(Spherical);
 
-	u32 fireParticleEmitterID = particleSystem.AddEmitter<FireParticleEmitter>();
+	/*u32 fireParticleEmitterID = particleSystem.AddEmitter<FireParticleEmitter>();
 	fireParticleEmitter = particleSystem.GetEmitter<FireParticleEmitter>(fireParticleEmitterID);
 	fireParticleEmitter->SetLocalParticleMaximum(30000);
 	fireParticleEmitter->SetAlphaMap(*particleTexture);
@@ -255,7 +255,7 @@ bool World::LoadParticles()
 	for(u32 i=0;i<fire_particle_lines.size();++i)
 	{
 		fireParticleEmitter->AddLine(fire_particle_lines[i]);
-	}
+	}*/
 	
 	return true;
 };
@@ -539,11 +539,6 @@ void World::reflective_draw(const GameTime &gameTime)
 	glCullFace(GL_FRONT);
 	glEnable(GL_NORMALIZE);
 
-	_light1.setPosition(Vector4f(5.0,5.0,5.0,1.0));
-	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
-	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
-	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
-
 	tree->Draw(gameTime.GetDeltaTime());
 
 	glDisable(GL_NORMALIZE);
@@ -552,11 +547,6 @@ void World::reflective_draw(const GameTime &gameTime)
 	glPopMatrix();
 
 	glDisable(GL_STENCIL_TEST);
-
-	_light1.setPosition(Vector4f(5.0,5.0,5.0,1.0));
-	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
-	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
-	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -641,9 +631,6 @@ void World::Draw(const GameTime &gameTime)
 
 	glRotatef(angle, 0, 1, 0);
 
-	glPushMatrix();
-	reflective_draw(gameTime);
-	glPopMatrix();
 
 	_light1.setPosition(Vector4f(5.0,5.0, 10.0, 1.0));
 	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
@@ -684,7 +671,11 @@ void World::Draw(const GameTime &gameTime)
 		ra += 0.5f * gameTime.GetDeltaTime();
 		lightSphere->Draw();
 	}
-	
+
+	glPushMatrix();
+	reflective_draw(gameTime);
+	glPopMatrix();
+
 	// Terrain (floor)
 	glDisable(GL_CULL_FACE);
 	terrain->Draw();

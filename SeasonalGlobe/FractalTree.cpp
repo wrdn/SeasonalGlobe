@@ -7,7 +7,7 @@ using namespace std;
 FractalTree::FractalTree() : branchRadius(GetDefaultBranchRadius()), branchRadiusReduction(GetDefaultBranchRadiusReduction()),
 	branchLength(GetDefaultBranchLength()), transformationMatricesArraySize(0), transformationMatrices(0),
 	leafMatrixCount(0), leafMatrices(0), loop_growth(false),
-	runtime(0), buildTime(15)
+	runtime(0), buildTime(15), tex(0), treeShader(0)
 {
 	rotationAngles[0] = rotationAngles[1] = rotationAngles[2] = DefaultAngle;
 	BuildRotationMatrices();
@@ -349,8 +349,10 @@ void FractalTree::Draw(f32 dt)
 	Mat44 ma; glPushMatrix(); glLoadIdentity();
 	glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)ma.GetMatrix()); matrixStack.push(ma);
 	glPopMatrix();
-
-	tex->Activate();
+	
+	if(treeShader) { treeShader->Activate(); }
+	if(tex) { tex->Activate(); }
+	mat.Activate();
 
 	glTranslatef(treePos.x(), treePos.y(), treePos.z());
 
@@ -359,7 +361,8 @@ void FractalTree::Draw(f32 dt)
 		for(u32 i=0; i < levels[levels.size()-1]; ++i) { DrawBranch(transformationMatrices[i]); }
 		glPopMatrix();
 
-		tex->Deactivate();
+		if(treeShader) { treeShader->Deactivate(); }
+		if(tex) { tex->Deactivate(); }
 		return;
 	}
 
@@ -371,7 +374,8 @@ void FractalTree::Draw(f32 dt)
 		for(u32 i=0; i < levels[levels.size()-1]; ++i) { DrawBranch(transformationMatrices[i]); }
 		glPopMatrix();
 
-		tex->Deactivate();
+		if(treeShader) { treeShader->Deactivate(); }
+		if(tex) { tex->Deactivate(); }
 		return;
 	}
 
@@ -409,7 +413,8 @@ void FractalTree::Draw(f32 dt)
 	}
 
 	glPopMatrix();
-	tex->Deactivate();
+	if(treeShader) { treeShader->Deactivate(); }
+	if(tex) { tex->Deactivate(); }
 	return;
 };
 

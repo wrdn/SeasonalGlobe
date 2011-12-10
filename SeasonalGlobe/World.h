@@ -134,6 +134,7 @@ public:
 			houseModel->SetShader(directionalLightShader);
 			baseModel->SetShader(directionalLightShader);
 			terrain->SetShader(directionalLightShader);
+			tree->SetShader(directionalLightShader);
 		}
 		else if(lightMode == Spotlights)
 		{
@@ -141,6 +142,7 @@ public:
 			houseModel->SetShader(spotShader);
 			baseModel->SetShader(spotShader);
 			terrain->SetShader(spotShader);
+			tree->SetShader(spotShader);
 		}
 		else if(lightMode == Ambient)
 		{
@@ -148,6 +150,7 @@ public:
 			houseModel->SetShader(ambientShader);
 			baseModel->SetShader(ambientShader);
 			terrain->SetShader(ambientShader);
+			tree->SetShader(ambientShader);
 		}
 	}
 };
