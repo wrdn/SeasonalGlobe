@@ -2,8 +2,9 @@
 
 
 GraphicsObject::GraphicsObject(void)
-	: position(), scale(1), mat(), xrotation(0), yrotation(0), zrotation(0), tex(0), objectShader(0)
+	: position(), scale(1), mat(), xrotation(0), yrotation(0), zrotation(0), textureA(0), textureB(0), objectShader(0)
 {
+	ogl.Load();
 }
 
 
@@ -13,10 +14,18 @@ GraphicsObject::~GraphicsObject(void)
 
 void GraphicsObject::Draw()
 {
-	if(tex)
-		tex->Activate();
-	if(objectShader)
-		objectShader->Activate();
+	if(objectShader) { objectShader->Activate(); }
+
+	if(textureA)
+	{
+		ogl.glActiveTexture(textureA->GetTextureSlot());
+		textureA->Activate();
+	}
+	if(textureB)
+	{
+		ogl.glActiveTexture(textureB->GetTextureSlot());
+		textureB->Activate();
+	}
 
 	mat.Activate(); // activate object material properties
 
@@ -34,10 +43,10 @@ void GraphicsObject::Draw()
 
 	glPopMatrix();
 
-	if(objectShader)
-		objectShader->Deactivate();
-	if(tex)
-		tex->Deactivate();
+	ogl.glActiveTexture(GL_TEXTURE0);
+	if(objectShader) { objectShader->Deactivate(); }
+	if(textureA){ textureA->Deactivate(); }
+	if(textureB){ textureB->Deactivate(); }
 };
 
 void GraphicsObject::DrawSimple()

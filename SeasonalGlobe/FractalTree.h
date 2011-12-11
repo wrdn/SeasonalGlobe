@@ -9,6 +9,14 @@
 #include "Material.h"
 #include "Shader.h"
 
+enum TreeShadingMode
+{
+	NonTexturedNonLitWireframe,
+	FlatNonTextured,
+	SmoothNonTextured,
+	SmoothTextured,
+};
+
 class FractalTree
 {
 private:
@@ -101,6 +109,8 @@ private:
 	Texture *tex;
 	Material mat;
 	Shader *treeShader;
+
+	TreeShadingMode treeShadeMode;
 
 	// Builds each of the 6 matrices required for applying rotations
 	void BuildRotationMatrices();
@@ -204,6 +214,17 @@ public:
 
 	Shader* GetTreeShader() const { return treeShader; }
 	void SetShader(Shader *s) { treeShader = s; }
+
+	TreeShadingMode GetTreeShadeMode()
+	{
+		return treeShadeMode;
+	};
+	void SetTreeShadeMode(Shader *s, Texture *t, TreeShadingMode m)
+	{
+		treeShader = s;
+		tex = t;
+		treeShadeMode = m;
+	};
 
 	// Constants (default radius, etc)
 	static const f32 GetDefaultBranchRadius() { return 1.0f; };

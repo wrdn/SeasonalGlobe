@@ -20,9 +20,10 @@ World::World(void)
 	defaultBillboardModel(0), polygonMode(GL_FILL),
 
 	phongShaderID(0), particleSystemBaseShaderID(0), globeShaderID(0), directionalLightShaderID(0), // Shaders
-	spotlightShaderID(0), ambientLightShaderID(0),
+	spotlightShaderID(0), ambientLightShaderID(0), displacementMapShaderID(0), treeShaders(),
 
 	grassTexture(0), houseTexture(0), barkTexture(0), particleTexture(0), leafTexture(0), baseTexture(0), // Textures
+	displacementTexture(0),
 
 	leafParticleEmitterID(0), snowEmitterID(0), smokeEmitterID(0), fireParticleEmitter(0), // Particle Emitters
 
@@ -89,32 +90,34 @@ bool World::LoadTextures()
 
 	houseTexture = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg");
 
-	return grassTexture && barkTexture && particleTexture && leafTexture && baseTexture && houseTexture;
+	displacementTexture = texMan.LoadTextureFromFile("Data/Textures/TerrainDisplacementMap.bmp");
+	displacementTexture->SetTextureSlot(SLOT_GL_TEXTURE_1);
+
+	return grassTexture && barkTexture && particleTexture && leafTexture && baseTexture && houseTexture && displacementTexture;
+};
+
+bool World::LoadShader(u32 &id, const c8* fragmentShaderFilename, const c8* vertexShaderFilename)
+{
+	id = shaderMan.AddShader(); 
+	Shader *sh = shaderMan.GetShader(id);
+	if(!sh->LoadShader(fragmentShaderFilename, vertexShaderFilename))
+	{
+		std::cout << vertexShaderFilename << " , " << fragmentShaderFilename << std::endl;
+		sh->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
+		sh->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
+		sh->PrintProgramLog(std::cout);
+		return false;
+	}
+	return true;
 };
 
 bool World::LoadShaders()
 {
-	particleSystemBaseShaderID = shaderMan.AddShader();
-	Shader *psysbase = shaderMan.GetShader(particleSystemBaseShaderID);
-	if(!psysbase->LoadShader("Data/Shaders/particlesystembase.frag", "Data/Shaders/particlesystembase.vert"))
+	LoadShader(particleSystemBaseShaderID, "Data/Shaders/particlesystembase.frag", "Data/Shaders/particlesystembase.vert");
+	
+	if(LoadShader(phongShaderID, "Data/Shaders/phong.frag", "Data/Shaders/phong.vert"))
 	{
-		psysbase->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
-		psysbase->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
-		psysbase->PrintProgramLog(std::cout);
-		return false;
-	}
-
-	phongShaderID = shaderMan.AddShader();
-	Shader* phongShader = shaderMan.GetShader(phongShaderID);
-	if(!phongShader->LoadShader("Data/Shaders/phong.frag", "Data/Shaders/phong.vert"))
-	{
-		phongShader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
-		phongShader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
-		phongShader->PrintProgramLog(std::cout);
-		return false;
-	}
-	else
-	{
+		Shader* phongShader = shaderMan.GetShader(phongShaderID);
 		float3 lightPos(0, 10 , 0);
 		phongShader->Activate();
 		phongShader->SetUniform("lightPosition", lightPos);
@@ -124,56 +127,31 @@ bool World::LoadShaders()
 		phongShader->SetUniform("applyTexture", true);
 		phongShader->Deactivate(); // initialise the shader uniforms
 	}
+	
+	LoadShader(globeShaderID, "Data/Shaders/globe.frag", "Data/Shaders/globe.vert");
 
-	globeShaderID = shaderMan.AddShader();
-	Shader* globeShader = shaderMan.GetShader(globeShaderID);
-	if(!globeShader->LoadShader("Data/Shaders/globe.frag", "Data/Shaders/globe.vert"))
-	{
-		globeShader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
-		globeShader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
-		globeShader->PrintProgramLog(std::cout);
-		return false;
-	}
+	LoadShader(directionalLightShaderID, "Data/Shaders/directionalLight.frag", "Data/Shaders/directionalLight.vert");
 
-	directionalLightShaderID = shaderMan.AddShader();
-	Shader* directionalLightShader = shaderMan.GetShader(directionalLightShaderID);
-	if(!directionalLightShader->LoadShader("Data/Shaders/directionalLight.frag", "Data/Shaders/directionalLight.vert"))
-	{
-		directionalLightShader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
-		directionalLightShader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
-		directionalLightShader->PrintProgramLog(std::cout);
-		return false;
-	}
+	LoadShader(spotlightShaderID, "Data/Shaders/spotlight.frag", "Data/Shaders/spotlight.vert");
 
-	spotlightShaderID = shaderMan.AddShader();
-	Shader* spotLightShader = shaderMan.GetShader(spotlightShaderID);
-	if(!spotLightShader->LoadShader("Data/Shaders/spotlight.frag", "Data/Shaders/spotlight.vert"))
-	{
-		spotLightShader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
-		spotLightShader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
-		spotLightShader->PrintProgramLog(std::cout);
-		return false;
-	}
+	LoadShader(ambientLightShaderID, "Data/Shaders/ambientLight.frag", "Data/Shaders/ambientLight.vert");
 
-	ambientLightShaderID = shaderMan.AddShader();
-	Shader* ambientLightShader = shaderMan.GetShader(ambientLightShaderID);
-	if(!ambientLightShader->LoadShader("Data/Shaders/ambientLight.frag", "Data/Shaders/ambientLight.vert"))
-	{
-		ambientLightShader->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
-		ambientLightShader->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
-		ambientLightShader->PrintProgramLog(std::cout);
-		return false;
-	}
+	LoadShader(displacementMapShaderID, "Data/Shaders/displacement.frag", "Data/Shaders/displacement.vert");
 
-	multiTexturingSampleShaderID = shaderMan.AddShader();
-	Shader *multitex = shaderMan.GetShader(multiTexturingSampleShaderID);
-	if(!multitex->LoadShader("Data/Shaders/multitex.frag", "Data/Shaders/multitex.vert"))
-	{
-		multitex->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
-		multitex->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
-		multitex->PrintProgramLog(std::cout);
-		return false;
-	}
+	LoadShader(multiTexturingSampleShaderID, "Data/Shaders/multitex.frag", "Data/Shaders/multitex.vert");
+	
+	// Load all the tree shaders
+	LoadShader(treeShaders.Tree_Ambient_ShaderID, "Data/Shaders/TreeShaders/ambientLight.frag", "Data/Shaders/TreeShaders/ambientLight.vert");
+
+	LoadShader(treeShaders.FlatNonTextured_Directional_ShaderID,
+		"Data/Shaders/TreeShaders/FlatShading/directionalLight.frag", "Data/Shaders/TreeShaders/FlatShading/directionalLight.vert");
+	LoadShader(treeShaders.FlatNonTextured_Spot_ShaderID,
+		"Data/Shaders/TreeShaders/FlatShading/spotlight.frag", "Data/Shaders/TreeShaders/FlatShading/spotlight.vert");
+	
+	LoadShader(treeShaders.SmoothShaded_Directional_ShaderID,
+		"Data/Shaders/TreeShaders/SmoothShading/directionalLight.frag", "Data/Shaders/TreeShaders/SmoothShading/directionalLight.vert");
+	LoadShader(treeShaders.SmoothShaded_Spot_ShaderID,
+		"Data/Shaders/TreeShaders/SmoothShading/spotlight.frag", "Data/Shaders/TreeShaders/SmoothShading/spotlight.vert");
 
 	return true;
 };
@@ -267,14 +245,14 @@ bool World::LoadGeometry()
 	houseModel->GetModel().BuildVBO();
 	houseModel->SetScale(float3(.05f,.05f,.05f));
 	houseModel->SetPosition(float3(-5.5,0,0.5));
-	houseModel->SetTexture(houseTexture);
+	houseModel->SetTextureA(houseTexture);
 	//Material mat(float4(0.25f, 0.25f, 0.25f, 1), float4(1,0,0,1), float4(1,1,1,1), 100);
 	//houseModel->SetMaterial(mat);
 
 	// Load globe base
 	baseModel = OBJFile::ParseFile("Data/base2.obj")[0];
 	baseModel->GetModel().BuildVBO();
-	baseModel->SetTexture(baseTexture);
+	baseModel->SetTextureA(baseTexture);
 	baseModel->SetPosition(float3(0, 0.2f, 0));
 	baseModel->SetScale(float3(2.0f, 0.83f, 2.0f));
 
@@ -287,7 +265,8 @@ bool World::LoadGeometry()
 	// Load terrain
 	terrain = new TerrainLoader();
 	terrain->Load("Data/Textures/ground_heightmap.bmp");
-	terrain->SetTexture(grassTexture);
+	terrain->SetTextureA(grassTexture);
+	terrain->SetTextureB(displacementTexture);
 	terrain->SetXRotation(-90);
 	terrain->SetZRotation(-90);
 	terrain->SetScale(float3(5.48f,5.48f,5.48f));
@@ -318,16 +297,20 @@ bool World::LoadGeometry()
 
 	SetLightingMode(Spotlights); // default to directional lights
 
+	terrain->SetShader(shaderMan.GetShader(displacementMapShaderID));
+
 	globeSphere->SetShader(shaderMan.GetShader(globeShaderID));
 
 	lightSphere = new Sphere();
 	lightSphere->Create(0.5,20,20);
-	lightSphere->SetTexture(barkTexture);
+	lightSphere->SetTextureA(barkTexture);
 
 	spotCone = new Cylinder();
 	spotCone->Create(0.1f, 0.3f, 0.45f, 10, 10);
-	spotCone->SetTexture(baseTexture);
+	spotCone->SetTextureA(baseTexture);
 	spotCone->SetPosition(spotlights[0].position.ToFloat3());
+
+	SetTreeShadeMode(NonTexturedNonLitWireframe);
 
 	return true;
 };
@@ -538,6 +521,7 @@ void World::reflective_draw(const GameTime &gameTime)
 	glCullFace(GL_FRONT);
 	glEnable(GL_NORMALIZE);
 
+	glDisable(GL_LIGHTING);
 	tree->Draw(gameTime.GetDeltaTime());
 
 	glDisable(GL_NORMALIZE);
@@ -565,9 +549,8 @@ void World::reflective_draw(const GameTime &gameTime)
 	glFrontFace(GL_CCW);
 	glDisable(GL_BLEND);
 
-	tree->Draw(gameTime.GetDeltaTime());
-
 	glDisable(GL_LIGHTING);
+	tree->Draw(gameTime.GetDeltaTime());
 };
 
 
@@ -677,8 +660,20 @@ void World::Draw(const GameTime &gameTime)
 	glPopMatrix();
 
 	// Terrain (floor)
-	glDisable(GL_CULL_FACE);
+	//float terrainShift = 2.0f;
+	float terrainShift = 1.45;
+	glDisable(GL_CULL_FACE); 
+	terrain->SetPosition(float3(0, terrain->GetPosition().y()-terrainShift,0));
+	terrain->GetShader()->Activate();
+	terrain->GetShader()->SetUniform("colorMap", 0);
+	terrain->GetShader()->SetUniform("displacementMap", 1);
+	//terrain->GetShader()->SetUniform("vposmult", 0.65f);
+	terrain->GetShader()->Deactivate();
+	terrain->SetXRotation(-90);
+	terrain->SetYRotation(0);
+	terrain->SetZRotation(-90);
 	terrain->Draw();
+	terrain->SetPosition(float3(0, terrain->GetPosition().y()+terrainShift,0));
 	glEnable(GL_CULL_FACE);
 
 	// House

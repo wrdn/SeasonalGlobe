@@ -16,8 +16,9 @@ private:
 	f32 xrotation, yrotation, zrotation;
 
 	// these should be pointers to data managed by the shader/texture manager
-	Texture *tex;
+	Texture *textureA, *textureB;
 	Shader *objectShader;
+	glex ogl;
 
 public:
 	GraphicsObject(void);
@@ -31,14 +32,16 @@ public:
 	
 	float3& GetScale() { return scale; }
 	Material& GetMaterial() { return mat; }
-	Texture* GetTexture() { return tex; }
+	Texture* GetTextureA() { return textureA; }
+	Texture* GetTextureB() { return textureB; }
 	Shader* GetShader() { return objectShader; }
 
 	Model& GetModel() { return gmodel; };
 
 	void SetModel(Model &m);
 	void SetShader(Shader *s) { objectShader = s; };
-	void SetTexture(Texture *t) { tex = t; };
+	void SetTextureA(Texture *t) { textureA = t; };
+	void SetTextureB(Texture *t) { textureB = t; };
 	void SetPosition(float3 pos) { position = pos; };
 	
 	void SetXRotation(f32 rot) { xrotation = rot; };

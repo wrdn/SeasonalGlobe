@@ -25,6 +25,26 @@ enum LightingMode
 	Spotlights,
 };
 
+struct TreeShaders // collects all the shaders for the tree (directional and spot lights)
+{
+public:
+	u32 FlatNonTextured_Directional_ShaderID,
+		FlatNonTextured_Spot_ShaderID,
+
+		// Can use the same ambient shader for smooth and flat as normal not considered
+		// Use the global ambient shader
+		Tree_Ambient_ShaderID;
+
+	// use a bool in the shader to determine if textures used or not
+	u32 SmoothShaded_Directional_ShaderID,
+		SmoothShaded_Spot_ShaderID;
+
+	TreeShaders() : FlatNonTextured_Directional_ShaderID(0), FlatNonTextured_Spot_ShaderID(0),
+		Tree_Ambient_ShaderID(0), SmoothShaded_Directional_ShaderID(0), SmoothShaded_Spot_ShaderID(0)
+	{};
+	~TreeShaders() { };
+};
+
 class World
 {
 private:
@@ -54,11 +74,12 @@ private:
 	u32 phongShaderID, particleSystemBaseShaderID,
 		globeShaderID, directionalLightShaderID,
 		multiTexturingSampleShaderID, spotlightShaderID,
-		ambientLightShaderID;
+		ambientLightShaderID, displacementMapShaderID;
+	TreeShaders treeShaders;
 
 	// Textures
 	Texture *grassTexture, *houseTexture, *barkTexture, *particleTexture,
-		*leafTexture, *baseTexture;
+		*leafTexture, *baseTexture, *displacementTexture;
 
 	// Particle emitters
 	u32 leafParticleEmitterID;
@@ -76,6 +97,8 @@ private:
 
 	// Load functions
 	bool LoadTextures();
+
+	bool LoadShader(u32 &id, const c8* fragmentShaderFilename, const c8* vertexShaderFilename);
 	bool LoadShaders();
 	bool LoadParticles();
 	bool LoadGeometry();
@@ -152,6 +175,98 @@ public:
 			terrain->SetShader(ambientShader);
 			tree->SetShader(ambientShader);
 		}
-	}
-};
 
+		SetTreeShadeMode(tree->GetTreeShadeMode());
+	}
+
+	// Controls what is selected as the next mode for shading the tree
+	TreeShadingMode GetNextTreeShadeMode()
+	{
+		switch(tree->GetTreeShadeMode())
+		{
+		case NonTexturedNonLitWireframe:
+			return FlatNonTextured;
+		case FlatNonTextured:
+			return SmoothNonTextured;
+		case SmoothNonTextured:
+			return SmoothTextured;
+		case SmoothTextured:
+			return NonTexturedNonLitWireframe;
+		}
+	};
+
+	// Used to move between all the tree shade modes
+	void SetTreeShadeMode(TreeShadingMode m)
+	{
+		// Non Textured non lit wireframe
+		if(m == NonTexturedNonLitWireframe)
+		{
+			tree->SetDrawMode(GL_LINE);
+			tree->SetTreeShadeMode(0, 0, NonTexturedNonLitWireframe);
+		}
+
+		// Flat non textured
+		else if(m == FlatNonTextured)
+		{
+			tree->SetDrawMode(GL_FILL);
+			if(lightMode == Ambient)
+			{
+				Shader *ambShader = shaderMan.GetShader(treeShaders.Tree_Ambient_ShaderID);
+				ambShader->Activate(); ambShader->SetUniform("useTextures", false); ambShader->Deactivate();
+				tree->SetTreeShadeMode(ambShader,0, FlatNonTextured);
+			}
+			else if(lightMode == Directional)
+				tree->SetTreeShadeMode(shaderMan.GetShader(treeShaders.FlatNonTextured_Directional_ShaderID),0, FlatNonTextured);
+			else if(lightMode == Spotlights)
+				tree->SetTreeShadeMode(shaderMan.GetShader(treeShaders.FlatNonTextured_Spot_ShaderID),0, FlatNonTextured);
+		}
+
+		// Smooth non textured
+		else if(m == SmoothNonTextured)
+		{
+			tree->SetDrawMode(GL_FILL);
+			if(lightMode == Ambient)
+			{
+				Shader *ambShader = shaderMan.GetShader(treeShaders.Tree_Ambient_ShaderID);
+				ambShader->Activate(); ambShader->SetUniform("useTextures", false); ambShader->Deactivate();
+				tree->SetTreeShadeMode(ambShader,0, SmoothNonTextured);
+			}
+			else if(lightMode == Directional)
+			{
+				Shader *directionalShader = shaderMan.GetShader(treeShaders.SmoothShaded_Directional_ShaderID);
+				directionalShader->Activate(); directionalShader->SetUniform("useTextures", false); directionalShader->Deactivate();
+				tree->SetTreeShadeMode(directionalShader,0, SmoothNonTextured);
+			}
+			else if(lightMode == Spotlights)
+			{
+				Shader *spotShader = shaderMan.GetShader(treeShaders.SmoothShaded_Spot_ShaderID);
+				spotShader->Activate(); spotShader->SetUniform("useTextures", false); spotShader->Deactivate();
+				tree->SetTreeShadeMode(spotShader,0, SmoothNonTextured);
+			}
+		}
+
+		// Smooth textured
+		else if(m == SmoothTextured)
+		{
+			tree->SetDrawMode(GL_FILL);
+			if(lightMode == Ambient)
+			{
+				Shader *ambShader = shaderMan.GetShader(treeShaders.Tree_Ambient_ShaderID);
+				ambShader->Activate(); ambShader->SetUniform("useTextures", true); ambShader->Deactivate();
+				tree->SetTreeShadeMode(ambShader,barkTexture, SmoothTextured);
+			}
+			else if(lightMode == Directional)
+			{
+				Shader *directionalShader = shaderMan.GetShader(treeShaders.SmoothShaded_Directional_ShaderID);
+				directionalShader->Activate(); directionalShader->SetUniform("useTextures", true); directionalShader->Deactivate();
+				tree->SetTreeShadeMode(directionalShader,barkTexture, SmoothTextured);
+			}
+			else if(lightMode == Spotlights)
+			{
+				Shader *spotShader = shaderMan.GetShader(treeShaders.SmoothShaded_Spot_ShaderID);
+				spotShader->Activate(); spotShader->SetUniform("useTextures", true); spotShader->Deactivate();
+				tree->SetTreeShadeMode(spotShader,barkTexture, SmoothTextured);
+			}
+		}
+	};
+};

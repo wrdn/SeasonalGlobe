@@ -192,6 +192,12 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 					scn.SetPolygonMode(GL_LINE);
 			}
 		} break;
+
+	case 'm':
+		{
+			if(!down)
+				scn.SetTreeShadeMode(scn.GetNextTreeShadeMode());
+		} break;
 	}
 };
 
