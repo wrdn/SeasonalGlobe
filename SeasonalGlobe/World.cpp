@@ -387,8 +387,8 @@ bool World::Load()
 	_light2.create(1, ColorT::black(), ColorT(0.5f,0.5f,0.5f,1.0f)); 
 	_light3.create(2, ColorT::black(), ColorT(0.5f,0.5f,0.0f,1.0f));
 	_light4.create(3, ColorT::black(), ColorT(0.5f,0.5f,0.5f,1.0f)); 
-	_light5.create(4, ColorT::black(), ColorT(0.5f,0.5f,0.5f,1.0f)); 
-
+	_light5.create(4, ColorT::black(), ColorT(0.5f,0.5f,0.5f,1.0f));
+	
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ColorT::black().rgba());
 
 	_light3.setPosition(Vector4f(0.0,5.0,-3.0,1.0));
@@ -526,7 +526,6 @@ void World::reflective_draw(const GameTime &gameTime)
 	DrawFloor(floorPos, floorScale);
 	glPopMatrix();
 
-	glEnable(GL_LIGHTING);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glEnable(GL_DEPTH_TEST);
 
@@ -548,6 +547,8 @@ void World::reflective_draw(const GameTime &gameTime)
 
 	glDisable(GL_STENCIL_TEST);
 
+	glEnable(GL_LIGHTING);
+	
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	_material2.apply();
@@ -631,11 +632,10 @@ void World::Draw(const GameTime &gameTime)
 
 	glRotatef(angle, 0, 1, 0);
 
-
-	_light1.setPosition(Vector4f(5.0,5.0, 10.0, 1.0));
-	_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
-	_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
-	_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
+	//_light1.setPosition(Vector4f(5.0,5.0, 10.0, 1.0));
+	//_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
+	//_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
+	//_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
 
 	if(lightMode == Spotlights)
 	{
