@@ -218,7 +218,7 @@ bool World::LoadParticles()
 	snowEmitter->SetShader(psysbase);
 	snowEmitter->SetBillboardType(Spherical);
 
-	/*u32 fireParticleEmitterID = particleSystem.AddEmitter<FireParticleEmitter>();
+	u32 fireParticleEmitterID = particleSystem.AddEmitter<FireParticleEmitter>();
 	fireParticleEmitter = particleSystem.GetEmitter<FireParticleEmitter>(fireParticleEmitterID);
 	fireParticleEmitter->SetLocalParticleMaximum(30000);
 	fireParticleEmitter->SetAlphaMap(*particleTexture);
@@ -226,6 +226,8 @@ bool World::LoadParticles()
 	fireParticleEmitter->SetBillboardType(Spherical);
 	fireParticleEmitter->SetEmitterOrigin(tree->GetPosition());
 	fireParticleEmitter->SetRateOfEmission(1000);
+	
+	fireParticleEmitter->tree = tree;
 
 	std::vector<ParticleLine> fire_particle_lines;
 	tree->CalculateParticleLines(fire_particle_lines);
@@ -233,7 +235,7 @@ bool World::LoadParticles()
 	for(u32 i=0;i<fire_particle_lines.size();++i)
 	{
 		fireParticleEmitter->AddLine(fire_particle_lines[i]);
-	}*/
+	}
 	
 	return true;
 };
@@ -286,7 +288,7 @@ bool World::LoadGeometry()
 	i32 gen = 8; conf.GetInt("LSystemGenerations", gen);
 	tree->SetGenerations(gen);
 	tree->BuildTree();
-
+	tree->SetBuildTime(0);
 
 	// Set the shader on each object (for lighting)
 	//Shader* directionalLightShader = shaderMan.GetShader(directionalLightShaderID);
@@ -310,7 +312,7 @@ bool World::LoadGeometry()
 	spotCone->SetTextureA(baseTexture);
 	spotCone->SetPosition(spotlights[0].position.ToFloat3());
 
-	SetTreeShadeMode(NonTexturedNonLitWireframe);
+	SetTreeShadeMode(SmoothTextured);
 
 	return true;
 };
@@ -620,6 +622,8 @@ void World::Draw(const GameTime &gameTime)
 	//_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
 	//_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
 
+	fireParticleEmitter->Update(gameTime);
+
 	if(lightMode == Spotlights)
 	{
 		spotlights[0].Activate();
@@ -661,7 +665,7 @@ void World::Draw(const GameTime &gameTime)
 
 	// Terrain (floor)
 	//float terrainShift = 2.0f;
-	float terrainShift = 1.45;
+	float terrainShift = 1.45f;
 	glDisable(GL_CULL_FACE); 
 	terrain->SetPosition(float3(0, terrain->GetPosition().y()-terrainShift,0));
 	terrain->GetShader()->Activate();

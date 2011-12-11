@@ -193,6 +193,8 @@ public:
 		case SmoothTextured:
 			return NonTexturedNonLitWireframe;
 		}
+
+		return SmoothTextured;
 	};
 
 	// Used to move between all the tree shade modes

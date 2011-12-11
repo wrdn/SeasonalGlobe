@@ -60,10 +60,6 @@ bool Model::BuildVBO()
 	glBindBuffer(GL_ARRAY_BUFFER, mvbo.modeldata_vboid);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(VERTEX) * vertexArraySize, vertexArray, GL_STATIC_DRAW);
 
-	//glVertexPointer(3, GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX::POS_BUFFER_OFFSET));
-	//glNormalPointer(GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX::NORMAL_BUFFER_OFFSET));
-	//glTexCoordPointer(2, GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX::UV_BUFFER_OFFSET));
-
 	glGenBuffers(1, &mvbo.indices_vboid);
 	if(!mvbo.indices_vboid)
 	{ 

@@ -25,12 +25,13 @@ public:
 struct VERTEX
 {
 public:
-	//f32 pos[3]; // 12
-	//f32 norm[3]; // 12
-	//f32 uvs[2]; // 8
+	float3 pos, normal; // 12,12
+	float2 uvs; // 8
+	
+	// 12,12, used for normal mapping. Binormal = Tangent X Normal
+	float3 tangent, binormal;
 
-	float3 pos, normal;
-	float2 uvs;
+	f32 pada, padb; // 8 bytes padding to 64 bytes. use padding for whatever you want
 
 	// NOTE: Remember to change these if you change the size/order of this structure
 	// Values are in bytes and are used during VBO creation

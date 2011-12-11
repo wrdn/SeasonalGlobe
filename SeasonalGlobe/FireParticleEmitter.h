@@ -3,6 +3,7 @@
 #include "ParticleEmitter.h"
 #include <vector>
 
+class FractalTree;
 class ParticleLine // line particles will be generated along
 {
 private:
@@ -12,11 +13,20 @@ private:
 	// may be useful if we want to fade by depth
 	u32 lineDepth;
 
+	u32 segmentIndex; // which segment is this line in
+	u32 depthOfLineInSegment; // how far into the segment is this line
+
 public:
 	ParticleLine() : startPos(), endPos(), direction() { };
 	ParticleLine(const float3 &start, const float3 &end) : startPos(start), endPos(end),
 		direction(endPos-startPos) { };
 	~ParticleLine() { };
+
+	void SetSegmentIndex(const u32 index) { segmentIndex = index; }
+	const u32 GetSegmentIndex() const { return segmentIndex; }
+
+	void SetDepthOfLineInSegment(const u32 d) { depthOfLineInSegment = d; }
+	const u32 GetDepthOfLineInSegment() const { return depthOfLineInSegment; }
 
 	void SetLineDepth(u32 d) { lineDepth = d; };
 	void SetStartPosition(const float3 &start)
@@ -35,6 +45,13 @@ public:
 	const float3& GetDirection() const { return direction; };
 };
 
+enum BurningState
+{
+	Igniting,
+	Burning,
+	Dieing,
+};
+
 class FireParticleEmitter : public ParticleEmitter
 {
 private:
@@ -46,9 +63,13 @@ private:
 
 	void Emit(Particle &p);
 	void UpdateParticleProperties(Particle &p/*, const GameTime &gameTime*/);
+
 public:
+	
 	FireParticleEmitter();
 	~FireParticleEmitter();
+
+	void Update(const GameTime &gameTime);
 
 	// Adds the particle line to the list of lines
 	// Note: lines should be added in depth order (list is not automatically sorted)
@@ -61,6 +82,13 @@ public:
 	void SetEndColor(const Color4f &endcol) { endColor = endcol; };
 	const Color4f& GetStartColor() const { return startColor; };
 	const Color4f& GetEndColor() const { return endColor; };
+	
+	f32 ignitionTime;
+	f32 runtime;
+	BurningState burnState;
+	u32 burnLevel;
+	FractalTree *tree;
+	f32 K;
 };
 
 /*

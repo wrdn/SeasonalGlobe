@@ -8,10 +8,13 @@ void GameTime::Update()
 {
 	f32 temp_time = (f32)gxbase::App::GetTime();
 	deltaTime = temp_time - currentTime;
-	FrameRate = 1.0f / deltaTime;
+	if(deltaTime >= 1) deltaTime=0;
+
+	//FrameRate = 1.0f / deltaTime;
 	currentTime = temp_time;
 
 	runningTime += deltaTime;
+
 
 	/*currentTime = (f32)gxbase::App::GetTime();
 	deltaTime = currentTime - oldTime;
@@ -19,4 +22,4 @@ void GameTime::Update()
 	oldTime = currentTime;*/
 };
 
-void GameTime::Init() { currentTime = (f32)gxbase::App::GetTime(); oldTime = currentTime; runningTime = 0; };
+void GameTime::Init() { currentTime = (f32)gxbase::App::GetTime(); oldTime = currentTime; runningTime = 0; deltaTime=0; };

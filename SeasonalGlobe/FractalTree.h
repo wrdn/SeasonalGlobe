@@ -4,10 +4,10 @@
 #include "Cylinder.h"
 #include "Sphere.h"
 #include "Mat44.h"
-#include "FireParticleEmitter.h"
 #include "Texture.h"
 #include "Material.h"
 #include "Shader.h"
+#include "FireParticleEmitter.h"
 
 enum TreeShadingMode
 {
@@ -15,6 +15,31 @@ enum TreeShadingMode
 	FlatNonTextured,
 	SmoothNonTextured,
 	SmoothTextured,
+};
+
+// BranchSegment and BranchDepth hold information about where each set of matrices (for branches)
+// starts and ends. A branch segment starts at "[" and ends at the corresponding "]". Note however
+// a level of the tree (BranchDepth) can contain multiple segments.
+// These structures are required so we can grow the tree properly
+struct BranchSegment
+{
+	u32 start; // first matrix in the segment
+	u32 end; // last matrix in the segment
+
+	BranchSegment() : start(0), end(0) { };
+	BranchSegment(u32 _start, u32 _end) : start(_start), end(_end) { };
+
+	~BranchSegment() { };
+};
+struct BranchDepth
+{
+	u32 depth;
+	std::vector<BranchSegment> segments;
+
+	BranchDepth() : depth(0) { };
+	explicit BranchDepth(u32 _depth) : depth(_depth) { };
+
+	~BranchDepth() { };
 };
 
 class FractalTree
@@ -39,31 +64,6 @@ private:
 		DownY = 3, LeftZ = 4, RightZ = 5,
 	};
 	
-	// BranchSegment and BranchDepth hold information about where each set of matrices (for branches)
-	// starts and ends. A branch segment starts at "[" and ends at the corresponding "]". Note however
-	// a level of the tree (BranchDepth) can contain multiple segments.
-	// These structures are required so we can grow the tree properly
-	struct BranchSegment
-	{
-		u32 start; // first matrix in the segment
-		u32 end; // last matrix in the segment
-
-		BranchSegment() : start(0), end(0) { };
-		BranchSegment(u32 _start, u32 _end) : start(_start), end(_end) { };
-
-		~BranchSegment() { };
-	};
-	struct BranchDepth
-	{
-		u32 depth;
-		std::vector<BranchSegment> segments;
-
-		BranchDepth() : depth(0) { };
-		explicit BranchDepth(u32 _depth) : depth(_depth) { };
-
-		~BranchDepth() { };
-	};
-
 	static const u32 DefaultAngle = 25;
 
 	LSystem lsysTree;
@@ -168,6 +168,10 @@ public:
 
 	// Adds lines for each branch segment in depth order
 	void CalculateParticleLines(std::vector<ParticleLine> &plines);
+
+	const u32 GetDepth() const { return treeBranchSegments.size(); }
+
+	const std::vector<BranchDepth>& GetBranchSegments() { return treeBranchSegments; }
 
 	#pragma region Accessors and Mutators
 	void SetGenerations(const u32 generations) { lsysTree.SetLSystemGenerations(generations); };

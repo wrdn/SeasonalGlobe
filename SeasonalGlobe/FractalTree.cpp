@@ -420,18 +420,26 @@ void FractalTree::Draw(f32 dt)
 
 void FractalTree::CalculateParticleLines(std::vector<ParticleLine> &plines)
 {
-	for(std::vector<BranchDepth>::const_iterator td = treeBranchSegments.begin(); td != treeBranchSegments.end(); ++td)
+	u32 depthIndex=0;
+	for(std::vector<BranchDepth>::const_iterator td = treeBranchSegments.begin(); td != treeBranchSegments.end(); ++td, ++depthIndex) // depth
 	{
-		for(std::vector<BranchSegment>::const_iterator it = td->segments.begin(); it != td->segments.end(); ++it)
+		u32 segmentIndex=0;
+		for(std::vector<BranchSegment>::const_iterator it = td->segments.begin(); it != td->segments.end(); ++it, ++segmentIndex) // segment
 		{
-			for(u32 i = it->start; i < it->end; ++i)
+			for(u32 i = it->start; i < it->end; ++i) // line
 			{
 				Mat44 &startMatrix = transformationMatrices[i], endMatrix;
 				glMatrixMode(GL_MODELVIEW); glPushMatrix(); glLoadIdentity();
 				glMultMatrixf(startMatrix.GetMatrix()); glTranslatef(0, branchLength, 0);
 				glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)endMatrix.GetMatrix()); glPopMatrix();
 
-				plines.push_back(ParticleLine(startMatrix.GetTranslationFromMatrix(), endMatrix.GetTranslationFromMatrix()));
+				ParticleLine p(startMatrix.GetTranslationFromMatrix(), endMatrix.GetTranslationFromMatrix());
+				
+				p.SetLineDepth(depthIndex);
+				p.SetSegmentIndex(segmentIndex);
+				p.SetDepthOfLineInSegment(i-it->start); // range 0 to n
+
+				plines.push_back(p);
 			}
 		}
 	}
