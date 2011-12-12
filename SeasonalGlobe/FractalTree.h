@@ -124,6 +124,9 @@ private:
 
 	void DeepCopy(const FractalTree *dstp) const; // copy data in "this" into "out"
 public:
+
+	f32 alpha;
+
 	void SetRuntime(f32 r) { runtime = r; };
 	void SetBuildTime(f32 b) { buildTime = b; };
 	const f32 GetRuntime() const { return runtime; };

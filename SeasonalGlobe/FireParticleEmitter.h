@@ -60,6 +60,7 @@ private:
 	u32 maxParticlesPerLine; // 20-40 is a reasonable number
 
 	Color4f startColor, endColor;
+	f32 fade;
 
 	void Emit(Particle &p);
 	void UpdateParticleProperties(Particle &p/*, const GameTime &gameTime*/);

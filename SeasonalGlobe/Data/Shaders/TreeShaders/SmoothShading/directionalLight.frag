@@ -24,4 +24,5 @@ void main()
 	else { texCol = vec4(1,1,1,1); }
 	
 	gl_FragColor = (lightAmbient * ka * texCol) + (lightDiffuse * kd * NdotL * texCol);
+	gl_FragColor.a = kd.a;
 }

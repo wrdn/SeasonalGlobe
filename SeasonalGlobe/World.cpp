@@ -660,8 +660,12 @@ void World::Draw(const GameTime &gameTime)
 	}
 
 	glPushMatrix();
-	reflective_draw(gameTime);
+	tree->Draw(gameTime.GetDeltaTime());
 	glPopMatrix();
+
+	/*glPushMatrix();
+	reflective_draw(gameTime);
+	glPopMatrix();*/
 
 	// Terrain (floor)
 	//float terrainShift = 2.0f;

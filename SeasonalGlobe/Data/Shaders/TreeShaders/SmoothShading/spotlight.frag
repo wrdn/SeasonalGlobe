@@ -43,4 +43,5 @@ void main()
 		ApplySpotLight(1, textureColor, N,1) +
 		ApplySpotLight(2, textureColor, N,1) +
 		ApplySpotLight(3, textureColor, N, 0.25);
+	gl_FragColor.a = gl_FrontMaterial.diffuse.a;
 }
