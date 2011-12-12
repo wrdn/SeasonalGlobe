@@ -67,38 +67,33 @@ public:
 
 	float4 negate() const;
 	float4 absolute() const;
+
+	inline const float4& operator+=(const float4 &rhs) { *this = add(rhs); return *this; }
+	inline const float4& operator-=(const float4 &rhs) { *this = sub(rhs); return *this; }
+	inline const float4& operator*=(const float4 &rhs) { *this = mul(rhs); return *this; }
+	inline const float4& operator/=(const float4 &rhs) { *this = div(rhs); return *this; }
+	inline const float4& operator^=(const float4 &rhs) { *this = cross(rhs); return *this; }
 };
 
 // Auxiliary Functions (operator overloads)
-float4 operator-(float4 &v);
+inline float4 operator-(float4 &v) { return v.negate(); }
 
-float4 operator+(const float4 &a, const float4 &b);
-float4 operator-(const float4 &a, const float4 &b);
-float4 operator*(const float4 &a, const float4 &b);
-float4 operator/(const float4 &a, const float4 &b);
+inline float4 operator+(const float4 &a, const float4 &b) { return float4(a)+=b; }
+inline float4 operator-(const float4 &a, const float4 &b) { return float4(a)-=b; }
+inline float4 operator*(const float4 &a, const float4 &b) { return float4(a)*=b; }
+inline float4 operator/(const float4 &a, const float4 &b) { return float4(a)/=b; }
 
-float4 operator+(const float4 &a, const f32 b);
-float4 operator-(const float4 &a, const f32 b);
-float4 operator*(const float4 &a, const f32 b);
-float4 operator/(const float4 &a, const f32 b);
+inline float4 operator+(const float4 &a, const f32 b) { return float4(a)+=float4(b); }
+inline float4 operator-(const float4 &a, const f32 b) { return float4(a)-=float4(b); }
+inline float4 operator*(const float4 &a, const f32 b) { return float4(a)*=float4(b); }
+inline float4 operator/(const float4 &a, const f32 b) { return float4(a)/=float4(b); }
 
-float4 operator+(const f32 a, const float4 &b);
-float4 operator-(const f32 a, const float4 &b);
-float4 operator*(const f32 a, const float4 &b);
-float4 operator/(const f32 a, const float4 &b);
+inline float4 operator+(const f32 a, const float4 &b) { return float4(a)+=b; }
+inline float4 operator-(const f32 a, const float4 &b) { return float4(a)-=b; }
+inline float4 operator*(const f32 a, const float4 &b) { return float4(a)*=b; }
+inline float4 operator/(const f32 a, const float4 &b) { return float4(a)/=b; }
 
-void operator+=(float4 &a, const float4 &b);
-void operator-=(float4 &a, const float4 &b);
-void operator*=(float4 &a, const float4 &b);
-void operator/=(float4 &a, const float4 &b);
-
-void operator+=(float4 &a, const f32 &b);
-void operator-=(float4 &a, const f32 &b);
-void operator*=(float4 &a, const f32 &b);
-void operator/=(float4 &a, const f32 &b);
-
-float4 operator^(const float4 &a, const float4 &b);
-void operator^=(float4 &a, const float4 &b);
+inline float4 operator^(const float4 &a, const float4 &b) { return float4(a)^=b; }
 
 std::ostream& operator<<(std::ostream &out, const float4 &m);
 

@@ -12,18 +12,18 @@ public:
 
 	Material() : ambient(float4(0.5f,0.5f,0.5f,1)), diffuse(float4(1,1,1,1)), specular(float4(1,1,1,1)), shininess(30)
 	{};
-	Material(float4 &amb, float4 &diff, float4 &spec, f32 _shininess)
+	Material(const float4 &amb, const float4 &diff, const float4 &spec, const f32 _shininess)
 		: ambient(amb), diffuse(diff), specular(spec), shininess(_shininess) { };
 	~Material() { };
 
 	// Set public variables to only change the object (and nothing else). Use the Set functions below to change
 	// the object and the OpenGL state
-	void SetAmbient(float4 &v) { ambient = v; glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient.GetVec()); }
-	void SetDiffuse(float4 &v) { diffuse = v; glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse.GetVec()); }
-	void SetSpecular(float4 &v) { specular = v; glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular.GetVec()); }
-	void SetShininess(float v) { shininess = v; glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess); }
+	void SetAmbient(const float4 &v) { ambient = v; glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient.GetVec()); }
+	void SetDiffuse(const float4 &v) { diffuse = v; glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse.GetVec()); }
+	void SetSpecular(const float4 &v) { specular = v; glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular.GetVec()); }
+	void SetShininess(const f32 v) { shininess = v; glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess); }
 
-	void Activate()
+	void Activate() const
 	{
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient.GetVec());
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse.GetVec());

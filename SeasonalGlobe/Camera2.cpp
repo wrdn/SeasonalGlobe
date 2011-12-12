@@ -2,7 +2,7 @@
 #include "float4.h"
 #include <GXBase.h>
 
-Camera2::Camera2() : nearPlane(0.3f), farPlane(100)
+Camera2::Camera2() : nearPlane(0.3f), farPlane(100), fov(45)
 {
 };
 

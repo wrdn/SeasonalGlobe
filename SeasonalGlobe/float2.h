@@ -63,34 +63,30 @@ public:
 	f32 dot(const float2 &v) const;
 
 	float2 negate() const;
+
+	// New operators (implementing + etc in terms of +=)
+	inline const float2& operator+=(const float2 &rhs) { *this = add(rhs); return *this; }
+	inline const float2& operator-=(const float2 &rhs) { *this = sub(rhs); return *this; }
+	inline const float2& operator*=(const float2 &rhs) { *this = mul(rhs); return *this; }
+	inline const float2& operator/=(const float2 &rhs) { *this = div(rhs); return *this; }
 };
 
 // Auxiliary Functions (operator overloads)
-float2 operator-(float2 &v);
+inline float2 operator-(float2 &v) { return v.negate(); }
 
-float2 operator+(const float2 &a, const float2 &b);
-float2 operator-(const float2 &a, const float2 &b);
-float2 operator*(const float2 &a, const float2 &b);
-float2 operator/(const float2 &a, const float2 &b);
+inline float2 operator+(const float2 &a, const float2 &b) { return float2(a)+=b; }
+inline float2 operator-(const float2 &a, const float2 &b) { return float2(a)-=b; };
+inline float2 operator*(const float2 &a, const float2 &b) { return float2(a)*=b; };
+inline float2 operator/(const float2 &a, const float2 &b) { return float2(a)/=b; };
 
-float2 operator+(const float2 &a, const f32 b);
-float2 operator-(const float2 &a, const f32 b);
-float2 operator*(const float2 &a, const f32 b);
-float2 operator/(const float2 &a, const f32 b);
+inline float2 operator+(const float2 &a, const f32 b) { return float2(a)+=float2(b); };
+inline float2 operator-(const float2 &a, const f32 b) { return float2(a)-=float2(b); };
+inline float2 operator*(const float2 &a, const f32 b) { return float2(a)*=float2(b); };
+inline float2 operator/(const float2 &a, const f32 b) { return float2(a)/=float2(b); };
 
-float2 operator+(const f32 a, const float2 &b);
-float2 operator-(const f32 a, const float2 &b);
-float2 operator*(const f32 a, const float2 &b);
-float2 operator/(const f32 a, const float2 &b);
-
-void operator+=(float2 &a, const float2 &b);
-void operator-=(float2 &a, const float2 &b);
-void operator*=(float2 &a, const float2 &b);
-void operator/=(float2 &a, const float2 &b);
-
-void operator+=(float2 &a, const f32 &b);
-void operator-=(float2 &a, const f32 &b);
-void operator*=(float2 &a, const f32 &b);
-void operator/=(float2 &a, const f32 &b);
+inline float2 operator+(const f32 a, const float2 &b) { return float2(a)+=b; };
+inline float2 operator-(const f32 a, const float2 &b) { return float2(a)+=b; };
+inline float2 operator*(const f32 a, const float2 &b) { return float2(a)+=b; };
+inline float2 operator/(const f32 a, const float2 &b) { return float2(a)+=b; };
 
 std::ostream& operator<<(std::ostream &out, float2 &m);

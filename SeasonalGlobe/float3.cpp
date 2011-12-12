@@ -157,36 +157,6 @@ float3 float3::absolute() const
 	return float3(fabs(vec[0]), fabs(vec[1]), fabs(vec[2]));
 };
 
-float3 operator-(const float3 &v) { return v.negate(); };
-
-float3 operator+(const float3 &a, const float3 &b) { return a.add(b); };
-float3 operator-(const float3 &a, const float3 &b) { return a.sub(b); };
-float3 operator*(const float3 &a, const float3 &b) { return a.mul(b); };
-float3 operator/(const float3 &a, const float3 &b) { return a.div(b); };
-
-float3 operator+(const float3 &a, const f32 b) { return a.add(b); };
-float3 operator-(const float3 &a, const f32 b) { return a.sub(b); };
-float3 operator*(const float3 &a, const f32 b) { return a.mul(b); };
-float3 operator/(const float3 &a, const f32 b) { return a.div(b); };
-
-float3 operator+(const f32 a, const float3 &b) { return b.add(a); };
-float3 operator-(const f32 a, const float3 &b) { return b.sub(a); };
-float3 operator*(const f32 a, const float3 &b) { return b.mul(a); };
-float3 operator/(const f32 a, const float3 &b) { return b.div(a); };
-
-void operator+=(float3 &a, const float3 &b) { a = a.add(b); };
-void operator-=(float3 &a, const float3 &b) { a = a.sub(b); };
-void operator*=(float3 &a, const float3 &b) { a = a.mul(b); };
-void operator/=(float3 &a, const float3 &b) { a = a.div(b); };
-
-void operator+=(float3 &a, const f32 &b) { a = a.add(b); };
-void operator-=(float3 &a, const f32 &b) { a = a.sub(b); };
-void operator*=(float3 &a, const f32 &b) { a = a.mul(b); };
-void operator/=(float3 &a, const f32 &b) { a = a.div(b); };
-
-float3 operator^(const float3 &a, const float3 &b) { return a.cross(b); };
-void operator^=(float3 &a, const float3 &b) { a = a.cross(b); };
-
 std::ostream& operator<<(std::ostream &out, const float3 &m)
 {
 	f32 * vec = m.GetVec();

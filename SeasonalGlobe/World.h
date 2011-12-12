@@ -69,6 +69,8 @@ private:
 	GraphicsObject *houseModel, *baseModel;
 	Model *defaultBillboardModel;
 	GLenum polygonMode;
+	Sphere *lightSphere;
+	Cylinder *spotCone;
 
 	// Shaders
 	u32 phongShaderID, particleSystemBaseShaderID,
@@ -92,9 +94,6 @@ private:
 	Light spotlights[4];
 	LightingMode lightMode; // ACW-switch between Ambient, Directional and 4 spotlights
 	
-	Sphere *lightSphere;
-	Cylinder *spotCone;
-
 	// Load functions
 	bool LoadTextures();
 
@@ -143,7 +142,7 @@ public:
 	bool Load();
 	void Shutdown();
 
-	void Update(GameTime &gameTime);
+	void Update(const GameTime &gameTime);
 	void Draw(const GameTime &gameTime);
 
 	LightingMode GetLightingMode() { return lightMode; }

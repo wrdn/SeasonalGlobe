@@ -22,7 +22,7 @@ public:
 		Assign(x, y, z, w);
 	}
 
-	Vector4f(GLfloat xyzw[]) {
+	explicit Vector4f(GLfloat xyzw[]) {
 		Assign(xyzw[0], xyzw[1], xyzw[2], xyzw[3]);
 	}
 
@@ -59,7 +59,7 @@ public:
 		Assign(r, g, b, a);
 	}
 
-	ColorT(GLfloat rgba[]) {
+	explicit ColorT(GLfloat rgba[]) {
 		Assign(rgba[0], rgba[1], rgba[2], rgba[3]);
 	}
 

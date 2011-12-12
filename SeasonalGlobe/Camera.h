@@ -93,8 +93,8 @@ public:
 	};
 
 	
-	void Init(f32 _fov, f32 _aspect, f32 _near, f32 _far,
-		float3 _pos, float3 _dir, float3 _up)
+	void Init(const f32 _fov, const f32 _aspect, const f32 _near, const f32 _far,
+		const float3 &_pos, const float3 &_dir, const float3 &_up)
 	{
 		fov = _fov;
 		aspect = _aspect;
@@ -108,7 +108,7 @@ public:
 		Init();
 	};
 
-	void Init()
+	void Init() const
 	{
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -118,7 +118,7 @@ public:
 		Update();
 	};
 
-	void Translate(float3 v)
+	void Translate(const float3 &v)
 	{
 		position += v;
 		Update();

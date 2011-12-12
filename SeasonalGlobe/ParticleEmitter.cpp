@@ -191,7 +191,7 @@ const std::vector<float3>& ParticleEmitter::GetForces() const { return forceVect
 void ParticleEmitter::SetShader(const Shader *shader) { emitterShader = (Shader*)shader; };
 const Shader* ParticleEmitter::GetShader() const { return emitterShader; };
 
-void ParticleEmitter::SetAlphaMap(const Texture t)
+void ParticleEmitter::SetAlphaMap(const Texture &t)
 {
 	alphaMap = t;
 	alphaMap.SetTextureSlot(SLOT_GL_TEXTURE_0);

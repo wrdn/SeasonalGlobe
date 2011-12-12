@@ -23,6 +23,10 @@ private:
 	};
 
 public:
+
+	SphericalCamera() : radius(0), azimuth(0), theta(0) { };
+	~SphericalCamera() { };
+
 	const f32 GetRadius() const { return radius; };
 	const f32 GetAzimuth() const { return azimuth; };
 	const f32 GetTheta() const { return theta; };

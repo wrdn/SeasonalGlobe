@@ -7,7 +7,7 @@ using namespace std;
 FractalTree::FractalTree() : branchRadius(GetDefaultBranchRadius()), branchRadiusReduction(GetDefaultBranchRadiusReduction()),
 	branchLength(GetDefaultBranchLength()), transformationMatricesArraySize(0), transformationMatrices(0),
 	leafMatrixCount(0), leafMatrices(0), loop_growth(false),
-	runtime(0), buildTime(15), tex(0), treeShader(0), alpha(0)
+	runtime(0), buildTime(15), tex(0), treeShader(0), treeShadeMode(SmoothTextured), alpha(0)
 {
 	rotationAngles[0] = rotationAngles[1] = rotationAngles[2] = DefaultAngle;
 	BuildRotationMatrices();
@@ -49,6 +49,10 @@ void FractalTree::DeepCopy(const FractalTree *dstp) const
 	dst.leafMatrixCount = leafMatrixCount;
 	dst.runtime = runtime;
 	dst.buildTime = buildTime;
+	dst.tex = tex;
+	dst.treeShadeMode = treeShadeMode;
+	dst.alpha = alpha;
+	dst.treeShader = treeShader;
 };
 
 FractalTree::~FractalTree()
@@ -440,12 +444,12 @@ void FractalTree::CalculateParticleLines(std::vector<ParticleLine> &plines)
 		{
 			for(u32 i = it->start; i < it->end; ++i) // line
 			{
-				Mat44 &startMatrix = transformationMatrices[i], endMatrix;
+				Mat44 *startMatrix = &transformationMatrices[i], endMatrix;
 				glMatrixMode(GL_MODELVIEW); glPushMatrix(); glLoadIdentity();
-				glMultMatrixf(startMatrix.GetMatrix()); glTranslatef(0, branchLength, 0);
+				glMultMatrixf(startMatrix->GetMatrix()); glTranslatef(0, branchLength, 0);
 				glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)endMatrix.GetMatrix()); glPopMatrix();
 
-				ParticleLine p(startMatrix.GetTranslationFromMatrix(), endMatrix.GetTranslationFromMatrix());
+				ParticleLine p(startMatrix->GetTranslationFromMatrix(), endMatrix.GetTranslationFromMatrix());
 				
 				p.SetLineDepth(depthIndex);
 				p.SetSegmentIndex(segmentIndex);

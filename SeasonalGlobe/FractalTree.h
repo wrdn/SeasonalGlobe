@@ -111,6 +111,7 @@ private:
 	Shader *treeShader;
 
 	TreeShadingMode treeShadeMode;
+	f32 alpha;
 
 	// Builds each of the 6 matrices required for applying rotations
 	void BuildRotationMatrices();
@@ -124,9 +125,6 @@ private:
 
 	void DeepCopy(const FractalTree *dstp) const; // copy data in "this" into "out"
 public:
-
-	f32 alpha;
-
 	void SetRuntime(f32 r) { runtime = r; };
 	void SetBuildTime(f32 b) { buildTime = b; };
 	const f32 GetRuntime() const { return runtime; };
@@ -174,9 +172,12 @@ public:
 
 	const u32 GetDepth() const { return treeBranchSegments.size(); }
 
-	const std::vector<BranchDepth>& GetBranchSegments() { return treeBranchSegments; }
+	const std::vector<BranchDepth>& GetBranchSegments() const { return treeBranchSegments; }
 
 	#pragma region Accessors and Mutators
+	const f32 GetAlpha() const { return alpha; };
+	void SetAlpha(const f32 _alpha) { alpha = _alpha; };
+
 	void SetGenerations(const u32 generations) { lsysTree.SetLSystemGenerations(generations); };
 	const u32 GetGenerations() const { return lsysTree.GetLSystemGenerations(); };
 	
@@ -217,12 +218,12 @@ public:
 	void SetDrawMode(GLenum dmode) { gbranch.SetDrawMode(dmode); };
 
 	const Material& GetTreeMaterial() const { return mat; }
-	void SetMaterial(Material &m) { mat = m; }
+	void SetMaterial(const Material &m) { mat = m; }
 
 	Shader* GetTreeShader() const { return treeShader; }
 	void SetShader(Shader *s) { treeShader = s; }
 
-	TreeShadingMode GetTreeShadeMode()
+	const TreeShadingMode GetTreeShadeMode() const
 	{
 		return treeShadeMode;
 	};

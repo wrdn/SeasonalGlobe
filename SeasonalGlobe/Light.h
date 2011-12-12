@@ -11,57 +11,66 @@ class Light
 private:
 	u32 lightID; // GL_LIGHT0 to GL_LIGHT7
 
-public:
 	float4 position, // light position (or direction if a directional light)
 		spotlightDirection; // spot light direction
 	f32 cutoff; // spotlight cutoff angle
 	float4 ambient, diffuse, specular; // colour properties
 
+public:
+	const u32 GetLightID() const { return lightID; }
+	const float4& GetPosition() const { return position; }
+	const float4& GetSpotLightDirection() const { return spotlightDirection; }
+	const float4& GetAmbient() const { return ambient; }
+	const float4& GetDiffuse() const { return diffuse; }
+	const float4& GetSpecular() const { return specular; }
+	const f32 GetCutoffAngle() const { return cutoff; };
+
+
 	// If you just want to set variables without affecting OpenGL state, use the public
 	// variables above. If the light has been Activate()'d and you wish to change its variable
 	// in OpenGL, call the Set functions below
-	void SetPosition(float4 &pos)
+	void SetPositionAndUpdateOpenGL(const float4 &pos)
 	{
 		position = pos;
 		glLightfv(lightID, GL_POSITION, position.GetVec());
 	};
-	void SetSpotLightDirection(float4 &dir)
+	void SetSpotLightDirectionAndUpdateOpenGL(const float4 &dir)
 	{
 		spotlightDirection = dir;
 		glLightfv(lightID, GL_SPOT_DIRECTION, spotlightDirection.GetVec());
 	};
-	void SetSpotLightCutoffAngle(f32 angle)
+	void SetSpotLightCutoffAngleAndUpdateOpenGL(const f32 angle)
 	{
 		cutoff = angle;
 		glLightf(lightID, GL_SPOT_CUTOFF, cutoff);
 	};
-	void SetAmbient(float4 &v)
+	void SetAmbientAndUpdateOpenGL(const float4 &v)
 	{
 		ambient = v;
 		glLightfv(lightID, GL_AMBIENT, ambient.GetVec());
 	};
-	void SetDiffuse(float4 &v)
+	void SetDiffuseAndUpdateOpenGL(const float4 &v)
 	{
 		diffuse = v;
 		glLightfv(lightID, GL_DIFFUSE, diffuse.GetVec());
 	};
-	void SetSpecular(float4 &v)
+	void SetSpecularAndUpdateOpenGL(const float4 &v)
 	{
 		specular = v;
 		glLightfv(lightID, GL_SPECULAR, specular.GetVec());
 	};
 
 	// Default constructor sets lightID to GL_LIGHT0
-	Light() : lightID(GL_LIGHT0) { };
+	Light() : lightID(GL_LIGHT0), cutoff(20) { };
 
 	// Constructor for directional or point light
-	Light(float4 &pos, float4 &amb, float4 &diff, float4 &spec)
-		: lightID(GL_LIGHT0), position(pos), ambient(amb), diffuse(diff), specular(spec)
+	Light(const float4 &pos, const float4 &amb, const float4 &diff, const float4 &spec)
+		: lightID(GL_LIGHT0), position(pos), cutoff(20), ambient(amb), diffuse(diff), specular(spec)
 	{ };
 
 	// Constructor for spotlight
-	Light(float4 &pos, float4 &spotDir, f32 cutoffAngle,
-		float4 &amb, float4 &diff, float4 &spec)
+	Light(const float4 &pos, const float4 &spotDir, const f32 cutoffAngle,
+		const float4 &amb, const float4 &diff, const float4 &spec)
 		: lightID(GL_LIGHT0), position(pos), spotlightDirection(spotDir), cutoff(cutoffAngle),
 		ambient(amb), diffuse(diff), specular(spec)
 	{ };
@@ -69,7 +78,7 @@ public:
 	// Destructor
 	~Light() { };
 
-	void Activate()
+	void Activate() const
 	{
 		//glEnable(GL_LIGHTING);
 		//glEnable(lightID);
@@ -83,14 +92,14 @@ public:
 	};
 
 	// glDisable()s the light. If using shaders, this has no effect
-	void Deactivate()
+	void Deactivate() const
 	{
 		glDisable(lightID);
 	};
 
 	// should be GL_LIGHT0 to GL_LIGHT7
 	// returns false if not
-	bool SetLightID(GLenum id)
+	const bool SetLightID(GLenum id)
 	{
 		if(id >= GL_LIGHT0 && id <= GL_LIGHT7)
 		{

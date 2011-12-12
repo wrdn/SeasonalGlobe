@@ -115,7 +115,7 @@ public:
 	void SetShader(const Shader *shader);
 	const Shader* GetShader() const;
 
-	void SetAlphaMap(const Texture t);
+	void SetAlphaMap(const Texture &t);
 	const Texture& GetAlphaMap() const;
 
 	void SetSourceAlphaBlendFunction(const GLenum blendfunc);

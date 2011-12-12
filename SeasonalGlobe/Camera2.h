@@ -6,7 +6,7 @@
 
 class Camera2
 {
-public:
+private:
 	float3 pos, dir, up, right;
 	f32 nearPlane, farPlane, fov;
 

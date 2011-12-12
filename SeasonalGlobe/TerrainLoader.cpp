@@ -2,7 +2,7 @@
 #include "Collision.h"
 using namespace gxbase;
 
-TerrainLoader::TerrainLoader(void)
+TerrainLoader::TerrainLoader(void) : width(0), height(0)
 {
 }
 
@@ -147,7 +147,9 @@ bool TerrainLoader::Load(char *filename)
 	Circle circ(centre, min(centre.x(), centre.y()));
 
 	// Calculate the collision points (where the circle exists) on each row
-	for(i32 i = (i32)(circ.pos.y()-circ.radius); i < (i32)(circ.pos.y()+circ.radius); ++i)
+	i32 loop_start = ((i32)(circ.pos.y()-circ.radius));
+	i32 loop_end = ((i32)(circ.pos.y()+circ.radius));
+	for(i32 i = loop_start; i < loop_end; ++i)
 	{
 		CollisionPoint2D cp;
 		Line2D ln( float2(0, (f32)i), float2(circ.pos.x(), (f32)i) );

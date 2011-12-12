@@ -34,7 +34,6 @@ std::vector<GraphicsObject*> OBJFile::ParseFile(const c8* filename)
 std::vector<GraphicsObject*> OBJFile::ParseFile(const std::vector<c8*> &objFile)
 {
 	std::vector<GraphicsObject*> out;
-
 	if(!objFile.size()) { return out; }
 
 	GraphicsObject *activeGraphicsObject = new GraphicsObject();

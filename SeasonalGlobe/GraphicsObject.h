@@ -24,32 +24,32 @@ public:
 	GraphicsObject(void);
 	virtual ~GraphicsObject(void);
 
-	float3& GetPosition() { return position; };
+	const float3& GetPosition()const { return position; };
 
-	f32 GetXRotation() { return xrotation; };
-	f32 GetYRotation() { return yrotation; };
-	f32 GetZRotation() { return zrotation; };
+	const f32 GetXRotation() const { return xrotation; };
+	const f32 GetYRotation() const { return yrotation; };
+	const f32 GetZRotation() const { return zrotation; };
 	
-	float3& GetScale() { return scale; }
-	Material& GetMaterial() { return mat; }
-	Texture* GetTextureA() { return textureA; }
-	Texture* GetTextureB() { return textureB; }
-	Shader* GetShader() { return objectShader; }
+	const float3& GetScale() const { return scale; }
+	const Material& GetMaterial() const { return mat; }
+	const Texture* GetTextureA() const { return textureA; }
+	const Texture* GetTextureB() const { return textureB; }
+	Shader* GetShader() const { return objectShader; }
 
-	Model& GetModel() { return gmodel; };
+	 Model& GetModel() { return gmodel; };
 
 	void SetModel(Model &m);
 	void SetShader(Shader *s) { objectShader = s; };
 	void SetTextureA(Texture *t) { textureA = t; };
 	void SetTextureB(Texture *t) { textureB = t; };
-	void SetPosition(float3 pos) { position = pos; };
+	void SetPosition(const float3 &pos) { position = pos; };
 	
 	void SetXRotation(f32 rot) { xrotation = rot; };
 	void SetYRotation(f32 rot) { yrotation = rot; };
 	void SetZRotation(f32 rot) { zrotation = rot; };
 
-	void SetScale(float3 sc) { scale = sc; };
-	void SetMaterial(Material &_mat) { mat = _mat; }
+	void SetScale(const float3 &sc) { scale = sc; };
+	void SetMaterial(const Material &_mat) { mat = _mat; }
 
 	void SetDrawMode(GLenum dmode) { gmodel.SetDrawMode(dmode); };
 

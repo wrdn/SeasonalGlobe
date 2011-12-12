@@ -17,9 +17,9 @@ private:
 	u32 depthOfLineInSegment; // how far into the segment is this line
 
 public:
-	ParticleLine() : startPos(), endPos(), direction() { };
+	ParticleLine() : startPos(), endPos(), direction(), lineDepth(0), segmentIndex(0), depthOfLineInSegment(0) { };
 	ParticleLine(const float3 &start, const float3 &end) : startPos(start), endPos(end),
-		direction(endPos-startPos) { };
+		direction(endPos-startPos), lineDepth(0), segmentIndex(0), depthOfLineInSegment(0) { };
 	~ParticleLine() { };
 
 	void SetSegmentIndex(const u32 index) { segmentIndex = index; }
@@ -62,6 +62,13 @@ private:
 	Color4f startColor, endColor;
 	f32 fade;
 
+	f32 ignitionTime;
+	f32 runtime;
+	BurningState burnState;
+	u32 burnLevel;
+	FractalTree *tree;
+	f32 K;
+
 	void Emit(Particle &p);
 	void UpdateParticleProperties(Particle &p/*, const GameTime &gameTime*/);
 
@@ -70,7 +77,7 @@ public:
 	FireParticleEmitter();
 	~FireParticleEmitter();
 
-	void Update(const GameTime &gameTime);
+	void UpdateFireParticleEmitter(const GameTime &gameTime);
 
 	// Adds the particle line to the list of lines
 	// Note: lines should be added in depth order (list is not automatically sorted)
@@ -83,13 +90,8 @@ public:
 	void SetEndColor(const Color4f &endcol) { endColor = endcol; };
 	const Color4f& GetStartColor() const { return startColor; };
 	const Color4f& GetEndColor() const { return endColor; };
-	
-	f32 ignitionTime;
-	f32 runtime;
-	BurningState burnState;
-	u32 burnLevel;
-	FractalTree *tree;
-	f32 K;
+
+	void SetTree(FractalTree *t) { tree = t; }
 };
 
 /*

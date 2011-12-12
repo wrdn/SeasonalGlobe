@@ -17,10 +17,10 @@ World::World(void)
 	_cameraRotation(-357.0f), AutoRotate(false),
 
 	terrain(0), tree(0), globeSphere(0), houseModel(0), baseModel(0), // Geometry
-	defaultBillboardModel(0), polygonMode(GL_FILL),
+	defaultBillboardModel(0), polygonMode(GL_FILL),lightSphere(0), spotCone(0),
 
 	phongShaderID(0), particleSystemBaseShaderID(0), globeShaderID(0), directionalLightShaderID(0), // Shaders
-	spotlightShaderID(0), ambientLightShaderID(0), displacementMapShaderID(0), treeShaders(),
+	multiTexturingSampleShaderID(0), spotlightShaderID(0), ambientLightShaderID(0), displacementMapShaderID(0), treeShaders(),
 
 	grassTexture(0), houseTexture(0), barkTexture(0), particleTexture(0), leafTexture(0), baseTexture(0), // Textures
 	displacementTexture(0),
@@ -227,7 +227,8 @@ bool World::LoadParticles()
 	fireParticleEmitter->SetEmitterOrigin(tree->GetPosition());
 	fireParticleEmitter->SetRateOfEmission(1000);
 	
-	fireParticleEmitter->tree = tree;
+	fireParticleEmitter->SetTree(tree);
+	
 
 	std::vector<ParticleLine> fire_particle_lines;
 	tree->CalculateParticleLines(fire_particle_lines);
@@ -253,7 +254,7 @@ bool World::LoadGeometry()
 
 	// Load globe base
 	baseModel = OBJFile::ParseFile("Data/base2.obj")[0];
-	baseModel->GetModel().BuildVBO();
+	((Model&)baseModel->GetModel()).BuildVBO();
 	baseModel->SetTextureA(baseTexture);
 	baseModel->SetPosition(float3(0, 0.2f, 0));
 	baseModel->SetScale(float3(2.0f, 0.83f, 2.0f));
@@ -310,7 +311,7 @@ bool World::LoadGeometry()
 	spotCone = new Cylinder();
 	spotCone->Create(0.1f, 0.3f, 0.45f, 10, 10);
 	spotCone->SetTextureA(baseTexture);
-	spotCone->SetPosition(spotlights[0].position.ToFloat3());
+	spotCone->SetPosition(spotlights[0].GetPosition().ToFloat3());
 
 	SetTreeShadeMode(SmoothTextured);
 
@@ -455,7 +456,7 @@ void cube()
 	glTexCoord2d(0.0, 1.0);		glVertex3d(-1.0,  1.0, -1.0);
 	glEnd();
 };
-void texcube(Texture &t)
+void texcube(const Texture &t)
 {
 	glEnable(GL_TEXTURE_2D);
 	t.Activate();
@@ -596,7 +597,7 @@ void World::multi_texturing_test(/*const GameTime &gameTime*/)
 	
 };
 
-void World::Update(GameTime &gameTime)
+void World::Update(const GameTime &gameTime)
 {
 	particleSystem.Update(gameTime);
 };
@@ -622,13 +623,13 @@ void World::Draw(const GameTime &gameTime)
 	//_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
 	//_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
 
-	fireParticleEmitter->Update(gameTime);
+	fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
 
 	if(lightMode == Spotlights)
 	{
 		spotlights[0].Activate();
 		spotCone->SetXRotation(0);
-		spotCone->SetPosition(spotlights[0].position.ToFloat3());
+		spotCone->SetPosition(spotlights[0].GetPosition().ToFloat3());
 		spotCone->Draw();
 
 		spotlights[1].Activate();
@@ -641,7 +642,7 @@ void World::Draw(const GameTime &gameTime)
 		spotCone->Draw();
 
 		spotlights[3].Activate();
-		spotCone->SetPosition(spotlights[3].position.ToFloat3());
+		spotCone->SetPosition(spotlights[3].GetPosition().ToFloat3());
 		spotCone->SetZRotation(180);
 		spotCone->Draw();
 		spotCone->SetZRotation(0);
@@ -654,18 +655,18 @@ void World::Draw(const GameTime &gameTime)
 		float3 newPos(pos.x()+radius*sin(ra), pos.y()+radius*cos(ra), pos.z());
 		lightSphere->SetPosition(newPos);
 		float4 lightSpherePos = lightSphere->GetPosition().ToFloat4();
-		directionalLight.SetPosition(lightSpherePos);
+		directionalLight.SetPositionAndUpdateOpenGL(lightSpherePos);
 		ra += 0.5f * gameTime.GetDeltaTime();
 		lightSphere->Draw();
 	}
 
-	glPushMatrix();
-	tree->Draw(gameTime.GetDeltaTime());
-	glPopMatrix();
-
 	/*glPushMatrix();
-	reflective_draw(gameTime);
+	tree->Draw(gameTime.GetDeltaTime());
 	glPopMatrix();*/
+
+	glPushMatrix();
+	reflective_draw(gameTime);
+	glPopMatrix();
 
 	// Terrain (floor)
 	//float terrainShift = 2.0f;

@@ -2,8 +2,8 @@
 #include "FractalTree.h"
 
 FireParticleEmitter::FireParticleEmitter() : currentParticleAdditionIndex(0), maxParticlesPerLine(25),
-	startColor(1,0.2f,0,1), endColor(1, 0.28f, 0, 0.8f), ignitionTime(10), runtime(0), burnState(Igniting),
-	burnLevel(0), tree(0)
+	startColor(1,0.2f,0,1), endColor(1, 0.28f, 0, 0.8f), fade(0), ignitionTime(10), runtime(0), burnState(Igniting),
+	burnLevel(0), tree(0), K(0)
 {
 };
 
@@ -20,11 +20,13 @@ void FireParticleEmitter::Emit(Particle &p)
 		
 		
 		
-		tree->alpha = 1.0f;
+	//	tree->alpha = 1.0f;
+		tree->SetAlpha(1.0f);
 		
 		if(burnState == Dieing)
 		{
-			tree->alpha = 0.5f;
+			tree->SetAlpha(0.5f);
+			//tree->alpha = 0.5f;
 
 			if(pline.GetLineDepth() <= burnLevel) // only generate particles below the burn level
 			{
@@ -123,7 +125,7 @@ void FireParticleEmitter::AddLine(const ParticleLine &line)
 	SetLocalParticleMaximum(currentParticleAdditionIndex);
 };
 
-void FireParticleEmitter::Update(const GameTime &gameTime)
+void FireParticleEmitter::UpdateFireParticleEmitter(const GameTime &gameTime)
 {
 	burnState = Dieing;
 
@@ -139,6 +141,6 @@ void FireParticleEmitter::Update(const GameTime &gameTime)
 	u32 depth = this->particleLines.back().GetLineDepth();
 
 	K = (1.0f / ignitionTime) * runtime;
-	f32 lerp_anim_level = lerp(0, depth, K);
-	burnLevel = depth - lerp_anim_level;
+	f32 lerp_anim_level = lerp(0, (f32)depth, K);
+	burnLevel = depth - (u32)lerp_anim_level;
 };
