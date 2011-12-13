@@ -675,7 +675,8 @@ void World::Draw(const GameTime &gameTime)
 
 	// Terrain (floor)
 	//float terrainShift = 2.0f;
-	float terrainShift = 1.45f;
+	//float terrainShift = 1.45f;
+	float terrainShift=0;
 	glDisable(GL_CULL_FACE); 
 	terrain->SetPosition(float3(0, terrain->GetPosition().y()-terrainShift,0));
 	terrain->GetShader()->Activate();
