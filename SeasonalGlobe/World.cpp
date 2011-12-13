@@ -170,7 +170,7 @@ bool World::LoadParticles()
 	leafEmitter->SetParticlesStaticState(true);
 	leafEmitter->SetAlphaMap(*leafTexture);
 	leafEmitter->SetShader(psysbase);
-	leafEmitter->SetEmitterOrigin(treePos);
+	leafEmitter->SetEmitterOrigin(tree->GetPosition());
 	leafEmitter->SetBillboardType(Cylindrical);
 	leafEmitter->SetSourceAlphaBlendFunction(GL_ONE_MINUS_SRC_ALPHA);
 	const Mat44 *LeafMatrices = tree->GetLeafMatrices();
@@ -190,8 +190,13 @@ bool World::LoadParticles()
 			p.size = float3(0.25f);
 			leafEmitter->AddParticle(p);
 		}
-	}*/
-
+	}
+	leafEmitter->SetParticlesStaticState(true);
+	leafEmitter->SetStartColor(Color4f(1));
+	leafEmitter->SetEndColor(Color4f(0.8f, 0.35f, 0.35f, 1));
+	leafEmitter->DoColorUpdate(true);
+	leafEmitter->InitiateParticleFade();
+	//leafEmitter->SetBillboardType(NoBillboarding);*/
 
 	smokeEmitterID = particleSystem.AddEmitter<PointBasedParticleEmitter>();
 	PointBasedParticleEmitter *smokeParticleEmitter = particleSystem.GetEmitter<PointBasedParticleEmitter>(smokeEmitterID);
@@ -623,7 +628,7 @@ void World::Draw(const GameTime &gameTime)
 	//_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
 	//_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
 
-	fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
+	//fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
 
 	if(lightMode == Spotlights)
 	{
@@ -660,13 +665,13 @@ void World::Draw(const GameTime &gameTime)
 		lightSphere->Draw();
 	}
 
-	/*glPushMatrix();
-	tree->Draw(gameTime.GetDeltaTime());
-	glPopMatrix();*/
-
 	glPushMatrix();
-	reflective_draw(gameTime);
+	tree->Draw(gameTime.GetDeltaTime());
 	glPopMatrix();
+
+	/*glPushMatrix();
+	reflective_draw(gameTime);
+	glPopMatrix();*/
 
 	// Terrain (floor)
 	//float terrainShift = 2.0f;

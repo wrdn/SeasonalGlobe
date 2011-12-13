@@ -8,7 +8,8 @@
 
 const u32 GLOBAL_MAX_PARTICLES_PER_EMITTER = 40000;
 
-enum BillboardType { Cylindrical = 0, Spherical = 1 };
+// we can switch to  NoBillboarding if we want to rotate on X or Y
+enum BillboardType { Cylindrical = 0, Spherical = 1, NoBillboarding = 2 };
 
 class ParticleEmitter : public glex // base abstract emitter class
 {

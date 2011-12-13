@@ -17,16 +17,11 @@ void FireParticleEmitter::Emit(Particle &p)
 	{
 		ParticleLine &pline = particleLines[(u32)p.pada]; // line the particle needs to be emitted on
 
-		
-		
-		
-	//	tree->alpha = 1.0f;
 		tree->SetAlpha(1.0f);
 		
 		if(burnState == Dieing)
 		{
 			tree->SetAlpha(0.5f);
-			//tree->alpha = 0.5f;
 
 			if(pline.GetLineDepth() <= burnLevel) // only generate particles below the burn level
 			{

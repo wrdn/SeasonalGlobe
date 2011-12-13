@@ -17,12 +17,12 @@ public:
 	Color4f color; // 48
 	f32 energy; // 52
 	f32 rotation_z; // rotation only ever applies to the Z axis, 56
-	
+	f32 rotation_x; // nearly always 0, used for leaves
+
 	// variables to pad structure to 64 bytes, use these for whatever you want
 	// e.g. the fire emitter may use one of them to store the index of the line
 	// the particle should be emitted across
 	f32 pada;
-	f32 padb;
 
 	Particle();
 	~Particle();

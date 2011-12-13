@@ -40,7 +40,7 @@ void ParticleEmitter::Draw(/*const GameTime &gameTime*/)
 			glPopMatrix();
 		}
 	}
-	else
+	else if(billboardType == Cylindrical)
 	{
 		for(u32 i=0;i<GetLocalParticleMaximum();++i)
 		{
@@ -49,6 +49,21 @@ void ParticleEmitter::Draw(/*const GameTime &gameTime*/)
 			glColor4fv(p.color.GetVec());
 			glTranslatef(p.pos.x(), p.pos.y(), p.pos.z());
 			CylindricalBillboardAdjust();
+			glRotatef(p.rotation_z, 0,0,1);
+			glScalef(p.size.x(), p.size.y(), p.size.z());
+			model->Draw();
+			glPopMatrix();
+		}
+	}
+	else // no billboarding (no adjustment)
+	{
+		for(u32 i=0;i<GetLocalParticleMaximum();++i)
+		{
+			Particle &p = particles[i];
+			glPushMatrix();
+			glColor4fv(p.color.GetVec());
+			glTranslatef(p.pos.x(), p.pos.y(), p.pos.z());
+			glRotatef(p.rotation_x, 1,0,0);
 			glRotatef(p.rotation_z, 0,0,1);
 			glScalef(p.size.x(), p.size.y(), p.size.z());
 			model->Draw();

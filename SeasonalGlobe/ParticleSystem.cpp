@@ -54,6 +54,8 @@ void ParticleSystem::Update(const GameTime &gameTime)
 
 void ParticleSystem::Draw(/*const GameTime &gameTime*/)
 {
+	glDisable(GL_CULL_FACE);
+
 	glEnable(GL_BLEND);
 	glDepthMask(GL_FALSE);
 
@@ -65,4 +67,6 @@ void ParticleSystem::Draw(/*const GameTime &gameTime*/)
 
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
+
+	glEnable(GL_CULL_FACE);
 };
