@@ -246,7 +246,7 @@ bool World::LoadParticles()
 	{
 		fireParticleEmitter->AddLine(fire_particle_lines[i]);
 	}
-	fireParticleEmitter->SetActive(false);
+	//fireParticleEmitter->SetActive(false);
 
 	return true;
 };
@@ -674,7 +674,7 @@ void World::Draw(const GameTime &gameTime)
 	//_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
 	//_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
 
-	//fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
+	fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
 
 	if(lightMode == Spotlights)
 	{
@@ -717,15 +717,15 @@ void World::Draw(const GameTime &gameTime)
 
 	// Terrain (floor)
 	//float terrainShift = 1.45f;
-	//float terrainShift=0;
+	float terrainShift=0;
 
 	glDisable(GL_CULL_FACE); 
 	terrain->SetPosition(float3(0, terrain->GetPosition().y()-terrainShift,0));
 	terrain->GetShader()->Activate();
 	terrain->GetShader()->SetUniform("colorMap", 0);
 	terrain->GetShader()->SetUniform("displacementMap", 1);
-	terrain->GetShader()->SetUniform("vposmult", 0.45f);
-	//terrain->GetShader()->SetUniform("vposmult", 0.0f);
+	//terrain->GetShader()->SetUniform("vposmult", 0.45f);
+	terrain->GetShader()->SetUniform("vposmult", 0.0f);
 	terrain->GetShader()->Deactivate();
 	terrain->SetXRotation(-90);
 	terrain->SetYRotation(0);
