@@ -662,8 +662,14 @@ void World::Update(const GameTime &gameTime)
 float xrot=0, yrot=0, radius=3.0f;
 float ra=0;
 
-f32 vpos_mult=0, terrainShift=0;
-f32 terrainRuntime=0;
+//f32 vpos_mult=0, terrainShift=0;
+//f32 terrainRuntime=0;
+
+f32 MaxDisplacementScale = 0.45f;
+f32 MaxShift = 1.45f;
+f32 CurrentShift=0, CurrentScale=0;
+f32 ShiftTime = 5, CurrentTerrainTime=0; // 5 seconds to make snow drifts
+
 void World::Draw(const GameTime &gameTime)
 {
 	seasonMan.Update(gameTime.GetDeltaTime());
@@ -730,27 +736,37 @@ void World::Draw(const GameTime &gameTime)
 	//float terrainShift = 1.45f;
 	//float terrainShift=0;
 
-	terrainRuntime += gameTime.GetDeltaTime();
-	if(terrainRuntime >= 0.45f) { terrainRuntime = 0; }
+	/*terrainRuntime += gameTime.GetDeltaTime();
+	if(terrainRuntime >= 1.0f) { terrainRuntime = 0; }
 	f32 P = (1.0f / 0.45f) * terrainRuntime;
 	f32 S = lerp(0, 1.45, P);
+	vpos_mult = 0.45f;
+	terrainShift = 1.45;*/
+	CurrentTerrainTime += gameTime.GetDeltaTime();
+	CurrentTerrainTime = fmod(CurrentTerrainTime, ShiftTime);
 
-	vpos_mult = P;
-	terrainShift = 0;
+	f32 N = (1.0f / ShiftTime) * CurrentTerrainTime; // N in range 0 to 1
+	
+	f32 vpos = lerp(0, 0.45f, N);
+	
+	CurrentShift = lerp(0, MaxShift, N);
+
 
 	glDisable(GL_CULL_FACE);
-	terrain->SetPosition(float3(0, terrain->GetPosition().y()-terrainShift,0));
+	terrain->SetPosition(float3(0, terrain->GetPosition().y()-CurrentShift,0));
+	glPushMatrix();
 	terrain->GetShader()->Activate();
 	terrain->GetShader()->SetUniform("colorMap", 0);
 	terrain->GetShader()->SetUniform("displacementMap", 1);
 	//terrain->GetShader()->SetUniform("vposmult", 0.45f);
-	terrain->GetShader()->SetUniform("vposmult", vpos_mult);
+	terrain->GetShader()->SetUniform("vposmult", vpos);
 	terrain->GetShader()->Deactivate();
 	terrain->SetXRotation(-90);
 	terrain->SetYRotation(0);
 	terrain->SetZRotation(-90);
 	terrain->Draw();
-	terrain->SetPosition(float3(0, terrain->GetPosition().y()+terrainShift,0));
+	glPopMatrix();
+	terrain->SetPosition(float3(0, terrain->GetPosition().y()+CurrentShift,0));
 	glEnable(GL_CULL_FACE);
 
 	// House
