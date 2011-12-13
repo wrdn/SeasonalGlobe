@@ -163,7 +163,7 @@ bool World::LoadParticles()
 
 	Shader *psysbase = shaderMan.GetShader(particleSystemBaseShaderID);
 
-	/*const u32 LEAF_PARTICLES_PER_LEAF_MATRIX = 3;
+	const u32 LEAF_PARTICLES_PER_LEAF_MATRIX = 3;
 	leafParticleEmitterID = particleSystem.AddEmitter<StaticParticleEmitter>();
 	StaticParticleEmitter *leafEmitter = particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID);
 	leafEmitter->SetLocalParticleMaximum(tree->GetLeafCount() * LEAF_PARTICLES_PER_LEAF_MATRIX);
@@ -192,10 +192,13 @@ bool World::LoadParticles()
 		}
 	}
 	leafEmitter->SetParticlesStaticState(true);
-	leafEmitter->SetStartColor(Color4f(1));
-	leafEmitter->SetEndColor(Color4f(0.8f, 0.35f, 0.35f, 1));
+	leafEmitter->SetStartColor(Color4f(1,1,1,0));
+	leafEmitter->SetEndColor(Color4f(1,1,1,1));
+	//leafEmitter->SetStartColor(Color4f(1));
+	//leafEmitter->SetEndColor(Color4f(0.8f, 0.35f, 0.35f, 1));
 	leafEmitter->DoColorUpdate(true);
-	leafEmitter->InitiateParticleFade();
+	leafEmitter->SetActive(false);
+	//leafEmitter->InitiateParticleFade();
 	//leafEmitter->SetBillboardType(NoBillboarding);*/
 
 	smokeEmitterID = particleSystem.AddEmitter<PointBasedParticleEmitter>();
@@ -212,6 +215,7 @@ bool World::LoadParticles()
 	smokeParticleEmitter->SetBillboardType(Spherical);
 	smokeParticleEmitter->AddForce(float3(1.0f,0,0));
 	smokeParticleEmitter->AddForce(float3(-1.0f,0.2f,0.43f));
+	smokeParticleEmitter->SetActive(false);
 
 	snowEmitterID = particleSystem.AddEmitter<HemiSphericalParticleEmitter>();
 	HemiSphericalParticleEmitter *snowEmitter = particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID);
@@ -222,6 +226,7 @@ bool World::LoadParticles()
 	snowEmitter->SetEmitterOrigin(float3(0,0,0));
 	snowEmitter->SetShader(psysbase);
 	snowEmitter->SetBillboardType(Spherical);
+	snowEmitter->SetActive(false);
 
 	u32 fireParticleEmitterID = particleSystem.AddEmitter<FireParticleEmitter>();
 	fireParticleEmitter = particleSystem.GetEmitter<FireParticleEmitter>(fireParticleEmitterID);
@@ -241,7 +246,8 @@ bool World::LoadParticles()
 	{
 		fireParticleEmitter->AddLine(fire_particle_lines[i]);
 	}
-	
+	fireParticleEmitter->SetActive(false);
+
 	return true;
 };
 
@@ -293,8 +299,8 @@ bool World::LoadGeometry()
 	i32 gen = 8; conf.GetInt("LSystemGenerations", gen);
 	tree->SetGenerations(gen);
 	tree->BuildTree();
-	tree->SetBuildTime(0);
-	tree->SetTreeDieing(true);
+	//tree->SetBuildTime(0);
+	//tree->SetTreeDieing(true);
 
 	// Set the shader on each object (for lighting)
 	//Shader* directionalLightShader = shaderMan.GetShader(directionalLightShaderID);
@@ -357,6 +363,42 @@ void World::LoadLights()
 	spotlights[3].SetLightID(GL_LIGHT3);
 };
 
+void StartTreeGrowth(World *w) { w->GetTree()->InitGrow(); }
+void InitiateLeafGrowth(World *w)
+{
+	w->GetLeafParticleEmitter()->SetActive(true);
+	w->GetLeafParticleEmitter()->SetStartColor(Color4f(1,1,1,1));
+	w->GetLeafParticleEmitter()->InitiateParticleFadeIn();
+};
+void InitiateLeafColorChange(World *w)
+{
+	w->GetLeafParticleEmitter()->SetEndColor(Color4f(0.8f, 0.35f, 0.35f, 1));
+	w->GetLeafParticleEmitter()->InitiateMainColorChange();
+};
+void InitiateLeafFall(World *w)
+{
+	w->GetLeafParticleEmitter()->InitiateParticleFall();
+};
+void InitiateLeafVanish(World *w) { w->GetLeafParticleEmitter()->InitiateParticleFadeOut(); }
+
+void World::SetupSeasons()
+{
+	seasonMan.SetTimePerSeason(8); // 8 seconds per season, 32 seconds per cycle
+	seasonMan.SetWorldPointer(this);
+
+	// Spring: Tree grows
+	tree->SetBuildTime(min(tree->GetBuildTime(), seasonMan.GetTimePerSeason()));
+	seasonMan.AddEvent(Spring, SeasonalEvent(0, StartTreeGrowth)); // tree grows at start of spring
+	
+	// Summer: Leaves appear on tree
+	seasonMan.AddEvent(Summer, SeasonalEvent(0.2f, InitiateLeafGrowth));
+
+	// Autumn: Leaves change colour and fall from tree (then disappear over time), lightning bolt hits tree and it burns down
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0, InitiateLeafColorChange));
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.35, InitiateLeafFall));
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.75, InitiateLeafVanish));
+};
+
 bool World::Load()
 {
 	conf.ParseConfigFile("Data/ConfigFile.txt"); // load configuration file
@@ -369,6 +411,8 @@ bool World::Load()
 	LoadGeometry();
 	LoadParticles();
 	
+	SetupSeasons();
+
 	// Load materials
 	_material1.create(ColorT::black(), ColorT(0.9f,0.9f,0.9f,1.0f));
 	_material2.create(ColorT::black(), ColorT(0.7f,0.7f,0.7f,0.5f));
@@ -611,6 +655,8 @@ float xrot=0, yrot=0, radius=3.0f;
 float ra=0;
 void World::Draw(const GameTime &gameTime)
 {
+	seasonMan.Update(gameTime.GetDeltaTime());
+
 	glLoadIdentity();
 
 	glPushMatrix();
@@ -628,7 +674,7 @@ void World::Draw(const GameTime &gameTime)
 	//_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
 	//_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
 
-	fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
+	//fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
 
 	if(lightMode == Spotlights)
 	{
@@ -670,15 +716,16 @@ void World::Draw(const GameTime &gameTime)
 	glPopMatrix();
 
 	// Terrain (floor)
-	//float terrainShift = 2.0f;
 	//float terrainShift = 1.45f;
-	float terrainShift=0;
+	//float terrainShift=0;
+
 	glDisable(GL_CULL_FACE); 
 	terrain->SetPosition(float3(0, terrain->GetPosition().y()-terrainShift,0));
 	terrain->GetShader()->Activate();
 	terrain->GetShader()->SetUniform("colorMap", 0);
 	terrain->GetShader()->SetUniform("displacementMap", 1);
-	//terrain->GetShader()->SetUniform("vposmult", 0.65f);
+	terrain->GetShader()->SetUniform("vposmult", 0.45f);
+	//terrain->GetShader()->SetUniform("vposmult", 0.0f);
 	terrain->GetShader()->Deactivate();
 	terrain->SetXRotation(-90);
 	terrain->SetYRotation(0);

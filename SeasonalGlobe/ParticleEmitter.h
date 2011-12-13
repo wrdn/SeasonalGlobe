@@ -26,6 +26,7 @@ private:
 	u32 localParticleMaximum;
 	bool doUpdate, doDraw, doEmit; // can turn off specific emitter functionality
 	u32 rateOfEmission;
+	bool isActive; // turns everything on/off
 
 	// True by default, used to specify if rotations will occur
 	// This variable was added to allow you to reuse the rotation vector
@@ -100,6 +101,9 @@ public:
 	const bool DoDraw() const;
 	void DoEmit(const bool shouldEmit);
 	const bool DoEmit() const;
+
+	void SetActive(const bool _isActive);
+	const bool IsActive() const;
 
 	void SetRateOfEmission(const u32 rate);
 	const u32 GetRateOfEmission() const;

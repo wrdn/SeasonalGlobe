@@ -27,14 +27,18 @@ private:
 	u32 currentParticleIndex;
 
 	bool updateColor; // leaves change from green to brown in autumn
-	Color4f startColor, endColor, fadeColor;
+	Color4f startColor, endColor, fadeOutColor, fadeInColor;
 
 
 	bool particlesFalling; // leaves fall to ground
 	bool particlesDieing; // particles fading out
+	bool particlesFadingIn;
 
 	f32 timeToChangeColor; // time for change from green leaf to brown leaf (default: 5)
-	f32 timeToFade; // time 
+	f32 timeToFadeOut, timeToFadeIn; // time 
+	
+	f32 timeToFall;
+	f32 maxYHeight;
 
 public:
 	StaticParticleEmitter();
@@ -52,16 +56,25 @@ public:
 	const Color4f& GetEndColor() const { return endColor; }
 	
 	void DoColorUpdate(const bool doUpdateColor) { updateColor = doUpdateColor; }
-	void SetStartColor(const Color4f &c) { startColor = c; }
+	void SetStartColor(const Color4f &c)
+	{
+		startColor = c;
+
+		fadeInColor = startColor;
+		fadeInColor.w(0);
+	}
 	void SetEndColor(const Color4f &c)
 	{
 		endColor = c;
 		
-		fadeColor = endColor;
-		fadeColor.w(0);
+		fadeOutColor = endColor;
+		fadeOutColor.w(0);
 	}
 
 	void InitiateParticleFall();
 
-	void InitiateParticleFade(); // fade particles from (endColor.rgba) to (endColor.rgb, 0)
+	void InitiateParticleFadeIn(); // fades from (startColor.rgb,0) to startColor
+	void InitiateParticleFadeOut(); // fade particles from (endColor.rgba) to (endColor.rgb, 0)
+
+	void InitiateMainColorChange(); // change from startColor to endColor
 };

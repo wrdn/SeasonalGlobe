@@ -140,6 +140,14 @@ public:
 	const f32 GetRuntime() const { return runtime; };
 	const f32 GetBuildTime() const { return buildTime; };
 
+	void InitGrow()
+	{
+		SetRuntime(0);
+		SetAlpha(1.0f);
+		treeDieing = false;
+		deathDepth = 0;
+	};
+
 	// Constructors / Destructors
 	FractalTree();
 

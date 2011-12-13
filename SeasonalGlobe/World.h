@@ -11,6 +11,7 @@
 #include "AppConfig.h"
 #include "ParticleSystem.h"
 #include "CylindricalParticleEmitter.h"
+#include "StaticParticleEmitter.h"
 #include "FireParticleEmitter.h"
 #include "SphericalCamera.h"
 #include "Camera2.h"
@@ -44,6 +45,19 @@ public:
 		Tree_Ambient_ShaderID(0), SmoothShaded_Directional_ShaderID(0), SmoothShaded_Spot_ShaderID(0)
 	{};
 	~TreeShaders() { };
+};
+
+struct TerrainShift
+{
+	f32 currentScale, // 0 < currentScale < maxScale
+		maxScale; // ~0.45 reasonable
+	
+	f32 currentShift; // 0 < currentShift < maxShift
+	f32 maxShift; // how much we shift on Y to put the terrain back into the base
+
+	TerrainShift() : currentScale(0), maxScale(0.45), currentShift(0), maxShift(1.45)
+	{ };
+	~TerrainShift() { };
 };
 
 class World
@@ -104,6 +118,7 @@ private:
 	bool LoadParticles();
 	bool LoadGeometry();
 	void LoadLights();
+	void SetupSeasons();
 
 	// Prevent copying
 	World(World const& w);
@@ -114,6 +129,8 @@ private:
 public:
 	const bool GetAutoRotate() const { return AutoRotate; };
 	void SetAutoRotate(const bool b) { AutoRotate = b; };
+	
+	StaticParticleEmitter* GetLeafParticleEmitter() { return particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID); }
 
 	FractalTree * GetTree() const { return tree; };
 	const GLenum GetPolygonMode() const { return polygonMode; };

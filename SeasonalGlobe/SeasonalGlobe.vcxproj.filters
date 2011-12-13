@@ -432,6 +432,24 @@
     <None Include="Data\Shaders\directionalLight.vert">
       <Filter>Resource Files\Data\Shaders</Filter>
     </None>
+    <None Include="Data\Shaders\ambientLight.frag">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\ambientLight.vert">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\displacement.frag">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\displacement.vert">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\spotlight.frag">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\spotlight.vert">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SeasonalGlobe.rc">

@@ -17,7 +17,7 @@ ParticleEmitter::~ParticleEmitter()
 
 void ParticleEmitter::Draw(/*const GameTime &gameTime*/)
 {
-	if(!emitterShader || !emitterShader->Valid()) return;
+	if(!isActive || !emitterShader || !emitterShader->Valid()) { return; }
 
 	glPushMatrix();
 
@@ -106,6 +106,8 @@ void ParticleEmitter::Draw(/*const GameTime &gameTime*/)
 
 void ParticleEmitter::Update(const GameTime &gameTime)
 {
+	if(!isActive) { return; }
+
 	f32 dt = gameTime.GetDeltaTime();
 	u32 emittedThisFrame = rateOfEmission;
 	
@@ -190,6 +192,9 @@ void ParticleEmitter::DoDraw(const bool shouldDraw) { doDraw = shouldDraw; };
 const bool ParticleEmitter::DoDraw() const { return doDraw; };
 void ParticleEmitter::DoEmit(const bool shouldEmit) { doEmit = shouldEmit; };
 const bool ParticleEmitter::DoEmit() const { return doEmit; };
+
+void ParticleEmitter::SetActive(const bool _isActive) { isActive = _isActive; }
+const bool ParticleEmitter::IsActive() const { return isActive; }
 
 void ParticleEmitter::SetRateOfEmission(const u32 rate) { rateOfEmission = rate; };
 const u32 ParticleEmitter::GetRateOfEmission() const { return rateOfEmission; };

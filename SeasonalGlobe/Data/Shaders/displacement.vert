@@ -1,12 +1,12 @@
 uniform sampler2D displacementMap;
-//uniform float vposmult;
+uniform float vposmult;
 
 void main(void)
 {
 	// in the application, shift the mesh down by vposmult*10, draw it, then move it down again by the same amount
 	// these transformations should be applied to the Y axis
    
-   float vposmult = 0.45f;
+   //float vposmult = 0.45f;
    
    gl_TexCoord[0].xy = gl_MultiTexCoord0.xy;
    vec4 dv = texture2D(displacementMap, gl_MultiTexCoord0.xy);

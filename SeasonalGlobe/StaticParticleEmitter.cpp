@@ -1,7 +1,8 @@
 #include "StaticParticleEmitter.h"
 
 StaticParticleEmitter::StaticParticleEmitter() : particlesStatic(true), currentParticleIndex(0), updateColor(false),
-	startColor(1), endColor(1), particlesFalling(false), particlesDieing(false), timeToChangeColor(5), timeToFade(3)
+	startColor(1), endColor(1), particlesFalling(false), particlesDieing(false), particlesFadingIn(false), timeToChangeColor(5), timeToFadeOut(3), timeToFadeIn(3),
+	timeToFall(3), maxYHeight(0)
 {
 };
 
@@ -25,7 +26,7 @@ void StaticParticleEmitter::Emit(Particle &p)
 	p.velocity = float3();
 	
 	if(particlesDieing)
-		p.energy = timeToFade;
+		p.energy = timeToFadeOut;
 	else
 		p.energy = timeToChangeColor;
 	
@@ -40,23 +41,53 @@ void StaticParticleEmitter::InitiateParticleFall()
 		Particle &p = GetParticles()[i];
 
 		p.velocity.x( randflt(-0.3, 0.3));
-		p.velocity.y(-1.0f);
+		p.velocity.y( -(maxYHeight/timeToFall) );
 		p.velocity.z( randflt(-0.3,0.3));
-		p.velocity.normalize();
 	}
 };
 
-void StaticParticleEmitter::InitiateParticleFade()
+void StaticParticleEmitter::InitiateParticleFadeOut()
 {
 	particlesDieing = true;
+	updateColor = true;
 
 	for(int i=0;i<currentParticleIndex;++i)
 	{
 		Particle &p = GetParticles()[i];
 		p.velocity = float3();
-		p.energy = timeToFade;
-		p.pada = timeToFade;
-		p.color = endColor;
+		p.energy = timeToFadeOut;
+		p.pada = timeToFadeOut;
+	}
+};
+
+void StaticParticleEmitter::InitiateParticleFadeIn()
+{
+	updateColor = true;
+	particlesFadingIn = true;
+
+	for(int i=0;i<currentParticleIndex;++i)
+	{
+		Particle &p = GetParticles()[i];
+		p.velocity = float3();
+		p.energy = timeToFadeIn;
+		p.pada = timeToFadeIn;
+		p.color = fadeInColor;
+	}
+};
+
+void StaticParticleEmitter::InitiateMainColorChange()
+{
+	updateColor = true;
+	particlesStatic = false;
+	particlesDieing = particlesFadingIn = particlesFalling = false;
+
+	for(int i=0;i<currentParticleIndex;++i)
+	{
+		Particle &p = GetParticles()[i];
+		p.velocity = float3();
+		p.energy = timeToChangeColor;
+		p.pada = timeToChangeColor;
+		p.color = startColor;
 	}
 };
 
@@ -64,12 +95,32 @@ void StaticParticleEmitter::UpdateParticleProperties(Particle &p/*, const GameTi
 {
 	if(particlesDieing)
 	{
-		f32 r = lerp(endColor.r(), fadeColor.r(), 1-(1.0f/p.pada)*p.energy);
-		f32 g = lerp(endColor.g(), fadeColor.g(), 1-(1.0f/p.pada)*p.energy);
-		f32 b = lerp(endColor.b(), fadeColor.b(), 1-(1.0f/p.pada)*p.energy);
-		f32 a = lerp(endColor.a(), fadeColor.a(), 1-(1.0f/p.pada)*p.energy);
+		if(p.energy <= EPSILON)
+		{
+			p.energy = EPSILON; return;
+		}
+
+		f32 r = lerp(endColor.r(), fadeOutColor.r(), 1-(1.0f/p.pada)*p.energy);
+		f32 g = lerp(endColor.g(), fadeOutColor.g(), 1-(1.0f/p.pada)*p.energy);
+		f32 b = lerp(endColor.b(), fadeOutColor.b(), 1-(1.0f/p.pada)*p.energy);
+		f32 a = lerp(endColor.a(), fadeOutColor.a(), 1-(1.0f/p.pada)*p.energy);
 
 		p.color = Color4f(r,g,b,a);
+		return;
+	}
+	else if(particlesFadingIn)
+	{
+		if(p.energy <= EPSILON)
+		{
+			p.energy = EPSILON; return;
+		}
+
+		f32 r = lerp(fadeInColor.r(), startColor.r(), 1-(1.0f/p.pada)*p.energy);
+		f32 g = lerp(fadeInColor.g(), startColor.g(), 1-(1.0f/p.pada)*p.energy);
+		f32 b = lerp(fadeInColor.b(), startColor.b(), 1-(1.0f/p.pada)*p.energy);
+		f32 a = lerp(fadeInColor.a(), startColor.a(), 1-(1.0f/p.pada)*p.energy);
+		p.color = Color4f(r,g,b,a);
+
 		return;
 	}
 
@@ -94,15 +145,14 @@ void StaticParticleEmitter::UpdateParticleProperties(Particle &p/*, const GameTi
 		p.energy=100; // falling particles dont die
 		return;
 	}
-
-	if(particlesStatic)
-	{
-		p.energy = 1; // dont update particle color
-		return;
-	}
-
+	
 	if(updateColor)
 	{
+		if(p.energy <= EPSILON)
+		{
+			p.energy = EPSILON; return;
+		}
+
 		f32 r = lerp(startColor.r(), endColor.r(), 1-(1.0f / p.pada)*p.energy);
 		f32 g = lerp(startColor.g(), endColor.g(), 1-(1.0f / p.pada)*p.energy);
 		f32 b = lerp(startColor.b(), endColor.b(), 1-(1.0f / p.pada)*p.energy);
@@ -114,12 +164,20 @@ void StaticParticleEmitter::UpdateParticleProperties(Particle &p/*, const GameTi
 	{
 		p.color = this->startColor;
 	}
+
+	if(particlesStatic)
+	{
+		p.energy = 1; // dont update particle color
+		return;
+	}
 };
 
 const bool StaticParticleEmitter::AddParticle(const Particle &p)
 {
 	if(currentParticleIndex <= GetLocalParticleMaximum())
 	{
+		maxYHeight = max(p.pos.y(), maxYHeight);
+
 		GetParticles()[currentParticleIndex++] = p;
 		return true;
 	}
