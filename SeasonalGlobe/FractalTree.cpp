@@ -475,7 +475,8 @@ void FractalTree::CalculateParticleLines(std::vector<ParticleLine> &plines)
 		u32 segmentIndex=0;
 		for(std::vector<BranchSegment>::const_iterator it = td->segments.begin(); it != td->segments.end(); ++it, ++segmentIndex) // segment
 		{
-			for(u32 i = it->start; i < it->end; ++i) // line
+			u32 indx=0;
+			for(u32 i = it->start; i < it->end; ++i, ++indx) // line
 			{
 				Mat44 *startMatrix = &transformationMatrices[i], endMatrix;
 				glMatrixMode(GL_MODELVIEW); glPushMatrix(); glLoadIdentity();
@@ -486,7 +487,7 @@ void FractalTree::CalculateParticleLines(std::vector<ParticleLine> &plines)
 				
 				p.SetLineDepth(depthIndex);
 				p.SetSegmentIndex(segmentIndex);
-				p.SetDepthOfLineInSegment(i-it->start); // range 0 to n
+				p.SetDepthOfLineInSegment(indx); // range 0 to n
 
 				plines.push_back(p);
 			}
