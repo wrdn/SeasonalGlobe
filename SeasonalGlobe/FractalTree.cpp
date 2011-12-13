@@ -12,6 +12,8 @@ FractalTree::FractalTree() : branchRadius(GetDefaultBranchRadius()), branchRadiu
 {
 	rotationAngles[0] = rotationAngles[1] = rotationAngles[2] = DefaultAngle;
 	BuildRotationMatrices();
+
+	ogl.Load();
 };
 
 FractalTree::FractalTree(FractalTree const& t) : transformationMatrices(0)
@@ -28,6 +30,8 @@ FractalTree::FractalTree(FractalTree const& t) : transformationMatrices(0)
 		leafMatrices = (Mat44*)_aligned_malloc(sizeof(Mat44) * leafMatrixCount, 16);
 		memcpy(leafMatrices, &t.leafMatrices, sizeof(Mat44)*leafMatrixCount);
 	}
+
+	ogl.Load();
 };
 
 void FractalTree::DeepCopy(const FractalTree *dstp) const
@@ -354,16 +358,20 @@ void FractalTree::Draw(f32 dt)
 	Mat44 ma; glPushMatrix(); glLoadIdentity();
 	glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)ma.GetMatrix()); matrixStack.push(ma);
 	glPopMatrix();
-	
 
 	if(treeDieing)
 	{
 		mat.Activate();
+		
 		if(treeShader) { treeShader->Activate(); }
+		ogl.glActiveTexture(GL_TEXTURE0);
 		if(tex) { tex->Activate(); }
+		ogl.glActiveTexture(GL_TEXTURE1);
+		if(normalMap) { normalMap->Activate(); }
+
 		glTranslatef(treePos.x(), treePos.y(), treePos.z());
 
-		for(int i=0;i<levels[deathDepth];++i)
+		for(u32 i=0;i<levels[deathDepth];++i)
 			DrawBranch(transformationMatrices[i]);
 		
 		glEnable(GL_BLEND);
@@ -374,12 +382,12 @@ void FractalTree::Draw(f32 dt)
 
 		if(deathDepth == levels.size()-1)
 		{
-			for(int i=levels[deathDepth];i<transformationMatricesArraySize;++i)
+			for(u32 i=levels[deathDepth];i<transformationMatricesArraySize;++i)
 				DrawBranch(transformationMatrices[i]);
 		}
 		else
 		{
-			for(int i=levels[deathDepth];i<levels[deathDepth+1];++i)
+			for(u32 i=levels[deathDepth];i<levels[deathDepth+1];++i)
 				DrawBranch(transformationMatrices[i]);
 		}
 
@@ -387,7 +395,9 @@ void FractalTree::Draw(f32 dt)
 
 		mat.SetDiffuse(float4(1));
 
+		if(normalMap) { normalMap->Deactivate(); }
 		glPopMatrix();
+		ogl.glActiveTexture(GL_TEXTURE0);
 		return;
 	}
 	
@@ -397,7 +407,10 @@ void FractalTree::Draw(f32 dt)
 	mat.SetDiffuse(float4(1,1,1,alpha));
 
 	if(treeShader) { treeShader->Activate(); }
+	ogl.glActiveTexture(GL_TEXTURE0);
 	if(tex) { tex->Activate(); }
+	ogl.glActiveTexture(GL_TEXTURE1);
+	if(normalMap) { normalMap->Activate(); }
 
 	glTranslatef(treePos.x(), treePos.y(), treePos.z());
 
@@ -409,6 +422,8 @@ void FractalTree::Draw(f32 dt)
 		glDisable(GL_BLEND);
 		if(treeShader) { treeShader->Deactivate(); }
 		if(tex) { tex->Deactivate(); }
+		if(normalMap) { normalMap->Deactivate(); }
+		ogl.glActiveTexture(GL_TEXTURE0);
 		return;
 	}
 
@@ -423,6 +438,8 @@ void FractalTree::Draw(f32 dt)
 		glDisable(GL_BLEND);
 		if(treeShader) { treeShader->Deactivate(); }
 		if(tex) { tex->Deactivate(); }
+		if(normalMap) { normalMap->Deactivate(); }
+		ogl.glActiveTexture(GL_TEXTURE0);
 		return;
 	}
 
@@ -464,6 +481,8 @@ void FractalTree::Draw(f32 dt)
 	glPopMatrix();
 	if(treeShader) { treeShader->Deactivate(); }
 	if(tex) { tex->Deactivate(); }
+	if(normalMap) { normalMap->Deactivate(); }
+	ogl.glActiveTexture(GL_TEXTURE0);
 	return;
 };
 

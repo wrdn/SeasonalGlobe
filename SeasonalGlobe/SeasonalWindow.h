@@ -12,6 +12,9 @@ using gxbase::GLWindowEx;
 class SeasonalWindow : public GLWindowEx
 {
 private:
+	static const c8 TREE_DRAW_MODES_CONTROL_KEY = 'm';
+	static const c8 LIGHT_SWITCH_CONTROL_KEY = 's';
+
 	static const u32 DEFAULT_WIDTH = 800;
 	static const u32 DEFAULT_HEIGHT = 600;
 	static const c8* DEFAULT_WINDOW_TITLE;

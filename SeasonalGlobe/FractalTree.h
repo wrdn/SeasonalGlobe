@@ -15,6 +15,7 @@ enum TreeShadingMode
 	FlatNonTextured,
 	SmoothNonTextured,
 	SmoothTextured,
+	NormalMappedTextured,
 };
 
 // BranchSegment and BranchDepth hold information about where each set of matrices (for branches)
@@ -106,7 +107,10 @@ private:
 	// created once only (in BuildTree())
 	Cylinder gbranch;
 	float3 treePos;
-	Texture *tex;
+	
+	Texture *tex, *normalMap;
+	glex ogl;
+
 	Material mat;
 	Shader *treeShader;
 
@@ -234,6 +238,9 @@ public:
 	void SetTexture(Texture *t) { tex = t; };
 	Texture* GetTexture() const { return tex; };
 	void SetDrawMode(GLenum dmode) { gbranch.SetDrawMode(dmode); };
+
+	Texture* GetNormalMap() { return normalMap; }
+	void SetNormalMap(Texture *t) { normalMap = t; }
 
 	const Material& GetTreeMaterial() const { return mat; }
 	void SetMaterial(const Material &m) { mat = m; }

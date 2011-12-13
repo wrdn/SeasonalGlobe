@@ -13,14 +13,14 @@ TerrainLoader::~TerrainLoader(void)
 bool TerrainLoader::Load(char *filename)
 {
 	unsigned char *rowpointer;
-	int vertex_index;
+	i32 vertex_index;
 
 	Image heightfield;
 	if(!heightfield.Load(filename)) { return false; }
 
 	height = heightfield.Height();
 	width = heightfield.Width();
-	int bitsperpixel = heightfield.GetPixelSize();
+	i32 bitsperpixel = heightfield.GetPixelSize();
 
 	const u32 vertexArraySize = width*height;
 	VERTEX *verts = new VERTEX[vertexArraySize]; // this can be passed straight to Model class
@@ -33,7 +33,7 @@ bool TerrainLoader::Load(char *filename)
 		for(u32 i = 0; i <width; i++)
 		{
 			VERTEX v;
-			v.uvs.set ( (float)i/(width-1), (float)j/(height-1) );
+			v.uvs.set ( (f32)i/(width-1), (f32)j/(height-1) );
 
 			v.pos.set(
 				(-2.0f + 4.0f* v.uvs.x()),

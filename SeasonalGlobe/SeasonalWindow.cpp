@@ -168,7 +168,7 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 				//scn.GetTree()->SetAnimationLevel(0);
 			}
 		} break;
-	case 'l':
+	case LIGHT_SWITCH_CONTROL_KEY:
 		{
 			// Order: Directional - Spotlight - Ambient - Directional
 			if(!down)
@@ -193,7 +193,7 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 			}
 		} break;
 
-	case 'm':
+	case TREE_DRAW_MODES_CONTROL_KEY:
 		{
 			if(!down)
 				scn.SetTreeShadeMode(scn.GetNextTreeShadeMode());

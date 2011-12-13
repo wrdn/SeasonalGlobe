@@ -67,7 +67,7 @@ struct TerrainShift
 	f32 currentShift; // 0 < currentShift < maxShift
 	f32 maxShift; // how much we shift on Y to put the terrain back into the base
 
-	TerrainShift() : currentScale(0), maxScale(0.45), currentShift(0), maxShift(1.45)
+	TerrainShift() : currentScale(0), maxScale(0.45f), currentShift(0), maxShift(1.45f)
 	{ };
 	~TerrainShift() { };
 };
@@ -104,13 +104,14 @@ private:
 	u32 phongShaderID, particleSystemBaseShaderID,
 		globeShaderID, directionalLightShaderID,
 		multiTexturingSampleShaderID, spotlightShaderID,
-		ambientLightShaderID, displacementMapShaderID;
+		ambientLightShaderID,
+		normalMap_Ambient_ShaderID, normalMap_Directional_ShaderID, normalMap_Spotlights_ShaderID;
 	TreeShaders treeShaders;
 	TerrainShaders terrainShaders;
 
 	// Textures
 	Texture *grassTexture, *houseTexture, *barkTexture, *particleTexture,
-		*leafTexture, *baseTexture, *displacementTexture;
+		*leafTexture, *baseTexture, *displacementTexture, *barkNormalMap;
 
 	// Particle emitters
 	u32 leafParticleEmitterID;
@@ -222,6 +223,8 @@ public:
 		case SmoothNonTextured:
 			return SmoothTextured;
 		case SmoothTextured:
+			return NormalMappedTextured;
+		case NormalMappedTextured:
 			return NonTexturedNonLitWireframe;
 		}
 
@@ -300,6 +303,10 @@ public:
 				spotShader->Activate(); spotShader->SetUniform("useTextures", true); spotShader->Deactivate();
 				tree->SetTreeShadeMode(spotShader,barkTexture, SmoothTextured);
 			}
+		}
+		else if(m == NormalMappedTextured)
+		{
+			tree->SetTreeShadeMode(shaderMan.GetShader(normalMap_Directional_ShaderID), barkTexture, NormalMappedTextured);
 		}
 	};
 };

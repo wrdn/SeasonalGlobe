@@ -36,13 +36,13 @@ void StaticParticleEmitter::Emit(Particle &p)
 void StaticParticleEmitter::InitiateParticleFall()
 {
 	particlesFalling=true;
-	for(int i=0;i<currentParticleIndex;++i)
+	for(u32 i=0;i<currentParticleIndex;++i)
 	{
 		Particle &p = GetParticles()[i];
 
-		p.velocity.x( randflt(-0.3, 0.3));
+		p.velocity.x( randflt(-0.3f, 0.3f));
 		p.velocity.y( -(maxYHeight/timeToFall) );
-		p.velocity.z( randflt(-0.3,0.3));
+		p.velocity.z( randflt(-0.3f,0.3f));
 	}
 };
 
@@ -51,7 +51,7 @@ void StaticParticleEmitter::InitiateParticleFadeOut()
 	particlesDieing = true;
 	updateColor = true;
 
-	for(int i=0;i<currentParticleIndex;++i)
+	for(u32 i=0;i<currentParticleIndex;++i)
 	{
 		Particle &p = GetParticles()[i];
 		p.velocity = float3();
@@ -65,7 +65,7 @@ void StaticParticleEmitter::InitiateParticleFadeIn()
 	updateColor = true;
 	particlesFadingIn = true;
 
-	for(int i=0;i<currentParticleIndex;++i)
+	for(u32 i=0;i<currentParticleIndex;++i)
 	{
 		Particle &p = GetParticles()[i];
 		p.velocity = float3();
@@ -81,7 +81,7 @@ void StaticParticleEmitter::InitiateMainColorChange()
 	particlesStatic = false;
 	particlesDieing = particlesFadingIn = particlesFalling = false;
 
-	for(int i=0;i<currentParticleIndex;++i)
+	for(u32 i=0;i<currentParticleIndex;++i)
 	{
 		Particle &p = GetParticles()[i];
 		p.velocity = float3();
@@ -133,13 +133,13 @@ void StaticParticleEmitter::UpdateParticleProperties(Particle &p/*, const GameTi
 		else
 		{
 			p.rotation_z += 0.1f;
-			p.rotation_x += randflt(-0.5, 0.5);
+			p.rotation_x += randflt(-0.5f, 0.5f);
 
-			p.pos.x( p.pos.x() + randflt(-0.05,0.05) );
-			p.pos.z( p.pos.z() + randflt(-0.03,0.03) );
+			p.pos.x( p.pos.x() + randflt(-0.05f,0.05f) );
+			p.pos.z( p.pos.z() + randflt(-0.03f,0.03f) );
 
-			p.velocity.x( randflt(-0.2, 0.2));
-			p.velocity.z( randflt(-0.2, 0.2));
+			p.velocity.x( randflt(-0.2f, 0.2f));
+			p.velocity.z( randflt(-0.2f, 0.2f));
 
 		}
 		p.energy=100; // falling particles dont die

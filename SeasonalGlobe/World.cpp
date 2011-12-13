@@ -20,7 +20,9 @@ World::World(void)
 	defaultBillboardModel(0), polygonMode(GL_FILL),lightSphere(0), spotCone(0),
 
 	phongShaderID(0), particleSystemBaseShaderID(0), globeShaderID(0), directionalLightShaderID(0), // Shaders
-	multiTexturingSampleShaderID(0), spotlightShaderID(0), ambientLightShaderID(0), displacementMapShaderID(0), treeShaders(),
+	multiTexturingSampleShaderID(0), spotlightShaderID(0), ambientLightShaderID(0), 
+	normalMap_Ambient_ShaderID(0), normalMap_Directional_ShaderID(0), normalMap_Spotlights_ShaderID(0),
+	treeShaders(), terrainShaders(),
 
 	grassTexture(0), houseTexture(0), barkTexture(0), particleTexture(0), leafTexture(0), baseTexture(0), // Textures
 	displacementTexture(0),
@@ -68,13 +70,16 @@ Materials _material1, _material2, _material3;
 
 bool World::LoadTextures()
 {
-	grassTexture = texMan.LoadTextureFromFile("Data/Textures/Grass2.jpg");
+	grassTexture = texMan.LoadTextureFromFile("Data/Textures/snowTexture.jpg");
 	grassTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR );
 	grassTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR );
 	grassTexture->SetWrapS(GL_REPEAT);
 	grassTexture->SetWrapT(GL_REPEAT);
 
 	barkTexture = texMan.LoadTextureFromFile("Data/Textures/bark.jpg");
+	barkTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
+	barkNormalMap = texMan.LoadTextureFromFile("Data/Textures/barkNormalMap2.jpg");
+	barkNormalMap->SetTextureSlot(SLOT_GL_TEXTURE_1);
 
 	particleTexture = texMan.LoadTextureFromFile("Data/Textures/particleTexture.tga");
 	particleTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
@@ -113,6 +118,8 @@ bool World::LoadShader(u32 &id, const c8* fragmentShaderFilename, const c8* vert
 
 bool World::LoadShaders()
 {
+	LoadShader(multiTexturingSampleShaderID, "Data/Shaders/multitex.frag", "Data/Shaders/multitex.vert");
+
 	LoadShader(particleSystemBaseShaderID, "Data/Shaders/particlesystembase.frag", "Data/Shaders/particlesystembase.vert");
 	
 	if(LoadShader(phongShaderID, "Data/Shaders/phong.frag", "Data/Shaders/phong.vert"))
@@ -128,15 +135,29 @@ bool World::LoadShaders()
 		phongShader->Deactivate(); // initialise the shader uniforms
 	}
 	
+	// Globe shader
 	LoadShader(globeShaderID, "Data/Shaders/globe.frag", "Data/Shaders/globe.vert");
 
+	// Lighting shaders
 	LoadShader(directionalLightShaderID, "Data/Shaders/directionalLight.frag", "Data/Shaders/directionalLight.vert");
-
 	LoadShader(spotlightShaderID, "Data/Shaders/spotlight.frag", "Data/Shaders/spotlight.vert");
-
 	LoadShader(ambientLightShaderID, "Data/Shaders/ambientLight.frag", "Data/Shaders/ambientLight.vert");
 
-	//LoadShader(displacementMapShaderID, "Data/Shaders/displacement.frag", "Data/Shaders/displacement.vert");
+	// Normal mapping shaders
+	LoadShader(normalMap_Ambient_ShaderID, "Data/Shaders/NormalMapping/normalMapping_ambient_light.frag",
+		"Data/Shaders/NormalMapping/normalMapping_ambient_light.vert");
+	LoadShader(normalMap_Directional_ShaderID, "Data/Shaders/NormalMapping/normalMapping_directional_light.frag",
+		"Data/Shaders/NormalMapping/normalMapping_directional_light.vert");
+	LoadShader(normalMap_Spotlights_ShaderID, "Data/Shaders/NormalMapping/normalMapping_spotlights.frag",
+		"Data/Shaders/NormalMapping/normalMapping_spotlights.vert");
+	
+	shaderMan.GetShader(normalMap_Directional_ShaderID)->Activate();
+	shaderMan.GetShader(normalMap_Directional_ShaderID)->SetUniform("baseMap",0);
+	shaderMan.GetShader(normalMap_Directional_ShaderID)->SetUniform("normalMap",1);
+	shaderMan.GetShader(normalMap_Directional_ShaderID)->Deactivate();
+
+
+	// Displacement mapping terrain shaders
 	LoadShader(terrainShaders.Terrain_Displacement_Ambient_ShaderID, 
 		"Data/Shaders/TerrainShaders/displacement_ambient.frag", "Data/Shaders/TerrainShaders/displacement_ambient.vert");
 	LoadShader(terrainShaders.Terrain_Displacement_Directional_ShaderID, 
@@ -144,16 +165,12 @@ bool World::LoadShaders()
 	LoadShader(terrainShaders.Terrain_Displacement_Spotlights_ShaderID, 
 		"Data/Shaders/TerrainShaders/displacement_spotlights.frag", "Data/Shaders/TerrainShaders/displacement_spotlights.vert");
 
-	LoadShader(multiTexturingSampleShaderID, "Data/Shaders/multitex.frag", "Data/Shaders/multitex.vert");
-	
 	// Load all the tree shaders
 	LoadShader(treeShaders.Tree_Ambient_ShaderID, "Data/Shaders/TreeShaders/ambientLight.frag", "Data/Shaders/TreeShaders/ambientLight.vert");
-
 	LoadShader(treeShaders.FlatNonTextured_Directional_ShaderID,
 		"Data/Shaders/TreeShaders/FlatShading/directionalLight.frag", "Data/Shaders/TreeShaders/FlatShading/directionalLight.vert");
 	LoadShader(treeShaders.FlatNonTextured_Spot_ShaderID,
 		"Data/Shaders/TreeShaders/FlatShading/spotlight.frag", "Data/Shaders/TreeShaders/FlatShading/spotlight.vert");
-	
 	LoadShader(treeShaders.SmoothShaded_Directional_ShaderID,
 		"Data/Shaders/TreeShaders/SmoothShading/directionalLight.frag", "Data/Shaders/TreeShaders/SmoothShading/directionalLight.vert");
 	LoadShader(treeShaders.SmoothShaded_Spot_ShaderID,
@@ -295,6 +312,7 @@ bool World::LoadGeometry()
 	tree = new FractalTree();
 	tree->SetPosition(float3(2.5f, 0, 0.2f));
 	tree->SetTexture(barkTexture);
+	tree->SetNormalMap(barkNormalMap);
 	tree->SetBranchRadius(1.0f);
 	tree->SetBranchRadiusReduction(0.1f);
 	tree->SetBranchLength(0.6f);
@@ -403,8 +421,8 @@ void World::SetupSeasons()
 
 	// Autumn: Leaves change colour and fall from tree (then disappear over time), lightning bolt hits tree and it burns down
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0, InitiateLeafColorChange));
-	seasonMan.AddEvent(Autumn, SeasonalEvent(0.35, InitiateLeafFall));
-	seasonMan.AddEvent(Autumn, SeasonalEvent(0.75, InitiateLeafVanish));
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.35f, InitiateLeafFall));
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.75f, InitiateLeafVanish));
 };
 
 bool World::Load()
@@ -464,7 +482,7 @@ f32 inc=0;
 
 void cube()
 {
-		// Front Face
+	// Front Face
 	glBegin(GL_QUADS);
 	glNormal3f(0.0f,0.0f,1.0f);
 	glTexCoord2d(0.0, 0.0);		glVertex3d(-1.0, -1.0,  1.0);
@@ -659,8 +677,8 @@ void World::Update(const GameTime &gameTime)
 	particleSystem.Update(gameTime);
 };
 
-float xrot=0, yrot=0, radius=3.0f;
-float ra=0;
+f32 xrot=0, yrot=0, radius=3.0f;
+f32 ra=0;
 
 //f32 vpos_mult=0, terrainShift=0;
 //f32 terrainRuntime=0;
@@ -668,7 +686,8 @@ float ra=0;
 f32 MaxDisplacementScale = 0.45f;
 f32 MaxShift = 1.45f;
 f32 CurrentShift=0, CurrentScale=0;
-f32 ShiftTime = 5, CurrentTerrainTime=0; // 5 seconds to make snow drifts
+f32 ShiftTime = 15, CurrentTerrainTime=0; // 5 seconds to make snow drifts
+bool loopTerrainGrowth=false;
 
 void World::Draw(const GameTime &gameTime)
 {
@@ -691,7 +710,7 @@ void World::Draw(const GameTime &gameTime)
 	//_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
 	//_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
 
-	fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
+	//fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
 
 	if(lightMode == Spotlights)
 	{
@@ -733,39 +752,29 @@ void World::Draw(const GameTime &gameTime)
 	glPopMatrix();
 
 	// Terrain (floor)
-	//float terrainShift = 1.45f;
-	//float terrainShift=0;
-
-	/*terrainRuntime += gameTime.GetDeltaTime();
-	if(terrainRuntime >= 1.0f) { terrainRuntime = 0; }
-	f32 P = (1.0f / 0.45f) * terrainRuntime;
-	f32 S = lerp(0, 1.45, P);
-	vpos_mult = 0.45f;
-	terrainShift = 1.45;*/
 	CurrentTerrainTime += gameTime.GetDeltaTime();
-	CurrentTerrainTime = fmod(CurrentTerrainTime, ShiftTime);
+
+	if(loopTerrainGrowth)
+		CurrentTerrainTime = fmod(CurrentTerrainTime, ShiftTime);
+	else
+		CurrentTerrainTime = min(CurrentTerrainTime, ShiftTime);
 
 	f32 N = (1.0f / ShiftTime) * CurrentTerrainTime; // N in range 0 to 1
-	
 	f32 vpos = lerp(0, 0.45f, N);
-	
 	CurrentShift = lerp(0, MaxShift, N);
 
 
 	glDisable(GL_CULL_FACE);
 	terrain->SetPosition(float3(0, terrain->GetPosition().y()-CurrentShift,0));
-	glPushMatrix();
 	terrain->GetShader()->Activate();
 	terrain->GetShader()->SetUniform("colorMap", 0);
 	terrain->GetShader()->SetUniform("displacementMap", 1);
-	//terrain->GetShader()->SetUniform("vposmult", 0.45f);
 	terrain->GetShader()->SetUniform("vposmult", vpos);
 	terrain->GetShader()->Deactivate();
 	terrain->SetXRotation(-90);
 	terrain->SetYRotation(0);
 	terrain->SetZRotation(-90);
 	terrain->Draw();
-	glPopMatrix();
 	terrain->SetPosition(float3(0, terrain->GetPosition().y()+CurrentShift,0));
 	glEnable(GL_CULL_FACE);
 
