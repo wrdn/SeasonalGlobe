@@ -136,7 +136,13 @@ bool World::LoadShaders()
 
 	LoadShader(ambientLightShaderID, "Data/Shaders/ambientLight.frag", "Data/Shaders/ambientLight.vert");
 
-	LoadShader(displacementMapShaderID, "Data/Shaders/displacement.frag", "Data/Shaders/displacement.vert");
+	//LoadShader(displacementMapShaderID, "Data/Shaders/displacement.frag", "Data/Shaders/displacement.vert");
+	LoadShader(terrainShaders.Terrain_Displacement_Ambient_ShaderID, 
+		"Data/Shaders/TerrainShaders/displacement_ambient.frag", "Data/Shaders/TerrainShaders/displacement_ambient.vert");
+	LoadShader(terrainShaders.Terrain_Displacement_Directional_ShaderID, 
+		"Data/Shaders/TerrainShaders/displacement_directional.frag", "Data/Shaders/TerrainShaders/displacement_directional.vert");
+	LoadShader(terrainShaders.Terrain_Displacement_Spotlights_ShaderID, 
+		"Data/Shaders/TerrainShaders/displacement_spotlights.frag", "Data/Shaders/TerrainShaders/displacement_spotlights.vert");
 
 	LoadShader(multiTexturingSampleShaderID, "Data/Shaders/multitex.frag", "Data/Shaders/multitex.vert");
 	
@@ -283,6 +289,7 @@ bool World::LoadGeometry()
 	terrain->SetXRotation(-90);
 	terrain->SetZRotation(-90);
 	terrain->SetScale(float3(5.48f,5.48f,5.48f));
+	terrain->SetMaterial(Material(float4(1.0f), float4(1.0f), float4(1.0f), 0));
 
 	// Load tree
 	tree = new FractalTree();
@@ -311,7 +318,7 @@ bool World::LoadGeometry()
 
 	SetLightingMode(Spotlights); // default to directional lights
 
-	terrain->SetShader(shaderMan.GetShader(displacementMapShaderID));
+	//terrain->SetShader(shaderMan.GetShader(displace));
 
 	globeSphere->SetShader(shaderMan.GetShader(globeShaderID));
 
@@ -324,6 +331,7 @@ bool World::LoadGeometry()
 	spotCone->SetTextureA(baseTexture);
 	spotCone->SetPosition(spotlights[0].GetPosition().ToFloat3());
 
+	SetLightingMode(Directional);
 	SetTreeShadeMode(SmoothTextured);
 
 	return true;
@@ -653,6 +661,9 @@ void World::Update(const GameTime &gameTime)
 
 float xrot=0, yrot=0, radius=3.0f;
 float ra=0;
+
+f32 vpos_mult=0, terrainShift=0;
+f32 terrainRuntime=0;
 void World::Draw(const GameTime &gameTime)
 {
 	seasonMan.Update(gameTime.GetDeltaTime());
@@ -717,15 +728,23 @@ void World::Draw(const GameTime &gameTime)
 
 	// Terrain (floor)
 	//float terrainShift = 1.45f;
-	float terrainShift=0;
+	//float terrainShift=0;
 
-	glDisable(GL_CULL_FACE); 
+	terrainRuntime += gameTime.GetDeltaTime();
+	if(terrainRuntime >= 0.45f) { terrainRuntime = 0; }
+	f32 P = (1.0f / 0.45f) * terrainRuntime;
+	f32 S = lerp(0, 1.45, P);
+
+	vpos_mult = P;
+	terrainShift = 0;
+
+	glDisable(GL_CULL_FACE);
 	terrain->SetPosition(float3(0, terrain->GetPosition().y()-terrainShift,0));
 	terrain->GetShader()->Activate();
 	terrain->GetShader()->SetUniform("colorMap", 0);
 	terrain->GetShader()->SetUniform("displacementMap", 1);
 	//terrain->GetShader()->SetUniform("vposmult", 0.45f);
-	terrain->GetShader()->SetUniform("vposmult", 0.0f);
+	terrain->GetShader()->SetUniform("vposmult", vpos_mult);
 	terrain->GetShader()->Deactivate();
 	terrain->SetXRotation(-90);
 	terrain->SetYRotation(0);

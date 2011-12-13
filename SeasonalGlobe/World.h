@@ -47,6 +47,18 @@ public:
 	~TreeShaders() { };
 };
 
+struct TerrainShaders
+{
+public:
+	u32 Terrain_Displacement_Ambient_ShaderID;
+	u32 Terrain_Displacement_Directional_ShaderID;
+	u32 Terrain_Displacement_Spotlights_ShaderID;
+
+	TerrainShaders() : Terrain_Displacement_Ambient_ShaderID(0), Terrain_Displacement_Directional_ShaderID(0),
+		Terrain_Displacement_Spotlights_ShaderID(0) {};
+	~TerrainShaders() {};
+};
+
 struct TerrainShift
 {
 	f32 currentScale, // 0 < currentScale < maxScale
@@ -94,6 +106,7 @@ private:
 		multiTexturingSampleShaderID, spotlightShaderID,
 		ambientLightShaderID, displacementMapShaderID;
 	TreeShaders treeShaders;
+	TerrainShaders terrainShaders;
 
 	// Textures
 	Texture *grassTexture, *houseTexture, *barkTexture, *particleTexture,
@@ -169,29 +182,29 @@ public:
 	{
 		lightMode = m;
 
-		if(lightMode == Directional)
-		{
-			Shader* directionalLightShader = shaderMan.GetShader(directionalLightShaderID);
-			houseModel->SetShader(directionalLightShader);
-			baseModel->SetShader(directionalLightShader);
-			terrain->SetShader(directionalLightShader);
-			tree->SetShader(directionalLightShader);
-		}
-		else if(lightMode == Spotlights)
-		{
-			Shader* spotShader = shaderMan.GetShader(spotlightShaderID);
-			houseModel->SetShader(spotShader);
-			baseModel->SetShader(spotShader);
-			terrain->SetShader(spotShader);
-			tree->SetShader(spotShader);
-		}
-		else if(lightMode == Ambient)
+		if(lightMode == Ambient) // AMBIENT LIGHTS
 		{
 			Shader* ambientShader = shaderMan.GetShader(ambientLightShaderID);
 			houseModel->SetShader(ambientShader);
 			baseModel->SetShader(ambientShader);
-			terrain->SetShader(ambientShader);
 			tree->SetShader(ambientShader);
+			terrain->SetShader(shaderMan.GetShader(terrainShaders.Terrain_Displacement_Ambient_ShaderID));
+		}
+		else if(lightMode == Directional) // DIRECTIONAL LIGHT
+		{
+			Shader* directionalLightShader = shaderMan.GetShader(directionalLightShaderID);
+			houseModel->SetShader(directionalLightShader);
+			baseModel->SetShader(directionalLightShader);
+			tree->SetShader(directionalLightShader);
+			terrain->SetShader(shaderMan.GetShader(terrainShaders.Terrain_Displacement_Directional_ShaderID));
+		}
+		else if(lightMode == Spotlights) // SPOT LIGHTS
+		{
+			Shader* spotShader = shaderMan.GetShader(spotlightShaderID);
+			houseModel->SetShader(spotShader);
+			baseModel->SetShader(spotShader);
+			tree->SetShader(spotShader);
+			terrain->SetShader(shaderMan.GetShader(terrainShaders.Terrain_Displacement_Spotlights_ShaderID));
 		}
 
 		SetTreeShadeMode(tree->GetTreeShadeMode());

@@ -450,6 +450,18 @@
     <None Include="Data\Shaders\spotlight.vert">
       <Filter>Resource Files\Data\Shaders</Filter>
     </None>
+    <None Include="Data\Shaders\TerrainShaders\displacement_ambient.frag">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\TerrainShaders\displacement_ambient.vert">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\TerrainShaders\displacement_directional.frag">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\TerrainShaders\displacement_directional.vert">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SeasonalGlobe.rc">
