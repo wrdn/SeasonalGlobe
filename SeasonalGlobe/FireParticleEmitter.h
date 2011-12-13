@@ -65,7 +65,7 @@ private:
 	f32 ignitionTime;
 	f32 runtime;
 	BurningState burnState;
-	u32 burnLevel;
+	i32 burnLevel;
 	FractalTree *tree;
 	f32 K;
 

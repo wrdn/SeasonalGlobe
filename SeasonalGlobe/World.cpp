@@ -233,7 +233,6 @@ bool World::LoadParticles()
 	fireParticleEmitter->SetRateOfEmission(1000);
 	
 	fireParticleEmitter->SetTree(tree);
-	
 
 	std::vector<ParticleLine> fire_particle_lines;
 	tree->CalculateParticleLines(fire_particle_lines);
@@ -295,6 +294,7 @@ bool World::LoadGeometry()
 	tree->SetGenerations(gen);
 	tree->BuildTree();
 	tree->SetBuildTime(0);
+	tree->SetTreeDieing(true);
 
 	// Set the shader on each object (for lighting)
 	//Shader* directionalLightShader = shaderMan.GetShader(directionalLightShaderID);
@@ -628,7 +628,7 @@ void World::Draw(const GameTime &gameTime)
 	//_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
 	//_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
 
-	//fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
+	fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
 
 	if(lightMode == Spotlights)
 	{

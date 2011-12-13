@@ -7,7 +7,8 @@ using namespace std;
 FractalTree::FractalTree() : branchRadius(GetDefaultBranchRadius()), branchRadiusReduction(GetDefaultBranchRadiusReduction()),
 	branchLength(GetDefaultBranchLength()), transformationMatricesArraySize(0), transformationMatrices(0),
 	leafMatrixCount(0), leafMatrices(0), loop_growth(false),
-	runtime(0), buildTime(15), tex(0), treeShader(0), treeShadeMode(SmoothTextured), alpha(1)
+	runtime(0), buildTime(15), tex(0), treeShader(0), treeShadeMode(SmoothTextured), alpha(1),
+	deathDepth(0), treeDieing(false)
 {
 	rotationAngles[0] = rotationAngles[1] = rotationAngles[2] = DefaultAngle;
 	BuildRotationMatrices();
@@ -354,14 +355,46 @@ void FractalTree::Draw(f32 dt)
 	glGetFloatv(GL_MODELVIEW_MATRIX, (f32*)ma.GetMatrix()); matrixStack.push(ma);
 	glPopMatrix();
 	
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
+	if(treeDieing)
+	{
+		mat.Activate();
+		if(treeShader) { treeShader->Activate(); }
+		if(tex) { tex->Activate(); }
+		glTranslatef(treePos.x(), treePos.y(), treePos.z());
+
+		for(int i=0;i<levels[deathDepth];++i)
+			DrawBranch(transformationMatrices[i]);
+		
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+		mat.SetDiffuse(float4(1,1,1, alpha));
+		mat.Activate();
+
+		if(deathDepth == levels.size()-1)
+		{
+			for(int i=levels[deathDepth];i<transformationMatricesArraySize;++i)
+				DrawBranch(transformationMatrices[i]);
+		}
+		else
+		{
+			for(int i=levels[deathDepth];i<levels[deathDepth+1];++i)
+				DrawBranch(transformationMatrices[i]);
+		}
+
+		glDisable(GL_BLEND);
+
+		mat.SetDiffuse(float4(1));
+
+		glPopMatrix();
+		return;
+	}
+	
 	//mat.SetAmbient(float4(1,1,1,0));
-	mat.SetDiffuse(float4(1,1,1,alpha));
 	//mat.SetSpecular(float4(1,1,1,1));
 	mat.Activate();
-
+	mat.SetDiffuse(float4(1,1,1,alpha));
 
 	if(treeShader) { treeShader->Activate(); }
 	if(tex) { tex->Activate(); }

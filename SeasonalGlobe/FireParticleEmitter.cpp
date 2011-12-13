@@ -2,7 +2,7 @@
 #include "FractalTree.h"
 
 FireParticleEmitter::FireParticleEmitter() : currentParticleAdditionIndex(0), maxParticlesPerLine(25),
-	startColor(1,0.2f,0,1), endColor(1, 0.28f, 0, 0.8f), fade(0), ignitionTime(10), runtime(0), burnState(Igniting),
+	startColor(1,0.2f,0,1), endColor(1, 0.28f, 0, 0.8f), fade(0), ignitionTime(20), runtime(0), burnState(Igniting),
 	burnLevel(0), tree(0), K(0)
 {
 };
@@ -133,9 +133,17 @@ void FireParticleEmitter::UpdateFireParticleEmitter(const GameTime &gameTime)
 		return;
 	}
 
-	u32 depth = this->particleLines.back().GetLineDepth();
+	//u32 depth = this->particleLines.back().GetLineDepth();
+	u32 depth = tree->GetDepth()-1;
 
 	K = (1.0f / ignitionTime) * runtime;
-	f32 lerp_anim_level = lerp(0, (f32)depth, K);
-	burnLevel = depth - (u32)lerp_anim_level;
+	f32 lerp_anim_level = lerp(0, (f32)depth+1, K);
+	//burnLevel = depth - (u32)lerp_anim_level;
+	burnLevel = depth - lerp_anim_level - 1;
+
+	f32 timePerDepth = ignitionTime / depth+1;
+	f32 cmodtime = runtime - (burnLevel * timePerDepth);
+	f32 a = (1.0f/timePerDepth) * cmodtime;
+	tree->SetAlpha(max(0.2, 1-fract(a)));
+	tree->SetTreeDeathDepth(max(0,burnLevel));
 };

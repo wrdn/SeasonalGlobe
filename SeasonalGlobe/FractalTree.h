@@ -111,7 +111,10 @@ private:
 	Shader *treeShader;
 
 	TreeShadingMode treeShadeMode;
+	
 	f32 alpha;
+	u32 deathDepth; // determines the depth of the tree we will fade by alpha
+	bool treeDieing;
 
 	// Builds each of the 6 matrices required for applying rotations
 	void BuildRotationMatrices();
@@ -125,6 +128,13 @@ private:
 
 	void DeepCopy(const FractalTree *dstp) const; // copy data in "this" into "out"
 public:
+
+	const bool GetTreeDieing() const { return treeDieing; }
+	void SetTreeDieing(const bool b) { treeDieing = b; }
+
+	void SetTreeDeathDepth(const u32 depth) { deathDepth = depth; }
+	const u32 GetTreeDeathDepth() const { return deathDepth; }
+
 	void SetRuntime(f32 r) { runtime = r; };
 	void SetBuildTime(f32 b) { buildTime = b; };
 	const f32 GetRuntime() const { return runtime; };
