@@ -11,7 +11,7 @@
 World::World(void)
 	: conf(), // Application configuration
 
-	texMan(), shaderMan(), particleSystem(), // Managers
+	texMan(), shaderMan(), particleSystem(), seasonMan(), // Managers
 
 	cam(), sceneRotationAxis(0,1,0), _cameraAngle(30.0f), _cameraPosition(-30.0f), // Camera
 	_cameraRotation(-357.0f), AutoRotate(false),
@@ -668,10 +668,6 @@ void World::Draw(const GameTime &gameTime)
 	glPushMatrix();
 	tree->Draw(gameTime.GetDeltaTime());
 	glPopMatrix();
-
-	/*glPushMatrix();
-	reflective_draw(gameTime);
-	glPopMatrix();*/
 
 	// Terrain (floor)
 	//float terrainShift = 2.0f;

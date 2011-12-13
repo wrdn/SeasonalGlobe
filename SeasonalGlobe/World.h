@@ -17,6 +17,7 @@
 #include "Light.h"
 #include "Disk.h"
 #include "TerrainLoader.h"
+#include "SeasonManager.h"
 
 enum LightingMode
 {
@@ -55,6 +56,7 @@ private:
 	TextureManager texMan;
 	ShaderManager shaderMan;
 	ParticleSystem particleSystem;
+	SeasonManager seasonMan;
 
 	// Camera
 	Camera2 cam;

@@ -123,6 +123,7 @@
     <ClCompile Include="PerfTimer.cpp" />
     <ClCompile Include="PointBasedParticleEmitter.cpp" />
     <ClCompile Include="SeasonalWindow.cpp" />
+    <ClCompile Include="SeasonManager.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Sphere.cpp" />
@@ -171,6 +172,7 @@
     <ClInclude Include="PointBasedParticleEmitter.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SeasonalWindow.h" />
+    <ClInclude Include="SeasonManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="Sphere.h" />
