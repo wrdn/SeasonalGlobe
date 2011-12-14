@@ -83,14 +83,14 @@ void FireParticleEmitter::Emit(Particle &p)
 			{
 				// Do the LERP over the segment in here (pline line depth == burnLevel)
 				u32 depth = tree->GetDepth();
-				const BranchDepth &d = tree->GetBranchSegments()[pline.GetLineDepth()];
-				const BranchSegment &particlesBranchSegment = d.segments[pline.GetSegmentIndex()];
+				const BranchDepth *d = &tree->GetBranchSegments()[pline.GetLineDepth()];
+				const BranchSegment *particlesBranchSegment = &d->segments[pline.GetSegmentIndex()];
 
 				u32 timePerDepth = (u32)(ignitionTime / depth);
 				f32 P = runtime - (burnLevel * timePerDepth);
 				f32 LFactor = (1.0f / timePerDepth) * P;
 				LFactor = min(0.99999f, LFactor);
-				u32 segLen = particlesBranchSegment.end - particlesBranchSegment.start;
+				u32 segLen = particlesBranchSegment->end - particlesBranchSegment->start;
 				if(segLen == 0) { p.color = float4(0,0,0,0); p.energy = -1; return; }
 
 				f32 J = lerp(0, (f32)segLen, LFactor);
@@ -98,13 +98,27 @@ void FireParticleEmitter::Emit(Particle &p)
 
 				if(pline.GetDepthOfLineInSegment() < N)
 				{
-					f32 t = randflt(0, 1); p.pos = pline.GetStartPosition() + (t * pline.GetDirection()); p.pos.y(p.pos.y()-0.2f);
-					p.velocity = float3(0.2f, randflt(0,1), randflt(-0.3f,0.3f)); p.velocity.normalize(); p.size.setall(0.4f); p.color = startColor; p.energy = randflt(0, 0.85f); return;
+					f32 t = randflt(0, 1);
+					p.pos = pline.GetStartPosition() + (t * pline.GetDirection());
+					p.pos.y(p.pos.y()-0.2f);
+					p.velocity = float3(0.2f, randflt(0,1), randflt(-0.3f,0.3f));
+					p.velocity.normalize();
+					p.size.setall(0.4f);
+					p.color = startColor;
+					p.energy = randflt(0, 0.85f);
+					return;
 				}
 				else if(pline.GetDepthOfLineInSegment() == N)
 				{
-					f32 t = randflt(0, fract(J)); p.pos = pline.GetStartPosition() + (t * pline.GetDirection()); p.pos.y(p.pos.y()-0.2f);
-					p.velocity = float3(0.2f, randflt(0,1), randflt(-0.3f,0.3f)); p.velocity.normalize(); p.size.setall(0.4f); p.color = startColor; p.energy = randflt(0, 0.85f); return;
+					f32 t = randflt(0, fract(J));
+					p.pos = pline.GetStartPosition() + (t * pline.GetDirection());
+					p.pos.y(p.pos.y()-0.2f);
+					p.velocity = float3(0.2f, randflt(0,1), randflt(-0.3f,0.3f));
+					p.velocity.normalize();
+					p.size.setall(0.4f);
+					p.color = startColor;
+					p.energy = randflt(0, 0.85f);
+					return;
 				}
 				else
 				{

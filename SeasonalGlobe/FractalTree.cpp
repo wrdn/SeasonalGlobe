@@ -8,7 +8,7 @@ FractalTree::FractalTree() : branchRadius(GetDefaultBranchRadius()), branchRadiu
 	branchLength(GetDefaultBranchLength()), transformationMatricesArraySize(0), transformationMatrices(0),
 	leafMatrixCount(0), leafMatrices(0), loop_growth(false),
 	runtime(0), buildTime(15), tex(0), normalMap(0), treeShader(0), treeShadeMode(SmoothTextured), alpha(1),
-	deathDepth(0), treeDieing(false)
+	deathDepth(0), treeDieing(false), isActive(true)
 {
 	rotationAngles[0] = rotationAngles[1] = rotationAngles[2] = DefaultAngle;
 	BuildRotationMatrices();
@@ -61,6 +61,7 @@ void FractalTree::DeepCopy(const FractalTree *dstp) const
 	dst.treeShadeMode = treeShadeMode;
 	dst.alpha = alpha;
 	dst.treeShader = treeShader;
+	dst.isActive = isActive;
 };
 
 FractalTree::~FractalTree()
@@ -356,6 +357,8 @@ void FractalTree::DrawBranch(const Mat44 &transformationMatrix)
 
 void FractalTree::Draw(f32 dt)
 {
+	if(!isActive) return;
+
 	stack<Mat44> matrixStack; glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	Mat44 ma; glPushMatrix(); glLoadIdentity();

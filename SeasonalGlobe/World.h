@@ -61,15 +61,18 @@ public:
 
 struct TerrainShift
 {
-	f32 currentScale, // 0 < currentScale < maxScale
-		maxScale; // ~0.45 reasonable
-	
-	f32 currentShift; // 0 < currentShift < maxShift
-	f32 maxShift; // how much we shift on Y to put the terrain back into the base
+public:
+	f32 maxDisplacementScaleFactor,
+		maxGeometryShiftFactor; // translation on Y axis to put terrain back in base
+	f32 timeToElevateFully;
+	f32 elevationRuntime; // updated by dt each frame
 
-	TerrainShift() : currentScale(0), maxScale(0.45f), currentShift(0), maxShift(1.45f)
-	{ };
-	~TerrainShift() { };
+	TerrainShift() : maxDisplacementScaleFactor(0), maxGeometryShiftFactor(0),
+		timeToElevateFully(0), elevationRuntime(0) {};
+	TerrainShift(f32 _maxDisplacementScaleFactor, f32 _maxGeometryShiftFactor, f32 _timeToEvalateFully)
+		: maxDisplacementScaleFactor(_maxDisplacementScaleFactor), maxGeometryShiftFactor(_maxGeometryShiftFactor),
+		timeToElevateFully(_timeToEvalateFully), elevationRuntime(0) {};
+	~TerrainShift() {};
 };
 
 class World
@@ -91,7 +94,7 @@ private:
 	bool AutoRotate;
 
 	// Geometry
-	TerrainLoader *terrain;
+	TerrainLoader *terrain; TerrainShift terrainElevation;
 	FractalTree *tree;
 	Sphere *globeSphere;
 	GraphicsObject *houseModel, *baseModel;
@@ -120,7 +123,7 @@ private:
 	FireParticleEmitter *fireParticleEmitter;
 
 	// Lights
-	Light directionalLight;
+	Light directionalLight; f32 directionalLightRotation; f32 directionalLightSpeed;
 	Light spotlights[4];
 	LightingMode lightMode; // ACW-switch between Ambient, Directional and 4 spotlights
 	
@@ -145,7 +148,7 @@ public:
 	void SetAutoRotate(const bool b) { AutoRotate = b; };
 	
 	StaticParticleEmitter* GetLeafParticleEmitter() { return particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID); }
-	FireParticleEmitter* GetFireParticleEmitter() { return fireParticleEmitter; };
+	const FireParticleEmitter* GetFireParticleEmitter() const { return fireParticleEmitter; };
 
 	FractalTree * GetTree() const { return tree; };
 	const GLenum GetPolygonMode() const { return polygonMode; };
@@ -179,7 +182,7 @@ public:
 	void Update(const GameTime &gameTime);
 	void Draw(const GameTime &gameTime);
 
-	LightingMode GetLightingMode() { return lightMode; }
+	const LightingMode GetLightingMode() const { return lightMode; }
 	void SetLightingMode(LightingMode m) // need to switch shaders when we change how the scene is lit
 	{
 		lightMode = m;
@@ -213,7 +216,7 @@ public:
 	}
 
 	// Controls what is selected as the next mode for shading the tree
-	TreeShadingMode GetNextTreeShadeMode()
+	const TreeShadingMode GetNextTreeShadeMode() const
 	{
 		switch(tree->GetTreeShadeMode())
 		{

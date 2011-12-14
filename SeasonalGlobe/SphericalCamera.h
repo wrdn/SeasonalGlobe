@@ -38,7 +38,7 @@ public:
 	const float3& GetPosition() const { return pos; }
 	const float3& GetDirection() const { return dir; };
 
-	void Update()
+	void Update() const
 	{
 		gluLookAt(pos.x(), pos.y(), pos.z(), dir.x(), dir.y(), dir.z(), 0,1,0);
 	};

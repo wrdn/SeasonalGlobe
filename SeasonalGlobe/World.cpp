@@ -16,8 +16,8 @@ World::World(void)
 	cam(), sceneRotationAxis(0,1,0), _cameraAngle(30.0f), _cameraPosition(-30.0f), // Camera
 	_cameraRotation(-357.0f), AutoRotate(false),
 
-	terrain(0), tree(0), globeSphere(0), houseModel(0), baseModel(0), // Geometry
-	defaultBillboardModel(0), polygonMode(GL_FILL),lightSphere(0), spotCone(0),
+	terrain(0), terrainElevation(0.45f, 0.13f, 3.0f), tree(0), globeSphere(0), houseModel(0), // Geometry
+	baseModel(0), defaultBillboardModel(0), polygonMode(GL_FILL),lightSphere(0), spotCone(0),
 
 	phongShaderID(0), particleSystemBaseShaderID(0), globeShaderID(0), directionalLightShaderID(0), // Shaders
 	multiTexturingSampleShaderID(0), spotlightShaderID(0), ambientLightShaderID(0), 
@@ -29,7 +29,7 @@ World::World(void)
 
 	leafParticleEmitterID(0), snowEmitterID(0), smokeEmitterID(0), fireParticleEmitter(0), // Particle Emitters
 
-	directionalLight(), lightMode(Directional) // Lights
+	directionalLight(), directionalLightRotation(0), directionalLightSpeed(0.5f), lightMode(Directional) // Lights
 {
 }
 
@@ -181,8 +181,8 @@ bool World::LoadShaders()
 
 bool World::LoadParticles()
 {
-	defaultBillboardModel = CreateBillboardModel();
-	particleSystem.SetDefaultModel(defaultBillboardModel);
+	particleSystem.SetDefaultModel(CreateBillboardModel());
+	defaultBillboardModel = particleSystem.GetDefaultModel();
 
 	Shader *psysbase = shaderMan.GetShader(particleSystemBaseShaderID);
 
@@ -259,6 +259,7 @@ bool World::LoadParticles()
 	fireParticleEmitter->SetBillboardType(Spherical);
 	fireParticleEmitter->SetEmitterOrigin(tree->GetPosition());
 	fireParticleEmitter->SetRateOfEmission(1000);
+	fireParticleEmitter->SetSourceAlphaBlendFunction(GL_ONE);
 	fireParticleEmitter->SetTree(tree);
 	std::vector<ParticleLine> fire_particle_lines;
 	tree->CalculateParticleLines(fire_particle_lines);
@@ -276,7 +277,7 @@ bool World::LoadGeometry()
 {
 	// Load house model
 	houseModel = OBJFile::ParseFile("Data/House/Haus20.obj")[0];
-	houseModel->GetModel().BuildVBO();
+	((Model&)houseModel->GetModel()).BuildVBO();
 	houseModel->SetScale(float3(.05f,.05f,.05f));
 	houseModel->SetPosition(float3(-5.5,0,0.5));
 	houseModel->SetTextureA(houseTexture);
@@ -322,6 +323,8 @@ bool World::LoadGeometry()
 	i32 gen = 8; conf.GetInt("LSystemGenerations", gen);
 	tree->SetGenerations(gen);
 	tree->BuildTree();
+	tree->SetActive(false);
+
 	//tree->SetBuildTime(0);
 	//tree->SetTreeDieing(true);
 
@@ -387,30 +390,43 @@ void World::LoadLights()
 	spotlights[3].SetLightID(GL_LIGHT3);
 };
 
-void StartTreeGrowth(World *w) { w->GetTree()->InitGrow(); }
-void InitiateLeafGrowth(World *w)
+void StartTreeGrowth(const World *w)
 {
-	w->GetLeafParticleEmitter()->SetActive(true);
-	w->GetLeafParticleEmitter()->SetStartColor(Color4f(1,1,1,1));
-	w->GetLeafParticleEmitter()->InitiateParticleFadeIn();
+	World *wt = (World*)w;
+	wt->GetTree()->SetActive(true);
+	wt->GetTree()->InitGrow();
 };
-void InitiateLeafColorChange(World *w)
+void InitiateLeafGrowth(const World *w)
 {
-	w->GetLeafParticleEmitter()->SetEndColor(Color4f(0.8f, 0.35f, 0.35f, 1));
-	w->GetLeafParticleEmitter()->InitiateMainColorChange();
+	World *wt = (World*)w;
+	wt->GetLeafParticleEmitter()->SetActive(true);
+	wt->GetLeafParticleEmitter()->SetStartColor(Color4f(1,1,1,1));
+	wt->GetLeafParticleEmitter()->InitiateParticleFadeIn();
 };
-void InitiateLeafFall(World *w)
+void InitiateLeafColorChange(const World *w)
 {
-	w->GetLeafParticleEmitter()->InitiateParticleFall();
+	World *wt = (World*)w;
+	wt->GetLeafParticleEmitter()->SetEndColor(Color4f(0.8f, 0.35f, 0.35f, 1));
+	wt->GetLeafParticleEmitter()->InitiateMainColorChange();
 };
-void InitiateTreeIgnitionFire(World *w)
+void InitiateLeafFall(const World *w)
 {
-	w->GetFireParticleEmitter()->SetRuntime(0);
-	w->GetFireParticleEmitter()->SetBurningState(Igniting);
-	w->GetFireParticleEmitter()->SetActive(true);
+	World *wt = (World*)w;
+	wt->GetLeafParticleEmitter()->InitiateParticleFall();
+};
+void InitiateTreeIgnitionFire(const World *w)
+{
+	FireParticleEmitter *fp = (FireParticleEmitter*)w->GetFireParticleEmitter();
+	fp->SetRuntime(0);
+	fp->SetBurningState(Igniting);
+	fp->SetActive(true);
 };
 
-void InitiateLeafVanish(World *w) { w->GetLeafParticleEmitter()->InitiateParticleFadeOut(); }
+void InitiateLeafVanish(const World *w)
+{
+	World *wt = (World*)w;
+	wt->GetLeafParticleEmitter()->InitiateParticleFadeOut();
+}
 
 void World::SetupSeasons()
 {
@@ -418,8 +434,8 @@ void World::SetupSeasons()
 	seasonMan.SetWorldPointer(this);
 
 	// Spring: Tree grows
-	tree->SetBuildTime(min(tree->GetBuildTime(), seasonMan.GetTimePerSeason()));
-	seasonMan.AddEvent(Spring, SeasonalEvent(0, StartTreeGrowth)); // tree grows at start of spring
+	tree->SetBuildTime(seasonMan.GetTimePerSeason() * 0.75f);
+	seasonMan.AddEvent(Spring, SeasonalEvent(0.2f, StartTreeGrowth)); // tree grows at start of spring
 	
 	// Summer: Leaves appear on tree
 	seasonMan.AddEvent(Summer, SeasonalEvent(0.2f, InitiateLeafGrowth));
@@ -435,7 +451,7 @@ void World::SetupSeasons()
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.35f, InitiateLeafVanish));
 	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.2f);
 
-	seasonMan.AddEvent(Autumn, SeasonalEvent(0.4, InitiateTreeIgnitionFire));
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.4f, InitiateTreeIgnitionFire));
 	fireParticleEmitter->SetIgnitionTime(seasonMan.GetTimePerSeason() * 0.6f);
 };
 
@@ -587,7 +603,7 @@ void DrawFloor(const float3 &floorPos, const float3 &floorScale)
 void World::reflective_draw(const GameTime &gameTime)
 {
 	float3 floorScale(0.3f, 0.3f, 0.3f);
-	float3 floorPos(3.5f, -0.45f, 3.6f);
+	float3 floorPos(2.5f, -0.45f, 3.2f);
 	
 	glDisable(GL_DEPTH_TEST);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -619,6 +635,7 @@ void World::reflective_draw(const GameTime &gameTime)
 	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
 	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->Draw();
+	fireParticleEmitter->Draw();
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
 
@@ -697,18 +714,6 @@ void World::Update(const GameTime &gameTime)
 	particleSystem.Update(gameTime);
 };
 
-f32 xrot=0, yrot=0, radius=3.0f;
-f32 ra=0;
-
-//f32 vpos_mult=0, terrainShift=0;
-//f32 terrainRuntime=0;
-
-f32 MaxDisplacementScale = 0.45f;
-f32 MaxShift = 1.45f;
-f32 CurrentShift=0, CurrentScale=0;
-f32 ShiftTime = 15, CurrentTerrainTime=0; // 5 seconds to make snow drifts
-bool loopTerrainGrowth=false;
-
 void World::Draw(const GameTime &gameTime)
 {
 	seasonMan.Update(gameTime.GetDeltaTime());
@@ -759,11 +764,11 @@ void World::Draw(const GameTime &gameTime)
 		// Directional Light
 		directionalLight.Activate();
 		f32 radius = 13; float3 pos(0,0,0);
-		float3 newPos(pos.x()+radius*sin(ra), pos.y()+radius*cos(ra), pos.z());
+		float3 newPos(pos.x()+radius*sin(directionalLightRotation), pos.y()+radius*cos(directionalLightRotation), pos.z());
 		lightSphere->SetPosition(newPos);
 		float4 lightSpherePos = lightSphere->GetPosition().ToFloat4();
 		directionalLight.SetPositionAndUpdateOpenGL(lightSpherePos);
-		ra += 0.5f * gameTime.GetDeltaTime();
+		directionalLightRotation += directionalLightSpeed * gameTime.GetDeltaTime();
 		lightSphere->Draw();
 	}
 
@@ -772,16 +777,11 @@ void World::Draw(const GameTime &gameTime)
 	glPopMatrix();
 
 	// Terrain (floor)
-	CurrentTerrainTime += gameTime.GetDeltaTime();
-
-	if(loopTerrainGrowth)
-		CurrentTerrainTime = fmod(CurrentTerrainTime, ShiftTime);
-	else
-		CurrentTerrainTime = min(CurrentTerrainTime, ShiftTime);
-
-	f32 N = (1.0f / ShiftTime) * CurrentTerrainTime; // N in range 0 to 1
-	f32 vpos = lerp(0, 0.45f, N);
-	CurrentShift = lerp(0, MaxShift, N);
+	terrainElevation.elevationRuntime += gameTime.GetDeltaTime();
+	terrainElevation.elevationRuntime = min(terrainElevation.elevationRuntime, terrainElevation.timeToElevateFully); // or =fmod(CurrentTerrainTime, ShiftTime); to loop terrain
+	f32 N = (1.0f / terrainElevation.timeToElevateFully) * terrainElevation.elevationRuntime;
+	f32 vpos = lerp(0, terrainElevation.maxDisplacementScaleFactor, N);
+	f32 CurrentShift = lerp(0, terrainElevation.maxGeometryShiftFactor, N);
 
 	glDisable(GL_CULL_FACE);
 	terrain->SetPosition(float3(0, terrain->GetPosition().y()-CurrentShift,0));
@@ -802,6 +802,14 @@ void World::Draw(const GameTime &gameTime)
 
 	// Base
 	baseModel->Draw();
+
+	// testing to see if fire CAN be drawn upside down
+	glPushMatrix();
+	glScalef(1,-1,1);
+	glEnable(GL_BLEND); glDepthMask(GL_FALSE);
+	fireParticleEmitter->Draw();
+	glDisable(GL_BLEND); glDepthMask(GL_TRUE);
+	glPopMatrix();
 
 	// Particle system
 	particleSystem.Draw();

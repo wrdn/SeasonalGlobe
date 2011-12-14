@@ -36,7 +36,7 @@ public:
 	const Texture* GetTextureB() const { return textureB; }
 	Shader* GetShader() const { return objectShader; }
 
-	 Model& GetModel() { return gmodel; };
+	 const Model& GetModel() const { return gmodel; };
 
 	void SetModel(Model &m);
 	void SetShader(Shader *s) { objectShader = s; };

@@ -11,20 +11,20 @@ class SeasonalEvent
 private:
 	bool hasTriggered;
 	f32 timeOffset;
-	void (*EventCallback)(World *w);
+	void (*EventCallback)(const World *w);
 
 public:
 	
 	SeasonalEvent() : hasTriggered(false), timeOffset(0), EventCallback(0) { };
 	explicit SeasonalEvent(const f32 _timeOffset) : hasTriggered(false), timeOffset(_timeOffset),
 		EventCallback(0) { };
-	SeasonalEvent(const f32 _timeOffset, void (*callback)(World *w)) : hasTriggered(false), timeOffset(_timeOffset),
+	SeasonalEvent(const f32 _timeOffset, void (*callback)(const World *w)) : hasTriggered(false), timeOffset(_timeOffset),
 		EventCallback(callback) { };
 
 	~SeasonalEvent() { };
 
 	// runs the execution function and modifies the hasTriggered bool
-	void Run(World *w) { if(EventCallback && !hasTriggered) { EventCallback(w); hasTriggered = true; } };
+	void Run(const World *w) { if(EventCallback && !hasTriggered) { EventCallback(w); hasTriggered = true; } };
 
 	const bool HasTriggered() const { return hasTriggered; };
 	const f32 GetTimeOffset() const { return timeOffset; }
@@ -44,8 +44,8 @@ private:
 
 	std::vector<SeasonalEvent> seasonEvents[4]; // 0=spring, 1=summer, 2=autumn, 3=winter
 
-	Season GetSeason(const f32 time);
-	const f32 ConvertTimeToSeasonTime(f32 time, Season _currentSeason);
+	const Season GetSeason(const f32 time) const;
+	const f32 ConvertTimeToSeasonTime(f32 time, Season _currentSeason) const;
 	void ExecuteSeasonFunctions(const f32 seasonTimeClamp, Season _currentSeason);
 
 public:

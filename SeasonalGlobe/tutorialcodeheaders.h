@@ -35,7 +35,7 @@ public:
 	}
 
 	float& operator[](int i) {
-		return _xyzw[i];
+		return (*this)[i];
 	}
 };
 
@@ -94,13 +94,13 @@ public:
 	static ColorT null() {
 		return ColorT(0.0, 0.0, 0.0, 0.0);
 	}
-
+	
 	const float& operator[](int i) const {
 		return _rgba[i];
 	}
 
 	float& operator[](int i) {
-		return _rgba[i];
+		return (*this)[i];
 	}
 };
 
@@ -188,7 +188,7 @@ public:
 		glLightfv(GL_LIGHT0+_lightNumber, GL_POSITION, _position.xyzw());
 	}
 
-	void apply() {
+	void apply() const {
 		glEnable(GL_LIGHTING);
 		glEnable(GL_LIGHT0 + _lightNumber);
 	}
@@ -198,6 +198,6 @@ public:
 	}
 
 	float& operator[](int i) {
-		return _position[i];
+		return (*this)[i];
 	}
 };

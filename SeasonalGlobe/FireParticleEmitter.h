@@ -32,12 +32,12 @@ public:
 	void SetStartPosition(const float3 &start)
 	{
 		startPos = start;
-		direction = endPos - startPos;
+		direction = endPos; direction -= startPos;
 	};
 	void SetEndPosition(const float3 &end)
 	{
 		endPos = end;
-		direction = endPos - startPos;
+		direction = endPos; direction -= startPos;
 	};
 	const u32 GetLineDepth() const { return lineDepth; };
 	const float3& GetStartPosition() const { return startPos; };

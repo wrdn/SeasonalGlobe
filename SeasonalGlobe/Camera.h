@@ -18,17 +18,10 @@ private:
 	f32 farplane;
 
 public:
-	Camera(void)
+	Camera(void) : position(), direction(0,0,-1), up(0,1,0), fov(45), aspect(1.333f), nearplane(0.3f), farplane(100.0f)
 	{
-		position = float3(0,0,0);
-		direction = float3(0,0,-1);
-		up = float3(0,1,0);
-		right = up ^ direction;
+		right = up; right ^= direction;
 		right.normalize();
-		fov = 45;
-		nearplane = 0.3f;
-		farplane = 100.0f;
-		aspect = 1.333333f;
 	};
 	~Camera(void)
 	{
@@ -134,10 +127,10 @@ public:
 		up = rotationMatrix.Mult(upvec).ToFloat3();
 		up.normalize();
 
-		right = direction ^ up;
+		right = direction; right ^= up;
 		right.normalize();
 
-		up = right ^ direction;
+		up = right; up ^= direction;
 		up.normalize();
 
 		Update();

@@ -40,7 +40,7 @@ public:
 	static const u32 UV_BUFFER_OFFSET = 24;
 
 	VERTEX() { };
-	VERTEX(float3 _pos, float3 _normal, float2 _uv)
+	VERTEX(const float3 &_pos, const float3 &_normal, const float2 &_uv)
 		: pos(_pos), normal(_normal), uvs(_uv)
 	{
 	};

@@ -42,7 +42,7 @@ public:
 
 	const u32* const GetWindowRes() const;
 	void SetWindowResolution(const u32 width, const u32 height);
-	void ResetPerspective();
+	void ResetPerspective() const;
 	void SwitchFullscreen();
 	const bool IsFullScreen() const;
 

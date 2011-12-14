@@ -33,8 +33,7 @@ std::vector<GraphicsObject*> OBJFile::ParseFile(const c8* filename)
 
 std::vector<GraphicsObject*> OBJFile::ParseFile(const std::vector<c8*> &objFile)
 {
-	std::vector<GraphicsObject*> out;
-	if(!objFile.size()) { return out; }
+	if(!objFile.size()) { return std::vector<GraphicsObject*>(); }
 
 	GraphicsObject *activeGraphicsObject = new GraphicsObject();
 
@@ -55,7 +54,7 @@ std::vector<GraphicsObject*> OBJFile::ParseFile(const std::vector<c8*> &objFile)
 	if(!VERTEX_COUNT)
 	{
 		delete activeGraphicsObject;
-		return out;
+		return std::vector<GraphicsObject*>();
 	}
 
 	f32* vertex_data = new f32[VERTEX_COUNT * 3];
@@ -157,7 +156,7 @@ std::vector<GraphicsObject*> OBJFile::ParseFile(const std::vector<c8*> &objFile)
 		SAFE_DELETE_ARRAY(uv_data);
 		
 		delete activeGraphicsObject;
-		return out;
+		return std::vector<GraphicsObject*>();
 	}
 
 	// Face reading logic dependant on what exists in the file and
@@ -215,8 +214,10 @@ std::vector<GraphicsObject*> OBJFile::ParseFile(const std::vector<c8*> &objFile)
 				}
 			} // end of index and vertex parsing loop
 		}
-		activeGraphicsObject->GetModel().SetVertexArray(vertexArray, vertexArrayInsertionPos);
-		activeGraphicsObject->GetModel().SetIndicesArray(indexArray, array_sz);
+
+
+		((Model&)activeGraphicsObject->GetModel()).SetVertexArray(vertexArray, vertexArrayInsertionPos);
+		((Model&)activeGraphicsObject->GetModel()).SetIndicesArray(indexArray, array_sz);
 	}
 #pragma endregion
 
@@ -266,8 +267,8 @@ std::vector<GraphicsObject*> OBJFile::ParseFile(const std::vector<c8*> &objFile)
 				}
 			} // end of index and vertex parsing loop
 		}
-		activeGraphicsObject->GetModel().SetVertexArray(vertexArray, vertexArrayInsertionPos);
-		activeGraphicsObject->GetModel().SetIndicesArray(indexArray, array_sz);
+		((Model&)activeGraphicsObject->GetModel()).SetVertexArray(vertexArray, vertexArrayInsertionPos);
+		((Model&)activeGraphicsObject->GetModel()).SetIndicesArray(indexArray, array_sz);
 	}
 #pragma endregion
 
@@ -281,6 +282,7 @@ std::vector<GraphicsObject*> OBJFile::ParseFile(const std::vector<c8*> &objFile)
 	}
 
 	// Add the model
+	std::vector<GraphicsObject*> out;
 	out.push_back(activeGraphicsObject);
 
 	// Cleanup

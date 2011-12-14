@@ -248,7 +248,8 @@ bool TerrainLoader::Load(char *filename)
 	u32 *indicesArray = new u32[indices.size()];
 	memcpy(indicesArray, &indices[0], sizeof(u32)*indices.size());
 
-	this->GetModel().SetVertexArray(verts, vertexArraySize);
-	this->GetModel().SetIndicesArray(indicesArray, indices.size());
-	return this->GetModel().BuildVBO();
+	::Model &m = ((::Model&)this->GetModel());
+	m.SetVertexArray(verts, vertexArraySize);
+	m.SetIndicesArray(indicesArray, indices.size());
+	return m.BuildVBO();
 };

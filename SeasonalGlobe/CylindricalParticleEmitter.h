@@ -21,12 +21,12 @@ public:
 	void SetStartPosition(const float3 &f)
 	{
 		startPos = f;
-		direction = endPos - startPos;
+		direction = endPos; direction -= startPos;
 	};
 	void SetEndPosition(const float3 &f)
 	{
 		endPos = f;
-		direction = endPos - startPos;
+		direction = endPos; direction -= startPos;
 	};
 
 	const float3& GetStartPosition() const { return startPos; };

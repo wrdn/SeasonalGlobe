@@ -38,7 +38,7 @@ void SeasonalWindow::SetWindowResolution(const u32 width, const u32 height)
 	ResetPerspective();
 };
 
-void SeasonalWindow::ResetPerspective()
+void SeasonalWindow::ResetPerspective() const
 {
 	glViewport(0,0,windowRes[0],windowRes[1]);
 	

@@ -120,6 +120,8 @@ private:
 	u32 deathDepth; // determines the depth of the tree we will fade by alpha
 	bool treeDieing;
 
+	bool isActive;
+
 	// Builds each of the 6 matrices required for applying rotations
 	void BuildRotationMatrices();
 
@@ -239,7 +241,7 @@ public:
 	Texture* GetTexture() const { return tex; };
 	void SetDrawMode(GLenum dmode) { gbranch.SetDrawMode(dmode); };
 
-	Texture* GetNormalMap() { return normalMap; }
+	const Texture* GetNormalMap() const { return normalMap; }
 	void SetNormalMap(Texture *t) { normalMap = t; }
 
 	const Material& GetTreeMaterial() const { return mat; }
@@ -258,6 +260,9 @@ public:
 		tex = t;
 		treeShadeMode = m;
 	};
+
+	void SetActive(bool active) { isActive = active; }
+	const bool GetActive() const { return isActive; }
 
 	// Constants (default radius, etc)
 	static const f32 GetDefaultBranchRadius() { return 1.0f; };

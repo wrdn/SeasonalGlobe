@@ -1,11 +1,11 @@
 #include "SeasonManager.h"
 
-Season SeasonManager::GetSeason(const f32 time)
+const Season SeasonManager::GetSeason(const f32 time) const
 {
 	return (Season)(u32)lerp(0, 4, (1.0f / totalTime) * time);
 };
 
-const f32 SeasonManager::ConvertTimeToSeasonTime(f32 time, Season _currentSeason)
+const f32 SeasonManager::ConvertTimeToSeasonTime(f32 time, Season _currentSeason) const
 {
 	// converts time into range 0 to 1 for the current season
 	// with this number we can then check each of the current seasons

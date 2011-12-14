@@ -72,8 +72,6 @@ public:
 };
 
 // Auxiliary Functions (operator overloads)
-inline float2 operator-(float2 &v) { return v.negate(); }
-
 inline float2 operator+(const float2 &a, const float2 &b) { return float2(a)+=b; }
 inline float2 operator-(const float2 &a, const float2 &b) { return float2(a)-=b; };
 inline float2 operator*(const float2 &a, const float2 &b) { return float2(a)*=b; };
