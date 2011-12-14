@@ -25,7 +25,7 @@ World::World(void)
 	treeShaders(), terrainShaders(),
 
 	grassTexture(0), houseTexture(0), barkTexture(0), particleTexture(0), leafTexture(0), baseTexture(0), // Textures
-	displacementTexture(0),
+	displacementTexture(0), barkNormalMap(0),
 
 	leafParticleEmitterID(0), snowEmitterID(0), smokeEmitterID(0), fireParticleEmitter(0), // Particle Emitters
 
@@ -259,9 +259,7 @@ bool World::LoadParticles()
 	fireParticleEmitter->SetBillboardType(Spherical);
 	fireParticleEmitter->SetEmitterOrigin(tree->GetPosition());
 	fireParticleEmitter->SetRateOfEmission(1000);
-	
 	fireParticleEmitter->SetTree(tree);
-
 	std::vector<ParticleLine> fire_particle_lines;
 	tree->CalculateParticleLines(fire_particle_lines);
 
@@ -269,7 +267,7 @@ bool World::LoadParticles()
 	{
 		fireParticleEmitter->AddLine(fire_particle_lines[i]);
 	}
-	//fireParticleEmitter->SetActive(false);
+	fireParticleEmitter->SetActive(false);
 
 	return true;
 };
@@ -405,11 +403,18 @@ void InitiateLeafFall(World *w)
 {
 	w->GetLeafParticleEmitter()->InitiateParticleFall();
 };
+void InitiateTreeIgnitionFire(World *w)
+{
+	w->GetFireParticleEmitter()->SetRuntime(0);
+	w->GetFireParticleEmitter()->SetBurningState(Igniting);
+	w->GetFireParticleEmitter()->SetActive(true);
+};
+
 void InitiateLeafVanish(World *w) { w->GetLeafParticleEmitter()->InitiateParticleFadeOut(); }
 
 void World::SetupSeasons()
 {
-	seasonMan.SetTimePerSeason(8); // 8 seconds per season, 32 seconds per cycle
+	seasonMan.SetTimePerSeason(15); // 8 seconds per season, 32 seconds per cycle
 	seasonMan.SetWorldPointer(this);
 
 	// Spring: Tree grows
@@ -418,11 +423,20 @@ void World::SetupSeasons()
 	
 	// Summer: Leaves appear on tree
 	seasonMan.AddEvent(Summer, SeasonalEvent(0.2f, InitiateLeafGrowth));
+	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToFadeIn(seasonMan.GetTimePerSeason() * 0.2f);
 
 	// Autumn: Leaves change colour and fall from tree (then disappear over time), lightning bolt hits tree and it burns down
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0, InitiateLeafColorChange));
-	seasonMan.AddEvent(Autumn, SeasonalEvent(0.35f, InitiateLeafFall));
-	seasonMan.AddEvent(Autumn, SeasonalEvent(0.75f, InitiateLeafVanish));
+	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.25f);
+
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.2f, InitiateLeafFall));
+	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.2f);
+
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.35f, InitiateLeafVanish));
+	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.2f);
+
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.4, InitiateTreeIgnitionFire));
+	fireParticleEmitter->SetIgnitionTime(seasonMan.GetTimePerSeason() * 0.6f);
 };
 
 bool World::Load()
@@ -574,12 +588,13 @@ void World::reflective_draw(const GameTime &gameTime)
 {
 	float3 floorScale(0.3f, 0.3f, 0.3f);
 	float3 floorPos(3.5f, -0.45f, 3.6f);
-
+	
 	glDisable(GL_DEPTH_TEST);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glDisable(GL_LIGHTING);
 	glEnable(GL_STENCIL_TEST);
-	
+	glDisable(GL_TEXTURE_2D);
+
 	glStencilFunc(GL_ALWAYS, 1, 1);
 	glStencilOp(GL_REPLACE,GL_REPLACE,GL_REPLACE);
 
@@ -601,6 +616,11 @@ void World::reflective_draw(const GameTime &gameTime)
 
 	glDisable(GL_LIGHTING);
 	tree->Draw(gameTime.GetDeltaTime());
+	glDepthMask(GL_FALSE);
+	glEnable(GL_BLEND);
+	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->Draw();
+	glDisable(GL_BLEND);
+	glDepthMask(GL_TRUE);
 
 	glDisable(GL_NORMALIZE);
 	glCullFace(GL_BACK);
@@ -710,7 +730,7 @@ void World::Draw(const GameTime &gameTime)
 	//_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
 	//_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
 
-	//fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
+	fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
 
 	if(lightMode == Spotlights)
 	{
@@ -748,7 +768,7 @@ void World::Draw(const GameTime &gameTime)
 	}
 
 	glPushMatrix();
-	tree->Draw(gameTime.GetDeltaTime());
+	reflective_draw(gameTime);
 	glPopMatrix();
 
 	// Terrain (floor)
@@ -762,7 +782,6 @@ void World::Draw(const GameTime &gameTime)
 	f32 N = (1.0f / ShiftTime) * CurrentTerrainTime; // N in range 0 to 1
 	f32 vpos = lerp(0, 0.45f, N);
 	CurrentShift = lerp(0, MaxShift, N);
-
 
 	glDisable(GL_CULL_FACE);
 	terrain->SetPosition(float3(0, terrain->GetPosition().y()-CurrentShift,0));

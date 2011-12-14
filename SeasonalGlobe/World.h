@@ -145,6 +145,7 @@ public:
 	void SetAutoRotate(const bool b) { AutoRotate = b; };
 	
 	StaticParticleEmitter* GetLeafParticleEmitter() { return particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID); }
+	FireParticleEmitter* GetFireParticleEmitter() { return fireParticleEmitter; };
 
 	FractalTree * GetTree() const { return tree; };
 	const GLenum GetPolygonMode() const { return polygonMode; };

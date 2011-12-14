@@ -67,7 +67,6 @@ private:
 	BurningState burnState;
 	i32 burnLevel;
 	FractalTree *tree;
-	f32 K;
 
 	void Emit(Particle &p);
 	void UpdateParticleProperties(Particle &p/*, const GameTime &gameTime*/);
@@ -92,6 +91,16 @@ public:
 	const Color4f& GetEndColor() const { return endColor; };
 
 	void SetTree(FractalTree *t) { tree = t; }
+
+	BurningState GetBurningState() const { return burnState; }
+	void SetBurningState(BurningState st) { burnState = st; }
+
+	void SetRuntime(f32 r) { runtime = r; }
+
+	const f32 GetIgnitionTime() const { return ignitionTime; }
+	void SetIgnitionTime(f32 t) { ignitionTime = t; }
+
+	void InitDeath(); // kills the fire and the tree in sync
 };
 
 /*

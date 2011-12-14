@@ -16,7 +16,7 @@ private:
 public:
 	
 	SeasonalEvent() : hasTriggered(false), timeOffset(0), EventCallback(0) { };
-	SeasonalEvent(const f32 _timeOffset) : hasTriggered(false), timeOffset(_timeOffset),
+	explicit SeasonalEvent(const f32 _timeOffset) : hasTriggered(false), timeOffset(_timeOffset),
 		EventCallback(0) { };
 	SeasonalEvent(const f32 _timeOffset, void (*callback)(World *w)) : hasTriggered(false), timeOffset(_timeOffset),
 		EventCallback(callback) { };
@@ -51,7 +51,7 @@ private:
 public:
 
 	SeasonManager() : totalTime(16), timePerSeason(totalTime/4),
-		currentSeason(Spring), runtime(0) { };
+		currentSeason(Spring), runtime(0), worldPtr(0) { };
 	~SeasonManager() { };
 
 	void SetWorldPointer(World *p) { worldPtr = p; }

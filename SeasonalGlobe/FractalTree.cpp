@@ -7,7 +7,7 @@ using namespace std;
 FractalTree::FractalTree() : branchRadius(GetDefaultBranchRadius()), branchRadiusReduction(GetDefaultBranchRadiusReduction()),
 	branchLength(GetDefaultBranchLength()), transformationMatricesArraySize(0), transformationMatrices(0),
 	leafMatrixCount(0), leafMatrices(0), loop_growth(false),
-	runtime(0), buildTime(15), tex(0), treeShader(0), treeShadeMode(SmoothTextured), alpha(1),
+	runtime(0), buildTime(15), tex(0), normalMap(0), treeShader(0), treeShadeMode(SmoothTextured), alpha(1),
 	deathDepth(0), treeDieing(false)
 {
 	rotationAngles[0] = rotationAngles[1] = rotationAngles[2] = DefaultAngle;
@@ -55,6 +55,9 @@ void FractalTree::DeepCopy(const FractalTree *dstp) const
 	dst.runtime = runtime;
 	dst.buildTime = buildTime;
 	dst.tex = tex;
+	dst.normalMap = normalMap;
+	dst.deathDepth = deathDepth;
+	dst.treeDieing = treeDieing;
 	dst.treeShadeMode = treeShadeMode;
 	dst.alpha = alpha;
 	dst.treeShader = treeShader;

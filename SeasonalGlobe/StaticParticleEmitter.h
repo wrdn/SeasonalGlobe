@@ -71,6 +71,16 @@ public:
 		fadeOutColor.w(0);
 	}
 
+	const f32 GetTimeToChangeColor() const { return timeToChangeColor; }
+	const f32 GetTimeToFadeOut() const { return timeToFadeOut; }
+	const f32 GetTimeToFadeIn() const { return timeToFadeIn; }
+	const f32 GetTimeToFall() const { return timeToFall; }
+
+	void SetTimeToChangeColor(f32 t) { timeToChangeColor = t; }
+	void SetTimeToFadeOut(f32 t) { timeToFadeOut = t; }
+	void SetTimeToFadeIn(f32 t) { timeToFadeIn = t; }
+	void SetTimeToFall(f32 t) { timeToFall = t; }
+
 	void InitiateParticleFall();
 
 	void InitiateParticleFadeIn(); // fades from (startColor.rgb,0) to startColor

@@ -11,7 +11,7 @@ SeasonalWindow::SeasonalWindow() : clearColor(Color::BLACK), _leftDown(false), _
 
 	SetSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	SetDepthBits(24);
-	SetStencilBits(16);
+	SetStencilBits(1);
 	SetTitle(DEFAULT_WINDOW_TITLE);
 };
 
@@ -66,9 +66,9 @@ void SeasonalWindow::OnDisplay()
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_DEPTH_TEST);
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glClearColor(0,0,0,1);
-
+	
 	scn.Draw(gameTime);
 
 	SwapBuffers();

@@ -10,16 +10,8 @@ bool ParticleSystem::RemoveEmitter(u32 index)
 	}
 	return false;
 };
-/*
-ParticleEmitter * const ParticleSystem::GetEmitter(u32 id)
-{
-	if(id < handles.size())
-	{
-		return handles[id].emitter;
-	}
-	return 0;
-};
-*/
+
+
 void ParticleSystem::Clean()
 {
 	for(u32 i=0;i<handles.size();++i)
@@ -52,7 +44,7 @@ void ParticleSystem::Update(const GameTime &gameTime)
 	}
 };
 
-void ParticleSystem::Draw(/*const GameTime &gameTime*/)
+void ParticleSystem::Draw()
 {
 	glDisable(GL_CULL_FACE);
 
@@ -61,8 +53,7 @@ void ParticleSystem::Draw(/*const GameTime &gameTime*/)
 
 	for(std::vector<ParticleEmitter*>::const_iterator it = emitterSet.begin(); it != emitterSet.end(); ++it)
 	{
-		glBlendFunc(GL_SRC_ALPHA, (*it)->GetSourceAlphaBlendFunction());
-		(*it)->Draw(/*gameTime*/);
+		(*it)->Draw();
 	}
 
 	glDepthMask(GL_TRUE);

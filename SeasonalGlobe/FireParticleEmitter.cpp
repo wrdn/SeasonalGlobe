@@ -3,7 +3,7 @@
 
 FireParticleEmitter::FireParticleEmitter() : currentParticleAdditionIndex(0), maxParticlesPerLine(25),
 	startColor(1,0.2f,0,1), endColor(1, 0.28f, 0, 0.8f), fade(0), ignitionTime(20), runtime(0), burnState(Igniting),
-	burnLevel(0), tree(0), K(0)
+	burnLevel(0), tree(0)
 {
 };
 
@@ -83,8 +83,8 @@ void FireParticleEmitter::Emit(Particle &p)
 			{
 				// Do the LERP over the segment in here (pline line depth == burnLevel)
 				u32 depth = tree->GetDepth();
-				BranchDepth &d = (BranchDepth&)tree->GetBranchSegments()[pline.GetLineDepth()];
-				BranchSegment &particlesBranchSegment = d.segments[pline.GetSegmentIndex()];
+				const BranchDepth &d = tree->GetBranchSegments()[pline.GetLineDepth()];
+				const BranchSegment &particlesBranchSegment = d.segments[pline.GetSegmentIndex()];
 
 				u32 timePerDepth = (u32)(ignitionTime / depth);
 				f32 P = runtime - (burnLevel * timePerDepth);
@@ -141,8 +141,6 @@ void FireParticleEmitter::AddLine(const ParticleLine &line)
 
 void FireParticleEmitter::UpdateFireParticleEmitter(const GameTime &gameTime)
 {
-	burnState = Igniting;
-
 	runtime += gameTime.GetDeltaTime();
 
 	if(runtime > ignitionTime)
@@ -157,4 +155,9 @@ void FireParticleEmitter::UpdateFireParticleEmitter(const GameTime &gameTime)
 	burnLevel = (i32)lerp(0, (f32)depth,K);
 
 	tree->SetTreeDieing(false);
+};
+
+void FireParticleEmitter::InitDeath()
+{
+	burnState = Dieing;
 };
