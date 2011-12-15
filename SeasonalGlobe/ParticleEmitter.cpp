@@ -80,32 +80,6 @@ void ParticleEmitter::Draw()
 			glPopMatrix();
 		}
 	}
-	
-	/*for(u32 i=0;i<GetLocalParticleMaximum();++i)
-	{
-		Particle &p = particles[i];
-
-		glPushMatrix();
-
-		glColor4fv(p.color.GetVec());
-		
-		glTranslatef(p.pos.x(), p.pos.y(), p.pos.z());
-
-		if(billboardType == Spherical)
-		{
-			SphericalBillboardAdjust();
-		}
-		else
-		{
-			CylindricalBillboardAdjust();
-		}
-
-		glRotatef(p.rotation_z, 0,0,1);
-		glScalef(p.size.x(), p.size.y(), p.size.z());
-		model->Draw();
-
-		glPopMatrix();
-	}*/
 
 	DeactivateShader();
 
@@ -131,6 +105,8 @@ void ParticleEmitter::Update(const GameTime &gameTime)
 
 		for(std::vector<float3>::const_iterator it=forceVectors.begin(); it != forceVectors.end(); ++it)
 			p.pos += (*it) * gameTime.GetDeltaTime();
+
+		p.oldPos = p.pos;
 
 		UpdateParticleProperties(p);
 

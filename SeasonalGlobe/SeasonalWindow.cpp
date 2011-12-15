@@ -116,8 +116,30 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		}
 	}
 
+	float3 movableSpherePos = scn.movableSphere->GetPosition();
 	switch(tolower(key))
 	{
+
+	case 'y':
+		movableSpherePos -= float3(0.05f,0, 0);
+		break;
+	case 'u':
+		movableSpherePos += float3(0.05f,0, 0);
+		break;
+	case 'h':
+		movableSpherePos -= float3(0,0.05f, 0);
+		break;
+	case 'j':
+		movableSpherePos += float3(0,0.05f, 0);
+		break;
+	case 'f':
+		movableSpherePos -= float3(0,0, 0.05f);
+		break;
+	case 'g':
+		movableSpherePos += float3(0,0, 0.05f);
+		break;
+
+
 	case 'a': 
 		//scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(5, 1,0,0));
 		//scn.SetCameraRotation(scn.GetCameraRotation() + 5.0f);
@@ -199,6 +221,9 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 				scn.SetTreeShadeMode(scn.GetNextTreeShadeMode());
 		} break;
 	}
+
+	scn.movableSphere->SetPosition(movableSpherePos);
+
 };
 
 void SeasonalWindow::OnMouseButton(MouseButton button, bool down)

@@ -483,7 +483,7 @@ void World::SetupSeasons()
 	fireParticleEmitter->SetDeathTime(seasonMan.GetTimePerSeason() * 0.75f);
 
 	// Winter
-	seasonMan.AddEvent(Winter, SeasonalEvent(0, InitialiseSnow ));
+	seasonMan.AddEvent(Spring, SeasonalEvent(0, InitialiseSnow ));
 	seasonMan.AddEvent(Winter, SeasonalEvent(0.05, InitialiseHouseSmoke));
 	particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID)->SetTimeToFall(seasonMan.GetTimePerSeason() * 0.1f);
 
@@ -510,6 +510,54 @@ bool World::Load()
 	LoadGeometry();
 	LoadParticles();
 	
+	movableSphere = new Sphere();
+	movableSphere->Create(0.05f,20,20);
+	//movableSphere->SetPosition(float3(-3.2,1.9,1.6));
+	movableSphere->SetPosition(float3(-7.4, 4, 0.1));
+
+	
+	CollisionFace frontHouseTri1, frontHouseTri2;
+	CollisionFace backHouseTri1, backHouseTri2;
+	
+	frontHouseTri1.v1 = float3(-3.2, 4, 0.1);
+	frontHouseTri1.v2 = float3(-7.4, 4, 0.1);
+	frontHouseTri1.v3 = float3(-7.4, 1.75, 1.65);
+	frontHouseTri1.CalculateNormal();
+
+	frontHouseTri2.v1 = float3(-3.2, 4, 0.1);
+	frontHouseTri2.v2 = float3(-7.4, 1.75, 1.65);
+	frontHouseTri2.v3 = float3(-3.25, 1.75, 1.65);
+	frontHouseTri2.CalculateNormal();
+
+	// Can perform collision detection against these triangles
+	test_roof_triangles = new GraphicsObject();
+	VERTEX *verts = new VERTEX[6]; // defined from looking at the FRONT of the house
+	verts[0].pos = float3(-3.2, 4, 0.1); // roof top right
+	verts[1].pos = float3(-7.4, 4, 0.1); // roof top left
+	verts[2].pos = float3(-7.4, 1.75, 1.65); // front bottom left
+	verts[3].pos = float3(-3.25, 1.75, 1.65); // front bottom right
+	verts[4].pos = float3(-3.25, 1.75, -1.4); // back bottom right
+	verts[5].pos = float3(-7.4, 1.75, -1.4); // back bottom left
+	Model &m = (Model&)test_roof_triangles->GetModel();
+	m.SetVertexArray(verts, 6);
+	u32 *indices_array_roof = new u32[12];
+	indices_array_roof[0] = 0;
+	indices_array_roof[1] = 1;
+	indices_array_roof[2] = 2;
+	indices_array_roof[3] = 0;
+	indices_array_roof[4] = 2;
+	indices_array_roof[5] = 3;
+	
+	indices_array_roof[6] = 1;
+	indices_array_roof[7] = 0;
+	indices_array_roof[8] = 4;
+	indices_array_roof[9] = 1;
+	indices_array_roof[10] = 4;
+	indices_array_roof[11] = 5;
+	m.SetIndicesArray(indices_array_roof, 12);
+	m.BuildVBO();
+
+
 	SetupSeasons();
 
 	terrainElevation.timeToElevateFully = 10;
@@ -761,6 +809,28 @@ void World::multi_texturing_test(/*const GameTime &gameTime*/)
 
 void World::Update(const GameTime &gameTime)
 {
+	if(mergingTerrainTextured)
+	{
+		terrainTextureMergeRuntime += gameTime.GetDeltaTime() * mergeDirection;
+		if(terrainTextureMergeRuntime > timeToMergeTextures)
+		{
+			terrainTextureMergeRuntime = timeToMergeTextures - EPSILON;
+		}
+		else if(terrainTextureMergeRuntime <= 0)
+		{
+			terrainTextureMergeRuntime = 0;
+		}
+		terrainTextureMergeRuntime = fmod(terrainTextureMergeRuntime, timeToMergeTextures);
+		terrainTextureMergeFactor = (1.0f / timeToMergeTextures) * terrainTextureMergeRuntime;
+	}
+
+	HemiSphericalParticleEmitter *snowEmitter = particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID);
+	if(snowEmitter->IsActive())
+	{
+		if(snowEmitter->GetActivity() < 1.0f)
+			snowEmitter->SetActivity(snowEmitter->GetActivity() + 0.005f);
+	}
+
 	particleSystem.Update(gameTime);
 	fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
 };
@@ -808,30 +878,7 @@ void World::Draw(const GameTime &gameTime)
 	glTranslatef(0.0f, -1.0f,0.0f);
 
 	glRotatef(angle, 0, 1, 0);
-
-
-	if(mergingTerrainTextured)
-	{
-		terrainTextureMergeRuntime += gameTime.GetDeltaTime() * mergeDirection;
-		if(terrainTextureMergeRuntime > timeToMergeTextures)
-		{
-			terrainTextureMergeRuntime = timeToMergeTextures - EPSILON;
-		}
-		else if(terrainTextureMergeRuntime <= 0)
-		{
-			terrainTextureMergeRuntime = 0;
-		}
-		terrainTextureMergeRuntime = fmod(terrainTextureMergeRuntime, timeToMergeTextures);
-		terrainTextureMergeFactor = (1.0f / timeToMergeTextures) * terrainTextureMergeRuntime;
-	}
-
-	HemiSphericalParticleEmitter *snowEmitter = particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID);
-	if(snowEmitter->IsActive())
-	{
-		if(snowEmitter->GetActivity() < 1.0f)
-			snowEmitter->SetActivity(snowEmitter->GetActivity() + 0.005f);
-	}
-
+	
 	if(lightMode == Spotlights)
 	{
 		spotlights[0].Activate();
@@ -871,7 +918,10 @@ void World::Draw(const GameTime &gameTime)
 	reflective_draw(gameTime);
 	glPopMatrix();
 
-	
+	//test_roof_triangles->Draw();
+
+	movableSphere->Draw();
+
 	// House
 	houseModel->Draw();
 

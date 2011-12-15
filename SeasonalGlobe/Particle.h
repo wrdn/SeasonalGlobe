@@ -13,7 +13,7 @@
 struct Particle
 {
 public:
-	float3 pos, velocity, size; // 36
+	float3 pos, oldPos, velocity, size; // 36
 	Color4f color; // 48
 	f32 energy; // 52
 	f32 rotation_z; // rotation only ever applies to the Z axis, 56
