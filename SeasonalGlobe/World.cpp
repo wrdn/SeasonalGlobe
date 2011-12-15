@@ -22,7 +22,8 @@ World::World(void)
 	phongShaderID(0), particleSystemBaseShaderID(0), globeShaderID(0), directionalLightShaderID(0), // Shaders
 	multiTexturingSampleShaderID(0), spotlightShaderID(0), ambientLightShaderID(0), 
 	normalMap_Ambient_ShaderID(0), normalMap_Directional_ShaderID(0), normalMap_Spotlights_ShaderID(0),
-	treeShaders(), terrainShaders(),
+	treeShaders(), terrainShaders(), terrainTextureMergeFactor(0), mergingTerrainTextured(false),
+	timeToMergeTextures(8), terrainTextureMergeRuntime(0), mergeDirection(1),
 
 	grassTexture(0), houseTexture(0), barkTexture(0), particleTexture(0), leafTexture(0), baseTexture(0), // Textures
 	displacementTexture(0), barkNormalMap(0),
@@ -70,11 +71,18 @@ Materials _material1, _material2, _material3;
 
 bool World::LoadTextures()
 {
-	grassTexture = texMan.LoadTextureFromFile("Data/Textures/snowTexture.jpg");
+	grassTexture = texMan.LoadTextureFromFile("Data/Textures/Grass2.jpg");
 	grassTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR );
 	grassTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR );
 	grassTexture->SetWrapS(GL_REPEAT);
 	grassTexture->SetWrapT(GL_REPEAT);
+
+	snowTexture = texMan.LoadTextureFromFile("Data/Textures/snowTexture.jpg");
+	snowTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR );
+	snowTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR );
+	snowTexture->SetWrapS(GL_REPEAT);
+	snowTexture->SetWrapT(GL_REPEAT);
+	snowTexture->SetTextureSlot(SLOT_GL_TEXTURE_2);
 
 	barkTexture = texMan.LoadTextureFromFile("Data/Textures/bark.jpg");
 	barkTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
@@ -227,7 +235,7 @@ bool World::LoadParticles()
 	smokeEmitterID = particleSystem.AddEmitter<PointBasedParticleEmitter>();
 	PointBasedParticleEmitter *smokeParticleEmitter = particleSystem.GetEmitter<PointBasedParticleEmitter>(smokeEmitterID);
 	smokeParticleEmitter->SetParticleSpread(0.35f);
-	smokeParticleEmitter->SetRateOfEmission(2);
+	smokeParticleEmitter->SetRateOfEmission(250);
 	smokeParticleEmitter->SetAlphaMap(*particleTexture);
 	i32 maxsmokeparticles=80; conf.GetInt("MaxSmokeParticles", maxsmokeparticles);
 	smokeParticleEmitter->SetLocalParticleMaximum(abs(maxsmokeparticles));
@@ -245,11 +253,12 @@ bool World::LoadParticles()
 	snowEmitter->SetAlphaMap(*particleTexture);
 	i32 maxsnowparticles=150; conf.GetInt("MaxSnowParticles", maxsnowparticles);
 	snowEmitter->SetLocalParticleMaximum(abs(maxsnowparticles));
-	snowEmitter->SetHemiSphereRadius(globeSphere->GetRadius() - (globeSphere->GetRadius() * 0.075f));
-	snowEmitter->SetEmitterOrigin(float3(0,0,0));
+	snowEmitter->SetHemiSphereRadius(globeSphere->GetRadius() - (globeSphere->GetRadius() * 0.048f));
+	snowEmitter->SetEmitterOrigin(float3(0.2f,0,0));
 	snowEmitter->SetShader(psysbase);
 	snowEmitter->SetBillboardType(Spherical);
 	snowEmitter->SetActive(false);
+	snowEmitter->SetRateOfEmission(500);
 
 	u32 fireParticleEmitterID = particleSystem.AddEmitter<FireParticleEmitter>();
 	fireParticleEmitter = particleSystem.GetEmitter<FireParticleEmitter>(fireParticleEmitterID);
@@ -258,7 +267,6 @@ bool World::LoadParticles()
 	fireParticleEmitter->SetShader(psysbase);
 	fireParticleEmitter->SetBillboardType(Spherical);
 	fireParticleEmitter->SetEmitterOrigin(tree->GetPosition());
-	fireParticleEmitter->SetRateOfEmission(1000);
 	fireParticleEmitter->SetSourceAlphaBlendFunction(GL_ONE);
 	fireParticleEmitter->SetTree(tree);
 	std::vector<ParticleLine> fire_particle_lines;
@@ -269,6 +277,7 @@ bool World::LoadParticles()
 		fireParticleEmitter->AddLine(fire_particle_lines[i]);
 	}
 	fireParticleEmitter->SetActive(false);
+	fireParticleEmitter->SetRateOfEmission(-1);
 
 	return true;
 };
@@ -302,6 +311,7 @@ bool World::LoadGeometry()
 	terrain->Load("Data/Textures/ground_heightmap.bmp");
 	terrain->SetTextureA(grassTexture);
 	terrain->SetTextureB(displacementTexture);
+	terrain->SetTextureC(snowTexture);
 	terrain->SetXRotation(-90);
 	terrain->SetZRotation(-90);
 	terrain->SetScale(float3(5.48f,5.48f,5.48f));
@@ -350,7 +360,6 @@ bool World::LoadGeometry()
 	spotCone->SetTextureA(baseTexture);
 	spotCone->SetPosition(spotlights[0].GetPosition().ToFloat3());
 
-	SetLightingMode(Directional);
 	SetTreeShadeMode(SmoothTextured);
 
 	return true;
@@ -435,39 +444,58 @@ void InitialiseHouseSmoke(const World *w)
 {
 	((World*)w)->ActivateSmokeParticleEffect();
 };
+void InitialiseSnow(const World *w)
+{
+	((World*)w)->ActivateSnow();
+};
+void InitialiseTerrainElevation(const World *w) { ((World*)w)->ActivateTerrainElevation(Up); }
+void InitialiseTerrainMelt(const World *w) { ((World*)w)->ActivateTerrainElevation(Down); }
+void InitialiseTerrainTextureMergeToSnow(const World *w) { ((World*)w)->ActiveTerrainTextureMerge(1); }
+void InitialiseTerrainTextureMergeToGrass(const World *w) { ((World*)w)->ActiveTerrainTextureMerge(-1); }
 
 void World::SetupSeasons()
 {
-	seasonMan.SetTimePerSeason(15); // 8 seconds per season, 32 seconds per cycle
+	seasonMan.SetTimePerSeason(18); // 8 seconds per season, 32 seconds per cycle
 	seasonMan.SetWorldPointer(this);
 
 	// Spring: Tree grows
 	tree->SetBuildTime(seasonMan.GetTimePerSeason() * 0.85f);
 	seasonMan.AddEvent(Spring, SeasonalEvent(0.1f, StartTreeGrowth)); // tree grows at start of spring
-	
+
 	// Summer: Leaves appear on tree
-	seasonMan.AddEvent(Summer, SeasonalEvent(0.1f, InitiateLeafGrowth));
+	seasonMan.AddEvent(Summer, SeasonalEvent(0.0f, InitiateLeafGrowth));
 	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToFadeIn(seasonMan.GetTimePerSeason() * 0.25f);
 
 	// Autumn: Leaves change colour and fall from tree (then disappear over time), lightning bolt hits tree and it burns down
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0, InitiateLeafColorChange));
-	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.1f);
+	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.15f);
 
-	seasonMan.AddEvent(Autumn, SeasonalEvent(0.15f, InitiateLeafFall));
-	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.1f);
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.2f, InitiateLeafFall));
 	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToFall(seasonMan.GetTimePerSeason() * 0.1f);
 
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.3f, InitiateLeafVanish));
 	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.2f);
 	
-	seasonMan.AddEvent(Autumn, SeasonalEvent(0.32f, InitiateTreeIgnitionFire));
-	fireParticleEmitter->SetIgnitionTime(seasonMan.GetTimePerSeason() * 0.62);
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.3f, InitiateTreeIgnitionFire));
+	fireParticleEmitter->SetIgnitionTime(seasonMan.GetTimePerSeason() * 0.45);
 
-	seasonMan.AddEvent(Autumn, SeasonalEvent(0.65f, InitiateTreeDeath));
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.78f, InitiateTreeDeath));
 	fireParticleEmitter->SetDeathTime(seasonMan.GetTimePerSeason() * 0.75f);
 
 	// Winter
-	seasonMan.AddEvent(Winter, SeasonalEvent(0, InitialiseHouseSmoke));
+	seasonMan.AddEvent(Winter, SeasonalEvent(0, InitialiseSnow ));
+	seasonMan.AddEvent(Winter, SeasonalEvent(0.05, InitialiseHouseSmoke));
+	particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID)->SetTimeToFall(seasonMan.GetTimePerSeason() * 0.1f);
+
+	seasonMan.AddEvent(Winter, SeasonalEvent(0.3, InitialiseTerrainTextureMergeToSnow));
+	timeToMergeTextures = seasonMan.GetTimePerSeason() * 0.25f;
+	
+	seasonMan.AddEvent(Winter, SeasonalEvent(0.5, InitialiseTerrainElevation));
+	terrainElevation.timeToElevateFully = seasonMan.GetTimePerSeason() * 0.2f;
+	
+	seasonMan.AddEvent(Winter, SeasonalEvent(0.8, InitialiseTerrainMelt));
+	seasonMan.AddEvent(Winter, SeasonalEvent(0.95, InitialiseTerrainTextureMergeToGrass));
+	
 };
 
 bool World::Load()
@@ -734,12 +762,15 @@ void World::multi_texturing_test(/*const GameTime &gameTime*/)
 void World::Update(const GameTime &gameTime)
 {
 	particleSystem.Update(gameTime);
+	fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
 };
 
 void World::DrawTerrain(const GameTime &gameTime)
 {
 	// Terrain (floor)
-	terrainElevation.elevationRuntime += gameTime.GetDeltaTime();
+	terrainElevation.elevationRuntime += gameTime.GetDeltaTime() * terrainElevation.shiftDirection;
+	if(terrainElevation.elevationRuntime <= 0 && terrainElevation.shiftDirection == Down) { terrainElevation.elevationRuntime=0; terrainElevation.shiftDirection = NoShift; }
+
 	terrainElevation.elevationRuntime = min(terrainElevation.elevationRuntime, terrainElevation.timeToElevateFully); // or =fmod(CurrentTerrainTime, ShiftTime); to loop terrain
 	f32 N = (1.0f / terrainElevation.timeToElevateFully) * terrainElevation.elevationRuntime;
 	f32 vpos = lerp(0, terrainElevation.maxDisplacementScaleFactor, N);
@@ -750,6 +781,8 @@ void World::DrawTerrain(const GameTime &gameTime)
 	terrain->GetShader()->Activate();
 	terrain->GetShader()->SetUniform("colorMap", 0);
 	terrain->GetShader()->SetUniform("displacementMap", 1);
+	terrain->GetShader()->SetUniform("snowMap", 2);
+	terrain->GetShader()->SetUniform("t", terrainTextureMergeFactor);
 	terrain->GetShader()->SetUniform("vposmult", vpos);
 	terrain->GetShader()->Deactivate();
 	terrain->SetXRotation(-90);
@@ -776,12 +809,28 @@ void World::Draw(const GameTime &gameTime)
 
 	glRotatef(angle, 0, 1, 0);
 
-	//_light1.setPosition(Vector4f(5.0,5.0, 10.0, 1.0));
-	//_light2.setPosition(Vector4f(-5.0,5.0,5.0,1.0));
-	//_light4.setPosition(Vector4f(0.0,5.0,-5.0,1.0));
-	//_light5.setPosition(Vector4f(0.0,-1.0,-5.0,1.0));
 
-	fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
+	if(mergingTerrainTextured)
+	{
+		terrainTextureMergeRuntime += gameTime.GetDeltaTime() * mergeDirection;
+		if(terrainTextureMergeRuntime > timeToMergeTextures)
+		{
+			terrainTextureMergeRuntime = timeToMergeTextures - EPSILON;
+		}
+		else if(terrainTextureMergeRuntime <= 0)
+		{
+			terrainTextureMergeRuntime = 0;
+		}
+		terrainTextureMergeRuntime = fmod(terrainTextureMergeRuntime, timeToMergeTextures);
+		terrainTextureMergeFactor = (1.0f / timeToMergeTextures) * terrainTextureMergeRuntime;
+	}
+
+	HemiSphericalParticleEmitter *snowEmitter = particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID);
+	if(snowEmitter->IsActive())
+	{
+		if(snowEmitter->GetActivity() < 1.0f)
+			snowEmitter->SetActivity(snowEmitter->GetActivity() + 0.005f);
+	}
 
 	if(lightMode == Spotlights)
 	{

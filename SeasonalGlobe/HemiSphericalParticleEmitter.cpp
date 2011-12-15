@@ -1,7 +1,7 @@
 #include "HemiSphericalParticleEmitter.h"
 #include "SphericalCamera.h"
 
-HemiSphericalParticleEmitter::HemiSphericalParticleEmitter() : hemisphere_radius(2), minAngle(0), maxAngle(0),
+HemiSphericalParticleEmitter::HemiSphericalParticleEmitter() : hemisphere_radius(2),
 	startColor(1,1,1,1), endColor(1,1,1,0)
 {
 };
@@ -23,13 +23,10 @@ void HemiSphericalParticleEmitter::Emit(Particle &p)
 	p.pos = float3(xpos,ypos,zpos);
 
 	p.velocity.x( randflt(-0.4f,0.4f));
-	p.velocity.y(-1.0f);
+	p.velocity.y( -(hemisphere_radius/timeToFall) );
 	p.velocity.z( randflt(-0.4f, 0.4f));
 	
-	p.velocity.normalize();
-
-	p.size.setall( randflt(0.25f, 0.35f) );
-	//p.size.set(0.25f, 0.25f, 0.25f);
+	p.size.setall( randflt(0.35f, 0.55f) );
 
 	p.color = startColor;
 };
@@ -38,7 +35,7 @@ void HemiSphericalParticleEmitter::UpdateParticleProperties(Particle &p/*, const
 {
 	if(p.pos.y() > EPSILON)
 	{
-		p.energy = randflt(3,5);
+		p.energy = randflt(3,4);
 		p.pada = p.energy;
 	}
 	else

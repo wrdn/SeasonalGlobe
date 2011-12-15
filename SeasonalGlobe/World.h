@@ -20,6 +20,7 @@
 #include "TerrainLoader.h"
 #include "SeasonManager.h"
 #include "PointBasedParticleEmitter.h"
+#include "HemiSphericalParticleEmitter.h"
 
 enum LightingMode
 {
@@ -60,6 +61,8 @@ public:
 	~TerrainShaders() {};
 };
 
+enum TerrainShiftDirection { NoShift=0, Up=1, Down=-1 };
+
 struct TerrainShift
 {
 public:
@@ -67,12 +70,13 @@ public:
 		maxGeometryShiftFactor; // translation on Y axis to put terrain back in base
 	f32 timeToElevateFully;
 	f32 elevationRuntime; // updated by dt each frame
+	TerrainShiftDirection shiftDirection;
 
 	TerrainShift() : maxDisplacementScaleFactor(0), maxGeometryShiftFactor(0),
-		timeToElevateFully(0), elevationRuntime(0) {};
+		timeToElevateFully(0), elevationRuntime(0), shiftDirection(NoShift) {};
 	TerrainShift(f32 _maxDisplacementScaleFactor, f32 _maxGeometryShiftFactor, f32 _timeToEvalateFully)
 		: maxDisplacementScaleFactor(_maxDisplacementScaleFactor), maxGeometryShiftFactor(_maxGeometryShiftFactor),
-		timeToElevateFully(_timeToEvalateFully), elevationRuntime(0) {};
+		timeToElevateFully(_timeToEvalateFully), elevationRuntime(0), shiftDirection(NoShift) {};
 	~TerrainShift() {};
 };
 
@@ -113,9 +117,16 @@ private:
 	TreeShaders treeShaders;
 	TerrainShaders terrainShaders;
 
+	f32 terrainTextureMergeFactor; // between 0 and 1, controls how much of grass/snow texture shown
+	bool mergingTerrainTextured; // merging snow to grass (or vice versa)
+	f32 timeToMergeTextures; // time in seconds to switch from grass to snow (and vice versa)
+	f32 terrainTextureMergeRuntime; // keep track of how far through the merge process we are
+	i32 mergeDirection; // should be 1 or -1
+
 	// Textures
 	Texture *grassTexture, *houseTexture, *barkTexture, *particleTexture,
-		*leafTexture, *baseTexture, *displacementTexture, *barkNormalMap;
+		*leafTexture, *baseTexture, *displacementTexture, *barkNormalMap,
+		*snowTexture;
 
 	// Particle emitters
 	u32 leafParticleEmitterID;
@@ -319,4 +330,15 @@ public:
 	};
 
 	void ActivateSmokeParticleEffect() { particleSystem.GetEmitter<PointBasedParticleEmitter>(smokeEmitterID)->SetActive(true); }
+	void ActivateSnow() { particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID)->SetActive(true); }
+	void ActivateTerrainElevation(TerrainShiftDirection d)
+	{
+		if(d == Up)
+			terrainElevation.elevationRuntime=0;
+		else if(d == Down)
+			terrainElevation.elevationRuntime = terrainElevation.timeToElevateFully;
+
+		terrainElevation.shiftDirection = d;
+	}
+	void ActiveTerrainTextureMerge(i32 dir) { mergeDirection=dir; mergingTerrainTextured = true; }
 };

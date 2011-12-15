@@ -1,4 +1,5 @@
-uniform sampler2D colorMap;
+uniform sampler2D colorMap, snowMap;
+uniform float t;
 varying vec3 Normal, LightDirection;
 varying vec2 TextureCoordinate;
 
@@ -15,6 +16,7 @@ void main(void)
 	
 	float NdotL = max(dot(N,L),0.0);
 
-	vec4 texCol = texture2D(colorMap, TextureCoordinate);
+		vec4 texCol = (1-t)*texture2D(colorMap, TextureCoordinate) +
+					t*texture2D(snowMap, TextureCoordinate);
         gl_FragColor = (lightAmbient * ka * texCol) + (lightDiffuse * kd * NdotL * texCol);
 }

@@ -23,9 +23,15 @@ private:
 
 	// Emitter data
 	float3 emitterOrigin;
+	
 	u32 localParticleMaximum;
+
 	bool doUpdate, doDraw, doEmit; // can turn off specific emitter functionality
-	u32 rateOfEmission;
+	
+	u32 rateOfEmission; // particles per second
+	f32 DtOverflow;
+	f32 activity;
+
 	bool isActive; // turns everything on/off
 
 	// True by default, used to specify if rotations will occur
@@ -101,6 +107,9 @@ public:
 	const bool DoDraw() const;
 	void DoEmit(const bool shouldEmit);
 	const bool DoEmit() const;
+
+	void SetActivity(const f32 a) { activity = a; }
+	const f32 GetActivity() const { return activity; }
 
 	void SetActive(const bool _isActive);
 	const bool IsActive() const;

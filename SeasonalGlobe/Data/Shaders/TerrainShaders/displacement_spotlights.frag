@@ -1,4 +1,5 @@
-uniform sampler2D colorMap;
+uniform sampler2D colorMap, snowMap;
+uniform float t;
 
 varying vec3 Normal;
 varying vec2 TextureCoordinate;
@@ -30,7 +31,8 @@ vec4 ApplySpotLight(int index, vec4 texCol, vec3 N, float ambientMultiplier)
 
 void main(void)
 {
-	vec4 textureColor = texture2D(colorMap, TextureCoordinate);
+	vec4 textureColor = (1-t)*texture2D(colorMap, TextureCoordinate) +
+					t*texture2D(snowMap, TextureCoordinate);
 	vec3 N = normalize(Normal);
 	gl_FragColor =
 		ApplySpotLight(0, textureColor, N, 0.3333) +

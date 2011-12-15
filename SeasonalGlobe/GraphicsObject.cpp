@@ -2,7 +2,7 @@
 
 
 GraphicsObject::GraphicsObject(void)
-	: position(), scale(1), mat(), xrotation(0), yrotation(0), zrotation(0), textureA(0), textureB(0), objectShader(0)
+	: position(), scale(1), mat(), xrotation(0), yrotation(0), zrotation(0), textureA(0), textureB(0), textureC(0), objectShader(0)
 {
 	ogl.Load();
 }
@@ -26,6 +26,12 @@ void GraphicsObject::Draw()
 		ogl.glActiveTexture(textureB->GetTextureSlot());
 		textureB->Activate();
 	}
+	if(textureC)
+	{
+		ogl.glActiveTexture(textureC->GetTextureSlot());
+		textureC->Activate();
+	}
+	
 
 	mat.Activate(); // activate object material properties
 
@@ -47,6 +53,7 @@ void GraphicsObject::Draw()
 	if(objectShader) { objectShader->Deactivate(); }
 	if(textureA){ textureA->Deactivate(); }
 	if(textureB){ textureB->Deactivate(); }
+	if(textureC){ textureC->Deactivate(); }
 };
 
 void GraphicsObject::DrawSimple()

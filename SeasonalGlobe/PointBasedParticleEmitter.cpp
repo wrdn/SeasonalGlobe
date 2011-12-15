@@ -16,6 +16,7 @@ void PointBasedParticleEmitter::Emit(Particle &p)
 	//p.col.SetColor(startColor.x(), startColor.y(), startColor.z(), startColor.a());
 
 	p.energy = randflt(GetMinParticleLife(), GetMaxParticleLife());
+	p.pada = p.energy;
 	//p.originalEnergy = p.energy;
 
 	p.velocity.x( randflt(-particleSpread, particleSpread));
@@ -27,10 +28,10 @@ void PointBasedParticleEmitter::Emit(Particle &p)
 
 void PointBasedParticleEmitter::UpdateParticleProperties(Particle &p/*, const GameTime &gameTime*/)
 {
-	f32 lR = lerp(startColor.r(), endColor.r(), 1.0f / p.energy);
-	f32 lG = lerp(startColor.g(), endColor.g(), 1.0f / p.energy);
-	f32 lB = lerp(startColor.b(), endColor.b(), 1.0f / p.energy);
-	f32 lA = lerp(startColor.a(), endColor.a(), 1.0f / p.energy);
+	f32 lR = lerp(startColor.r(), endColor.r(), 1-(1.0f/p.pada)*p.energy);
+	f32 lG = lerp(startColor.g(), endColor.g(), 1-(1.0f/p.pada)*p.energy);
+	f32 lB = lerp(startColor.b(), endColor.b(), 1-(1.0f/p.pada)*p.energy);
+	f32 lA = lerp(startColor.a(), endColor.a(), 1-(1.0f/p.pada)*p.energy);
 
 	p.color = Color4f(lR, lG, lB, lA);
 };

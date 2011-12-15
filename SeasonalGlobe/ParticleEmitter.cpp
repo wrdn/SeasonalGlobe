@@ -2,10 +2,15 @@
 
 // Constructors / Destructors
 ParticleEmitter::ParticleEmitter() : billboardType(Spherical), model(0), localParticleMaximum(GLOBAL_MAX_PARTICLES_PER_EMITTER),
-	doUpdate(true), doDraw(true), doEmit(true), rateOfEmission(20), isActive(true), applyRotations(true), minLife(1.5f), maxLife(3.5f),
-	emitterShader(0), sourceAlphaBlendFunction(GL_ONE)
+	doUpdate(true), doDraw(true), doEmit(true), rateOfEmission(20), DtOverflow(0), isActive(true), applyRotations(true), minLife(1.5f), maxLife(3.5f),
+	emitterShader(0), sourceAlphaBlendFunction(GL_ONE), activity(0.2)
 {
 	glex::Load();
+
+	for(int i=0;i<GLOBAL_MAX_PARTICLES_PER_EMITTER;++i)
+	{
+		particles[i].color = float4(0,0,0,0);
+	}
 };
 
 ParticleEmitter::~ParticleEmitter()
@@ -15,7 +20,7 @@ ParticleEmitter::~ParticleEmitter()
 	emitterShader = 0;
 };
 
-void ParticleEmitter::Draw(/*const GameTime &gameTime*/)
+void ParticleEmitter::Draw()
 {
 	if(!isActive || !emitterShader || !emitterShader->Valid()) { return; }
 
@@ -32,6 +37,7 @@ void ParticleEmitter::Draw(/*const GameTime &gameTime*/)
 		for(u32 i=0;i<GetLocalParticleMaximum();++i)
 		{
 			Particle &p = particles[i];
+			if(p.energy <= 0) { continue; }
 			glPushMatrix();
 			glColor4fv(p.color.GetVec());
 			glTranslatef(p.pos.x(), p.pos.y(), p.pos.z());
@@ -47,6 +53,7 @@ void ParticleEmitter::Draw(/*const GameTime &gameTime*/)
 		for(u32 i=0;i<GetLocalParticleMaximum();++i)
 		{
 			Particle &p = particles[i];
+			if(p.energy <= 0) { continue; }
 			glPushMatrix();
 			glColor4fv(p.color.GetVec());
 			glTranslatef(p.pos.x(), p.pos.y(), p.pos.z());
@@ -62,6 +69,7 @@ void ParticleEmitter::Draw(/*const GameTime &gameTime*/)
 		for(u32 i=0;i<GetLocalParticleMaximum();++i)
 		{
 			Particle &p = particles[i];
+			if(p.energy <= 0) { continue; }
 			glPushMatrix();
 			glColor4fv(p.color.GetVec());
 			glTranslatef(p.pos.x(), p.pos.y(), p.pos.z());
@@ -110,28 +118,35 @@ void ParticleEmitter::Update(const GameTime &gameTime)
 {
 	if(!isActive) { return; }
 
-	f32 dt = gameTime.GetDeltaTime();
-	u32 emittedThisFrame = rateOfEmission;
+	DtOverflow += gameTime.GetDeltaTime();
+	int newParticles = (int)(DtOverflow * rateOfEmission * activity);
+	DtOverflow -= newParticles / (rateOfEmission * activity);
 	
-	for(u32 i=0;i<GetLocalParticleMaximum();++i)
+	for(int i=0;i<GetLocalParticleMaximum();++i)
 	{
 		Particle &p = particles[i];
 
-		p.energy -= dt;
-		p.pos += p.velocity * dt;
+		p.energy -= gameTime.GetDeltaTime();
+		p.pos += p.velocity * gameTime.GetDeltaTime();
 
-		// If you don't want to apply forces, just call ClearForces() to remove all of them
 		for(std::vector<float3>::const_iterator it=forceVectors.begin(); it != forceVectors.end(); ++it)
-				p.pos += (*it) * dt;
+			p.pos += (*it) * gameTime.GetDeltaTime();
 
-		// Called before check for death. Feel free to use this function to kill a particle (by setting energy to < 0)
-		UpdateParticleProperties(p/*, gameTime*/);
+		UpdateParticleProperties(p);
 
-		if(p.energy <= 0/* && emittedThisFrame > 0*/ )
+		if(rateOfEmission < 0)
 		{
-			Emit(p);
-			--emittedThisFrame;
-			continue;
+			if(p.energy <= 0)
+			{
+				Emit(p);
+			}
+		}
+		else
+		{
+			if(p.energy <= 0 && newParticles-- > 0)
+			{
+				Emit(p);
+			}
 		}
 	}
 };

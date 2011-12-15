@@ -193,12 +193,12 @@ void FireParticleEmitter::UpdateFireParticleEmitter(const GameTime &gameTime)
 		burnLevel = depth - (i32)lerp(0, (f32)depth,K) - 1;
 
 		tree->SetTreeDeathDepth(max(0, burnLevel));
-		//tree->SetAlpha(K);
-
+		
 		f32 DeathTimePerDepth = deathTime/depth;
 		f32 P = fmod(runtime,DeathTimePerDepth);
-		tree->SetAlpha((1.0f/DeathTimePerDepth)*P);
+		tree->SetAlpha(1.0f - ((1.0f/DeathTimePerDepth)*P));
 
+		std::cout << tree->GetAlpha() << std::endl;
 	}
 	else
 	{
