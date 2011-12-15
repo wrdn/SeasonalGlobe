@@ -19,6 +19,7 @@
 #include "Disk.h"
 #include "TerrainLoader.h"
 #include "SeasonManager.h"
+#include "PointBasedParticleEmitter.h"
 
 enum LightingMode
 {
@@ -316,4 +317,6 @@ public:
 			tree->SetTreeShadeMode(shaderMan.GetShader(normalMap_Directional_ShaderID), barkTexture, NormalMappedTextured);
 		}
 	};
+
+	void ActivateSmokeParticleEffect() { particleSystem.GetEmitter<PointBasedParticleEmitter>(smokeEmitterID)->SetActive(true); }
 };

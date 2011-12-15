@@ -426,42 +426,48 @@ void InitiateTreeDeath(const World *w)
 	FireParticleEmitter *fp = (FireParticleEmitter*)w->GetFireParticleEmitter();
 	fp->InitDeath();
 };
-
 void InitiateLeafVanish(const World *w)
 {
 	World *wt = (World*)w;
 	wt->GetLeafParticleEmitter()->InitiateParticleFadeOut();
 }
+void InitialiseHouseSmoke(const World *w)
+{
+	((World*)w)->ActivateSmokeParticleEffect();
+};
 
 void World::SetupSeasons()
 {
-	seasonMan.SetTimePerSeason(10); // 8 seconds per season, 32 seconds per cycle
+	seasonMan.SetTimePerSeason(15); // 8 seconds per season, 32 seconds per cycle
 	seasonMan.SetWorldPointer(this);
 
 	// Spring: Tree grows
-	tree->SetBuildTime(seasonMan.GetTimePerSeason() * 0.75f);
-	seasonMan.AddEvent(Spring, SeasonalEvent(0.2f, StartTreeGrowth)); // tree grows at start of spring
+	tree->SetBuildTime(seasonMan.GetTimePerSeason() * 0.85f);
+	seasonMan.AddEvent(Spring, SeasonalEvent(0.1f, StartTreeGrowth)); // tree grows at start of spring
 	
 	// Summer: Leaves appear on tree
-	seasonMan.AddEvent(Summer, SeasonalEvent(0.2f, InitiateLeafGrowth));
-	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToFadeIn(seasonMan.GetTimePerSeason() * 0.2f);
+	seasonMan.AddEvent(Summer, SeasonalEvent(0.1f, InitiateLeafGrowth));
+	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToFadeIn(seasonMan.GetTimePerSeason() * 0.25f);
 
 	// Autumn: Leaves change colour and fall from tree (then disappear over time), lightning bolt hits tree and it burns down
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0, InitiateLeafColorChange));
-	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.25f);
+	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.1f);
 
-	seasonMan.AddEvent(Autumn, SeasonalEvent(0.2f, InitiateLeafFall));
-	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.2f);
-	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToFall(seasonMan.GetTimePerSeason() * 0.18f);
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.15f, InitiateLeafFall));
+	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.1f);
+	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToFall(seasonMan.GetTimePerSeason() * 0.1f);
 
-	seasonMan.AddEvent(Autumn, SeasonalEvent(0.35f, InitiateLeafVanish));
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.3f, InitiateLeafVanish));
 	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.2f);
 	
-	seasonMan.AddEvent(Autumn, SeasonalEvent(0.4f, InitiateTreeIgnitionFire));
-	fireParticleEmitter->SetIgnitionTime(seasonMan.GetTimePerSeason() * 0.3);
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.32f, InitiateTreeIgnitionFire));
+	fireParticleEmitter->SetIgnitionTime(seasonMan.GetTimePerSeason() * 0.62);
 
-	seasonMan.AddEvent(Autumn, SeasonalEvent(0.85f, InitiateTreeDeath));
-	fireParticleEmitter->SetDeathTime(seasonMan.GetTimePerSeason() * 0.6f);
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.65f, InitiateTreeDeath));
+	fireParticleEmitter->SetDeathTime(seasonMan.GetTimePerSeason() * 0.75f);
+
+	// Winter
+	seasonMan.AddEvent(Winter, SeasonalEvent(0, InitialiseHouseSmoke));
 };
 
 bool World::Load()
