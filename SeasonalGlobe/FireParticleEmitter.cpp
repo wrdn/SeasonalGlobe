@@ -2,7 +2,7 @@
 #include "FractalTree.h"
 
 FireParticleEmitter::FireParticleEmitter() : currentParticleAdditionIndex(0), maxParticlesPerLine(25),
-	startColor(1,0.2f,0,1), endColor(1, 0.28f, 0, 0.8f), fade(0), ignitionTime(20), runtime(0), burnState(Igniting),
+	startColor(1,0.2f,0,1), endColor(1, 0.28f, 0, 0.8f), fade(0), ignitionTime(10), deathTime(10), runtime(0), burnState(Igniting),
 	burnLevel(0), tree(0)
 {
 };
@@ -13,17 +13,21 @@ FireParticleEmitter::~FireParticleEmitter()
 
 void FireParticleEmitter::Emit(Particle &p)
 {
+	if(burnState == Dead)
+	{
+		p.color = float4(0,0,0,0);
+		return;
+	}
+
 	if(p.pada >= 0)
 	{
 		ParticleLine &pline = particleLines[(u32)p.pada]; // line the particle needs to be emitted on
 
-		tree->SetAlpha(1.0f);
-
 		if(burnState == Dieing)
 		{
-			tree->SetAlpha(0.5f);
+			//tree->SetAlpha(0.5f);
 
-			if(pline.GetLineDepth() <= (u32)burnLevel) // only generate particles below the burn level
+			if(pline.GetLineDepth() < (u32)burnLevel) // only generate particles below the burn level
 			{
 				f32 t = randflt(0, 1);
 				p.pos = pline.GetStartPosition() + (t * pline.GetDirection());
@@ -39,19 +43,9 @@ void FireParticleEmitter::Emit(Particle &p)
 				p.color.w(0);
 			}
 
-			return;
+			return; // end of dieing
 		}
-
-
-
-
-
-
-
-
-
-
-
+		
 		if(burnState == Burning)
 		{
 			// Ray equation: O + tD, where O is origin, D is direction and t is distance along line. End point
@@ -67,6 +61,8 @@ void FireParticleEmitter::Emit(Particle &p)
 
 			p.color = startColor;
 			p.energy = randflt(0, 0.85f);
+
+			return; // end of burning
 		}
 
 
@@ -125,12 +121,24 @@ void FireParticleEmitter::Emit(Particle &p)
 					p.color = float4(0,0,0,0); p.energy = -1; return;
 				}
 			}
+			return; // end of igniting
+		}
+
+		else
+		{
+			p.color = float4(0,0,0,0);
 		}
 	}
 };
 
 void FireParticleEmitter::UpdateParticleProperties(Particle &p/*, const GameTime &gameTime*/)
 {
+	if(burnState == Dead)
+	{
+		p.color = Color4f(0,0,0,0);
+		return;
+	}
+
 	f32 lR = lerp(startColor.r(), endColor.r(), 1.0f / p.energy);
 	f32 lG = lerp(startColor.g(), endColor.g(), 1.0f / p.energy);
 	f32 lB = lerp(startColor.b(), endColor.b(), 1.0f / p.energy);
@@ -155,23 +163,50 @@ void FireParticleEmitter::AddLine(const ParticleLine &line)
 
 void FireParticleEmitter::UpdateFireParticleEmitter(const GameTime &gameTime)
 {
-	runtime += gameTime.GetDeltaTime();
+	if(!IsActive() && burnState!=Dead) return;
 
-	if(runtime > ignitionTime)
+	if(burnState == Dieing)
 	{
-		runtime = 0;
-		burnState = Burning; // static burning
-		return;
+		if(runtime >= deathTime)
+		{
+			burnState = Dead;
+			SetActive(false);
+			return;
+		}
+	}
+	else if(burnState == Igniting)
+	{
+		if(runtime >= ignitionTime)
+		{
+			runtime = 0;
+			SetBurningState(Burning);
+		}
 	}
 
-	u32 depth = tree->GetDepth();
-	f32 K = (1.0f / ignitionTime) * runtime;
-	burnLevel = (i32)lerp(0, (f32)depth,K);
+	runtime += gameTime.GetDeltaTime();
 
-	tree->SetTreeDieing(false);
+	u32 depth=0; f32 K=0;
+	if(burnState == Dieing)
+	{
+		depth = tree->GetDepth();
+		K = (1.0f / deathTime) * runtime;
+		burnLevel = depth - (i32)lerp(0, (f32)depth,K) - 1;
+
+		tree->SetTreeDeathDepth(max(0, burnLevel));
+		tree->SetAlpha(K);
+	}
+	else
+	{
+		depth = tree->GetDepth();
+		K = (1.0f / ignitionTime) * runtime;
+		burnLevel = (i32)lerp(0, (f32)depth,K);
+	}
 };
 
 void FireParticleEmitter::InitDeath()
 {
+	tree->SetTreeDieing(true);
+	tree->SetTreeDeathDepth(0);
 	burnState = Dieing;
+	runtime = 0;
 };

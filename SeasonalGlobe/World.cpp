@@ -421,6 +421,11 @@ void InitiateTreeIgnitionFire(const World *w)
 	fp->SetBurningState(Igniting);
 	fp->SetActive(true);
 };
+void InitiateTreeDeath(const World *w)
+{
+	FireParticleEmitter *fp = (FireParticleEmitter*)w->GetFireParticleEmitter();
+	fp->InitDeath();
+};
 
 void InitiateLeafVanish(const World *w)
 {
@@ -430,7 +435,7 @@ void InitiateLeafVanish(const World *w)
 
 void World::SetupSeasons()
 {
-	seasonMan.SetTimePerSeason(15); // 8 seconds per season, 32 seconds per cycle
+	seasonMan.SetTimePerSeason(10); // 8 seconds per season, 32 seconds per cycle
 	seasonMan.SetWorldPointer(this);
 
 	// Spring: Tree grows
@@ -447,12 +452,16 @@ void World::SetupSeasons()
 
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.2f, InitiateLeafFall));
 	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.2f);
+	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToFall(seasonMan.GetTimePerSeason() * 0.18f);
 
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.35f, InitiateLeafVanish));
 	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.2f);
-
+	
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.4f, InitiateTreeIgnitionFire));
-	fireParticleEmitter->SetIgnitionTime(seasonMan.GetTimePerSeason() * 0.6f);
+	fireParticleEmitter->SetIgnitionTime(seasonMan.GetTimePerSeason() * 0.3);
+
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.85f, InitiateTreeDeath));
+	fireParticleEmitter->SetDeathTime(seasonMan.GetTimePerSeason() * 0.6f);
 };
 
 bool World::Load()
@@ -468,6 +477,8 @@ bool World::Load()
 	LoadParticles();
 	
 	SetupSeasons();
+
+	terrainElevation.timeToElevateFully = 10;
 
 	// Load materials
 	_material1.create(ColorT::black(), ColorT(0.9f,0.9f,0.9f,1.0f));
@@ -595,9 +606,11 @@ void floor()
 
 void DrawFloor(const float3 &floorPos, const float3 &floorScale)
 {
+	glDisable(GL_TEXTURE_2D);
 	glTranslatef(floorPos.x(), floorPos.y(), floorPos.z());
 	glScalef(floorScale.x(), floorScale.y(), floorScale.z());
 	floor(); // draw floor into stencil
+	glEnable(GL_TEXTURE_2D);
 };
 
 void World::reflective_draw(const GameTime &gameTime)
@@ -633,9 +646,9 @@ void World::reflective_draw(const GameTime &gameTime)
 	glDisable(GL_LIGHTING);
 	tree->Draw(gameTime.GetDeltaTime());
 	glDepthMask(GL_FALSE);
+
 	glEnable(GL_BLEND);
 	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->Draw();
-	fireParticleEmitter->Draw();
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
 
@@ -648,6 +661,8 @@ void World::reflective_draw(const GameTime &gameTime)
 
 	glEnable(GL_LIGHTING);
 	
+	glColor4f(1,1,1,1);
+	glDisable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	_material2.apply();
@@ -665,7 +680,8 @@ void World::reflective_draw(const GameTime &gameTime)
 	glDisable(GL_BLEND);
 
 	glDisable(GL_LIGHTING);
-	tree->Draw(gameTime.GetDeltaTime());
+
+	DrawTerrain(gameTime);
 };
 
 
@@ -712,6 +728,30 @@ void World::multi_texturing_test(/*const GameTime &gameTime*/)
 void World::Update(const GameTime &gameTime)
 {
 	particleSystem.Update(gameTime);
+};
+
+void World::DrawTerrain(const GameTime &gameTime)
+{
+	// Terrain (floor)
+	terrainElevation.elevationRuntime += gameTime.GetDeltaTime();
+	terrainElevation.elevationRuntime = min(terrainElevation.elevationRuntime, terrainElevation.timeToElevateFully); // or =fmod(CurrentTerrainTime, ShiftTime); to loop terrain
+	f32 N = (1.0f / terrainElevation.timeToElevateFully) * terrainElevation.elevationRuntime;
+	f32 vpos = lerp(0, terrainElevation.maxDisplacementScaleFactor, N);
+	f32 CurrentShift = lerp(0, terrainElevation.maxGeometryShiftFactor, N);
+
+	glDisable(GL_CULL_FACE);
+	terrain->SetPosition(float3(0, terrain->GetPosition().y()-CurrentShift,0));
+	terrain->GetShader()->Activate();
+	terrain->GetShader()->SetUniform("colorMap", 0);
+	terrain->GetShader()->SetUniform("displacementMap", 1);
+	terrain->GetShader()->SetUniform("vposmult", vpos);
+	terrain->GetShader()->Deactivate();
+	terrain->SetXRotation(-90);
+	terrain->SetYRotation(0);
+	terrain->SetZRotation(-90);
+	terrain->Draw();
+	terrain->SetPosition(float3(0, terrain->GetPosition().y()+CurrentShift,0));
+	glEnable(GL_CULL_FACE);
 };
 
 void World::Draw(const GameTime &gameTime)
@@ -776,40 +816,14 @@ void World::Draw(const GameTime &gameTime)
 	reflective_draw(gameTime);
 	glPopMatrix();
 
-	// Terrain (floor)
-	terrainElevation.elevationRuntime += gameTime.GetDeltaTime();
-	terrainElevation.elevationRuntime = min(terrainElevation.elevationRuntime, terrainElevation.timeToElevateFully); // or =fmod(CurrentTerrainTime, ShiftTime); to loop terrain
-	f32 N = (1.0f / terrainElevation.timeToElevateFully) * terrainElevation.elevationRuntime;
-	f32 vpos = lerp(0, terrainElevation.maxDisplacementScaleFactor, N);
-	f32 CurrentShift = lerp(0, terrainElevation.maxGeometryShiftFactor, N);
-
-	glDisable(GL_CULL_FACE);
-	terrain->SetPosition(float3(0, terrain->GetPosition().y()-CurrentShift,0));
-	terrain->GetShader()->Activate();
-	terrain->GetShader()->SetUniform("colorMap", 0);
-	terrain->GetShader()->SetUniform("displacementMap", 1);
-	terrain->GetShader()->SetUniform("vposmult", vpos);
-	terrain->GetShader()->Deactivate();
-	terrain->SetXRotation(-90);
-	terrain->SetYRotation(0);
-	terrain->SetZRotation(-90);
-	terrain->Draw();
-	terrain->SetPosition(float3(0, terrain->GetPosition().y()+CurrentShift,0));
-	glEnable(GL_CULL_FACE);
-
+	
 	// House
 	houseModel->Draw();
 
 	// Base
 	baseModel->Draw();
 
-	// testing to see if fire CAN be drawn upside down
-	glPushMatrix();
-	glScalef(1,-1,1);
-	glEnable(GL_BLEND); glDepthMask(GL_FALSE);
-	fireParticleEmitter->Draw();
-	glDisable(GL_BLEND); glDepthMask(GL_TRUE);
-	glPopMatrix();
+	tree->Draw(gameTime.GetDeltaTime());
 
 	// Particle system
 	particleSystem.Draw();

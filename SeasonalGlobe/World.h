@@ -143,6 +143,9 @@ private:
 
 	void reflective_draw(const GameTime &gameTime);
 	void multi_texturing_test(/*const GameTime &gameTime*/);
+
+	void DrawTerrain(const GameTime &gameTime);
+
 public:
 	const bool GetAutoRotate() const { return AutoRotate; };
 	void SetAutoRotate(const bool b) { AutoRotate = b; };

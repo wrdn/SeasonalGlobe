@@ -50,6 +50,7 @@ enum BurningState
 	Igniting,
 	Burning,
 	Dieing,
+	Dead,
 };
 
 class FireParticleEmitter : public ParticleEmitter
@@ -62,7 +63,7 @@ private:
 	Color4f startColor, endColor;
 	f32 fade;
 
-	f32 ignitionTime;
+	f32 ignitionTime , deathTime;
 	f32 runtime;
 	BurningState burnState;
 	i32 burnLevel;
@@ -96,6 +97,9 @@ public:
 	void SetBurningState(BurningState st) { burnState = st; }
 
 	void SetRuntime(f32 r) { runtime = r; }
+
+	const f32 GetDeathTime() const { return deathTime; }
+	void SetDeathTime(f32 t) { deathTime = t; }
 
 	const f32 GetIgnitionTime() const { return ignitionTime; }
 	void SetIgnitionTime(f32 t) { ignitionTime = t; }

@@ -399,7 +399,8 @@ void FractalTree::Draw(f32 dt)
 
 		glDisable(GL_BLEND);
 
-		mat.SetDiffuse(float4(1));
+		mat.SetDiffuse(float4(1,1,1,1));
+		mat.Activate();
 
 		if(normalMap) { normalMap->Deactivate(); }
 		glPopMatrix();
