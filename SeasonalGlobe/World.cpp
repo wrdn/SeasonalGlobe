@@ -26,7 +26,8 @@ World::World(void)
 	timeToMergeTextures(8), terrainTextureMergeRuntime(0), mergeDirection(1),
 
 	grassTexture(0), houseTexture(0), barkTexture(0), particleTexture(0), leafTexture(0), baseTexture(0), // Textures
-	displacementTexture(0), barkNormalMap(0),
+	displacementTexture(0), barkNormalMap(0), snowTexture(0), terrainNormalMapFull(0), grassParticleTexture(0),
+	grassParticleColorMap(0),
 
 	leafParticleEmitterID(0), snowEmitterID(0), smokeEmitterID(0), fireParticleEmitter(0), // Particle Emitters
 
@@ -121,6 +122,9 @@ bool World::LoadTextures()
 	grassParticleTexture = texMan.LoadTextureFromFile("Data/Textures/grass2.tga");
 	grassParticleTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
 
+	grassParticleColorMap = texMan.LoadTextureFromFile("Data/Textures/grassParticleTexture.bmp");
+	grassParticleColorMap->SetTextureSlot(SLOT_GL_TEXTURE_1);
+
 	snowTexture = texMan.LoadTextureFromFile("Data/Textures/snowTexture.jpg");
 	snowTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR );
 	snowTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR );
@@ -182,7 +186,7 @@ bool World::LoadShaders()
 	{
 		shaderMan.GetShader(texturedParticleShaderID)->Activate();
 		shaderMan.GetShader(texturedParticleShaderID)->SetUniform("AlphaMap", 0);
-		shaderMan.GetShader(texturedParticleShaderID)->SetUniform("ColorMap", 0);
+		shaderMan.GetShader(texturedParticleShaderID)->SetUniform("ColorMap", 1);
 		shaderMan.GetShader(texturedParticleShaderID)->Deactivate();
 	}
 
@@ -373,7 +377,7 @@ bool World::LoadParticles()
 	grassParticles->SetAlphaMap(*grassParticleTexture);
 	grassParticles->SetParticlesStaticState(true);
 	grassParticles->SetShader(shaderMan.GetShader(texturedParticleShaderID));
-	grassParticles->SetColorMap(leafTexture);
+	grassParticles->SetColorMap(grassParticleColorMap);
 	grassParticles->SetBillboardType(NoBillboarding);
 	grassParticles->SetEmitterOrigin(float3(0,0.25f,0));
 	grassParticles->SetSourceAlphaBlendFunction(GL_ONE);
