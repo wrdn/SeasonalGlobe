@@ -104,6 +104,7 @@ private:
 	Sphere *globeSphere;
 	GraphicsObject *houseModel, *baseModel;
 	Model *defaultBillboardModel;
+	Model *imposterModel;
 	GLenum polygonMode;
 	Sphere *lightSphere;
 	Cylinder *spotCone;
@@ -127,7 +128,7 @@ private:
 	// Textures
 	Texture *grassTexture, *houseTexture, *barkTexture, *particleTexture,
 		*leafTexture, *baseTexture, *displacementTexture, *barkNormalMap,
-		*snowTexture, *terrainNormalMapFull;
+		*snowTexture, *terrainNormalMapFull, *grassParticleTexture;
 
 	// Particle emitters
 	u32 leafParticleEmitterID;

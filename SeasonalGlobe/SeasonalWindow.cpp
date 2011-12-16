@@ -67,7 +67,7 @@ void SeasonalWindow::OnDisplay()
 	glEnable(GL_DEPTH_TEST);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	glClearColor(0,0,0,1);
+	glClearColor(0.2,0.2,0.2,1);
 	
 	scn.Draw(gameTime);
 
@@ -77,7 +77,7 @@ void SeasonalWindow::OnDisplay()
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
-	glRasterPos2f(0.6, 0.9);
+	glRasterPos2f(0.6f, 0.9f);
 	Printf("Current Season: %s", scn.GetCurrentSeasonString());
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();   

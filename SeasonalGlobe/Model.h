@@ -52,6 +52,7 @@ enum TriangleDrawMethod
 	DM_TRIANGLES = GL_TRIANGLES,
 	DM_TRIANGLE_STRIP = GL_TRIANGLE_STRIP,
 	DM_POINTS = GL_POINTS,
+	DM_QUADS = GL_QUADS,
 };
 
 class Model : public glex

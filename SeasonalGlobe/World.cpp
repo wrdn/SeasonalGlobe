@@ -43,6 +43,46 @@ World::~World(void)
 	catch(...) { };
 }
 
+Model* CreateImposterModel()
+{
+	Model *imposterModel = new Model();
+	
+	VERTEX *imposterVerts = new VERTEX[8];
+
+	// first quad
+	imposterVerts[0] = VERTEX(float3(-1,1,0),  float3(0,0,1), float2(0,1));
+	imposterVerts[1] = VERTEX(float3(1,1,0),   float3(0,0,1), float2(1,1));
+	imposterVerts[2] = VERTEX(float3(1,-1,0),  float3(0,0,1), float2(1,0));
+	imposterVerts[3] = VERTEX(float3(-1,-1,0), float3(0,0,1), float2(0,0));
+
+	// second quad
+	imposterVerts[4] = VERTEX(float3(0,1,-1),  float3(1,0,0), float2(0,1));
+	imposterVerts[5] = VERTEX(float3(0,1,1),   float3(1,0,0), float2(1,1));
+	imposterVerts[6] = VERTEX(float3(0,-1,1),  float3(1,0,0), float2(1,0));
+	imposterVerts[7] = VERTEX(float3(0,-1,-1), float3(1,0,0), float2(0,0));
+	
+	imposterModel->SetVertexArray(imposterVerts, 8);
+	
+	u32 *imposterIndices = new u32[16];
+	imposterIndices[0] = 1;
+	imposterIndices[1] = 0;
+	imposterIndices[2] = 3;
+	imposterIndices[3] = 1;
+	imposterIndices[4] = 3;
+	imposterIndices[5] = 2;
+	imposterIndices[6] = 5;
+	imposterIndices[7] = 4;
+	imposterIndices[8] = 7;
+	imposterIndices[9] = 5;
+	imposterIndices[10] = 7;
+	imposterIndices[11] = 6;
+
+	imposterModel->SetIndicesArray(imposterIndices, 16);
+
+	imposterModel->BuildVBO();
+	return imposterModel;
+};
+
 Model* CreateBillboardModel()
 {
 	// Billboard model (textured quad)
@@ -77,6 +117,9 @@ bool World::LoadTextures()
 	grassTexture->SetWrapS(GL_REPEAT);
 	grassTexture->SetWrapT(GL_REPEAT);
 	grassTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
+
+	grassParticleTexture = texMan.LoadTextureFromFile("Data/Textures/grass2.tga");
+	grassParticleTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
 
 	snowTexture = texMan.LoadTextureFromFile("Data/Textures/snowTexture.jpg");
 	snowTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR );
@@ -313,6 +356,38 @@ bool World::LoadParticles()
 	fireParticleEmitter->SetActive(false);
 	fireParticleEmitter->SetRateOfEmission(-1);
 
+	grassStaticEmitterID = particleSystem.AddEmitter<StaticParticleEmitter>();
+	StaticParticleEmitter *grassParticles = particleSystem.GetEmitter<StaticParticleEmitter>(grassStaticEmitterID);
+	grassParticles->SetLocalParticleMaximum(150);
+	grassParticles->SetModel(CreateImposterModel());
+	imposterModel = (Model*)grassParticles->GetModel();
+	grassParticles->SetAlphaMap(*grassParticleTexture);
+	grassParticles->SetParticlesStaticState(true);
+	grassParticles->SetShader(psysbase);
+	grassParticles->SetBillboardType(NoBillboarding);
+	grassParticles->SetEmitterOrigin(float3(0,0.25f,0));
+	grassParticles->SetSourceAlphaBlendFunction(GL_ONE);
+
+	f32 radius = globeSphere->GetRadius()-0.2f;
+	for(int i=0;i<150;++i)
+	{
+		
+		f32 ZAxis = randflt(-radius, radius);
+		f32 phi = randflt(0,PI);
+		f32 theta = asin(ZAxis/radius);
+
+		f32 xpos = radius * cos(theta) * cos(phi);
+		f32 zpos = radius * sin(theta);
+
+		Particle p;
+		p.color = float4(1);
+		p.energy = 10000;
+		p.pos = float3(xpos, 0, zpos);
+		p.size = float3(0.4f);
+		
+		grassParticles->AddParticle(p);
+	}
+
 	return true;
 };
 
@@ -414,7 +489,7 @@ void World::LoadLights()
 	
 	float4 spotAmb(0.35f,0.35f,0.35f,1);
 	float4 spotDiff(1,0.66666f,0.19607f,1);
-	float4 spotSpec(0.3,0.3,0.3,1); float4 spotDir;
+	float4 spotSpec(0.3f,0.3f,0.3f,1); float4 spotDir;
 
 	// Spotlight 1
 	lightPosition = float4(0,7.5f,0,1); spotDir = float4(0,-1,0,1);
@@ -516,24 +591,24 @@ void World::SetupSeasons()
 	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.2f);
 	
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.3f, InitiateTreeIgnitionFire));
-	fireParticleEmitter->SetIgnitionTime(seasonMan.GetTimePerSeason() * 0.45);
+	fireParticleEmitter->SetIgnitionTime(seasonMan.GetTimePerSeason() * 0.45f);
 
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.78f, InitiateTreeDeath));
 	fireParticleEmitter->SetDeathTime(seasonMan.GetTimePerSeason() * 0.75f);
 
 	// Winter
 	seasonMan.AddEvent(Spring, SeasonalEvent(0, InitialiseSnow ));
-	seasonMan.AddEvent(Spring, SeasonalEvent(0.05, InitialiseHouseSmoke));
+	seasonMan.AddEvent(Spring, SeasonalEvent(0.05f, InitialiseHouseSmoke));
 	particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID)->SetTimeToFall(seasonMan.GetTimePerSeason() * 0.1f);
 
-	seasonMan.AddEvent(Spring, SeasonalEvent(0.3, InitialiseTerrainTextureMergeToSnow));
+	seasonMan.AddEvent(Spring, SeasonalEvent(0.3f, InitialiseTerrainTextureMergeToSnow));
 	timeToMergeTextures = seasonMan.GetTimePerSeason() * 0.25f;
 	
-	seasonMan.AddEvent(Spring, SeasonalEvent(0.45, InitialiseTerrainElevation));
+	seasonMan.AddEvent(Spring, SeasonalEvent(0.45f, InitialiseTerrainElevation));
 	terrainElevation.timeToElevateFully =  seasonMan.GetTimePerSeason() * 0.25f;
 	
-	seasonMan.AddEvent(Spring, SeasonalEvent(0.8, InitialiseTerrainMelt));
-	seasonMan.AddEvent(Spring, SeasonalEvent(0.85, InitialiseTerrainTextureMergeToGrass));
+	seasonMan.AddEvent(Spring, SeasonalEvent(0.8f, InitialiseTerrainMelt));
+	seasonMan.AddEvent(Spring, SeasonalEvent(0.85f, InitialiseTerrainTextureMergeToGrass));
 };
   
 bool World::Load()
@@ -551,31 +626,31 @@ bool World::Load()
 	movableSphere = new Sphere();
 	movableSphere->Create(0.05f,20,20);
 	//movableSphere->SetPosition(float3(-3.2,1.9,1.6));
-	movableSphere->SetPosition(float3(-7.4, 4, 0.1));
+	movableSphere->SetPosition(float3(-7.4f, 4, 0.1f));
 
 	
 	CollisionFace frontHouseTri1, frontHouseTri2;
 	CollisionFace backHouseTri1, backHouseTri2;
 	
-	frontHouseTri1.v1 = float3(-3.2, 4, 0.1);
-	frontHouseTri1.v2 = float3(-7.4, 4, 0.1);
-	frontHouseTri1.v3 = float3(-7.4, 1.75, 1.65);
+	frontHouseTri1.v1 = float3(-3.2f, 4, 0.1f);
+	frontHouseTri1.v2 = float3(-7.4f, 4, 0.1f);
+	frontHouseTri1.v3 = float3(-7.4f, 1.75f, 1.65f);
 	frontHouseTri1.CalculateNormal();
 
-	frontHouseTri2.v1 = float3(-3.2, 4, 0.1);
-	frontHouseTri2.v2 = float3(-7.4, 1.75, 1.65);
-	frontHouseTri2.v3 = float3(-3.25, 1.75, 1.65);
+	frontHouseTri2.v1 = float3(-3.2f, 4, 0.1f);
+	frontHouseTri2.v2 = float3(-7.4f, 1.75f, 1.65f);
+	frontHouseTri2.v3 = float3(-3.25f, 1.75f, 1.65f);
 	frontHouseTri2.CalculateNormal();
 
 	// Can perform collision detection against these triangles
 	test_roof_triangles = new GraphicsObject();
 	VERTEX *verts = new VERTEX[6]; // defined from looking at the FRONT of the house
-	verts[0].pos = float3(-3.2, 4, 0.1); // roof top right
-	verts[1].pos = float3(-7.4, 4, 0.1); // roof top left
-	verts[2].pos = float3(-7.4, 1.75, 1.65); // front bottom left
-	verts[3].pos = float3(-3.25, 1.75, 1.65); // front bottom right
-	verts[4].pos = float3(-3.25, 1.75, -1.4); // back bottom right
-	verts[5].pos = float3(-7.4, 1.75, -1.4); // back bottom left
+	verts[0].pos = float3(-3.2f, 4, 0.1f); // roof top right
+	verts[1].pos = float3(-7.4f, 4, 0.1f); // roof top left
+	verts[2].pos = float3(-7.4f, 1.75f, 1.65f); // front bottom left
+	verts[3].pos = float3(-3.25f, 1.75f, 1.65f); // front bottom right
+	verts[4].pos = float3(-3.25f, 1.75f, -1.4f); // back bottom right
+	verts[5].pos = float3(-7.4f, 1.75f, -1.4f); // back bottom left
 	Model &m = (Model&)test_roof_triangles->GetModel();
 	m.SetVertexArray(verts, 6);
 	u32 *indices_array_roof = new u32[12];
@@ -594,7 +669,6 @@ bool World::Load()
 	indices_array_roof[11] = 5;
 	m.SetIndicesArray(indices_array_roof, 12);
 	m.BuildVBO();
-
 
 	SetupSeasons();
 
@@ -948,11 +1022,10 @@ void World::Draw(const GameTime &gameTime)
 		lightSphere->Draw();
 	}
 
+
 	glPushMatrix();
 	reflective_draw(gameTime);
 	glPopMatrix();
-
-	//movableSphere->Draw();
 
 	// House
 	houseModel->Draw();

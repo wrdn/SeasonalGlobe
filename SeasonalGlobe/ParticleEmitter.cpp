@@ -3,7 +3,7 @@
 // Constructors / Destructors
 ParticleEmitter::ParticleEmitter() : billboardType(Spherical), model(0), localParticleMaximum(GLOBAL_MAX_PARTICLES_PER_EMITTER),
 	doUpdate(true), doDraw(true), doEmit(true), rateOfEmission(20), DtOverflow(0), isActive(true), applyRotations(true), minLife(1.5f), maxLife(3.5f),
-	emitterShader(0), sourceAlphaBlendFunction(GL_ONE), activity(0.2)
+	emitterShader(0), sourceAlphaBlendFunction(GL_ONE), activity(0.2f)
 {
 	glex::Load();
 
@@ -71,7 +71,7 @@ void ParticleEmitter::Draw()
 			Particle &p = particles[i];
 			if(p.energy <= 0) { continue; }
 			glPushMatrix();
-			glColor4fv(p.color.GetVec());
+			glColor4f(p.color.x(), p.color.y(), p.color.z(), p.color.w());
 			glTranslatef(p.pos.x(), p.pos.y(), p.pos.z());
 			glRotatef(p.rotation_x, 1,0,0);
 			glRotatef(p.rotation_z, 0,0,1);
@@ -96,7 +96,7 @@ void ParticleEmitter::Update(const GameTime &gameTime)
 	int newParticles = (int)(DtOverflow * rateOfEmission * activity);
 	DtOverflow -= newParticles / (rateOfEmission * activity);
 	
-	for(int i=0;i<GetLocalParticleMaximum();++i)
+	for(u32 i=0;i<GetLocalParticleMaximum();++i)
 	{
 		Particle &p = particles[i];
 
@@ -189,8 +189,8 @@ const bool ParticleEmitter::DoEmit() const { return doEmit; };
 void ParticleEmitter::SetActive(const bool _isActive) { isActive = _isActive; }
 const bool ParticleEmitter::IsActive() const { return isActive; }
 
-void ParticleEmitter::SetRateOfEmission(const u32 rate) { rateOfEmission = rate; };
-const u32 ParticleEmitter::GetRateOfEmission() const { return rateOfEmission; };
+void ParticleEmitter::SetRateOfEmission(const i32 rate) { rateOfEmission = rate; };
+const i32 ParticleEmitter::GetRateOfEmission() const { return rateOfEmission; };
 
 void ParticleEmitter::SetMaxParticleLife(const f32 maxLifeInSeconds) { maxLife = maxLifeInSeconds; };
 const f32 ParticleEmitter::GetMaxParticleLife() const { return maxLife; };

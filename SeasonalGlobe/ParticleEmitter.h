@@ -28,7 +28,7 @@ private:
 
 	bool doUpdate, doDraw, doEmit; // can turn off specific emitter functionality
 	
-	u32 rateOfEmission; // particles per second
+	i32 rateOfEmission; // particles per second
 	f32 DtOverflow;
 	f32 activity;
 
@@ -48,6 +48,7 @@ private:
 	// Drawing data
 	Shader *emitterShader;
 	Texture alphaMap; // at a minumum, particles should have a alpha texture
+
 	GLenum sourceAlphaBlendFunction; // e.g. GL_ONE, GL_ONE_MINUS_SRC_ALPHA
 
 	// NOTE: the matrix trick for spherical/cylindrical billboarding should be done in the shader
@@ -94,7 +95,8 @@ public:
 	#pragma region Accessors and Mutators
 	void SetBillboardType(const BillboardType btype);
 	void SetModel(const Model *m);
-	
+	const Model* GetModel() const { return model; };
+
 	void SetEmitterOrigin(const float3& f);
 	const float3& GetEmitterOrigin() const;
 	
@@ -114,8 +116,8 @@ public:
 	void SetActive(const bool _isActive);
 	const bool IsActive() const;
 
-	void SetRateOfEmission(const u32 rate);
-	const u32 GetRateOfEmission() const;
+	void SetRateOfEmission(const i32 rate);
+	const i32 GetRateOfEmission() const;
 
 	void SetMaxParticleLife(const f32 maxLifeInSeconds);
 	const f32 GetMaxParticleLife() const;

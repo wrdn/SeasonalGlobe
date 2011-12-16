@@ -40,8 +40,8 @@ void HemiSphericalParticleEmitter::UpdateParticleProperties(Particle &p)
 		&& (p.pos.z() >= -1.35 && p.pos.z() <= 1.6) 
 		&& (p.pos.y() >= 1.9 && p.pos.y() <= 3.4) ))
 	{
-		float4 C(-3.3, 3.7, 0.1);
-		float4 B(-3.3, 1.65, 1.65);
+		float4 C(-3.3f, 3.7f, 0.1f);
+		float4 B(-3.3f, 1.65f, 1.65f);
 		f32 xDistance = abs(C.z() - B.z());
 		f32 yDistance = abs(C.y() - B.y());
 		f32 T = abs(p.pos.z() - C.z());
@@ -49,7 +49,7 @@ void HemiSphericalParticleEmitter::UpdateParticleProperties(Particle &p)
 		if(p.pos.y() < abs(Q))
 		{
 			p.velocity = float3();
-			p.pos.y( Q + 0.16 );
+			p.pos.y( Q + 0.16f );
 			p.rotation_x = 5;
 		}
 	}
