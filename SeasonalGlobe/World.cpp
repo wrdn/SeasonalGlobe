@@ -76,13 +76,20 @@ bool World::LoadTextures()
 	grassTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR );
 	grassTexture->SetWrapS(GL_REPEAT);
 	grassTexture->SetWrapT(GL_REPEAT);
+	grassTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
 
 	snowTexture = texMan.LoadTextureFromFile("Data/Textures/snowTexture.jpg");
 	snowTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR );
 	snowTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR );
 	snowTexture->SetWrapS(GL_REPEAT);
 	snowTexture->SetWrapT(GL_REPEAT);
-	snowTexture->SetTextureSlot(SLOT_GL_TEXTURE_2);
+	snowTexture->SetTextureSlot(SLOT_GL_TEXTURE_1);
+
+	terrainNormalMapFull = texMan.LoadTextureFromFile("Data/Textures/TerrainDisplacementNormalMap_Full.bmp");
+	terrainNormalMapFull->SetTextureSlot(SLOT_GL_TEXTURE_2);
+
+	displacementTexture = texMan.LoadTextureFromFile("Data/Textures/TerrainDisplacementMap.bmp");
+	displacementTexture->SetTextureSlot(SLOT_GL_TEXTURE_3);
 
 	barkTexture = texMan.LoadTextureFromFile("Data/Textures/bark.jpg");
 	barkTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
@@ -102,9 +109,6 @@ bool World::LoadTextures()
 	baseTexture = texMan.LoadTextureFromFile("Data/Textures/wood.jpg");
 
 	houseTexture = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap.jpg");
-
-	displacementTexture = texMan.LoadTextureFromFile("Data/Textures/TerrainDisplacementMap.bmp");
-	displacementTexture->SetTextureSlot(SLOT_GL_TEXTURE_1);
 
 	return grassTexture && barkTexture && particleTexture && leafTexture && baseTexture && houseTexture && displacementTexture;
 };
@@ -289,14 +293,16 @@ bool World::LoadGeometry()
 	((Model&)houseModel->GetModel()).BuildVBO();
 	houseModel->SetScale(float3(.05f,.05f,.05f));
 	houseModel->SetPosition(float3(-5.5,0,0.5));
-	houseModel->SetTextureA(houseTexture);
+	houseModel->AddTexture(houseTexture);
+	//houseModel->SetTextureA(houseTexture);
 	//Material mat(float4(0.25f, 0.25f, 0.25f, 1), float4(1,0,0,1), float4(1,1,1,1), 100);
 	//houseModel->SetMaterial(mat);
 
 	// Load globe base
 	baseModel = OBJFile::ParseFile("Data/base2.obj")[0];
 	((Model&)baseModel->GetModel()).BuildVBO();
-	baseModel->SetTextureA(baseTexture);
+	//baseModel->SetTextureA(baseTexture);
+	baseModel->AddTexture(baseTexture);
 	baseModel->SetPosition(float3(0, 0.2f, 0));
 	baseModel->SetScale(float3(2.0f, 0.83f, 2.0f));
 
@@ -309,9 +315,13 @@ bool World::LoadGeometry()
 	// Load terrain
 	terrain = new TerrainLoader();
 	terrain->Load("Data/Textures/ground_heightmap.bmp");
-	terrain->SetTextureA(grassTexture);
+	terrain->AddTexture(grassTexture);
+	terrain->AddTexture(displacementTexture);
+	terrain->AddTexture(snowTexture);
+	terrain->AddTexture(terrainNormalMapFull);
+	/*terrain->SetTextureA(grassTexture);
 	terrain->SetTextureB(displacementTexture);
-	terrain->SetTextureC(snowTexture);
+	terrain->SetTextureC(snowTexture);*/
 	terrain->SetXRotation(-90);
 	terrain->SetZRotation(-90);
 	terrain->SetScale(float3(5.48f,5.48f,5.48f));
@@ -353,11 +363,13 @@ bool World::LoadGeometry()
 
 	lightSphere = new Sphere();
 	lightSphere->Create(0.5,20,20);
-	lightSphere->SetTextureA(barkTexture);
+	//lightSphere->SetTextureA(barkTexture);
+	lightSphere->AddTexture(barkTexture);
 
 	spotCone = new Cylinder();
 	spotCone->Create(0.1f, 0.3f, 0.45f, 10, 10);
-	spotCone->SetTextureA(baseTexture);
+	//spotCone->SetTextureA(baseTexture);
+	spotCone->AddTexture(baseTexture);
 	spotCone->SetPosition(spotlights[0].GetPosition().ToFloat3());
 
 	SetTreeShadeMode(SmoothTextured);
@@ -484,20 +496,20 @@ void World::SetupSeasons()
 
 	// Winter
 	seasonMan.AddEvent(Spring, SeasonalEvent(0, InitialiseSnow ));
-	seasonMan.AddEvent(Winter, SeasonalEvent(0.05, InitialiseHouseSmoke));
+	seasonMan.AddEvent(Spring, SeasonalEvent(0.05, InitialiseHouseSmoke));
 	particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID)->SetTimeToFall(seasonMan.GetTimePerSeason() * 0.1f);
 
-	seasonMan.AddEvent(Winter, SeasonalEvent(0.3, InitialiseTerrainTextureMergeToSnow));
+	seasonMan.AddEvent(Spring, SeasonalEvent(0.3, InitialiseTerrainTextureMergeToSnow));
 	timeToMergeTextures = seasonMan.GetTimePerSeason() * 0.25f;
 	
-	seasonMan.AddEvent(Winter, SeasonalEvent(0.5, InitialiseTerrainElevation));
-	terrainElevation.timeToElevateFully = seasonMan.GetTimePerSeason() * 0.2f;
+	seasonMan.AddEvent(Spring, SeasonalEvent(0.45, InitialiseTerrainElevation));
+	terrainElevation.timeToElevateFully =  seasonMan.GetTimePerSeason() * 0.25f;
 	
-	seasonMan.AddEvent(Winter, SeasonalEvent(0.8, InitialiseTerrainMelt));
-	seasonMan.AddEvent(Winter, SeasonalEvent(0.95, InitialiseTerrainTextureMergeToGrass));
+	seasonMan.AddEvent(Spring, SeasonalEvent(0.8, InitialiseTerrainMelt));
+	seasonMan.AddEvent(Spring, SeasonalEvent(0.85, InitialiseTerrainTextureMergeToGrass));
 	
 };
-
+  
 bool World::Load()
 {
 	conf.ParseConfigFile("Data/ConfigFile.txt"); // load configuration file
@@ -559,8 +571,6 @@ bool World::Load()
 
 
 	SetupSeasons();
-
-	terrainElevation.timeToElevateFully = 10;
 
 	// Load materials
 	_material1.create(ColorT::black(), ColorT(0.9f,0.9f,0.9f,1.0f));
@@ -850,9 +860,11 @@ void World::DrawTerrain(const GameTime &gameTime)
 	terrain->SetPosition(float3(0, terrain->GetPosition().y()-CurrentShift,0));
 	terrain->GetShader()->Activate();
 	terrain->GetShader()->SetUniform("colorMap", 0);
-	terrain->GetShader()->SetUniform("displacementMap", 1);
-	terrain->GetShader()->SetUniform("snowMap", 2);
+	terrain->GetShader()->SetUniform("snowMap", 1);
+	terrain->GetShader()->SetUniform("normalMap", 2);
+	terrain->GetShader()->SetUniform("displacementMap", 3);
 	terrain->GetShader()->SetUniform("t", terrainTextureMergeFactor);
+	terrain->GetShader()->SetUniform("normalLerpFactor", N);
 	terrain->GetShader()->SetUniform("vposmult", vpos);
 	terrain->GetShader()->Deactivate();
 	terrain->SetXRotation(-90);
@@ -910,7 +922,7 @@ void World::Draw(const GameTime &gameTime)
 		lightSphere->SetPosition(newPos);
 		float4 lightSpherePos = lightSphere->GetPosition().ToFloat4();
 		directionalLight.SetPositionAndUpdateOpenGL(lightSpherePos);
-		directionalLightRotation += directionalLightSpeed * gameTime.GetDeltaTime();
+		//directionalLightRotation += directionalLightSpeed * gameTime.GetDeltaTime();
 		lightSphere->Draw();
 	}
 
@@ -918,9 +930,7 @@ void World::Draw(const GameTime &gameTime)
 	reflective_draw(gameTime);
 	glPopMatrix();
 
-	//test_roof_triangles->Draw();
-
-	movableSphere->Draw();
+	//movableSphere->Draw();
 
 	// House
 	houseModel->Draw();

@@ -49,7 +49,7 @@ void HemiSphericalParticleEmitter::UpdateParticleProperties(Particle &p)
 		if(p.pos.y() < abs(Q))
 		{
 			p.velocity = float3();
-			p.pos.y( Q + 0.1 );
+			p.pos.y( Q + 0.16 );
 			p.rotation_x = 5;
 		}
 	}

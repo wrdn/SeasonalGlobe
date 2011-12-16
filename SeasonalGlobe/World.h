@@ -127,7 +127,7 @@ private:
 	// Textures
 	Texture *grassTexture, *houseTexture, *barkTexture, *particleTexture,
 		*leafTexture, *baseTexture, *displacementTexture, *barkNormalMap,
-		*snowTexture;
+		*snowTexture, *terrainNormalMapFull;
 
 	// Particle emitters
 	u32 leafParticleEmitterID;

@@ -16,9 +16,12 @@ private:
 	f32 xrotation, yrotation, zrotation;
 
 	// these should be pointers to data managed by the shader/texture manager
-	Texture *textureA, *textureB, *textureC;
+	//Texture *textureA, *textureB, *textureC;
+	
 	Shader *objectShader;
 	glex ogl;
+
+	std::vector<Texture*> textures;
 
 public:
 	GraphicsObject(void);
@@ -32,18 +35,18 @@ public:
 	
 	const float3& GetScale() const { return scale; }
 	const Material& GetMaterial() const { return mat; }
-	const Texture* GetTextureA() const { return textureA; }
-	const Texture* GetTextureB() const { return textureB; }
-	const Texture* GetTextureC() const { return textureC; }
+	
+	const Texture* GetTexture(u32 index) { return textures[index]; };
+	
 	Shader* GetShader() const { return objectShader; }
 
 	 const Model& GetModel() const { return gmodel; };
 
 	void SetModel(Model &m);
 	void SetShader(Shader *s) { objectShader = s; };
-	void SetTextureA(Texture *t) { textureA = t; };
-	void SetTextureB(Texture *t) { textureB = t; };
-	void SetTextureC(Texture *t) { textureC = t; };
+	
+	void AddTexture(Texture *t) { textures.push_back(t); };
+	
 	void SetPosition(const float3 &pos) { position = pos; };
 	
 	void SetXRotation(f32 rot) { xrotation = rot; };

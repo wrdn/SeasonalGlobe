@@ -2,7 +2,7 @@
 
 
 GraphicsObject::GraphicsObject(void)
-	: position(), scale(1), mat(), xrotation(0), yrotation(0), zrotation(0), textureA(0), textureB(0), textureC(0), objectShader(0)
+	: position(), scale(1), mat(), xrotation(0), yrotation(0), zrotation(0), objectShader(0)
 {
 	ogl.Load();
 }
@@ -16,7 +16,7 @@ void GraphicsObject::Draw()
 {
 	if(objectShader) { objectShader->Activate(); }
 
-	if(textureA)
+	/*if(textureA)
 	{
 		ogl.glActiveTexture(textureA->GetTextureSlot());
 		textureA->Activate();
@@ -30,6 +30,11 @@ void GraphicsObject::Draw()
 	{
 		ogl.glActiveTexture(textureC->GetTextureSlot());
 		textureC->Activate();
+	}*/
+	for(std::vector<Texture*>::iterator it = textures.begin(); it != textures.end(); ++it)
+	{
+		ogl.glActiveTexture((*it)->GetTextureSlot());
+		(*it)->Activate();
 	}
 	
 
@@ -51,9 +56,14 @@ void GraphicsObject::Draw()
 
 	ogl.glActiveTexture(GL_TEXTURE0);
 	if(objectShader) { objectShader->Deactivate(); }
-	if(textureA){ textureA->Deactivate(); }
+	
+	/*if(textureA){ textureA->Deactivate(); }
 	if(textureB){ textureB->Deactivate(); }
-	if(textureC){ textureC->Deactivate(); }
+	if(textureC){ textureC->Deactivate(); }*/
+	for(std::vector<Texture*>::iterator it = textures.begin(); it != textures.end(); ++it)
+	{
+		(*it)->Deactivate();
+	}
 };
 
 void GraphicsObject::DrawSimple()

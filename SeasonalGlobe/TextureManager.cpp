@@ -23,7 +23,7 @@ void TextureManager::Cleanup()
 	{
 		glDeleteTextures(1, &it->first);
 	}
-	textures.clear();
+	textures.clear(); 
 };
 
 Texture* TextureManager::LoadTextureFromFile(const c8* const _filename)
