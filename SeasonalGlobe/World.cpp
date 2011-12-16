@@ -371,13 +371,18 @@ bool World::LoadParticles()
 	f32 radius = globeSphere->GetRadius()-0.2f;
 	for(int i=0;i<150;++i)
 	{
-		
 		f32 ZAxis = randflt(-radius, radius);
 		f32 phi = randflt(0,PI);
 		f32 theta = asin(ZAxis/radius);
 
 		f32 xpos = radius * cos(theta) * cos(phi);
 		f32 zpos = radius * sin(theta);
+
+		if( (xpos>(-0.3) && xpos<5.1) && (zpos>1.15 && zpos<5.3) ) // dont generate particles on the pond
+		{
+			i--;
+			continue;
+		}
 
 		Particle p;
 		p.color = float4(1);
@@ -389,6 +394,21 @@ bool World::LoadParticles()
 	}
 
 	return true;
+};
+
+void DrawLightning()
+{
+	glBegin(GL_POLYGON);
+
+	glVertex3f(0.5,1,0);
+	glVertex3f(-0.3,0.4,0);
+	glVertex3f(-0.1,-0.4,0);
+	glVertex3f(-0.5,-1,0);
+	glVertex3f(0.5,-0.4,0);
+	glVertex3f(0.1,0.4,0);
+	glVertex3f(0.5,1,0);
+	
+	glEnd();
 };
 
 bool World::LoadGeometry()
@@ -410,6 +430,10 @@ bool World::LoadGeometry()
 	baseModel->AddTexture(baseTexture);
 	baseModel->SetPosition(float3(0, 0.2f, 0));
 	baseModel->SetScale(float3(2.0f, 0.83f, 2.0f));
+
+	boltModel = OBJFile::ParseFile("Data/bolt.obj")[0];
+	((Model&)boltModel->GetModel()).BuildVBO();
+	boltModel->SetMaterial(Material(float4(0,0,0), float4(1,0.8,0,0), float4(1,1,1,1), 20));
 
 	// Load globe
 	globeSphere = new Sphere();
@@ -597,18 +621,18 @@ void World::SetupSeasons()
 	fireParticleEmitter->SetDeathTime(seasonMan.GetTimePerSeason() * 0.75f);
 
 	// Winter
-	seasonMan.AddEvent(Spring, SeasonalEvent(0, InitialiseSnow ));
-	seasonMan.AddEvent(Spring, SeasonalEvent(0.05f, InitialiseHouseSmoke));
+	seasonMan.AddEvent(Winter, SeasonalEvent(0, InitialiseSnow ));
+	seasonMan.AddEvent(Winter, SeasonalEvent(0.05f, InitialiseHouseSmoke));
 	particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID)->SetTimeToFall(seasonMan.GetTimePerSeason() * 0.1f);
 
-	seasonMan.AddEvent(Spring, SeasonalEvent(0.3f, InitialiseTerrainTextureMergeToSnow));
+	seasonMan.AddEvent(Winter, SeasonalEvent(0.3f, InitialiseTerrainTextureMergeToSnow));
 	timeToMergeTextures = seasonMan.GetTimePerSeason() * 0.25f;
 	
-	seasonMan.AddEvent(Spring, SeasonalEvent(0.45f, InitialiseTerrainElevation));
+	seasonMan.AddEvent(Winter, SeasonalEvent(0.45f, InitialiseTerrainElevation));
 	terrainElevation.timeToElevateFully =  seasonMan.GetTimePerSeason() * 0.25f;
 	
-	seasonMan.AddEvent(Spring, SeasonalEvent(0.8f, InitialiseTerrainMelt));
-	seasonMan.AddEvent(Spring, SeasonalEvent(0.85f, InitialiseTerrainTextureMergeToGrass));
+	seasonMan.AddEvent(Winter, SeasonalEvent(0.8f, InitialiseTerrainMelt));
+	seasonMan.AddEvent(Winter, SeasonalEvent(0.85f, InitialiseTerrainTextureMergeToGrass));
 };
   
 bool World::Load()
@@ -837,12 +861,15 @@ void World::reflective_draw(const GameTime &gameTime)
 
 	glDisable(GL_LIGHTING);
 	tree->Draw(gameTime.GetDeltaTime());
+	
+	glDisable(GL_CULL_FACE);
 	glDepthMask(GL_FALSE);
-
 	glEnable(GL_BLEND);
+	fireParticleEmitter->Draw();
 	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->Draw();
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
 
 	glDisable(GL_NORMALIZE);
 	glCullFace(GL_BACK);
@@ -1022,6 +1049,19 @@ void World::Draw(const GameTime &gameTime)
 		lightSphere->Draw();
 	}
 
+
+	glDisable(GL_LIGHTING);
+	glPushMatrix();
+	glTranslatef(tree->GetPosition().x(), tree->GetPosition().y(), tree->GetPosition().z());
+	glTranslatef(-0.25,5,0);
+	glScalef(2,2,2);
+	glColor4f(0.9451, 0.9178, 0,1);
+	boltModel->Draw();
+	glPopMatrix();
+	glEnable(GL_LIGHTING);
+	glColor4f(1,1,1,1);
+
+	movableSphere->Draw();
 
 	glPushMatrix();
 	reflective_draw(gameTime);

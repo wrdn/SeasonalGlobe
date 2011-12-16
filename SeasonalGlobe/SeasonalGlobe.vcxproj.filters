@@ -572,5 +572,8 @@
     <Object Include="Data\House\Haus20.obj">
       <Filter>Resource Files\Data\House</Filter>
     </Object>
+    <Object Include="Data\bolt.obj">
+      <Filter>Resource Files\Data</Filter>
+    </Object>
   </ItemGroup>
 </Project>

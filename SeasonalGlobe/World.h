@@ -102,7 +102,7 @@ private:
 	TerrainLoader *terrain; TerrainShift terrainElevation;
 	FractalTree *tree;
 	Sphere *globeSphere;
-	GraphicsObject *houseModel, *baseModel;
+	GraphicsObject *houseModel, *baseModel, *boltModel;
 	Model *defaultBillboardModel;
 	Model *imposterModel;
 	GLenum polygonMode;
