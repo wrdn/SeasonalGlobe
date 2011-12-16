@@ -227,4 +227,13 @@ const Texture& ParticleEmitter::GetAlphaMap() const { return alphaMap; };
 
 void ParticleEmitter::SetSourceAlphaBlendFunction(const GLenum blendfunc) { sourceAlphaBlendFunction = blendfunc; };
 const GLenum ParticleEmitter::GetSourceAlphaBlendFunction() const { return sourceAlphaBlendFunction; };
+
+void ParticleEmitter::ResetParticleEmitter()
+{
+	for(int i=0;i<GLOBAL_MAX_PARTICLES_PER_EMITTER;++i)
+	{
+		particles[i].color = float4(0,0,0,0);
+		particles[i].energy = -1;
+	}
+};
 #pragma endregion

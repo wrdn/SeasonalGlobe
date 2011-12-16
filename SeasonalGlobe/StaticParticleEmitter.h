@@ -47,6 +47,8 @@ public:
 	// Adds the particle at currentParticleIndex. Does NOT change any particle properties
 	const bool AddParticle(const Particle &p);
 
+	Particle* GetStaticParticles() const { return GetParticles(); }
+
 	// Accessors and Mutators
 	void SetParticlesStaticState(const bool particlesAreStatic);
 	const bool GetParticlesStaticState() const;
@@ -70,6 +72,10 @@ public:
 		fadeOutColor = endColor;
 		fadeOutColor.w(0);
 	}
+
+	void SetParticlesDieing(bool b) { particlesDieing = b; }
+	void SetParticlesFalling(bool b) { particlesFalling = b; }
+	void SetParticlesFadingIn(bool b) { particlesFadingIn = b; }
 
 	const f32 GetTimeToChangeColor() const { return timeToChangeColor; }
 	const f32 GetTimeToFadeOut() const { return timeToFadeOut; }

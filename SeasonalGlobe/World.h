@@ -18,9 +18,9 @@
 #include "Light.h"
 #include "Disk.h"
 #include "TerrainLoader.h"
-#include "SeasonManager.h"
 #include "PointBasedParticleEmitter.h"
 #include "HemiSphericalParticleEmitter.h"
+#include "SeasonManager.h"
 
 enum LightingMode
 {
@@ -91,6 +91,7 @@ private:
 	ShaderManager shaderMan;
 	ParticleSystem particleSystem;
 	SeasonManager seasonMan;
+	f32 dtMultiplier; // used to speed up/slow down, every frame dt = dt*dtMultiplier
 
 	// Camera
 	Camera2 cam;
@@ -338,6 +339,7 @@ public:
 
 	void ActivateSmokeParticleEffect() { particleSystem.GetEmitter<PointBasedParticleEmitter>(smokeEmitterID)->SetActive(true); }
 	void ActivateSnow() { particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID)->SetActive(true); }
+	void DeactivateSnow() { particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID)->SetActive(false); }
 	void ActivateTerrainElevation(TerrainShiftDirection d)
 	{
 		if(d == Up)
@@ -350,6 +352,8 @@ public:
 	void ActiveTerrainTextureMerge(i32 dir) { mergeDirection=dir; mergingTerrainTextured = true; }
 
 	const Season GetCurrentSeason() const { return seasonMan.GetCurrentSeason(); }
+
+	const SeasonManager* GetSeasonManager() const { return &seasonMan; }
 
 	const c8* GetCurrentSeasonString() const
 	{
@@ -364,4 +368,24 @@ public:
 	};
 
 	void SetLightningActive(bool active) { drawLightning = active; }
+
+	void ResetWorld();
+	
+	void UpdateSceneTimings()
+	{
+		tree->SetBuildTime(seasonMan.GetTimePerSeason() * 0.85f);
+		particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToFadeIn(seasonMan.GetTimePerSeason() * 0.25f);
+		particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.15f);
+		particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToFall(seasonMan.GetTimePerSeason() * 0.1f);
+		particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.2f);
+		fireParticleEmitter->SetIgnitionTime(seasonMan.GetTimePerSeason() * 0.45f);
+		fireParticleEmitter->SetDeathTime(seasonMan.GetTimePerSeason() * 0.75f);
+		particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID)->SetTimeToFall(seasonMan.GetTimePerSeason() * 0.1f);
+		timeToMergeTextures = seasonMan.GetTimePerSeason() * 0.25f;
+		terrainElevation.timeToElevateFully =  seasonMan.GetTimePerSeason() * 0.25f;
+	};
+
+	void SetDtMultiplier(f32 multiplier) { dtMultiplier = multiplier; }
+	const f32 GetMultiplier() const { return dtMultiplier; }
+
 };

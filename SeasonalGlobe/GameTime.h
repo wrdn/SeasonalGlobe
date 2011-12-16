@@ -21,6 +21,8 @@ public:
 	void Init();
 	void Update();
 
+	void SetDeltaTime(f32 _dt) { deltaTime = _dt; }
+
 	const f32 GetFrameRate() const { return FrameRate; };
 
 	const f32 GetRunningTime() const { return runningTime; };

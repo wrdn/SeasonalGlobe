@@ -7,11 +7,13 @@
 #include "StaticParticleEmitter.h"
 #include "CylindricalParticleEmitter.h"
 #include "tutorialcodeheaders.h"
+#include "SeasonManager.h"
 
 World::World(void)
 	: conf(), // Application configuration
 
 	texMan(), shaderMan(), particleSystem(), seasonMan(), // Managers
+	dtMultiplier(1),
 
 	cam(), sceneRotationAxis(0,1,0), _cameraAngle(30.0f), _cameraPosition(-30.0f), // Camera
 	_cameraRotation(-357.0f), AutoRotate(false),
@@ -285,7 +287,11 @@ bool World::LoadParticles()
 
 	Shader *psysbase = shaderMan.GetShader(particleSystemBaseShaderID);
 
-	const u32 LEAF_PARTICLES_PER_LEAF_MATRIX = 3;
+	//const u32 LEAF_PARTICLES_PER_LEAF_MATRIX = 3;
+
+	u32 LEAF_PARTICLES_PER_LEAF_MATRIX = 3;
+	conf.GetInt("LeavesPerLeafMatrix", (i32&)LEAF_PARTICLES_PER_LEAF_MATRIX);
+
 	leafParticleEmitterID = particleSystem.AddEmitter<StaticParticleEmitter>();
 	StaticParticleEmitter *leafEmitter = particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID);
 	leafEmitter->SetLocalParticleMaximum(tree->GetLeafCount() * LEAF_PARTICLES_PER_LEAF_MATRIX);
@@ -326,7 +332,8 @@ bool World::LoadParticles()
 	smokeEmitterID = particleSystem.AddEmitter<PointBasedParticleEmitter>();
 	PointBasedParticleEmitter *smokeParticleEmitter = particleSystem.GetEmitter<PointBasedParticleEmitter>(smokeEmitterID);
 	smokeParticleEmitter->SetParticleSpread(0.35f);
-	smokeParticleEmitter->SetRateOfEmission(250);
+	i32 smokeRateOfEmission = 250; conf.GetInt("SmokeRateOfEmission", smokeRateOfEmission);
+	smokeParticleEmitter->SetRateOfEmission(smokeRateOfEmission);
 	smokeParticleEmitter->SetAlphaMap(*particleTexture);
 	i32 maxsmokeparticles=80; conf.GetInt("MaxSmokeParticles", maxsmokeparticles);
 	smokeParticleEmitter->SetLocalParticleMaximum(abs(maxsmokeparticles));
@@ -372,7 +379,11 @@ bool World::LoadParticles()
 
 	grassStaticEmitterID = particleSystem.AddEmitter<StaticParticleEmitter>();
 	StaticParticleEmitter *grassParticles = particleSystem.GetEmitter<StaticParticleEmitter>(grassStaticEmitterID);
-	grassParticles->SetLocalParticleMaximum(150);
+
+	i32 grassLocalParticleMax = 150;
+	conf.GetInt("GrassParticleCount", grassLocalParticleMax);
+	grassParticles->SetLocalParticleMaximum(grassLocalParticleMax);
+	
 	grassParticles->SetModel(CreateImposterModel());
 	imposterModel = (Model*)grassParticles->GetModel();
 	grassParticles->SetAlphaMap(*grassParticleTexture);
@@ -564,6 +575,7 @@ void InitiateTreeIgnitionFire(const World *w)
 {
 	FireParticleEmitter *fp = (FireParticleEmitter*)w->GetFireParticleEmitter();
 	fp->SetRuntime(0);
+	fp->SetBurnLevel(0);
 	fp->SetBurningState(Igniting);
 	fp->SetActive(true);
 };
@@ -591,52 +603,50 @@ void InitialiseTerrainTextureMergeToSnow(const World *w) { ((World*)w)->ActiveTe
 void InitialiseTerrainTextureMergeToGrass(const World *w) { ((World*)w)->ActiveTerrainTextureMerge(-1); }
 void InitLightningAppear(const World *w) { ((World*)w)->SetLightningActive(true); }
 void InitLightningVanish(const World *w) { ((World*)w)->SetLightningActive(false); }
+void DeactivateWorldSnow(const World *w) { ((World*)w)->DeactivateSnow(); };
 
 void World::SetupSeasons()
 {
-	seasonMan.SetTimePerSeason(18); // 8 seconds per season, 32 seconds per cycle
+	i32 timePerSeasons = 16;
+	conf.GetInt("TimePerSeason", timePerSeasons);
+
+	seasonMan.SetTimePerSeason((f32)timePerSeasons); // 8 seconds per season, 32 seconds per cycle
 	seasonMan.SetWorldPointer(this);
 
 	// Spring: Tree grows
-	tree->SetBuildTime(seasonMan.GetTimePerSeason() * 0.85f);
 	seasonMan.AddEvent(Spring, SeasonalEvent(0.1f, StartTreeGrowth)); // tree grows at start of spring
 
 	// Summer: Leaves appear on tree
 	seasonMan.AddEvent(Summer, SeasonalEvent(0.0f, InitiateLeafGrowth));
-	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToFadeIn(seasonMan.GetTimePerSeason() * 0.25f);
 
 	// Autumn: Leaves change colour and fall from tree (then disappear over time), lightning bolt hits tree and it burns down
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0, InitiateLeafColorChange));
-	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.15f);
 
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.2f, InitiateLeafFall));
-	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToFall(seasonMan.GetTimePerSeason() * 0.1f);
 
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.3f, InitiateLeafVanish));
-	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.2f);
 	
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.29f, InitLightningAppear));
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.3f, InitLightningVanish));
 
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.3f, InitiateTreeIgnitionFire));
-	fireParticleEmitter->SetIgnitionTime(seasonMan.GetTimePerSeason() * 0.45f);
 
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.78f, InitiateTreeDeath));
-	fireParticleEmitter->SetDeathTime(seasonMan.GetTimePerSeason() * 0.75f);
 
 	// Winter
 	seasonMan.AddEvent(Winter, SeasonalEvent(0, InitialiseSnow ));
 	seasonMan.AddEvent(Winter, SeasonalEvent(0.05f, InitialiseHouseSmoke));
-	particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID)->SetTimeToFall(seasonMan.GetTimePerSeason() * 0.1f);
-
+	
 	seasonMan.AddEvent(Winter, SeasonalEvent(0.3f, InitialiseTerrainTextureMergeToSnow));
-	timeToMergeTextures = seasonMan.GetTimePerSeason() * 0.25f;
 	
 	seasonMan.AddEvent(Winter, SeasonalEvent(0.45f, InitialiseTerrainElevation));
-	terrainElevation.timeToElevateFully =  seasonMan.GetTimePerSeason() * 0.25f;
 	
 	seasonMan.AddEvent(Winter, SeasonalEvent(0.8f, InitialiseTerrainMelt));
 	seasonMan.AddEvent(Winter, SeasonalEvent(0.85f, InitialiseTerrainTextureMergeToGrass));
+
+	seasonMan.AddEvent(Winter, SeasonalEvent(0.95f, DeactivateWorldSnow));
+
+	UpdateSceneTimings();
 };
   
 bool World::Load()
@@ -687,8 +697,10 @@ void World::Shutdown()
 	delete lightSphere;
 	delete spotCone;
 	delete tree;
-	delete terrain; // crash
-	delete defaultBillboardModel; // crash
+	delete terrain;
+	delete defaultBillboardModel;
+	delete imposterModel;
+	delete boltModel;
 };
 
 f32 angle=0; const f32 rotationSpeed = 50.0f;
@@ -903,6 +915,8 @@ void World::multi_texturing_test(/*const GameTime &gameTime*/)
 
 void World::Update(const GameTime &gameTime)
 {
+	UpdateSceneTimings();
+
 	if(mergingTerrainTextured)
 	{
 		terrainTextureMergeRuntime += gameTime.GetDeltaTime() * mergeDirection;
@@ -955,8 +969,11 @@ void World::DrawTerrain(const GameTime &gameTime)
 	glEnable(GL_CULL_FACE);
 };
 
-void World::Draw(const GameTime &gameTime)
+void World::Draw(const GameTime &_gameTime)
 {
+	GameTime gameTime = _gameTime;
+	gameTime.SetDeltaTime(gameTime.GetDeltaTime() * dtMultiplier);
+
 	seasonMan.Update(gameTime.GetDeltaTime());
 
 	glLoadIdentity();
@@ -1002,7 +1019,7 @@ void World::Draw(const GameTime &gameTime)
 		lightSphere->SetPosition(newPos);
 		float4 lightSpherePos = lightSphere->GetPosition().ToFloat4();
 		directionalLight.SetPositionAndUpdateOpenGL(lightSpherePos);
-		//directionalLightRotation += directionalLightSpeed * gameTime.GetDeltaTime();
+		directionalLightRotation += directionalLightSpeed * gameTime.GetDeltaTime();
 		lightSphere->Draw();
 	}
 
@@ -1059,3 +1076,55 @@ void World::Draw(const GameTime &gameTime)
 		if(angle >= 360) { angle-=360; }
 	}
 }
+
+	void World::ResetWorld()
+	{
+		seasonMan.Reset();
+
+		// RESET TREE
+		tree->SetRuntime(0);
+		tree->SetTreeDieing(false);
+		tree->SetTreeDeathDepth(0);
+		tree->SetActive(false);
+
+		// RESET LEAVES
+		const u32 LEAF_PARTICLES_PER_LEAF_MATRIX = 3;
+		const Mat44 *LeafMatrices = tree->GetLeafMatrices();
+		const u32 LeafCount = tree->GetLeafCount();
+		StaticParticleEmitter *leafEmitter = particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID);
+		leafEmitter->ResetParticleEmitter();
+		for(u32 i=0;i<LeafCount;++i)
+		{
+			glMatrixMode(GL_MODELVIEW);
+			const f32 *leafMat = LeafMatrices[i].GetMatrix();
+			for(u32 j=0;j<LEAF_PARTICLES_PER_LEAF_MATRIX;++j)
+			{
+				leafEmitter->GetStaticParticles()[ (i*LEAF_PARTICLES_PER_LEAF_MATRIX)+j ].pos = float3(leafMat[12], leafMat[13], leafMat[14]);
+				leafEmitter->GetStaticParticles()[ (i*LEAF_PARTICLES_PER_LEAF_MATRIX)+j ].size = float3(0.25f);
+				leafEmitter->GetStaticParticles()[ (i*LEAF_PARTICLES_PER_LEAF_MATRIX)+j ].rotation_z = randflt(0, 360);
+				leafEmitter->GetStaticParticles()[ (i*LEAF_PARTICLES_PER_LEAF_MATRIX)+j ].color = leafEmitter->GetStartColor();
+			}
+		}
+		leafEmitter->SetParticlesStaticState(true);
+		leafEmitter->SetStartColor(Color4f(1,1,1,0));
+		leafEmitter->SetEndColor(Color4f(1,1,1,1));
+		leafEmitter->SetParticlesDieing(false);
+		leafEmitter->SetParticlesFadingIn(false);
+		leafEmitter->SetParticlesFalling(false);
+		leafEmitter->DoColorUpdate(true);
+		leafEmitter->SetActive(false);
+
+		fireParticleEmitter->SetRuntime(0);
+		fireParticleEmitter->SetBurningState(Igniting);
+		fireParticleEmitter->SetBurnLevel(0);
+		fireParticleEmitter->SetActive(false);
+
+		terrainElevation.shiftDirection = NoShift;
+
+		particleSystem.GetEmitter<PointBasedParticleEmitter>(smokeEmitterID)->ResetParticleEmitter();
+		particleSystem.GetEmitter<PointBasedParticleEmitter>(smokeEmitterID)->SetActive(false);
+
+		particleSystem.GetEmitter<PointBasedParticleEmitter>(snowEmitterID)->ResetParticleEmitter();
+		particleSystem.GetEmitter<PointBasedParticleEmitter>(snowEmitterID)->SetRateOfEmission(500);
+		particleSystem.GetEmitter<PointBasedParticleEmitter>(snowEmitterID)->SetActive(false);
+	};

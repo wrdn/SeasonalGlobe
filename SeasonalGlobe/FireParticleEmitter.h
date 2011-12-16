@@ -104,6 +104,8 @@ public:
 	const f32 GetIgnitionTime() const { return ignitionTime; }
 	void SetIgnitionTime(f32 t) { ignitionTime = t; }
 
+	void SetBurnLevel(i32 level) { burnLevel = level; }
+
 	void InitDeath(); // kills the fire and the tree in sync
 };
 

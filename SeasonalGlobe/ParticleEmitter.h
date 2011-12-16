@@ -140,5 +140,8 @@ public:
 
 	void SetSourceAlphaBlendFunction(const GLenum blendfunc);
 	const GLenum GetSourceAlphaBlendFunction() const;
+
+	void ResetParticleEmitter();
+
 	#pragma endregion
 };

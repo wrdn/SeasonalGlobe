@@ -41,7 +41,7 @@ void SeasonalWindow::SetWindowResolution(const u32 width, const u32 height)
 void SeasonalWindow::ResetPerspective() const
 {
 	glViewport(0,0,windowRes[0],windowRes[1]);
-	
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(60, (double)windowRes[0] / (double)windowRes[1],0.3f,200.0);
@@ -68,7 +68,7 @@ void SeasonalWindow::OnDisplay()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glClearColor(0,0,0,1);
-	
+
 	scn.Draw(gameTime);
 
 	glMatrixMode(GL_PROJECTION);
@@ -99,7 +99,61 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 	{
 		Close();
 	}
-	else if(key == VK_RETURN && !down)
+	
+	if(!down) return;
+
+	switch(tolower(key))
+	{
+	case 187: //+
+		scn.SetDtMultiplier(scn.GetMultiplier() + scn.GetMultiplier()*0.1f);
+		//scn.GetSeasonManager()->SetTimePerSeason( scn.GetSeasonManager()->GetTimePerSeason() + 0.1f );
+		break;
+	case 189: //-
+		scn.SetDtMultiplier(scn.GetMultiplier() - scn.GetMultiplier()*0.1f);
+		//scn.GetSeasonManager()->SetTimePerSeason( scn.GetSeasonManager()->GetTimePerSeason() - 0.1f );
+		break;
+	case 37:
+		{
+			scn.SetCameraRotation(scn.GetCameraRotation() - 5);
+			break;
+		}
+	case 39:
+		{
+			scn.SetCameraRotation(scn.GetCameraRotation() + 5);
+			break;
+		}
+	case 38:
+		{
+			scn.SetCameraAngle(scn.GetCameraAngle() - 5);
+			break;
+		}
+	case 40:
+		{
+			scn.SetCameraAngle(scn.GetCameraAngle() + 5);
+			break;
+		}
+	case 109:
+		{
+			scn.SetTreeShadeMode(scn.GetNextTreeShadeMode());
+		} break;
+	case 115:
+		{
+			// Order: Directional - Spotlight - Ambient - Directional
+			const LightingMode lm = scn.GetLightingMode();
+			switch(lm)
+			{
+			case Directional: { scn.SetLightingMode(Spotlights); break; }
+			case Spotlights: { scn.SetLightingMode(Ambient); break; }
+			case Ambient: { scn.SetLightingMode(Directional); break; }
+			}
+		} break;
+	}
+
+
+
+
+
+	/*else if(key == VK_RETURN && !down)
 	{
 		if(glIsEnabled(GL_CULL_FACE))
 		{
@@ -127,92 +181,7 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
-	}
-
-	switch(tolower(key))
-	{
-
-	case 'a': 
-		//scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(5, 1,0,0));
-		//scn.SetCameraRotation(scn.GetCameraRotation() + 5.0f);
-		scn.SetCameraAngle(scn.GetCameraAngle() + 5.0f);
-		break;
-	case 'z':
-		scn.SetCameraAngle(scn.GetCameraAngle() - 5.0f);
-		//scn.SetCameraRotation(scn.GetCameraRotation() - 5.0f);
-		//scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(-5, 1,0,0));
-		break;
-	case 'p':
-		{
-			if(!down)
-			{
-				if(scn.GetPolygonMode() == GL_LINE)
-				{
-					scn.SetPolygonMode(GL_FILL);
-				}
-				else
-				{
-					scn.SetPolygonMode(GL_LINE);
-				}
-			}
-		} break;
-	case 'c':
-		{
-			if(!down)
-			{
-				if(glIsEnabled(GL_CULL_FACE))
-					glDisable(GL_CULL_FACE);
-				else
-					glEnable(GL_CULL_FACE);
-			}
-		} break;
-	case 'r':
-		{
-			if(!down)
-			{
-				scn.SetAutoRotate(!scn.GetAutoRotate());
-			}
-		} break;
-	case 'b':
-		{
-			if(!down)
-			{
-				scn.GetTree()->SetRuntime(0);
-				//scn.GetTree()->runtime = 0;
-				//scn.GetTree()->SetAnimationLevel(0);
-			}
-		} break;
-	case LIGHT_SWITCH_CONTROL_KEY:
-		{
-			// Order: Directional - Spotlight - Ambient - Directional
-			if(!down)
-			{
-				const LightingMode lm = scn.GetLightingMode();
-				switch(lm)
-				{
-				case Directional: { scn.SetLightingMode(Spotlights); break; }
-				case Spotlights: { scn.SetLightingMode(Ambient); break; }
-				case Ambient: { scn.SetLightingMode(Directional); break; }
-				}
-			}
-		} break;
-	case 't':
-		{
-			if(!down)
-			{
-				if(scn.GetPolygonMode() == GL_LINE)
-					scn.SetPolygonMode(GL_FILL);
-				else
-					scn.SetPolygonMode(GL_LINE);
-			}
-		} break;
-
-	case TREE_DRAW_MODES_CONTROL_KEY:
-		{
-			if(!down)
-				scn.SetTreeShadeMode(scn.GetNextTreeShadeMode());
-		} break;
-	}
+	}*/
 };
 
 void SeasonalWindow::OnMouseButton(MouseButton button, bool down)
@@ -260,7 +229,7 @@ void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 
 
 		scn.SetCameraPosition(scn.GetCameraPosition() + (y-temp_y)*0.05f);
-		
+
 		//scn.GetCamera().Translate( scn.GetCamera().GetDirection() * ((f32)y-(f32)temp_y)*gameTime.GetDeltaTime() );
 		//const f32 speed = 0.1f;
 		//const f32 d = ((f32)y-(f32)temp_y);
@@ -281,7 +250,7 @@ void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 
 
 		scn.SetCameraRotation(scn.GetCameraRotation()+(x-temp_x)*0.5f);
-		
+
 		//const f32 d = ((f32)x - (f32)temp_x);
 		//scn.GetCamera().SetTheta ( scn.GetCamera().GetTheta() + d*0.1f );
 		//scn.GetCamera().Rotate( Mat44::BuildRotationMatrix( (x-temp_x)*0.5f, 0,1,0 ) );

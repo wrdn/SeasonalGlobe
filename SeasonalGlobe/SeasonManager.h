@@ -24,7 +24,14 @@ public:
 	~SeasonalEvent() { };
 
 	// runs the execution function and modifies the hasTriggered bool
-	void Run(const World *w) { if(EventCallback && !hasTriggered) { EventCallback(w); hasTriggered = true; } };
+	void Run(const World *w)
+	{
+		if(EventCallback && !hasTriggered)
+		{
+			EventCallback(w);
+			hasTriggered = true;
+		}
+	};
 
 	const bool HasTriggered() const { return hasTriggered; };
 	const f32 GetTimeOffset() const { return timeOffset; }
@@ -57,8 +64,8 @@ public:
 	void SetWorldPointer(World *p) { worldPtr = p; }
 
 	// use whichever is easiest to set season times. Time per season = totalTime/4, total time = time per season * 4
-	void SetTotalTime(const f32 f) { totalTime = f; timePerSeason = totalTime/4; };
-	void SetTimePerSeason(const f32 f) { timePerSeason = f; totalTime = timePerSeason*4; };
+	void SetTotalTime(const f32 f);
+	void SetTimePerSeason(const f32 f);
 
 	const f32 GetTimePerSeason() const { return timePerSeason; }
 	const f32 GetTotalTime() const { return totalTime; }
@@ -69,4 +76,6 @@ public:
 
 	// updates runtime and executes seasonal events if they have been reached
 	void Update(const f32 dt);
+
+	void Reset();
 };
