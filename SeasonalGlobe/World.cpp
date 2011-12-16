@@ -590,6 +590,8 @@ void InitialiseTerrainElevation(const World *w) { ((World*)w)->ActivateTerrainEl
 void InitialiseTerrainMelt(const World *w) { ((World*)w)->ActivateTerrainElevation(Down); }
 void InitialiseTerrainTextureMergeToSnow(const World *w) { ((World*)w)->ActiveTerrainTextureMerge(1); }
 void InitialiseTerrainTextureMergeToGrass(const World *w) { ((World*)w)->ActiveTerrainTextureMerge(-1); }
+void InitLightningAppear(const World *w) { ((World*)w)->SetLightningActive(true); }
+void InitLightningVanish(const World *w) { ((World*)w)->SetLightningActive(false); }
 
 void World::SetupSeasons()
 {
@@ -614,6 +616,9 @@ void World::SetupSeasons()
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.3f, InitiateLeafVanish));
 	particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.2f);
 	
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.29f, InitLightningAppear));
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.3f, InitLightningVanish));
+
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.3f, InitiateTreeIgnitionFire));
 	fireParticleEmitter->SetIgnitionTime(seasonMan.GetTimePerSeason() * 0.45f);
 
@@ -1049,19 +1054,21 @@ void World::Draw(const GameTime &gameTime)
 		lightSphere->Draw();
 	}
 
+	if(drawLightning)
+	{
+		glDisable(GL_LIGHTING);
+		glPushMatrix();
+		glTranslatef(tree->GetPosition().x(), tree->GetPosition().y(), tree->GetPosition().z());
+		glTranslatef(-0.25,5,0);
+		glScalef(2,2,2);
+		glColor4f(0.9451, 0.9178, 0,1);
+		boltModel->Draw();
+		glPopMatrix();
+		glEnable(GL_LIGHTING);
+		glColor4f(1,1,1,1);
+	}
 
-	glDisable(GL_LIGHTING);
-	glPushMatrix();
-	glTranslatef(tree->GetPosition().x(), tree->GetPosition().y(), tree->GetPosition().z());
-	glTranslatef(-0.25,5,0);
-	glScalef(2,2,2);
-	glColor4f(0.9451, 0.9178, 0,1);
-	boltModel->Draw();
-	glPopMatrix();
-	glEnable(GL_LIGHTING);
-	glColor4f(1,1,1,1);
-
-	movableSphere->Draw();
+	//movableSphere->Draw();
 
 	glPushMatrix();
 	reflective_draw(gameTime);

@@ -108,7 +108,7 @@ private:
 	GLenum polygonMode;
 	Sphere *lightSphere;
 	Cylinder *spotCone;
-
+	bool drawLightning;
 	
 	// Shaders
 	u32 phongShaderID, particleSystemBaseShaderID,
@@ -364,4 +364,6 @@ public:
 		}
 		return "";
 	};
+
+	void SetLightningActive(bool active) { drawLightning = active; }
 };
