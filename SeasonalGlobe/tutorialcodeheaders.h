@@ -26,17 +26,17 @@ public:
 		Assign(xyzw[0], xyzw[1], xyzw[2], xyzw[3]);
 	}
 
-	const GLfloat* xyzw() const {
-		return _xyzw;
-	}
+	const GLfloat* GetVec() const { return _xyzw; };
 
-	const float& operator[](int i) const {
-		return _xyzw[i];
-	}
+	const float x() const { return _xyzw[0]; }
+	const float y() const { return _xyzw[1]; }
+	const float z() const { return _xyzw[2]; }
+	const float w() const { return _xyzw[3]; }
 
-	float& operator[](int i) {
-		return (*this)[i];
-	}
+	void x(float _x) { _xyzw[0] = _x; }
+	void y(float _y) { _xyzw[1] = _y; }
+	void z(float _z) { _xyzw[2] = _z; }
+	void w(float _w) { _xyzw[3] = _w; }
 };
 
 class ColorT {
@@ -59,12 +59,20 @@ public:
 		Assign(r, g, b, a);
 	}
 
+	const GLfloat* GetVec() const { return _rgba; }
+
+	const float r() const { return _rgba[0]; }
+	const float g() const { return _rgba[1]; }
+	const float b() const { return _rgba[2]; }
+	const float a() const { return _rgba[3]; }
+
+	void r(float _r) { _rgba[0] = _r; }
+	void g(float _g) { _rgba[1] = _g; }
+	void b(float _b) { _rgba[2] = _b; }
+	void a(float _a) { _rgba[3] = _a; }
+
 	explicit ColorT(GLfloat rgba[]) {
 		Assign(rgba[0], rgba[1], rgba[2], rgba[3]);
-	}
-
-	const GLfloat* rgba() const {
-		return _rgba;
 	}
 
 	static ColorT black() {
@@ -93,14 +101,6 @@ public:
 
 	static ColorT null() {
 		return ColorT(0.0, 0.0, 0.0, 0.0);
-	}
-	
-	const float& operator[](int i) const {
-		return _rgba[i];
-	}
-
-	float& operator[](int i) {
-		return (*this)[i];
 	}
 };
 
@@ -135,16 +135,16 @@ public:
 	}		
 
 	void alphaDiffuse(const float inc) {
-		_diffuse[3] += inc;
-		if (_diffuse[3] < 0.0f) _diffuse[3] = 0.0f;
-		if (_diffuse[3] > 1.0f) _diffuse[3] = 1.0f;
+		_diffuse.a( _diffuse.a() + inc);
+		if (_diffuse.a() < 0.0f) _diffuse.a(0.0f);
+		if (_diffuse.a() > 1.0f) _diffuse.a(1.0f);
 	}
 
 
 	void apply() const {
-		glMaterialfv(GL_FRONT, GL_AMBIENT, _ambient.rgba());
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, _diffuse.rgba());
-		glMaterialfv(GL_FRONT, GL_EMISSION, _emission.rgba());
+		glMaterialfv(GL_FRONT, GL_AMBIENT, _ambient.GetVec());
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, _diffuse.GetVec());
+		glMaterialfv(GL_FRONT, GL_EMISSION, _emission.GetVec());
 	}
 };
 
@@ -175,29 +175,21 @@ public:
 
 	void setAmbient(const ColorT &ambient) {
 		_ambient = ambient;
-		glLightfv(GL_LIGHT0+_lightNumber, GL_AMBIENT, _ambient.rgba());
+		glLightfv(GL_LIGHT0+_lightNumber, GL_AMBIENT, _ambient.GetVec());
 	}		
 
 	void setDiffuse(const ColorT &diffuse) {
 		_diffuse = diffuse;
-		glLightfv(GL_LIGHT0+_lightNumber, GL_DIFFUSE, _diffuse.rgba());
+		glLightfv(GL_LIGHT0+_lightNumber, GL_DIFFUSE, _diffuse.GetVec());
 	}		
 
 	void setPosition(const Vector4f &position) {
 		_position = position;
-		glLightfv(GL_LIGHT0+_lightNumber, GL_POSITION, _position.xyzw());
+		glLightfv(GL_LIGHT0+_lightNumber, GL_POSITION, _position.GetVec());
 	}
 
 	void apply() const {
 		glEnable(GL_LIGHTING);
 		glEnable(GL_LIGHT0 + _lightNumber);
-	}
-
-	const float& operator[](int i) const {
-		return _position[i];
-	}
-
-	float& operator[](int i) {
-		return (*this)[i];
 	}
 };

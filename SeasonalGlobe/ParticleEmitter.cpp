@@ -2,8 +2,8 @@
 
 // Constructors / Destructors
 ParticleEmitter::ParticleEmitter() : billboardType(Spherical), model(0), localParticleMaximum(GLOBAL_MAX_PARTICLES_PER_EMITTER),
-	doUpdate(true), doDraw(true), doEmit(true), rateOfEmission(20), DtOverflow(0), isActive(true), applyRotations(true), minLife(1.5f), maxLife(3.5f),
-	emitterShader(0), colorMap(0), sourceAlphaBlendFunction(GL_ONE), activity(0.2f)
+	doUpdate(true), doDraw(true), doEmit(true), rateOfEmission(20), DtOverflow(0), activity(0.2f), isActive(true), applyRotations(true), minLife(1.5f), maxLife(3.5f),
+	emitterShader(0), colorMap(0), sourceAlphaBlendFunction(GL_ONE)
 {
 	glex::Load();
 

@@ -67,7 +67,7 @@ void SeasonalWindow::OnDisplay()
 	glEnable(GL_DEPTH_TEST);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	glClearColor(0.2,0.2,0.2,1);
+	glClearColor(0,0,0,1);
 	
 	scn.Draw(gameTime);
 
@@ -129,29 +129,8 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		}
 	}
 
-	float3 movableSpherePos = scn.movableSphere->GetPosition();
 	switch(tolower(key))
 	{
-
-	case 'y':
-		movableSpherePos -= float3(0.05f,0, 0);
-		break;
-	case 'u':
-		movableSpherePos += float3(0.05f,0, 0);
-		break;
-	case 'h':
-		movableSpherePos -= float3(0,0.05f, 0);
-		break;
-	case 'j':
-		movableSpherePos += float3(0,0.05f, 0);
-		break;
-	case 'f':
-		movableSpherePos -= float3(0,0, 0.05f);
-		break;
-	case 'g':
-		movableSpherePos += float3(0,0, 0.05f);
-		break;
-
 
 	case 'a': 
 		//scn.GetCamera().Rotate(Mat44::BuildRotationMatrix(5, 1,0,0));
@@ -234,9 +213,6 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 				scn.SetTreeShadeMode(scn.GetNextTreeShadeMode());
 		} break;
 	}
-
-	scn.movableSphere->SetPosition(movableSpherePos);
-
 };
 
 void SeasonalWindow::OnMouseButton(MouseButton button, bool down)

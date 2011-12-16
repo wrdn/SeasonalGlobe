@@ -2,7 +2,7 @@
 #include "SphericalCamera.h"
 
 HemiSphericalParticleEmitter::HemiSphericalParticleEmitter() : hemisphere_radius(2),
-	startColor(1,1,1,1), endColor(1,1,1,0)
+	startColor(1,1,1,1), endColor(1,1,1,0), timeToFall(3)
 {
 };
 

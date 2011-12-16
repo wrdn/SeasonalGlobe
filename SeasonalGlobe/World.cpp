@@ -17,9 +17,10 @@ World::World(void)
 	_cameraRotation(-357.0f), AutoRotate(false),
 
 	terrain(0), terrainElevation(0.45f, 0.13f, 3.0f), tree(0), globeSphere(0), houseModel(0), // Geometry
-	baseModel(0), defaultBillboardModel(0), polygonMode(GL_FILL),lightSphere(0), spotCone(0),
+	baseModel(0), boltModel(0), defaultBillboardModel(0), imposterModel(0), polygonMode(GL_FILL),lightSphere(0), spotCone(0),
+	drawLightning(false),
 
-	phongShaderID(0), particleSystemBaseShaderID(0), globeShaderID(0), directionalLightShaderID(0), // Shaders
+	phongShaderID(0), particleSystemBaseShaderID(0), texturedParticleShaderID(0), globeShaderID(0), directionalLightShaderID(0), // Shaders
 	multiTexturingSampleShaderID(0), spotlightShaderID(0), ambientLightShaderID(0), 
 	normalMap_Ambient_ShaderID(0), normalMap_Directional_ShaderID(0), normalMap_Spotlights_ShaderID(0),
 	treeShaders(), terrainShaders(), terrainTextureMergeFactor(0), mergingTerrainTextured(false),
@@ -29,7 +30,7 @@ World::World(void)
 	displacementTexture(0), barkNormalMap(0), snowTexture(0), terrainNormalMapFull(0), grassParticleTexture(0),
 	grassParticleColorMap(0),
 
-	leafParticleEmitterID(0), snowEmitterID(0), smokeEmitterID(0), fireParticleEmitter(0), // Particle Emitters
+	leafParticleEmitterID(0), snowEmitterID(0), smokeEmitterID(0), grassStaticEmitterID(0) , fireParticleEmitter(0), // Particle Emitters
 
 	directionalLight(), directionalLightRotation(0), directionalLightSpeed(0.5f), lightMode(Directional) // Lights
 {
@@ -409,21 +410,6 @@ bool World::LoadParticles()
 	return true;
 };
 
-void DrawLightning()
-{
-	glBegin(GL_POLYGON);
-
-	glVertex3f(0.5,1,0);
-	glVertex3f(-0.3,0.4,0);
-	glVertex3f(-0.1,-0.4,0);
-	glVertex3f(-0.5,-1,0);
-	glVertex3f(0.5,-0.4,0);
-	glVertex3f(0.1,0.4,0);
-	glVertex3f(0.5,1,0);
-	
-	glEnd();
-};
-
 bool World::LoadGeometry()
 {
 	// Load house model
@@ -446,7 +432,7 @@ bool World::LoadGeometry()
 
 	boltModel = OBJFile::ParseFile("Data/bolt.obj")[0];
 	((Model&)boltModel->GetModel()).BuildVBO();
-	boltModel->SetMaterial(Material(float4(0,0,0), float4(1,0.8,0,0), float4(1,1,1,1), 20));
+	boltModel->SetMaterial(Material(float4(0,0,0), float4(1,0.8f,0,0), float4(1,1,1,1), 20));
 
 	// Load globe
 	globeSphere = new Sphere();
@@ -665,53 +651,6 @@ bool World::Load()
 	LoadGeometry();
 	LoadParticles();
 	
-	movableSphere = new Sphere();
-	movableSphere->Create(0.05f,20,20);
-	//movableSphere->SetPosition(float3(-3.2,1.9,1.6));
-	movableSphere->SetPosition(float3(-7.4f, 4, 0.1f));
-
-	
-	CollisionFace frontHouseTri1, frontHouseTri2;
-	CollisionFace backHouseTri1, backHouseTri2;
-	
-	frontHouseTri1.v1 = float3(-3.2f, 4, 0.1f);
-	frontHouseTri1.v2 = float3(-7.4f, 4, 0.1f);
-	frontHouseTri1.v3 = float3(-7.4f, 1.75f, 1.65f);
-	frontHouseTri1.CalculateNormal();
-
-	frontHouseTri2.v1 = float3(-3.2f, 4, 0.1f);
-	frontHouseTri2.v2 = float3(-7.4f, 1.75f, 1.65f);
-	frontHouseTri2.v3 = float3(-3.25f, 1.75f, 1.65f);
-	frontHouseTri2.CalculateNormal();
-
-	// Can perform collision detection against these triangles
-	test_roof_triangles = new GraphicsObject();
-	VERTEX *verts = new VERTEX[6]; // defined from looking at the FRONT of the house
-	verts[0].pos = float3(-3.2f, 4, 0.1f); // roof top right
-	verts[1].pos = float3(-7.4f, 4, 0.1f); // roof top left
-	verts[2].pos = float3(-7.4f, 1.75f, 1.65f); // front bottom left
-	verts[3].pos = float3(-3.25f, 1.75f, 1.65f); // front bottom right
-	verts[4].pos = float3(-3.25f, 1.75f, -1.4f); // back bottom right
-	verts[5].pos = float3(-7.4f, 1.75f, -1.4f); // back bottom left
-	Model &m = (Model&)test_roof_triangles->GetModel();
-	m.SetVertexArray(verts, 6);
-	u32 *indices_array_roof = new u32[12];
-	indices_array_roof[0] = 0;
-	indices_array_roof[1] = 1;
-	indices_array_roof[2] = 2;
-	indices_array_roof[3] = 0;
-	indices_array_roof[4] = 2;
-	indices_array_roof[5] = 3;
-	
-	indices_array_roof[6] = 1;
-	indices_array_roof[7] = 0;
-	indices_array_roof[8] = 4;
-	indices_array_roof[9] = 1;
-	indices_array_roof[10] = 4;
-	indices_array_roof[11] = 5;
-	m.SetIndicesArray(indices_array_roof, 12);
-	m.BuildVBO();
-
 	SetupSeasons();
 
 	// Load materials
@@ -725,7 +664,7 @@ bool World::Load()
 	_light4.create(3, ColorT::black(), ColorT(0.5f,0.5f,0.5f,1.0f)); 
 	_light5.create(4, ColorT::black(), ColorT(0.5f,0.5f,0.5f,1.0f));
 	
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ColorT::black().rgba());
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ColorT::black().GetVec());
 
 	_light3.setPosition(Vector4f(0.0,5.0,-3.0,1.0));
 	_light1.apply();
@@ -1074,7 +1013,7 @@ void World::Draw(const GameTime &gameTime)
 		glTranslatef(tree->GetPosition().x(), tree->GetPosition().y(), tree->GetPosition().z());
 		glTranslatef(-0.25,5,0);
 		glScalef(2,2,2);
-		glColor4f(0.9451, 0.9178, 0,1);
+		glColor4f(0.9451f, 0.9178f, 0,1);
 		boltModel->Draw();
 		glPopMatrix();
 		glEnable(GL_LIGHTING);

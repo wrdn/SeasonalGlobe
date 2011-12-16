@@ -163,11 +163,7 @@ private:
 
 	void DrawTerrain(const GameTime &gameTime);
 
-	GraphicsObject *test_roof_triangles;
-
 public:
-
-	Sphere *movableSphere;
 
 	const bool GetAutoRotate() const { return AutoRotate; };
 	void SetAutoRotate(const bool b) { AutoRotate = b; };
