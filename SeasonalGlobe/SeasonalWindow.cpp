@@ -105,11 +105,11 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 	switch(tolower(key))
 	{
 	case 187: //+
-		scn.SetDtMultiplier(scn.GetMultiplier() + scn.GetMultiplier()*0.1f);
+		scn.SetDtMultiplier(scn.GetMultiplier() + 0.1f);
 		//scn.GetSeasonManager()->SetTimePerSeason( scn.GetSeasonManager()->GetTimePerSeason() + 0.1f );
 		break;
 	case 189: //-
-		scn.SetDtMultiplier(scn.GetMultiplier() - scn.GetMultiplier()*0.1f);
+		scn.SetDtMultiplier(scn.GetMultiplier() - 0.1f);
 		//scn.GetSeasonManager()->SetTimePerSeason( scn.GetSeasonManager()->GetTimePerSeason() - 0.1f );
 		break;
 	case 37:

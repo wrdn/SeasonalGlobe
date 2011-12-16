@@ -30,7 +30,7 @@ World::World(void)
 
 	grassTexture(0), houseTexture(0), barkTexture(0), particleTexture(0), leafTexture(0), baseTexture(0), // Textures
 	displacementTexture(0), barkNormalMap(0), snowTexture(0), terrainNormalMapFull(0), grassParticleTexture(0),
-	grassParticleColorMap(0),
+	grassParticleColorMap(0), houseNormalMap(0),
 
 	leafParticleEmitterID(0), snowEmitterID(0), smokeEmitterID(0), grassStaticEmitterID(0) , fireParticleEmitter(0), // Particle Emitters
 
@@ -399,10 +399,10 @@ bool World::LoadParticles()
 	grassParticles->SetShader(shaderMan.GetShader(texturedParticleShaderID));
 	grassParticles->SetColorMap(grassParticleColorMap);
 	grassParticles->SetBillboardType(NoBillboarding);
-	grassParticles->SetEmitterOrigin(float3(0,0.25f,0));
+	grassParticles->SetEmitterOrigin(float3(0,0,0));
 	grassParticles->SetSourceAlphaBlendFunction(GL_ONE);
 
-	f32 radius = globeSphere->GetRadius()-0.2f;
+	f32 radius = globeSphere->GetRadius()-0.3f;
 	for(int i=0;i<150;++i)
 	{
 		f32 ZAxis = randflt(-radius, radius);
@@ -449,7 +449,7 @@ bool World::LoadGeometry()
 	//baseModel->SetTextureA(baseTexture);
 	baseModel->AddTexture(baseTexture);
 	baseModel->SetPosition(float3(0, 0.2f, 0));
-	baseModel->SetScale(float3(2.0f, 0.83f, 2.0f));
+	baseModel->SetScale(float3(2.0f, 0.45f, 2.0f));
 
 	boltModel = OBJFile::ParseFile("Data/bolt.obj")[0];
 	((Model&)boltModel->GetModel()).BuildVBO();
@@ -655,7 +655,7 @@ void World::SetupSeasons()
 	seasonMan.AddEvent(Winter, SeasonalEvent(0.8f, InitialiseTerrainMelt));
 	seasonMan.AddEvent(Winter, SeasonalEvent(0.85f, InitialiseTerrainTextureMergeToGrass));
 
-	seasonMan.AddEvent(Winter, SeasonalEvent(0.8, ActivateSnowSlowing));
+	seasonMan.AddEvent(Winter, SeasonalEvent(0.8f, ActivateSnowSlowing));
 	
 	seasonMan.AddEvent(Winter, SeasonalEvent(0.9f, DeactivateWorldSnow));
 
