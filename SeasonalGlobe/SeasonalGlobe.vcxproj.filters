@@ -16,15 +16,6 @@
     <Filter Include="Resource Files\Data">
       <UniqueIdentifier>{a0bd3c2b-2db1-4d8c-9505-afe747cdeba9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\Data\House">
-      <UniqueIdentifier>{4800405b-47dd-42eb-8885-121cf02c22fd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\Data\Textures">
-      <UniqueIdentifier>{cb7e9c9c-0e91-48a9-9252-7276aecc2c91}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\Data\Shaders">
-      <UniqueIdentifier>{f8a8bd17-4033-4dca-8337-3f687eae5f31}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Math">
       <UniqueIdentifier>{a5cc3a2f-269b-4447-b218-3e4639a60744}</UniqueIdentifier>
     </Filter>
@@ -66,6 +57,30 @@
     </Filter>
     <Filter Include="Header Files\LSystem">
       <UniqueIdentifier>{b9fb3536-9827-44fa-94d6-2c39935a92c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Data\House">
+      <UniqueIdentifier>{eb62254a-98c7-4576-b57a-f2bb11257f98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Data\Textures">
+      <UniqueIdentifier>{561455d1-9fe9-46d5-ac51-94f973726f31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Data\Shaders">
+      <UniqueIdentifier>{855b3419-6921-4f1f-92cd-310b860babe4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Data\Shaders\NormalMapping">
+      <UniqueIdentifier>{c9071f4d-8aea-450a-b9f7-9b089b83b83e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Data\Shaders\TerrainShaders">
+      <UniqueIdentifier>{52b319dd-6a24-45cd-b0a1-3cd9affd1c7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Data\Shaders\TreeShaders">
+      <UniqueIdentifier>{dd6011e6-7cf7-4814-aae8-b6aa7db51612}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Data\Shaders\TreeShaders\FlatShading">
+      <UniqueIdentifier>{ff79e7ae-861b-480f-83ad-506085968a0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Data\Shaders\TreeShaders\SmoothShading">
+      <UniqueIdentifier>{b4a706f1-8fb2-480b-98a0-1c55ebf9617f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -346,48 +361,31 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Object Include="Data\TexturedCube.obj">
+    <None Include="snow_globe_icon.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Data\ConfigFile.txt">
       <Filter>Resource Files\Data</Filter>
-    </Object>
-    <Object Include="Data\House\Haus20.obj">
-      <Filter>Resource Files\Data\House</Filter>
-    </Object>
-    <Object Include="Data\base2.obj">
-      <Filter>Resource Files\Data</Filter>
-    </Object>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Data\House\Haus_020_unwrap_SPEC.jpg">
+    </None>
+    <None Include="Data\House\Haus_020_unwrap.jpg">
       <Filter>Resource Files\Data\House</Filter>
     </None>
     <None Include="Data\House\Haus_020_unwrap_NRM.jpg">
       <Filter>Resource Files\Data\House</Filter>
     </None>
-    <None Include="Data\House\Haus_020_unwrap.jpg">
+    <None Include="Data\House\Haus_020_unwrap_SPEC.jpg">
       <Filter>Resource Files\Data\House</Filter>
     </None>
     <None Include="Data\House\Haus20.mtl">
       <Filter>Resource Files\Data\House</Filter>
     </None>
-    <None Include="Data\Textures\ground_heightmap.bmp">
-      <Filter>Resource Files\Data\Textures</Filter>
-    </None>
-    <None Include="Data\Textures\ground_old.bmp">
-      <Filter>Resource Files\Data\Textures</Filter>
-    </None>
-    <None Include="Data\Textures\Grass2.jpg">
-      <Filter>Resource Files\Data\Textures</Filter>
-    </None>
-    <None Include="Data\Textures\Grass.jpg">
-      <Filter>Resource Files\Data\Textures</Filter>
-    </None>
-    <None Include="Data\Shaders\phong.frag">
-      <Filter>Resource Files\Data\Shaders</Filter>
-    </None>
-    <None Include="Data\Shaders\phong.vert">
-      <Filter>Resource Files\Data\Shaders</Filter>
-    </None>
     <None Include="Data\Textures\bark.jpg">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Textures\barkNormalMap.jpg">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Textures\barkNormalMap2.jpg">
       <Filter>Resource Files\Data\Textures</Filter>
     </None>
     <None Include="Data\Textures\checkerboard.jpg">
@@ -396,11 +394,56 @@
     <None Include="Data\Textures\checkerboard_Test.jpg">
       <Filter>Resource Files\Data\Textures</Filter>
     </None>
-    <None Include="snow_globe_icon.ico">
-      <Filter>Resource Files</Filter>
+    <None Include="Data\Textures\gradientMap.tga">
+      <Filter>Resource Files\Data\Textures</Filter>
     </None>
-    <None Include="Data\ConfigFile.txt">
-      <Filter>Resource Files\Data</Filter>
+    <None Include="Data\Textures\Grass.jpg">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Textures\Grass2.jpg">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Textures\ground_heightmap.bmp">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Textures\ground_heightmap2.bmp">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Textures\ground_old.bmp">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Textures\leaf.tga">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Textures\leaf_desat.tga">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Textures\particleTexture.tga">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Textures\snowTexture.jpg">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Textures\TerrainDisplacementMap.bmp">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Textures\TerrainDisplacementNormalMap_Full.bmp">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Textures\wood.jpg">
+      <Filter>Resource Files\Data\Textures</Filter>
+    </None>
+    <None Include="Data\Shaders\ambientLight.frag">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\ambientLight.vert">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\directionalLight.frag">
+      <Filter>Resource Files\Data\Shaders</Filter>
+    </None>
+    <None Include="Data\Shaders\directionalLight.vert">
+      <Filter>Resource Files\Data\Shaders</Filter>
     </None>
     <None Include="Data\Shaders\globe.frag">
       <Filter>Resource Files\Data\Shaders</Filter>
@@ -426,22 +469,10 @@
     <None Include="Data\Shaders\particlesystembase.vert">
       <Filter>Resource Files\Data\Shaders</Filter>
     </None>
-    <None Include="Data\Shaders\directionalLight.frag">
+    <None Include="Data\Shaders\phong.frag">
       <Filter>Resource Files\Data\Shaders</Filter>
     </None>
-    <None Include="Data\Shaders\directionalLight.vert">
-      <Filter>Resource Files\Data\Shaders</Filter>
-    </None>
-    <None Include="Data\Shaders\ambientLight.frag">
-      <Filter>Resource Files\Data\Shaders</Filter>
-    </None>
-    <None Include="Data\Shaders\ambientLight.vert">
-      <Filter>Resource Files\Data\Shaders</Filter>
-    </None>
-    <None Include="Data\Shaders\displacement.frag">
-      <Filter>Resource Files\Data\Shaders</Filter>
-    </None>
-    <None Include="Data\Shaders\displacement.vert">
+    <None Include="Data\Shaders\phong.vert">
       <Filter>Resource Files\Data\Shaders</Filter>
     </None>
     <None Include="Data\Shaders\spotlight.frag">
@@ -450,28 +481,96 @@
     <None Include="Data\Shaders\spotlight.vert">
       <Filter>Resource Files\Data\Shaders</Filter>
     </None>
+    <None Include="Data\Shaders\NormalMapping\normalMapping_ambient_light.frag">
+      <Filter>Resource Files\Data\Shaders\NormalMapping</Filter>
+    </None>
+    <None Include="Data\Shaders\NormalMapping\normalMapping_ambient_light.vert">
+      <Filter>Resource Files\Data\Shaders\NormalMapping</Filter>
+    </None>
+    <None Include="Data\Shaders\NormalMapping\normalMapping_directional_light.frag">
+      <Filter>Resource Files\Data\Shaders\NormalMapping</Filter>
+    </None>
+    <None Include="Data\Shaders\NormalMapping\normalMapping_directional_light.vert">
+      <Filter>Resource Files\Data\Shaders\NormalMapping</Filter>
+    </None>
+    <None Include="Data\Shaders\NormalMapping\normalMapping_spotlights.frag">
+      <Filter>Resource Files\Data\Shaders\NormalMapping</Filter>
+    </None>
+    <None Include="Data\Shaders\NormalMapping\normalMapping_spotlights.vert">
+      <Filter>Resource Files\Data\Shaders\NormalMapping</Filter>
+    </None>
     <None Include="Data\Shaders\TerrainShaders\displacement_ambient.frag">
-      <Filter>Resource Files\Data\Shaders</Filter>
+      <Filter>Resource Files\Data\Shaders\TerrainShaders</Filter>
     </None>
     <None Include="Data\Shaders\TerrainShaders\displacement_ambient.vert">
-      <Filter>Resource Files\Data\Shaders</Filter>
+      <Filter>Resource Files\Data\Shaders\TerrainShaders</Filter>
     </None>
     <None Include="Data\Shaders\TerrainShaders\displacement_directional.frag">
-      <Filter>Resource Files\Data\Shaders</Filter>
+      <Filter>Resource Files\Data\Shaders\TerrainShaders</Filter>
     </None>
     <None Include="Data\Shaders\TerrainShaders\displacement_directional.vert">
-      <Filter>Resource Files\Data\Shaders</Filter>
+      <Filter>Resource Files\Data\Shaders\TerrainShaders</Filter>
     </None>
     <None Include="Data\Shaders\TerrainShaders\displacement_spotlights.frag">
-      <Filter>Resource Files\Data\Shaders</Filter>
+      <Filter>Resource Files\Data\Shaders\TerrainShaders</Filter>
     </None>
     <None Include="Data\Shaders\TerrainShaders\displacement_spotlights.vert">
-      <Filter>Resource Files\Data\Shaders</Filter>
+      <Filter>Resource Files\Data\Shaders\TerrainShaders</Filter>
+    </None>
+    <None Include="Data\Shaders\TreeShaders\ambientLight.frag">
+      <Filter>Resource Files\Data\Shaders\TreeShaders</Filter>
+    </None>
+    <None Include="Data\Shaders\TreeShaders\ambientLight.vert">
+      <Filter>Resource Files\Data\Shaders\TreeShaders</Filter>
+    </None>
+    <None Include="Data\Shaders\TreeShaders\SmoothShading\directionalLight.frag">
+      <Filter>Resource Files\Data\Shaders\TreeShaders\SmoothShading</Filter>
+    </None>
+    <None Include="Data\Shaders\TreeShaders\SmoothShading\directionalLight.vert">
+      <Filter>Resource Files\Data\Shaders\TreeShaders\SmoothShading</Filter>
+    </None>
+    <None Include="Data\Shaders\TreeShaders\SmoothShading\spotlight.frag">
+      <Filter>Resource Files\Data\Shaders\TreeShaders\SmoothShading</Filter>
+    </None>
+    <None Include="Data\Shaders\TreeShaders\SmoothShading\spotlight.vert">
+      <Filter>Resource Files\Data\Shaders\TreeShaders\SmoothShading</Filter>
+    </None>
+    <None Include="Data\Shaders\TreeShaders\FlatShading\directionalLight.frag">
+      <Filter>Resource Files\Data\Shaders\TreeShaders\FlatShading</Filter>
+    </None>
+    <None Include="Data\Shaders\TreeShaders\FlatShading\directionalLight.vert">
+      <Filter>Resource Files\Data\Shaders\TreeShaders\FlatShading</Filter>
+    </None>
+    <None Include="Data\Shaders\TreeShaders\FlatShading\spotlight.frag">
+      <Filter>Resource Files\Data\Shaders\TreeShaders\FlatShading</Filter>
+    </None>
+    <None Include="Data\Shaders\TreeShaders\FlatShading\spotlight.vert">
+      <Filter>Resource Files\Data\Shaders\TreeShaders\FlatShading</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SeasonalGlobe.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Data\base2.obj">
+      <Filter>Resource Files\Data</Filter>
+    </Object>
+    <Object Include="Data\base2_old.obj">
+      <Filter>Resource Files\Data</Filter>
+    </Object>
+    <Object Include="Data\bunny.obj">
+      <Filter>Resource Files\Data</Filter>
+    </Object>
+    <Object Include="Data\cube.obj">
+      <Filter>Resource Files\Data</Filter>
+    </Object>
+    <Object Include="Data\TexturedCube.obj">
+      <Filter>Resource Files\Data</Filter>
+    </Object>
+    <Object Include="Data\House\Haus20.obj">
+      <Filter>Resource Files\Data\House</Filter>
+    </Object>
   </ItemGroup>
 </Project>

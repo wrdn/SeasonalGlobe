@@ -197,8 +197,6 @@ void FireParticleEmitter::UpdateFireParticleEmitter(const GameTime &gameTime)
 		f32 DeathTimePerDepth = deathTime/depth;
 		f32 P = fmod(runtime,DeathTimePerDepth);
 		tree->SetAlpha(1.0f - ((1.0f/DeathTimePerDepth)*P));
-
-		std::cout << tree->GetAlpha() << std::endl;
 	}
 	else
 	{

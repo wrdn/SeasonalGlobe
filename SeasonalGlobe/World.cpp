@@ -177,6 +177,36 @@ bool World::LoadShaders()
 	LoadShader(terrainShaders.Terrain_Displacement_Spotlights_ShaderID, 
 		"Data/Shaders/TerrainShaders/displacement_spotlights.frag", "Data/Shaders/TerrainShaders/displacement_spotlights.vert");
 
+	Shader *displacementAmbientShader = shaderMan.GetShader(terrainShaders.Terrain_Displacement_Ambient_ShaderID);
+	Shader *displacementDirectionalShader = shaderMan.GetShader(terrainShaders.Terrain_Displacement_Directional_ShaderID);
+	Shader *displacementSpotlightsShader = shaderMan.GetShader(terrainShaders.Terrain_Displacement_Spotlights_ShaderID);
+
+	displacementAmbientShader->Activate();
+	displacementAmbientShader->SetUniform("colorMap", 0);
+	displacementAmbientShader->SetUniform("snowMap", 1);
+	displacementAmbientShader->SetUniform("normalMap", 2);
+	displacementAmbientShader->SetUniform("displacementMap", 3);
+	displacementAmbientShader->Deactivate();
+
+	displacementDirectionalShader->Activate();
+	displacementDirectionalShader->SetUniform("colorMap", 0);
+	displacementDirectionalShader->SetUniform("snowMap", 1);
+	displacementDirectionalShader->SetUniform("normalMap", 2);
+	displacementDirectionalShader->SetUniform("displacementMap", 3);
+	displacementDirectionalShader->Deactivate();
+
+	displacementSpotlightsShader->Activate();
+	displacementSpotlightsShader->SetUniform("colorMap", 0);
+	displacementSpotlightsShader->SetUniform("snowMap", 1);
+	displacementSpotlightsShader->SetUniform("normalMap", 2);
+	displacementSpotlightsShader->SetUniform("displacementMap", 3);
+	displacementSpotlightsShader->Deactivate();
+
+	/*	terrain->GetShader()->SetUniform("colorMap", 0);
+	terrain->GetShader()->SetUniform("snowMap", 1);
+	terrain->GetShader()->SetUniform("normalMap", 2);
+	terrain->GetShader()->SetUniform("displacementMap", 3);*/
+
 	// Load all the tree shaders
 	LoadShader(treeShaders.Tree_Ambient_ShaderID, "Data/Shaders/TreeShaders/ambientLight.frag", "Data/Shaders/TreeShaders/ambientLight.vert");
 	LoadShader(treeShaders.FlatNonTextured_Directional_ShaderID,
@@ -319,13 +349,10 @@ bool World::LoadGeometry()
 	terrain->AddTexture(displacementTexture);
 	terrain->AddTexture(snowTexture);
 	terrain->AddTexture(terrainNormalMapFull);
-	/*terrain->SetTextureA(grassTexture);
-	terrain->SetTextureB(displacementTexture);
-	terrain->SetTextureC(snowTexture);*/
 	terrain->SetXRotation(-90);
 	terrain->SetZRotation(-90);
 	terrain->SetScale(float3(5.48f,5.48f,5.48f));
-	terrain->SetMaterial(Material(float4(1.0f), float4(1.0f), float4(1.0f), 0));
+	terrain->SetMaterial(Material(float4(0.5f), float4(0.95f), float4(0.3f), 50));
 
 	// Load tree
 	tree = new FractalTree();
@@ -387,7 +414,7 @@ void World::LoadLights()
 	
 	float4 spotAmb(0.35f,0.35f,0.35f,1);
 	float4 spotDiff(1,0.66666f,0.19607f,1);
-	float4 spotSpec(1,1,1,1); float4 spotDir;
+	float4 spotSpec(0.3,0.3,0.3,1); float4 spotDir;
 
 	// Spotlight 1
 	lightPosition = float4(0,7.5f,0,1); spotDir = float4(0,-1,0,1);
@@ -507,7 +534,6 @@ void World::SetupSeasons()
 	
 	seasonMan.AddEvent(Spring, SeasonalEvent(0.8, InitialiseTerrainMelt));
 	seasonMan.AddEvent(Spring, SeasonalEvent(0.85, InitialiseTerrainTextureMergeToGrass));
-	
 };
   
 bool World::Load()
@@ -859,10 +885,6 @@ void World::DrawTerrain(const GameTime &gameTime)
 	glDisable(GL_CULL_FACE);
 	terrain->SetPosition(float3(0, terrain->GetPosition().y()-CurrentShift,0));
 	terrain->GetShader()->Activate();
-	terrain->GetShader()->SetUniform("colorMap", 0);
-	terrain->GetShader()->SetUniform("snowMap", 1);
-	terrain->GetShader()->SetUniform("normalMap", 2);
-	terrain->GetShader()->SetUniform("displacementMap", 3);
 	terrain->GetShader()->SetUniform("t", terrainTextureMergeFactor);
 	terrain->GetShader()->SetUniform("normalLerpFactor", N);
 	terrain->GetShader()->SetUniform("vposmult", vpos);

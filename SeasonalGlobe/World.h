@@ -133,6 +133,7 @@ private:
 	u32 leafParticleEmitterID;
 	u32 snowEmitterID;
 	u32 smokeEmitterID;
+	u32 grassStaticEmitterID;
 	FireParticleEmitter *fireParticleEmitter;
 
 	// Lights
@@ -230,6 +231,7 @@ public:
 			houseModel->SetShader(spotShader);
 			baseModel->SetShader(spotShader);
 			tree->SetShader(spotShader);
+			
 			terrain->SetShader(shaderMan.GetShader(terrainShaders.Terrain_Displacement_Spotlights_ShaderID));
 		}
 
@@ -347,4 +349,18 @@ public:
 		terrainElevation.shiftDirection = d;
 	}
 	void ActiveTerrainTextureMerge(i32 dir) { mergeDirection=dir; mergingTerrainTextured = true; }
+
+	const Season GetCurrentSeason() const { return seasonMan.GetCurrentSeason(); }
+
+	const c8* GetCurrentSeasonString() const
+	{
+		switch(seasonMan.GetCurrentSeason())
+		{
+		case Spring: return "Spring";
+		case Summer: return "Summer";
+		case Autumn: return "Autumn";
+		case Winter: return "Winter";
+		}
+		return "";
+	};
 };

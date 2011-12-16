@@ -10,8 +10,10 @@ public:
 	float4 ambient, diffuse, specular;
 	f32 shininess; // used in Phong shading
 
-	Material() : ambient(float4(0.5f,0.5f,0.5f,1)), diffuse(float4(1,1,1,1)), specular(float4(1,1,1,1)), shininess(30)
+	Material() : ambient(float4(0.5f,0.5f,0.5f,1)), diffuse(float4(1,1,1,1)), specular(float4(1,1,1,1)), shininess(20)
 	{};
+	Material(const float4 &amb, const float4 &diff, const float4 &spec)
+		: ambient(amb), diffuse(diff), specular(spec), shininess(20) { };
 	Material(const float4 &amb, const float4 &diff, const float4 &spec, const f32 _shininess)
 		: ambient(amb), diffuse(diff), specular(spec), shininess(_shininess) { };
 	~Material() { };
