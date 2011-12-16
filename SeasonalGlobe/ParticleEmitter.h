@@ -48,6 +48,7 @@ private:
 	// Drawing data
 	Shader *emitterShader;
 	Texture alphaMap; // at a minumum, particles should have a alpha texture
+	Texture *colorMap;
 
 	GLenum sourceAlphaBlendFunction; // e.g. GL_ONE, GL_ONE_MINUS_SRC_ALPHA
 
@@ -133,6 +134,9 @@ public:
 
 	void SetAlphaMap(const Texture &t);
 	const Texture& GetAlphaMap() const;
+
+	void SetColorMap(Texture *t) { colorMap = t; }
+	const Texture* GetColorMap() const { return colorMap; };
 
 	void SetSourceAlphaBlendFunction(const GLenum blendfunc);
 	const GLenum GetSourceAlphaBlendFunction() const;

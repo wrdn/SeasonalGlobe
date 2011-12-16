@@ -177,6 +177,15 @@ bool World::LoadShaders()
 
 	LoadShader(particleSystemBaseShaderID, "Data/Shaders/particlesystembase.frag", "Data/Shaders/particlesystembase.vert");
 	
+	//texturedParticleShaderID
+	if(LoadShader(texturedParticleShaderID, "Data/Shaders/texturedParticle.frag", "Data/Shaders/texturedParticle.vert"))
+	{
+		shaderMan.GetShader(texturedParticleShaderID)->Activate();
+		shaderMan.GetShader(texturedParticleShaderID)->SetUniform("AlphaMap", 0);
+		shaderMan.GetShader(texturedParticleShaderID)->SetUniform("ColorMap", 0);
+		shaderMan.GetShader(texturedParticleShaderID)->Deactivate();
+	}
+
 	if(LoadShader(phongShaderID, "Data/Shaders/phong.frag", "Data/Shaders/phong.vert"))
 	{
 		Shader* phongShader = shaderMan.GetShader(phongShaderID);
@@ -363,7 +372,8 @@ bool World::LoadParticles()
 	imposterModel = (Model*)grassParticles->GetModel();
 	grassParticles->SetAlphaMap(*grassParticleTexture);
 	grassParticles->SetParticlesStaticState(true);
-	grassParticles->SetShader(psysbase);
+	grassParticles->SetShader(shaderMan.GetShader(texturedParticleShaderID));
+	grassParticles->SetColorMap(leafTexture);
 	grassParticles->SetBillboardType(NoBillboarding);
 	grassParticles->SetEmitterOrigin(float3(0,0.25f,0));
 	grassParticles->SetSourceAlphaBlendFunction(GL_ONE);
@@ -385,8 +395,7 @@ bool World::LoadParticles()
 		}
 
 		Particle p;
-		p.color = float4(1);
-		p.energy = 10000;
+		p.color = float4(1,1,1,1);
 		p.pos = float3(xpos, 0, zpos);
 		p.size = float3(0.4f);
 		

@@ -111,7 +111,7 @@ private:
 	bool drawLightning;
 	
 	// Shaders
-	u32 phongShaderID, particleSystemBaseShaderID,
+	u32 phongShaderID, particleSystemBaseShaderID, texturedParticleShaderID,
 		globeShaderID, directionalLightShaderID,
 		multiTexturingSampleShaderID, spotlightShaderID,
 		ambientLightShaderID,

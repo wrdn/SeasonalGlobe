@@ -3,7 +3,7 @@
 // Constructors / Destructors
 ParticleEmitter::ParticleEmitter() : billboardType(Spherical), model(0), localParticleMaximum(GLOBAL_MAX_PARTICLES_PER_EMITTER),
 	doUpdate(true), doDraw(true), doEmit(true), rateOfEmission(20), DtOverflow(0), isActive(true), applyRotations(true), minLife(1.5f), maxLife(3.5f),
-	emitterShader(0), sourceAlphaBlendFunction(GL_ONE), activity(0.2f)
+	emitterShader(0), colorMap(0), sourceAlphaBlendFunction(GL_ONE), activity(0.2f)
 {
 	glex::Load();
 
@@ -31,6 +31,15 @@ void ParticleEmitter::Draw()
 	ActivateShader();
 	
 	glTranslatef(emitterOrigin.x(), emitterOrigin.y(), emitterOrigin.z());
+
+	glActiveTexture(GL_TEXTURE0);
+	alphaMap.Activate();
+
+	if(colorMap)
+	{
+		glActiveTexture(GL_TEXTURE1);
+		colorMap->Activate();
+	}
 
 	if(billboardType == Spherical) // only need 1 check, so duplicate most of the drawing code
 	{
@@ -82,6 +91,11 @@ void ParticleEmitter::Draw()
 	}
 
 	DeactivateShader();
+
+	glActiveTexture(GL_TEXTURE0);
+
+	alphaMap.Deactivate();
+	if(colorMap) { colorMap->Deactivate(); }
 
 	glPopMatrix();
 
