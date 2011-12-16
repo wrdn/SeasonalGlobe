@@ -16,7 +16,7 @@ World::World(void)
 	dtMultiplier(1),
 
 	cam(), sceneRotationAxis(0,1,0), _cameraAngle(30.0f), _cameraPosition(-30.0f), // Camera
-	_cameraRotation(-357.0f), AutoRotate(false),
+	_cameraRotation(-357.0f), AutoRotate(false), snowSlowing(false),
 
 	terrain(0), terrainElevation(0.45f, 0.13f, 3.0f), tree(0), globeSphere(0), houseModel(0), // Geometry
 	baseModel(0), boltModel(0), defaultBillboardModel(0), imposterModel(0), polygonMode(GL_FILL),lightSphere(0), spotCone(0),
@@ -138,6 +138,9 @@ bool World::LoadTextures()
 	terrainNormalMapFull = texMan.LoadTextureFromFile("Data/Textures/TerrainDisplacementNormalMap_Full.bmp");
 	terrainNormalMapFull->SetTextureSlot(SLOT_GL_TEXTURE_2);
 
+	houseNormalMap = texMan.LoadTextureFromFile("Data/House/Haus_020_unwrap_NRM.jpg");
+	houseNormalMap->SetTextureSlot(SLOT_GL_TEXTURE_1);
+
 	displacementTexture = texMan.LoadTextureFromFile("Data/Textures/TerrainDisplacementMap.bmp");
 	displacementTexture->SetTextureSlot(SLOT_GL_TEXTURE_3);
 
@@ -226,6 +229,11 @@ bool World::LoadShaders()
 	shaderMan.GetShader(normalMap_Directional_ShaderID)->SetUniform("baseMap",0);
 	shaderMan.GetShader(normalMap_Directional_ShaderID)->SetUniform("normalMap",1);
 	shaderMan.GetShader(normalMap_Directional_ShaderID)->Deactivate();
+
+	shaderMan.GetShader(normalMap_Spotlights_ShaderID)->Activate();
+	shaderMan.GetShader(normalMap_Spotlights_ShaderID)->SetUniform("baseMap",0);
+	shaderMan.GetShader(normalMap_Spotlights_ShaderID)->SetUniform("normalMap",1);
+	shaderMan.GetShader(normalMap_Spotlights_ShaderID)->Deactivate();
 
 
 	// Displacement mapping terrain shaders
@@ -429,6 +437,8 @@ bool World::LoadGeometry()
 	houseModel->SetScale(float3(.05f,.05f,.05f));
 	houseModel->SetPosition(float3(-5.5,0,0.5));
 	houseModel->AddTexture(houseTexture);
+	houseModel->AddTexture(houseNormalMap);
+
 	//houseModel->SetTextureA(houseTexture);
 	//Material mat(float4(0.25f, 0.25f, 0.25f, 1), float4(1,0,0,1), float4(1,1,1,1), 100);
 	//houseModel->SetMaterial(mat);
@@ -604,6 +614,7 @@ void InitialiseTerrainTextureMergeToGrass(const World *w) { ((World*)w)->ActiveT
 void InitLightningAppear(const World *w) { ((World*)w)->SetLightningActive(true); }
 void InitLightningVanish(const World *w) { ((World*)w)->SetLightningActive(false); }
 void DeactivateWorldSnow(const World *w) { ((World*)w)->DeactivateSnow(); };
+void ActivateSnowSlowing(const World *w) { ((World*)w)->SetSnowSlowing(true); }
 
 void World::SetupSeasons()
 {
@@ -644,7 +655,9 @@ void World::SetupSeasons()
 	seasonMan.AddEvent(Winter, SeasonalEvent(0.8f, InitialiseTerrainMelt));
 	seasonMan.AddEvent(Winter, SeasonalEvent(0.85f, InitialiseTerrainTextureMergeToGrass));
 
-	seasonMan.AddEvent(Winter, SeasonalEvent(0.95f, DeactivateWorldSnow));
+	seasonMan.AddEvent(Winter, SeasonalEvent(0.8, ActivateSnowSlowing));
+	
+	seasonMan.AddEvent(Winter, SeasonalEvent(0.9f, DeactivateWorldSnow));
 
 	UpdateSceneTimings();
 };
@@ -935,8 +948,14 @@ void World::Update(const GameTime &gameTime)
 	HemiSphericalParticleEmitter *snowEmitter = particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID);
 	if(snowEmitter->IsActive())
 	{
-		if(snowEmitter->GetActivity() < 1.0f)
+		if(snowEmitter->GetActivity() < 1.0f && !snowSlowing)
+		{
 			snowEmitter->SetActivity(snowEmitter->GetActivity() + 0.005f);
+		}
+		else if(snowSlowing && snowEmitter->GetActivity()>0)
+		{
+			snowEmitter->SetActivity(snowEmitter->GetActivity() - 0.005f);
+		}
 	}
 
 	particleSystem.Update(gameTime);
@@ -1086,6 +1105,8 @@ void World::Draw(const GameTime &_gameTime)
 		tree->SetTreeDieing(false);
 		tree->SetTreeDeathDepth(0);
 		tree->SetActive(false);
+
+		snowSlowing = false;
 
 		// RESET LEAVES
 		const u32 LEAF_PARTICLES_PER_LEAF_MATRIX = 3;

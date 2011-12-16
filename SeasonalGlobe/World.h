@@ -98,6 +98,7 @@ private:
 	float3 sceneRotationAxis;
 	f32 _cameraAngle, _cameraPosition, _cameraRotation;
 	bool AutoRotate;
+	bool snowSlowing; // used to reduce rate of emission to snow slow down towards the end
 
 	// Geometry
 	TerrainLoader *terrain; TerrainShift terrainElevation;
@@ -131,7 +132,8 @@ private:
 		*leafTexture, *baseTexture, *displacementTexture, *barkNormalMap,
 		*snowTexture, *terrainNormalMapFull,
 		*grassParticleTexture, // alpha map
-		*grassParticleColorMap;
+		*grassParticleColorMap,
+		*houseNormalMap;
 
 	// Particle emitters
 	u32 leafParticleEmitterID;
@@ -212,7 +214,7 @@ public:
 		if(lightMode == Ambient) // AMBIENT LIGHTS
 		{
 			Shader* ambientShader = shaderMan.GetShader(ambientLightShaderID);
-			houseModel->SetShader(ambientShader);
+			houseModel->SetShader(shaderMan.GetShader(normalMap_Ambient_ShaderID));
 			baseModel->SetShader(ambientShader);
 			tree->SetShader(ambientShader);
 			terrain->SetShader(shaderMan.GetShader(terrainShaders.Terrain_Displacement_Ambient_ShaderID));
@@ -220,7 +222,7 @@ public:
 		else if(lightMode == Directional) // DIRECTIONAL LIGHT
 		{
 			Shader* directionalLightShader = shaderMan.GetShader(directionalLightShaderID);
-			houseModel->SetShader(directionalLightShader);
+			houseModel->SetShader(shaderMan.GetShader(normalMap_Directional_ShaderID));
 			baseModel->SetShader(directionalLightShader);
 			tree->SetShader(directionalLightShader);
 			terrain->SetShader(shaderMan.GetShader(terrainShaders.Terrain_Displacement_Directional_ShaderID));
@@ -228,10 +230,9 @@ public:
 		else if(lightMode == Spotlights) // SPOT LIGHTS
 		{
 			Shader* spotShader = shaderMan.GetShader(spotlightShaderID);
-			houseModel->SetShader(spotShader);
+			houseModel->SetShader(shaderMan.GetShader(normalMap_Spotlights_ShaderID));
 			baseModel->SetShader(spotShader);
 			tree->SetShader(spotShader);
-			
 			terrain->SetShader(shaderMan.GetShader(terrainShaders.Terrain_Displacement_Spotlights_ShaderID));
 		}
 
@@ -388,4 +389,5 @@ public:
 	void SetDtMultiplier(f32 multiplier) { dtMultiplier = multiplier; }
 	const f32 GetMultiplier() const { return dtMultiplier; }
 
+	void SetSnowSlowing(bool _slowing) { snowSlowing = _slowing; }
 };

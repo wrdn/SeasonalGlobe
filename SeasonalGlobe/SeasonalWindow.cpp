@@ -77,7 +77,7 @@ void SeasonalWindow::OnDisplay()
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
-	glRasterPos2f(0.6f, 0.9f);
+	glRasterPos2f(0.5f, 0.9f);
 	Printf("Current Season: %s", scn.GetCurrentSeasonString());
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();   

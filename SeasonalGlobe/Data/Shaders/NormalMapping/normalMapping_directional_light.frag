@@ -27,14 +27,14 @@ void main()
 	
 	vec4 fragmentColour = vec4(0.0,0.0,0.0,1.0); // initialise fragment(pixel) colour to black
 		
-	vec4 ambientIntensity	= vec4(0.0,0.0,0.0,1.0);
-	vec4 diffuseIntensity	= vec4(1.0,1.0,1.0,1.0);
-	vec4 specularIntensity  = vec4(1.0,1.0,1.0,1.0);
+	vec4 ambientIntensity	= gl_LightSource[0].ambient;
+	vec4 diffuseIntensity	= gl_LightSource[0].diffuse;
+	vec4 specularIntensity  = gl_LightSource[0].specular;
 
-	float ambientCoefficient = 0.0;
-	float diffuseCoefficient = 0.95;
-	float specularCoefficient = 1.0;
-	float specularShininess = 20.0;
+	vec4 ambientCoefficient = gl_FrontMaterial.ambient;
+	vec4 diffuseCoefficient = gl_FrontMaterial.diffuse;
+	vec4 specularCoefficient = gl_FrontMaterial.specular;
+	float specularShininess = gl_FrontMaterial.shininess;
 	
 	vec3 normalVector = normal;
 	
