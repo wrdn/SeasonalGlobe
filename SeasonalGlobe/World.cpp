@@ -926,8 +926,11 @@ void World::multi_texturing_test(/*const GameTime &gameTime*/)
 	
 };
 
-void World::Update(const GameTime &gameTime)
+void World::Update(const GameTime &_gameTime)
 {
+	GameTime gameTime = _gameTime;
+	gameTime.SetDeltaTime(gameTime.GetDeltaTime() * dtMultiplier);
+
 	UpdateSceneTimings();
 
 	if(mergingTerrainTextured)
