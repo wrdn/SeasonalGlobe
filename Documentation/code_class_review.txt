@@ -1,0 +1,95 @@
+Class List
+
+Model (base geometry)
+GraphicsObject - store the model, position, scale, rotation, shader and textures
+
+Utility geometry creation classes:
+Cylinder (inherit GraphicsObject) - creates a cylinder
+Sphere (inherit GraphicsObject) - creates a sphere
+Disk (inherits GraphicsObject) - creates a disk
+OBJFile (static functions only) - parses obj file (geometry only) and returns list of GraphicsObject*'s
+TerrainLoader (inherits GraphicsObject) - loads terrain from heightmap in shape of disk (circular)
+
+Math Utilities: Collision (2D line circle - used when building the terrain from the heightmap to figure
+		out what pixels are in the circle).
+		float2, float3, float4 (2D, 3D, 4D vector, 4D vector also used for colours).
+		Mat44 (4x4 matrix) - entirely in SSE
+
+LSytem - generic interpreter for lsystem replacement grammar provided
+FractalTree - uses LSystem (composition), SYMBOL_SET, rotation matrices (cached matrices used when
+		applying rotation), list of indices of first matrix per level of tree. Level starts at
+		"[" and ends at "]". Entirely non recursive. List of "branch depths" - each depth
+		contains a list of branch segments (defined between "[" and "]"). Branch segment has
+		start and end matrix index. Branch segments used when growing tree and doing fire, so
+		we can do an entire depth at once, in the correct order.
+		Tree also has a Cylinder instance (single cylinder drawn many times for each branch), 
+		a position, texture, normal map, shader, material, state (Growing, Static, Dieing),
+		and an array of matrices (each matrix is used to orient the branch properly).
+		Tree build process occurs at load time ( originally did a traditional LSystem
+		interpretation per frame to draw the tree - while this would allow more flexibiltiy, it
+		proved to be extremely expensive ). Tree does NOT use GraphicsObject, due to the
+		complexities involved in growing the tree (do not want to abstract data, such as its
+		position vector, away). Cylinder::DrawSimple() is used to draw the cylinder with NO
+		activations or deactivations by the GraphicsObject class (from which Cylinder inherits).
+		Usually materials and shaders activated/deactivated. We do this manually in the
+		FractalTree draw function.
+
+AppConfig - given a text config file, maps entries in format "name = value". Stores everything in a	
+	    string initially (std::map<name_string , value_string>) then provides functions such as
+	    GetInt(), GetFloat(), GetVec2|3|4() which will do proper type conversions.
+
+GameTime - uses gxbase timing functionality. Used to get delta time (useful for animation)
+
+Log - log text to a file
+
+PerfTimer -  High resolution timer using QueryPerformanceCounter() and QueryPerformanceFrequency()
+
+ParticleSystem - Used to add/remove particle emitters. Holds default particle Model (a quad for 	                  billboards). To provide more safety, returns integer handles to emitters, which are
+		stored internally. An EmitterHandle struct is created, with a pointer to a                 ParticleEmitter. These are both stored in seperate STL vectors. We can remove                 ParticleEmitters but can never remove the EmitterHandle (only invalidate its pointer).
+                We now have a robust system where we can delete any particle emitter in a vector, and
+                the IDs to them will always be valid.
+
+ParticleEmitter - array of particles (constant size), all particles are the same (and are 64bytes in  		  size, for cache efficiency). Emitter also has billboard type (spherical, cylindrical
+		  or nobillboarding), an origin, a local maximum (<= global maximum, allows for less
+		  than global max to be used, while still using a constant size array).
+		  Rate of emission and activity (controls rate at which particles are emitted).
+		  ApplyRotations. List of forces (e.g. could add wind). Shader, alpha map, color map,
+		  source alpha blend function.
+                  
+                  Draw() - draws particles using particle info above
+		  Update(gametime) - updates particles using virtual functions below
+		 
+		  Virtual functions: ActivateShader(), DeactiveShader()
+		  Pure virtual functions: UpdateParticleProperties(Particle &p), Emit(Particle&)
+
+Particle emitter inherited from for specific emission functionality.
+HemiSpherical (emit over hemisphere, snow), PointBased (emit from single point, smoke), Cylindrical (emiter over cylinder), Static (used for leaves, usually static, then fall and vanish)
+FireParticleEmitter (used to create fire particles along lines - lines defined by the branch segments of the tree) - we then animate the emitter so the fire appears to rush up the tree
+
+Color - static set of colours (typedef of float4). Color components in 0 to 1 range.
+Light - lightID (GL_LIGHT0 to GL_LIGHT7), pos, spot direction, spot cutoff angle, ambient, diffuse, specular. Single light class for all lights.
+        Can activate and deactivate lights.
+Material - color info applied to models. Ambient, diffuse, specular, shininess.
+For both light and material, using opengl inbuilt variables to set the properties (e.g. lights GL_POSITION property). These are automatically passed
+to shaders, so we dont have to manually setup the uniforms. Limits us to max of 7 lights at a time (within confines of acw specification, this is enough. Further in a forward renderer, many lights can cause a very significant slow down).
+
+Shader - object to manage vertex and fragment shader (compilation of shaders and program setup, uniforms, activation, deactivation
+ShaderManager - used to add and remove shaders. Uses handles (Shader pointers and ShaderHandle's) in a similar fashion to the particlesystem.
+
+Texture - manages a texture, with opengl id, filters, width, height, and texture slot (required when using multi-texturing). Activate(),Deactivate()
+TextureManager - manage loaded textures. Uses std::map to map hashed texture file names to the associated Texture object (std::map<u32, Texture>)
+
+SeasonalWindow - used for GXBase controls, display() - calls World display function, keyboard, 
+
+
+Season Manager - totalTime (=timePerSeason*4), timerPerSeason (=totalTime/4), currentSeason, runtime, World pointer. List of events per season. 
+		 Event has "hasTriggered", "timeOffset" and a callback function. All event time offsets are between 0 and 1. We calculate current
+                 season and normalize the runtime into the same range. Then we call all events where the offset is <= the normalized runtime.
+		 The call is only made if hasTriggered = false. Using normalized time, we can easily change the time per season, with no effect
+                 on the timing of the events (in terms of the percentage of time before the event is called).
+
+World - World class is the top level manager for most items in the world. Contains AppConfig, TextureManager, ShaderManager, ParticleSystem, 	SeasonalManager and dtMultiplier (allowing us to speed up/slow down updates). Also contains a set of models (e.g. house, terrain, globe)
+	the shader IDs (from the shader manager) and texture pointers (from the texture manager). Particle emitter IDs and lights are also stored.
+	World contains Load, Draw, Update functions, and accessors and mutators (primarily used by callbacks to seasonal events so they can change
+        the state of the world).
+
