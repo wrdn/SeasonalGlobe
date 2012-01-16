@@ -53,15 +53,17 @@ Model* CreateImposterModel()
 	
 	VERTEX *imposterVerts = new VERTEX[8];
 
+	const f32 moduvtop = 0.9f;
+
 	// first quad
-	imposterVerts[0] = VERTEX(float3(-1,1,0),  float3(0,0,1), float2(0,1));
-	imposterVerts[1] = VERTEX(float3(1,1,0),   float3(0,0,1), float2(1,1));
+	imposterVerts[0] = VERTEX(float3(-1,1,0),  float3(0,0,1), float2(0,moduvtop));
+	imposterVerts[1] = VERTEX(float3(1,1,0),   float3(0,0,1), float2(1,moduvtop));
 	imposterVerts[2] = VERTEX(float3(1,-1,0),  float3(0,0,1), float2(1,0));
 	imposterVerts[3] = VERTEX(float3(-1,-1,0), float3(0,0,1), float2(0,0));
 
 	// second quad
-	imposterVerts[4] = VERTEX(float3(0,1,-1),  float3(1,0,0), float2(0,1));
-	imposterVerts[5] = VERTEX(float3(0,1,1),   float3(1,0,0), float2(1,1));
+	imposterVerts[4] = VERTEX(float3(0,1,-1),  float3(1,0,0), float2(0,moduvtop));
+	imposterVerts[5] = VERTEX(float3(0,1,1),   float3(1,0,0), float2(1,moduvtop));
 	imposterVerts[6] = VERTEX(float3(0,-1,1),  float3(1,0,0), float2(1,0));
 	imposterVerts[7] = VERTEX(float3(0,-1,-1), float3(1,0,0), float2(0,0));
 	
