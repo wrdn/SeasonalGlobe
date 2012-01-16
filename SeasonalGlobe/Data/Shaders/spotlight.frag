@@ -35,8 +35,8 @@ void main()
 	vec4 textureColor = texture2D(baseMap, TextureCoordinate);
 	vec3 N = normalize(Normal);
 	gl_FragColor =
-		ApplySpotLight(0, textureColor, N, 0.3333) +
+		ApplySpotLight(0, textureColor, N, 1) +
 		ApplySpotLight(1, textureColor, N,1) +
 		ApplySpotLight(2, textureColor, N,1) +
-		ApplySpotLight(3, textureColor, N, 0.25);
+		ApplySpotLight(3, textureColor, N, 1);
 }
