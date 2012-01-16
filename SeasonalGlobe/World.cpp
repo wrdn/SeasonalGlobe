@@ -395,12 +395,13 @@ bool World::LoadParticles()
 	grassParticles->SetModel(CreateImposterModel());
 	imposterModel = (Model*)grassParticles->GetModel();
 	grassParticles->SetAlphaMap(*grassParticleTexture);
+	//grassParticles->SetAlphaMap(*particleTexture);
 	grassParticles->SetParticlesStaticState(true);
 	grassParticles->SetShader(shaderMan.GetShader(texturedParticleShaderID));
 	grassParticles->SetColorMap(grassParticleColorMap);
 	grassParticles->SetBillboardType(NoBillboarding);
-	grassParticles->SetEmitterOrigin(float3(0,0,0));
-	grassParticles->SetSourceAlphaBlendFunction(GL_ONE);
+	grassParticles->SetEmitterOrigin(float3(0,0.15,0));
+	grassParticles->SetSourceAlphaBlendFunction(GL_ONE_MINUS_SRC_ALPHA);
 
 	f32 radius = globeSphere->GetRadius()-0.3f;
 	for(int i=0;i<150;++i)
