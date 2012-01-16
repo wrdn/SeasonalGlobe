@@ -7,7 +7,7 @@ varying vec2 texture_coordinate;
 varying vec3 LightDir[4];
 
 
-const float cos_outer_cone_angle = 0.5;
+const float cos_outer_cone_angle = 0.8;
 
 vec4 ApplySpotLight(int index, vec4 texCol, vec3 N, float ambientMultiplier, float diffuseMultiplier, float specularMultiplier)
 {
@@ -53,7 +53,7 @@ void main(void)
 	
 	gl_FragColor =
 		ApplySpotLight(0, textureCoefficient, normalVector, 1,1,1) +
-		ApplySpotLight(1, textureCoefficient, normalVector,0.35, 0.5, 0.1) +
-		ApplySpotLight(2, textureCoefficient, normalVector,0.35, 0.5, 0.1) +
-		ApplySpotLight(3, textureCoefficient, normalVector, 0.35, 0.5, 0.2);
+		ApplySpotLight(1, textureCoefficient, normalVector,1, 1, 1) +
+		ApplySpotLight(2, textureCoefficient, normalVector,1, 1, 1) +
+		ApplySpotLight(3, textureCoefficient, normalVector, 1, 1, 1);
 }

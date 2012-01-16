@@ -228,14 +228,17 @@ public:
 			terrain->SetShader(shaderMan.GetShader(terrainShaders.Terrain_Displacement_Directional_ShaderID));
 		}
 		else if(lightMode == Spotlights) // SPOT LIGHTS
-		{
+		{ 
 			Shader* spotShader = shaderMan.GetShader(spotlightShaderID);
 			houseModel->SetShader(shaderMan.GetShader(normalMap_Spotlights_ShaderID));
 			baseModel->SetShader(spotShader);
 			tree->SetShader(spotShader);
-			terrain->SetShader(shaderMan.GetShader(terrainShaders.Terrain_Displacement_Spotlights_ShaderID));
-		}
-
+			//terrain->SetShader(shaderMan.GetShader(terrainShaders.Terrain_Displacement_Spotlights_ShaderID));
+			 
+			Shader *spotlightTerrainShader = shaderMan.GetShader(terrainShaders.Terrain_Displacement_Spotlights_ShaderID);
+			terrain->SetShader(spotlightTerrainShader);
+		} 
+		 
 		SetTreeShadeMode(tree->GetTreeShadeMode());
 	}
 
@@ -386,7 +389,7 @@ public:
 		terrainElevation.timeToElevateFully =  seasonMan.GetTimePerSeason() * 0.25f;
 	};
 
-	void SetDtMultiplier(f32 multiplier) { dtMultiplier = multiplier; }
+	void SetDtMultiplier(f32 multiplier) { dtMultiplier = max(0,multiplier); }
 	const f32 GetMultiplier() const { return dtMultiplier; }
 
 	void SetSnowSlowing(bool _slowing) { snowSlowing = _slowing; }

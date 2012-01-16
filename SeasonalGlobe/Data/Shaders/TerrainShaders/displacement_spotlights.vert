@@ -15,10 +15,11 @@ void main(void)
 	float df = 0.30*dv.x + 0.59*dv.y + 0.11*dv.z;
    	vec4 newVertexPos = vec4(normalize(gl_Normal) * df * vposmult, 0);
 	vec4 finalVertexPosition = gl_Vertex + newVertexPos;
+	
 	gl_Position = gl_ModelViewProjectionMatrix * finalVertexPosition;
 	
 	position = vec3(gl_ModelViewMatrix * finalVertexPosition);
-	normal = normalize(gl_NormalMatrix * gl_Normal);
+	normal = normalize(gl_NormalMatrix * normalize(gl_Normal));
 	
 	// Normal mapping (required to fix lighting on displacement mapped terrain)
 	vec3 c1 = cross( gl_Normal, vec3(0.0, 0.0, 1.0) ); 
@@ -42,11 +43,11 @@ void main(void)
 	tangentSpace[1][2] = normal.y;
 	tangentSpace[2][2] = normal.z;
 
-	eyeVector = normalize(-position);
+	eyeVector = -position;
 	eyeVector = tangentSpace * eyeVector;
 	
-	LightDir[0] = tangentSpace * vec3(gl_LightSource[0].position.xyz - position);
-	LightDir[1] = tangentSpace * vec3(gl_LightSource[1].position.xyz - position);
-	LightDir[2] = tangentSpace * vec3(gl_LightSource[2].position.xyz - position);
-	LightDir[3] = tangentSpace * vec3(gl_LightSource[3].position.xyz - position);
+	LightDir[0] =  vec3(gl_LightSource[0].position.xyz - position);
+	LightDir[1] =  vec3(gl_LightSource[1].position.xyz - position);
+	LightDir[2] =  vec3(gl_LightSource[2].position.xyz - position);
+	LightDir[3] =  vec3(gl_LightSource[3].position.xyz - position);
 }

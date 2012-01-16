@@ -6,11 +6,12 @@ varying vec3 LightDir[4];
 varying vec2 TextureCoordinate;
 varying vec3 eyeVec;
 
-const float cos_outer_cone_angle = 0.5;
+const float cos_outer_cone_angle = 0.8f;
 
 vec4 ApplySpotLight(int index, vec4 texCol, vec3 N, float ambientMultiplier)
 {
 	vec4 finalColor = ambientMultiplier * gl_LightSource[index].ambient * gl_FrontMaterial.ambient * texCol;
+	
 	vec3 L = normalize(LightDir[index]);
 	vec3 D = normalize(gl_LightSource[index].spotDirection);
 	

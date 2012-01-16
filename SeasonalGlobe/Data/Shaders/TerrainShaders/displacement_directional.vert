@@ -43,7 +43,8 @@ void main(void)
 	tangentSpace[1][2] = normal.y;
 	tangentSpace[2][2] = normal.z;
 
-	lightVector = tangentSpace * lightVector;
+	//lightVector = tangentSpace * lightVector;
+	
 	eyeVector = normalize(-position);
 	eyeVector = tangentSpace * eyeVector;
 }

@@ -53,7 +53,7 @@ Model* CreateImposterModel()
 	
 	VERTEX *imposterVerts = new VERTEX[8];
 
-	const f32 moduvtop = 0.9f;
+	const f32 moduvtop = 0.95f;
 
 	// first quad
 	imposterVerts[0] = VERTEX(float3(-1,1,0),  float3(0,0,1), float2(0,moduvtop));
@@ -125,6 +125,8 @@ bool World::LoadTextures()
 	grassTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
 
 	grassParticleTexture = texMan.LoadTextureFromFile("Data/Textures/grass2.tga");
+	grassParticleTexture->SetWrapS(GL_CLAMP);
+	grassParticleTexture->SetWrapT(GL_CLAMP);
 	grassParticleTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
 
 	grassParticleColorMap = texMan.LoadTextureFromFile("Data/Textures/grassParticleTexture.bmp");
@@ -249,7 +251,7 @@ bool World::LoadShaders()
 	Shader *displacementAmbientShader = shaderMan.GetShader(terrainShaders.Terrain_Displacement_Ambient_ShaderID);
 	Shader *displacementDirectionalShader = shaderMan.GetShader(terrainShaders.Terrain_Displacement_Directional_ShaderID);
 	Shader *displacementSpotlightsShader = shaderMan.GetShader(terrainShaders.Terrain_Displacement_Spotlights_ShaderID);
-
+	
 	displacementAmbientShader->Activate();
 	displacementAmbientShader->SetUniform("colorMap", 0);
 	displacementAmbientShader->SetUniform("snowMap", 1);
@@ -269,6 +271,7 @@ bool World::LoadShaders()
 	displacementSpotlightsShader->SetUniform("snowMap", 1);
 	displacementSpotlightsShader->SetUniform("normalMap", 2);
 	displacementSpotlightsShader->SetUniform("displacementMap", 3);
+	displacementSpotlightsShader->SetUniform("vposmult", 0);
 	displacementSpotlightsShader->Deactivate();
 
 	/*	terrain->GetShader()->SetUniform("colorMap", 0);
@@ -402,7 +405,7 @@ bool World::LoadParticles()
 	grassParticles->SetShader(shaderMan.GetShader(texturedParticleShaderID));
 	grassParticles->SetColorMap(grassParticleColorMap);
 	grassParticles->SetBillboardType(NoBillboarding);
-	grassParticles->SetEmitterOrigin(float3(0,0.15,0));
+	grassParticles->SetEmitterOrigin(float3(0,0.15f,0));
 	grassParticles->SetSourceAlphaBlendFunction(GL_ONE_MINUS_SRC_ALPHA);
 
 	f32 radius = globeSphere->GetRadius()-0.3f;
@@ -532,31 +535,37 @@ void World::LoadLights()
 	float4 directionalLightAmb(0.35f,0.35f,0.35f,1), directionLightDiffuse(1,0.66666f,0.19607f,1), directionalLightSpecular(1,1,1,1), lightPosition;
 	directionalLight = Light(lightPosition,directionalLightAmb, directionLightDiffuse, directionalLightSpecular);
 	directionalLight.SetLightID(GL_LIGHT0);
-
 	
-	float4 spotAmb(0.35f,0.35f,0.35f,1);
+	float4 spotDir;
 	float4 spotDiff(1,0.66666f,0.19607f,1);
-	float4 spotSpec(0.3f,0.3f,0.3f,1); float4 spotDir;
+	//float4 spotSpec(0.3f,0.3f,0.3f,1);
 
-	// Spotlight 1
-	lightPosition = float4(0,7.5f,0,1); spotDir = float4(0,-1,0,1);
+	float4 spotAmb = Color::WHITE * 0.2f;
+	float4 spotSpec = Color::WHITE * 0.2f; 
+
+	// Spotlight 1 (top) 
+	lightPosition = float4(0,5,0,1); spotDir = float4(0,-1,0,1);  
+	spotDiff = Color::GREY*0.55f;
 	spotlights[0] = Light(lightPosition, spotDir, 10, spotAmb, spotDiff, spotSpec);
-	spotlights[0].SetLightID(GL_LIGHT0);
-
-	// Spotlight 2
-	lightPosition = float4(-5.3f, 2, 9.6f,1); spotDir = float4(0,0,-1,1); spotAmb = float4(0,0,0,1); spotDiff = float4(1,1,1,1);
-	spotlights[1] = Light(lightPosition, spotDir, 10, spotAmb, spotDiff, spotSpec);
+	spotlights[0].SetLightID(GL_LIGHT0); 
+	 
+	// Spotlight 2 (left)
+	lightPosition = float4(-5.3, 0.6f, 9.6f,1);  spotDir = float4(0,-0.5,-1,1);
+	spotDiff = float4(0.5,0.6,0.2,1);
+	spotlights[1] = Light(lightPosition, spotDir, 32, spotAmb, spotDiff, spotSpec);
 	spotlights[1].SetLightID(GL_LIGHT1);
-
-	// Spotlight 3
-	lightPosition = float4(4.4f, 2, 10, 1); spotDir = float4(0,0,-1,1); spotDiff = float4(0.6f,0.5f,0.4f,1);
-	spotlights[2] = Light(lightPosition, spotDir, 10, spotAmb, spotDiff, spotSpec);
+	 
+	// Spotlight 3 (right)
+	lightPosition = float4(4.4f, 0.6f, 10, 1); spotDir = float4(0,-0.5,-1,1);
+	spotDiff = float4(0.8f,0.45f,0.3f,1);
+	spotlights[2] = Light(lightPosition, spotDir, 32, spotAmb, spotDiff, spotSpec);
 	spotlights[2].SetLightID(GL_LIGHT2);
-
-	// Spotlight 4
-	lightPosition = float4(0,0.6f,-11.2f,1); spotDir = float4(0,0,1,1); spotAmb = float4(0.35f,0.35f,0.35f,1);
-	spotDiff = float4(1,0.66666f,0.19607f,1);
-	spotlights[3] = Light(lightPosition, spotDir, 15, spotAmb, spotDiff, spotSpec);
+	 
+	// Spotlight 4 (back) 
+	lightPosition = float4(0,0.6f,-11.2f,1); spotDir = float4(0,0,1,1);
+	spotAmb = float4(0.35f,0.35f,0.35f,1);
+	spotDiff = float4(1,0.66666f,0.19607f,1); 
+	spotlights[3] = Light(lightPosition, spotDir, 33, spotAmb, spotDiff, spotSpec);
 	spotlights[3].SetLightID(GL_LIGHT3);
 };
 
@@ -568,7 +577,7 @@ void StartTreeGrowth(const World *w)
 };
 void InitiateLeafGrowth(const World *w)
 {
-	World *wt = (World*)w;
+	World *wt = (World*)w; 
 	wt->GetLeafParticleEmitter()->SetActive(true);
 	wt->GetLeafParticleEmitter()->SetStartColor(Color4f(1,1,1,1));
 	wt->GetLeafParticleEmitter()->InitiateParticleFadeIn();
@@ -698,6 +707,8 @@ bool World::Load()
 	_light3.apply();
 	_light4.apply();
 	_light5.apply();
+
+	SetLightingMode(Spotlights);
 
 	return true;
 };
@@ -969,29 +980,31 @@ void World::Update(const GameTime &_gameTime)
 };
 
 void World::DrawTerrain(const GameTime &gameTime)
-{
+{ 
 	// Terrain (floor)
 	terrainElevation.elevationRuntime += gameTime.GetDeltaTime() * terrainElevation.shiftDirection;
 	if(terrainElevation.elevationRuntime <= 0 && terrainElevation.shiftDirection == Down) { terrainElevation.elevationRuntime=0; terrainElevation.shiftDirection = NoShift; }
 
+	glEnable(GL_NORMALIZE);
 	terrainElevation.elevationRuntime = min(terrainElevation.elevationRuntime, terrainElevation.timeToElevateFully); // or =fmod(CurrentTerrainTime, ShiftTime); to loop terrain
 	f32 N = (1.0f / terrainElevation.timeToElevateFully) * terrainElevation.elevationRuntime;
 	f32 vpos = lerp(0, terrainElevation.maxDisplacementScaleFactor, N);
 	f32 CurrentShift = lerp(0, terrainElevation.maxGeometryShiftFactor, N);
-
-	glDisable(GL_CULL_FACE);
+	 
+	glDisable(GL_CULL_FACE); 
 	terrain->SetPosition(float3(0, terrain->GetPosition().y()-CurrentShift,0));
 	terrain->GetShader()->Activate();
 	terrain->GetShader()->SetUniform("t", terrainTextureMergeFactor);
 	terrain->GetShader()->SetUniform("normalLerpFactor", N);
 	terrain->GetShader()->SetUniform("vposmult", vpos);
 	terrain->GetShader()->Deactivate();
-	terrain->SetXRotation(-90);
+	terrain->SetXRotation(-90); 
 	terrain->SetYRotation(0);
-	terrain->SetZRotation(-90);
-	terrain->Draw();
+	terrain->SetZRotation(-90); 
+	terrain->Draw(); 
 	terrain->SetPosition(float3(0, terrain->GetPosition().y()+CurrentShift,0));
 	glEnable(GL_CULL_FACE);
+	glDisable(GL_NORMALIZE);
 };
 
 void World::Draw(const GameTime &_gameTime)
@@ -1022,14 +1035,14 @@ void World::Draw(const GameTime &_gameTime)
 
 		spotlights[1].Activate();
 		spotCone->SetXRotation(90);
-		spotCone->SetPosition(float3(-5.3f, 1.7f, 9.6f));
+		spotCone->SetPosition(spotlights[1].GetPosition().ToFloat3());
 		spotCone->Draw();
-
+		 
 		spotlights[2].Activate();
-		spotCone->SetPosition(float3(4.4f, 1.7f, 10));
+		spotCone->SetPosition(spotlights[2].GetPosition().ToFloat3());
 		spotCone->Draw();
 
-		spotlights[3].Activate();
+		spotlights[3].Activate(); 
 		spotCone->SetPosition(spotlights[3].GetPosition().ToFloat3());
 		spotCone->SetZRotation(180);
 		spotCone->Draw();

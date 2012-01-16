@@ -71,18 +71,27 @@ void SeasonalWindow::OnDisplay()
 
 	scn.Draw(gameTime);
 
+	glDisable(GL_DEPTH_TEST);
+
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
+
 	glRasterPos2f(0.5f, 0.9f);
 	Printf("Current Season: %s", scn.GetCurrentSeasonString());
+	
+	glRasterPos2f(-0.96f, 0.9f);
+	Printf("Current Time Multiplier: %f", scn.GetMultiplier());
+
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();   
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
+
+	glEnable(GL_DEPTH_TEST);
 
 	SwapBuffers();
 };

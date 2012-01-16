@@ -3,7 +3,7 @@ varying vec3 LightDir[4];
 
 varying vec3 eyeVec;
 
-const float cos_outer_cone_angle = 0.5;
+const float cos_outer_cone_angle = 0.8;
 
 vec4 ApplySpotLight(int index, vec3 N, float ambientMultiplier)
 {
@@ -30,8 +30,8 @@ void main()
 {
 	vec3 N = normalize(Normal);
 	gl_FragColor =
-		ApplySpotLight(0, N, 0.3333) +
+		ApplySpotLight(0, N, 1) +
 		ApplySpotLight(1, N,1) +
 		ApplySpotLight(2, N,1) +
-		ApplySpotLight(3, N, 0.25);
+		ApplySpotLight(3, N, 1);
 }
