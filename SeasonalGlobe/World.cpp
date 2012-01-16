@@ -550,8 +550,8 @@ void World::LoadLights()
 	spotlights[0].SetLightID(GL_LIGHT0); 
 	 
 	// Spotlight 2 (left)
-	lightPosition = float4(-5.3, 0.6f, 9.6f,1);  spotDir = float4(0,-0.5,-1,1);
-	spotDiff = float4(0.5,0.6,0.2,1);
+	lightPosition = float4(-5.3f, 0.6f, 9.6f,1);  spotDir = float4(0,-0.5f,-1,1);
+	spotDiff = float4(0.5f,0.6f,0.2f,1);
 	spotlights[1] = Light(lightPosition, spotDir, 32, spotAmb, spotDiff, spotSpec);
 	spotlights[1].SetLightID(GL_LIGHT1);
 	 
