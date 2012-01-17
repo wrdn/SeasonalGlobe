@@ -156,6 +156,10 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 			case Ambient: { scn.SetLightingMode(Directional); break; }
 			}
 		} break;
+	case 't':
+		{
+			scn.SetPolygonMode(scn.GetNextPolygonMode(scn.GetPolygonMode()));
+		};
 	}
 
 

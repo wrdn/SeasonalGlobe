@@ -186,7 +186,11 @@ public:
 		baseModel->SetDrawMode(polyMode);
 		tree->SetDrawMode(polyMode);
 	};
-	
+	GLenum GetNextPolygonMode(const GLenum polyMode)
+	{
+		return polyMode == GL_FILL ? GL_LINE : GL_FILL;
+	};
+
 	const f32 GetCameraAngle() const { return _cameraAngle; };
 	const f32 GetCameraPosition() const { return _cameraPosition; };
 	const f32 GetCameraRotation() const { return _cameraRotation; };
