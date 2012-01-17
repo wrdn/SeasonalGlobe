@@ -409,7 +409,12 @@ bool World::LoadParticles()
 	grassParticles->SetSourceAlphaBlendFunction(GL_ONE_MINUS_SRC_ALPHA);
 
 	f32 radius = globeSphere->GetRadius()-0.3f;
-	for(int i=0;i<150;++i)
+
+	i32 grass_particles_count=150;
+	conf.GetInt("GrassParticleCount", grass_particles_count);
+	if(grass_particles_count < 0) { grass_particles_count = 150; }
+
+	for(int i=0;i<grass_particles_count;++i)
 	{
 		f32 ZAxis = randflt(-radius, radius);
 		f32 phi = randflt(0,PI);
