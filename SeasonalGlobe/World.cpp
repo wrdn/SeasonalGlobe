@@ -818,6 +818,7 @@ void floor()
 
 void DrawFloor(const float3 &floorPos, const float3 &floorScale)
 {
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisable(GL_TEXTURE_2D);
 	glTranslatef(floorPos.x(), floorPos.y(), floorPos.z());
 	glScalef(floorScale.x(), floorScale.y(), floorScale.z());
