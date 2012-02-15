@@ -93,12 +93,13 @@ void SeasonalWindow::OnDisplay()
 		glRasterPos2f(-0.96f, 0.7f);  Printf("Press +/- to increase/decrease time multiplier");
 		glRasterPos2f(-0.96f, 0.65f); Printf("Press s to switch lighting mode");
 		glRasterPos2f(-0.96f, 0.6f);  Printf("Press t to switch polygon mode (wireframe or fill)");
+		glRasterPos2f(-0.96f, 0.55f);  Printf("Press m to switch tree viewing mode");
 
-		glRasterPos2f(-0.96f, 0.5f);  Printf("Press Left/Right or Up/Down arrows to rotate camera");
-		glRasterPos2f(-0.96f, 0.45f); Printf("Hold Left Mouse and move mouse to zoom");
-		glRasterPos2f(-0.96f, 0.4f);  Printf("Hold Right Mouse and move mouse to rotate");
+		glRasterPos2f(-0.96f, 0.45f);  Printf("Press Left/Right or Up/Down arrows to rotate camera");
+		glRasterPos2f(-0.96f, 0.4f); Printf("Hold Left Mouse and move mouse to zoom");
+		glRasterPos2f(-0.96f, 0.35f);  Printf("Hold Right Mouse and move mouse to rotate");
 
-		glRasterPos2f(-0.96f, 0.3f);  Printf("Press h to hide/display this help menu");
+		glRasterPos2f(-0.96f, 0.25f);  Printf("Press h to hide/display this help menu");
 	}
 	else
 	{
