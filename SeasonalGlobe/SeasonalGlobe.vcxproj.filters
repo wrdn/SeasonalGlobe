@@ -373,31 +373,10 @@
     <None Include="Data\House\Haus_020_unwrap_NRM.jpg">
       <Filter>Resource Files\Data\House</Filter>
     </None>
-    <None Include="Data\House\Haus_020_unwrap_SPEC.jpg">
-      <Filter>Resource Files\Data\House</Filter>
-    </None>
-    <None Include="Data\House\Haus20.mtl">
-      <Filter>Resource Files\Data\House</Filter>
-    </None>
     <None Include="Data\Textures\bark.jpg">
       <Filter>Resource Files\Data\Textures</Filter>
     </None>
-    <None Include="Data\Textures\barkNormalMap.jpg">
-      <Filter>Resource Files\Data\Textures</Filter>
-    </None>
     <None Include="Data\Textures\barkNormalMap2.jpg">
-      <Filter>Resource Files\Data\Textures</Filter>
-    </None>
-    <None Include="Data\Textures\checkerboard.jpg">
-      <Filter>Resource Files\Data\Textures</Filter>
-    </None>
-    <None Include="Data\Textures\checkerboard_Test.jpg">
-      <Filter>Resource Files\Data\Textures</Filter>
-    </None>
-    <None Include="Data\Textures\gradientMap.tga">
-      <Filter>Resource Files\Data\Textures</Filter>
-    </None>
-    <None Include="Data\Textures\Grass.jpg">
       <Filter>Resource Files\Data\Textures</Filter>
     </None>
     <None Include="Data\Textures\Grass2.jpg">
@@ -406,16 +385,7 @@
     <None Include="Data\Textures\ground_heightmap.bmp">
       <Filter>Resource Files\Data\Textures</Filter>
     </None>
-    <None Include="Data\Textures\ground_heightmap2.bmp">
-      <Filter>Resource Files\Data\Textures</Filter>
-    </None>
-    <None Include="Data\Textures\ground_old.bmp">
-      <Filter>Resource Files\Data\Textures</Filter>
-    </None>
     <None Include="Data\Textures\leaf.tga">
-      <Filter>Resource Files\Data\Textures</Filter>
-    </None>
-    <None Include="Data\Textures\leaf_desat.tga">
       <Filter>Resource Files\Data\Textures</Filter>
     </None>
     <None Include="Data\Textures\particleTexture.tga">
@@ -555,18 +525,6 @@
   </ItemGroup>
   <ItemGroup>
     <Object Include="Data\base2.obj">
-      <Filter>Resource Files\Data</Filter>
-    </Object>
-    <Object Include="Data\base2_old.obj">
-      <Filter>Resource Files\Data</Filter>
-    </Object>
-    <Object Include="Data\bunny.obj">
-      <Filter>Resource Files\Data</Filter>
-    </Object>
-    <Object Include="Data\cube.obj">
-      <Filter>Resource Files\Data</Filter>
-    </Object>
-    <Object Include="Data\TexturedCube.obj">
       <Filter>Resource Files\Data</Filter>
     </Object>
     <Object Include="Data\House\Haus20.obj">
