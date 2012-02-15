@@ -28,6 +28,8 @@ private:
 
 	bool _leftDown, _rightDown;
 
+	bool displayHelpMenu;
+
 public:
 
 	void OnCreate();

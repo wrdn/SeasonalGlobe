@@ -4,7 +4,7 @@
 
 const c8* SeasonalWindow::DEFAULT_WINDOW_TITLE = "Seasonal Globe";
 
-SeasonalWindow::SeasonalWindow() : clearColor(Color::BLACK), _leftDown(false), _rightDown(false)
+SeasonalWindow::SeasonalWindow() : clearColor(Color::BLACK), _leftDown(false), _rightDown(false), displayHelpMenu(false)
 {
 	windowRes[0] = DEFAULT_WIDTH;
 	windowRes[1] = DEFAULT_HEIGHT;
@@ -86,6 +86,26 @@ void SeasonalWindow::OnDisplay()
 	glRasterPos2f(-0.96f, 0.9f);
 	Printf("Current Time Multiplier: %f", scn.GetMultiplier());
 
+	if(displayHelpMenu)
+	{
+		glRasterPos2f(-0.96f, 0.80f); Printf("Press p to pause time");
+		glRasterPos2f(-0.96f, 0.75f); Printf("Press r to set default time multiplier");
+		glRasterPos2f(-0.96f, 0.7f);  Printf("Press +/- to increase/decrease time multiplier");
+		glRasterPos2f(-0.96f, 0.65f); Printf("Press s to switch lighting mode");
+		glRasterPos2f(-0.96f, 0.6f);  Printf("Press t to switch polygon mode (wireframe or fill)");
+
+		glRasterPos2f(-0.96f, 0.5f);  Printf("Press Left/Right or Up/Down arrows to rotate camera");
+		glRasterPos2f(-0.96f, 0.45f); Printf("Hold Left Mouse and move mouse to zoom");
+		glRasterPos2f(-0.96f, 0.4f);  Printf("Hold Right Mouse and move mouse to rotate");
+
+		glRasterPos2f(-0.96f, 0.3f);  Printf("Press h to hide/display this help menu");
+	}
+	else
+	{
+		glRasterPos2f(-0.96f, 0.80f);
+		Printf("Press h to display help menu");
+	}
+	
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();   
 	glMatrixMode(GL_MODELVIEW);
@@ -113,6 +133,10 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 
 	switch(tolower(key))
 	{
+	case 'h':
+		{
+			displayHelpMenu = !displayHelpMenu;
+		} break;
 	case 187: //+
 		scn.SetDtMultiplier(scn.GetMultiplier() + 0.1f);
 		//scn.GetSeasonManager()->SetTimePerSeason( scn.GetSeasonManager()->GetTimePerSeason() + 0.1f );
