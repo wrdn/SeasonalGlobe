@@ -138,11 +138,11 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 			displayHelpMenu = !displayHelpMenu;
 		} break;
 	case 187: //+
-		scn.SetDtMultiplier(scn.GetMultiplier() + 0.1f);
+		scn.SetDtMultiplier(scn.GetMultiplier() + 0.1);
 		//scn.GetSeasonManager()->SetTimePerSeason( scn.GetSeasonManager()->GetTimePerSeason() + 0.1f );
 		break;
 	case 189: //-
-		scn.SetDtMultiplier(scn.GetMultiplier() - 0.1f);
+		scn.SetDtMultiplier(scn.GetMultiplier() - 0.1);
 		//scn.GetSeasonManager()->SetTimePerSeason( scn.GetSeasonManager()->GetTimePerSeason() - 0.1f );
 		break;
 	case 'p':
@@ -314,17 +314,27 @@ void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 void SeasonalWindow::OnCreate()
 {
 	GLWindowEx::OnCreate();
+	SetCursor(CRNone);
 
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	SetTitle(DEFAULT_WINDOW_TITLE);
 	SetWindowResolution(windowRes[0], windowRes[1]);
 
-	//glEnable(GL_LIGHTING);
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D); 
+	// Draw Loading . . .
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix(); glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix(); glLoadIdentity();
+	glRasterPos2f(-0.15f, 0);
+	Printf("Loading . . .");
+	SwapBuffers();
 
 	scn.Load();
+
+	SetCursor(CRArrow);
+	glMatrixMode(GL_PROJECTION); glPopMatrix();   
+	glMatrixMode(GL_MODELVIEW); glPopMatrix();
+	glEnable(GL_DEPTH_TEST);
 
 	gameTime.Init();
 };

@@ -408,11 +408,13 @@ bool World::LoadParticles()
 	grassParticles->SetEmitterOrigin(float3(0,0.15f,0));
 	grassParticles->SetSourceAlphaBlendFunction(GL_ONE_MINUS_SRC_ALPHA);
 
-	f32 radius = globeSphere->GetRadius()-0.3f;
+	f32 radius = globeSphere->GetRadius()-0.95f;
 
 	i32 grass_particles_count=150;
 	conf.GetInt("GrassParticleCount", grass_particles_count);
 	if(grass_particles_count < 0) { grass_particles_count = 150; }
+
+	const float X_FUDGE = 0.35f;
 
 	for(int i=0;i<grass_particles_count;++i)
 	{
@@ -420,7 +422,7 @@ bool World::LoadParticles()
 		f32 phi = randflt(0,PI);
 		f32 theta = asin(ZAxis/radius);
 
-		f32 xpos = radius * cos(theta) * cos(phi);
+		f32 xpos = (radius * cos(theta) * cos(phi)) + X_FUDGE;
 		f32 zpos = radius * sin(theta);
 
 		if( (xpos>(-0.3) && xpos<5.1) && (zpos>1.15 && zpos<5.3) ) // dont generate particles on the pond
@@ -951,7 +953,7 @@ void World::multi_texturing_test(/*const GameTime &gameTime*/)
 void World::Update(const GameTime &_gameTime)
 {
 	GameTime gameTime = _gameTime;
-	gameTime.SetDeltaTime(gameTime.GetDeltaTime() * dtMultiplier);
+	gameTime.SetDeltaTime(gameTime.GetDeltaTime() * (f32)dtMultiplier);
 
 	UpdateSceneTimings();
 
@@ -1018,7 +1020,7 @@ void World::DrawTerrain(const GameTime &gameTime)
 void World::Draw(const GameTime &_gameTime)
 {
 	GameTime gameTime = _gameTime;
-	gameTime.SetDeltaTime(gameTime.GetDeltaTime() * dtMultiplier);
+	gameTime.SetDeltaTime(gameTime.GetDeltaTime() * (f32)dtMultiplier);
 
 	seasonMan.Update(gameTime.GetDeltaTime());
 

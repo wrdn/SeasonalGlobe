@@ -91,7 +91,7 @@ private:
 	ShaderManager shaderMan;
 	ParticleSystem particleSystem;
 	SeasonManager seasonMan;
-	f32 dtMultiplier; // used to speed up/slow down, every frame dt = dt*dtMultiplier
+	f64 dtMultiplier; // used to speed up/slow down, every frame dt = dt*dtMultiplier
 
 	// Camera
 	Camera2 cam;
@@ -393,8 +393,8 @@ public:
 		terrainElevation.timeToElevateFully =  seasonMan.GetTimePerSeason() * 0.25f;
 	};
 
-	void SetDtMultiplier(f32 multiplier) { dtMultiplier = max(0,multiplier); }
-	const f32 GetMultiplier() const { return dtMultiplier; }
+	void SetDtMultiplier(f64 multiplier) { dtMultiplier = max(0,multiplier); };
+	const f64 GetMultiplier() const { return dtMultiplier; };
 
 	void SetSnowSlowing(bool _slowing) { snowSlowing = _slowing; }
 };

@@ -4,6 +4,6 @@ GlobeRadius=10.55
 MaxSnowParticles=2500
 MaxSmokeParticles=100
 LeavesPerLeafMatrix=3
-GrassParticleCount=150
+GrassParticleCount=280
 TimePerSeason=16
 SmokeRateOfEmission=250
