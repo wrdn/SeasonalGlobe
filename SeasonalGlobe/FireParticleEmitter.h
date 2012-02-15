@@ -64,7 +64,7 @@ private:
 	f32 fade;
 
 	f32 ignitionTime , deathTime;
-	f32 runtime;
+	f32 runtime, ignitionRuntime;
 	BurningState burnState;
 	i32 burnLevel;
 	FractalTree *tree;
@@ -74,6 +74,9 @@ private:
 
 public:
 	
+	f32 LERP_FACTOR;
+
+
 	FireParticleEmitter();
 	~FireParticleEmitter();
 
@@ -96,7 +99,7 @@ public:
 	BurningState GetBurningState() const { return burnState; }
 	void SetBurningState(BurningState st) { burnState = st; }
 
-	void SetRuntime(f32 r) { runtime = r; }
+	void SetRuntime(f32 r) { runtime = r; ignitionRuntime = r; }
 
 	const f32 GetDeathTime() const { return deathTime; }
 	void SetDeathTime(f32 t) { deathTime = t; }

@@ -26,4 +26,10 @@ public:
 
 	Particle();
 	~Particle();
+
+	void InvalidateParticle()
+	{
+		energy = -1;
+		color.zero();
+	};
 };

@@ -1,9 +1,12 @@
 #include "FireParticleEmitter.h"
 #include "FractalTree.h"
 
+#include <fstream>
+using namespace std;
+
 FireParticleEmitter::FireParticleEmitter() : currentParticleAdditionIndex(0), maxParticlesPerLine(25),
 	startColor(1,0.2f,0,1), endColor(1, 0.28f, 0, 0.8f), fade(0), ignitionTime(10), deathTime(10), runtime(0), burnState(Igniting),
-	burnLevel(0), tree(0)
+	burnLevel(0), tree(0), ignitionRuntime(0)
 {
 };
 
@@ -13,21 +16,14 @@ FireParticleEmitter::~FireParticleEmitter()
 
 void FireParticleEmitter::Emit(Particle &p)
 {
-	if(burnState == Dead)
-	{
-		p.color = float4(0,0,0,0);
-		return;
-	}
+	if(burnState != Igniting) { return; }
 
 	if(p.pada >= 0)
 	{
-		ParticleLine &pline = particleLines[(u32)p.pada]; // line the particle needs to be emitted on
+		ParticleLine &pline = particleLines[(u32)(p.pada+0.01f)]; // line the particle needs to be emitted on, shift pada slightly to avoid any FP accuracy issues
 
-		if(burnState == Dieing)
-		{
-			//tree->SetAlpha(0.5f);
-
-			if(pline.GetLineDepth() < (u32)burnLevel) // only generate particles below the burn level
+			if(pline.GetLineDepth() > (u32)burnLevel) { p.InvalidateParticle(); return; } // lines above burn level, hide particles and return
+			if(pline.GetLineDepth() < (u32)burnLevel) // standard emission for particles below the burn level
 			{
 				f32 t = randflt(0, 1);
 				p.pos = pline.GetStartPosition() + (t * pline.GetDirection());
@@ -37,62 +33,24 @@ void FireParticleEmitter::Emit(Particle &p)
 				p.size.setall(0.4f);
 				p.color = startColor;
 				p.energy = randflt(0, 0.85f);
-			}
-			else
-			{
-				p.color.w(0);
+				return;
 			}
 
-			return; // end of dieing
-		}
-		
-		if(burnState == Burning)
-		{
-			// Ray equation: O + tD, where O is origin, D is direction and t is distance along line. End point
-			// of ParticleLine is startPos + (1*direction)
-			f32 t = randflt(0, 1);
-			p.pos = pline.GetStartPosition() + (t * pline.GetDirection());
-			p.pos.y(p.pos.y()-0.2f);
-
-			p.velocity = float3(0.2f, randflt(0,1), randflt(-0.3f,0.3f));
-			p.velocity.normalize();
-
-			p.size.setall(0.4f);
-
-			p.color = startColor;
-			p.energy = randflt(0, 0.85f);
-
-			return; // end of burning
-		}
-
-
-
-		else if(burnState == Igniting)
-		{
-			if(pline.GetLineDepth() > (u32)burnLevel) {  p.color = float4(0,0,0,0); p.energy = -1; return; }
-
-			if(pline.GetLineDepth() < (u32)burnLevel) { f32 t = randflt(0, 1); p.pos = pline.GetStartPosition() + (t * pline.GetDirection()); p.pos.y(p.pos.y()-0.2f);
-			p.velocity = float3(0.2f, randflt(0,1), randflt(-0.3f,0.3f)); p.velocity.normalize(); p.size.setall(0.4f); p.color = startColor; p.energy = randflt(0, 0.85f); return; }
-
-
-			if(pline.GetLineDepth() == (u32)burnLevel)
+			if((i32)pline.GetLineDepth() == burnLevel)
 			{
-				// Do the LERP over the segment in here (pline line depth == burnLevel)
-				u32 depth = tree->GetDepth();
-				const BranchDepth *d = &tree->GetBranchSegments()[pline.GetLineDepth()];
-				const BranchSegment *particlesBranchSegment = &d->segments[pline.GetSegmentIndex()];
+				const BranchDepth *branchDepth = &tree->GetBranchSegments()[pline.GetLineDepth()];
+				const BranchSegment *branchSegment = &branchDepth->segments[pline.GetSegmentIndex()];
+			
+				f32 timePerDepthToIgnite = ignitionTime / tree->GetDepth();
+				f32 LerpFactor = (1.0f / timePerDepthToIgnite) * ignitionRuntime;
 
-				u32 timePerDepth = (u32)(ignitionTime / depth);
-				f32 P = runtime - (burnLevel * timePerDepth);
-				f32 LFactor = (1.0f / timePerDepth) * P;
-				LFactor = min(0.99999f, LFactor);
-				u32 segLen = particlesBranchSegment->end - particlesBranchSegment->start;
-				if(segLen == 0) { p.color = float4(0,0,0,0); p.energy = -1; return; }
+				u32 treeSegmentLength = branchSegment->end - branchSegment->start;
+				if(treeSegmentLength == 0) { p.InvalidateParticle(); return; }
+				
+				f32 SegmentLerp = lerp(0, (f32)treeSegmentLength, LerpFactor);
+				u32 SegmentIndex = (u32)SegmentLerp;
 
-				f32 J = lerp(0, (f32)segLen, LFactor);
-				u32 N = (u32)J;
-
-				if(pline.GetDepthOfLineInSegment() < N)
+				if(pline.GetDepthOfLineInSegment() < SegmentIndex)
 				{
 					f32 t = randflt(0, 1);
 					p.pos = pline.GetStartPosition() + (t * pline.GetDirection());
@@ -104,9 +62,9 @@ void FireParticleEmitter::Emit(Particle &p)
 					p.energy = randflt(0, 0.85f);
 					return;
 				}
-				else if(pline.GetDepthOfLineInSegment() == N)
+				else if(pline.GetDepthOfLineInSegment() == SegmentIndex)
 				{
-					f32 t = randflt(0, fract(J));
+					f32 t = randflt(0, fract(SegmentLerp));
 					p.pos = pline.GetStartPosition() + (t * pline.GetDirection());
 					p.pos.y(p.pos.y()-0.2f);
 					p.velocity = float3(0.2f, randflt(0,1), randflt(-0.3f,0.3f));
@@ -118,17 +76,39 @@ void FireParticleEmitter::Emit(Particle &p)
 				}
 				else
 				{
-					p.color = float4(0,0,0,0); p.energy = -1; return;
+					p.InvalidateParticle();
+					return;
 				}
 			}
-			return; // end of igniting
-		}
-
-		else
-		{
-			p.color = float4(0,0,0,0);
-		}
 	}
+
+	return;
+
+	//if(p.pada > 0)
+	//{
+	//	ParticleLine &pline = particleLines[(u32)(p.pada)];
+
+	//	if(pline.GetLineDepth() > (u32)burnLevel) {  p.color.zero(); p.energy = -1; return; }
+	//	if(pline.GetLineDepth() < (u32)burnLevel) { f32 t = randflt(0, 1); p.pos = pline.GetStartPosition() + (t * pline.GetDirection()); p.pos.y(p.pos.y()-0.2f);
+	//	p.velocity = float3(0.2f, randflt(0,1), randflt(-0.3f,0.3f)); p.velocity.normalize(); p.size.setall(0.4f); p.color = startColor; p.energy = randflt(0, 0.85f); return; }
+
+	//	// pline.GetLineDepth() must equal burnLevel if we get here
+	//	u32 treeDepth = tree->GetDepth();
+	//	const BranchDepth *branchDepth = &tree->GetBranchSegments()[pline.GetLineDepth()];
+	//	const BranchSegment *branchSegment = &branchDepth->segments[pline.GetSegmentIndex()];
+	//	
+	//	f32 TimePerDepth = ignitionTime / treeDepth;
+
+	//	f32 BurnLevelStartTime = burnLevel * TimePerDepth;
+	//	f32 BurnLevelEndTime = BurnLevelStartTime + TimePerDepth;
+
+	//	f32 CurrentTime = fmod(runtime, BurnLevelStartTime);
+
+	//	f32 LerpFactor = (1.0 / TimePerDepth) * CurrentTime;
+
+	//	u32 treeSegmentLength = branchSegment->end - branchSegment->start;
+	//	if(treeSegmentLength == 0) { p.color.zero(); return; }
+	//}
 };
 
 void FireParticleEmitter::UpdateParticleProperties(Particle &p/*, const GameTime &gameTime*/)
@@ -163,7 +143,25 @@ void FireParticleEmitter::AddLine(const ParticleLine &line)
 
 void FireParticleEmitter::UpdateFireParticleEmitter(const GameTime &gameTime)
 {
-	if(!IsActive() && burnState!=Dead) return;
+	if(burnState != Igniting) { return; }
+
+	runtime += gameTime.GetDeltaTime();
+	ignitionRuntime += gameTime.GetDeltaTime();
+
+	//cout << "Ignition Runtime: " << ignitionRuntime << endl;
+
+	f32 timePerDepthToIgnite = ignitionTime / tree->GetDepth();
+	if(ignitionRuntime > timePerDepthToIgnite) { ignitionRuntime = 0; }
+
+
+	f32 k = (1.0f / 10.0f) * runtime;
+	burnLevel = (i32)lerp(0, (f32)tree->GetDepth(), k) - 1;
+
+	tree->SetTreeDeathDepth(max(0, burnLevel));
+
+	if(runtime >= deathTime) { runtime = 0; }
+
+	/*if(!IsActive() && burnState!=Dead) return;
 
 	if(burnState == Dieing)
 	{
@@ -203,7 +201,7 @@ void FireParticleEmitter::UpdateFireParticleEmitter(const GameTime &gameTime)
 		depth = tree->GetDepth();
 		K = (1.0f / ignitionTime) * runtime;
 		burnLevel = (i32)lerp(0, (f32)depth,K);
-	}
+	}*/
 };
 
 void FireParticleEmitter::InitDeath()
