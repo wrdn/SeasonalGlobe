@@ -76,6 +76,8 @@ public:
 	float3 negate() const;
 	float3 absolute() const;
 
+	float3 vec_lerp(const float3 &target, f32 lerpFactor);
+
 	inline const float3& operator+=(const float3 &rhs) { *this = add(rhs); return *this; }
 	inline const float3& operator-=(const float3 &rhs) { *this = sub(rhs); return *this; }
 	inline const float3& operator*=(const float3 &rhs) { *this = mul(rhs); return *this; }

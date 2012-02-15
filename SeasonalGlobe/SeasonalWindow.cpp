@@ -109,7 +109,7 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		Close();
 	}
 	
-	if(!down) return;
+	if(down) return;
 
 	switch(tolower(key))
 	{
@@ -121,6 +121,14 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		scn.SetDtMultiplier(scn.GetMultiplier() - 0.1f);
 		//scn.GetSeasonManager()->SetTimePerSeason( scn.GetSeasonManager()->GetTimePerSeason() - 0.1f );
 		break;
+	case 'p':
+		{
+			scn.SetDtMultiplier(0);
+		} break;
+	case 'r':
+		{
+			scn.SetDtMultiplier(1);
+		} break;
 	case 37:
 		{
 			scn.SetCameraRotation(scn.GetCameraRotation() - 5);

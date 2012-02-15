@@ -204,6 +204,15 @@ float4 float4::absolute() const
 	return float4(fabs(vec[0]), fabs(vec[1]), fabs(vec[2]), fabs(vec[3]));
 };
 
+float4 float4::vec_lerp(const float4 &target, f32 lerpFactor)
+{
+	return float4(
+		lerp(x(), target.x(), lerpFactor),
+		lerp(y(), target.y(), lerpFactor),
+		lerp(z(), target.z(), lerpFactor),
+		lerp(w(), target.w(), lerpFactor));
+};
+
 std::ostream& operator<<(std::ostream &out, const float4 &m)
 {
 	f32 * vec = m.GetVec();

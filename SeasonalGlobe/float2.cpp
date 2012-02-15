@@ -1,4 +1,5 @@
 #include "float2.h"
+#include "util.h"
 #include <iostream>
 
 const float2 float2::ZERO = float2();
@@ -100,6 +101,13 @@ float2 float2::negate() const
 	return float2(
 		-vec[0],
 		-vec[1]);
+};
+
+float2 float2::vec_lerp(const float2 &target, f32 lerpFactor)
+{
+	return float2(
+		lerp(x(), target.x(), lerpFactor),
+		lerp(y(), target.y(), lerpFactor));
 };
 
 std::ostream& operator<<(std::ostream &out, float2 &m)

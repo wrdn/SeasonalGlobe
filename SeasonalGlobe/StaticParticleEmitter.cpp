@@ -100,12 +100,7 @@ void StaticParticleEmitter::UpdateParticleProperties(Particle &p/*, const GameTi
 			p.energy = EPSILON; return;
 		}
 
-		f32 r = lerp(endColor.r(), fadeOutColor.r(), 1-(1.0f/p.pada)*p.energy);
-		f32 g = lerp(endColor.g(), fadeOutColor.g(), 1-(1.0f/p.pada)*p.energy);
-		f32 b = lerp(endColor.b(), fadeOutColor.b(), 1-(1.0f/p.pada)*p.energy);
-		f32 a = lerp(endColor.a(), fadeOutColor.a(), 1-(1.0f/p.pada)*p.energy);
-
-		p.color = Color4f(r,g,b,a);
+		p.color = endColor.vec_lerp(fadeOutColor, 1-(1.0f/p.pada)*p.energy);
 		return;
 	}
 	else if(particlesFadingIn)
@@ -115,12 +110,7 @@ void StaticParticleEmitter::UpdateParticleProperties(Particle &p/*, const GameTi
 			p.energy = EPSILON; return;
 		}
 
-		f32 r = lerp(fadeInColor.r(), startColor.r(), 1-(1.0f/p.pada)*p.energy);
-		f32 g = lerp(fadeInColor.g(), startColor.g(), 1-(1.0f/p.pada)*p.energy);
-		f32 b = lerp(fadeInColor.b(), startColor.b(), 1-(1.0f/p.pada)*p.energy);
-		f32 a = lerp(fadeInColor.a(), startColor.a(), 1-(1.0f/p.pada)*p.energy);
-		p.color = Color4f(r,g,b,a);
-
+		p.color = fadeInColor.vec_lerp(startColor, 1-(1.0f/p.pada)*p.energy);
 		return;
 	}
 
@@ -153,12 +143,7 @@ void StaticParticleEmitter::UpdateParticleProperties(Particle &p/*, const GameTi
 			p.energy = EPSILON; return;
 		}
 
-		f32 r = lerp(startColor.r(), endColor.r(), 1-(1.0f / p.pada)*p.energy);
-		f32 g = lerp(startColor.g(), endColor.g(), 1-(1.0f / p.pada)*p.energy);
-		f32 b = lerp(startColor.b(), endColor.b(), 1-(1.0f / p.pada)*p.energy);
-		f32 a = lerp(startColor.a(), endColor.a(), 1-(1.0f / p.pada)*p.energy);
-
-		p.color = Color4f(r, g, b, a);
+		p.color = startColor.vec_lerp(endColor, 1-(1.0f / p.pada)*p.energy);
 	}
 	else
 	{
