@@ -15,7 +15,7 @@ World::World(void)
 	texMan(), shaderMan(), particleSystem(), seasonMan(), // Managers
 	dtMultiplier(1),
 
-	cam(), sceneRotationAxis(0,1,0), _cameraAngle(30.0f), _cameraPosition(-30.0f), // Camera
+	sceneRotationAxis(0,1,0), _cameraAngle(30.0f), _cameraPosition(-30.0f), // Camera
 	_cameraRotation(-357.0f), AutoRotate(false), snowSlowing(false),
 
 	terrain(0), terrainElevation(0.45f, 0.13f, 3.0f), tree(0), globeSphere(0), houseModel(0), // Geometry

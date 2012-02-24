@@ -94,8 +94,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppConfig.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Camera2.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Cylinder.cpp" />
@@ -127,7 +125,6 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Sphere.cpp" />
-    <ClCompile Include="SphericalCamera.cpp" />
     <ClCompile Include="StaticParticleEmitter.cpp" />
     <ClCompile Include="strutils.cpp" />
     <ClCompile Include="TerrainLoader.cpp" />
@@ -139,8 +136,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppConfig.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Camera2.h" />
     <ClInclude Include="Circle.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Color.h" />
@@ -176,7 +171,6 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="Sphere.h" />
-    <ClInclude Include="SphericalCamera.h" />
     <ClInclude Include="StaticParticleEmitter.h" />
     <ClInclude Include="strutils.h" />
     <ClInclude Include="TerrainLoader.h" />

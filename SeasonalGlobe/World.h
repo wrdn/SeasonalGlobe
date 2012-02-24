@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Camera.h"
 #include "OBJFile.h"
 #include "GameTime.h"
 #include "TextureManager.h"
@@ -13,8 +12,6 @@
 #include "CylindricalParticleEmitter.h"
 #include "StaticParticleEmitter.h"
 #include "FireParticleEmitter.h"
-#include "SphericalCamera.h"
-#include "Camera2.h"
 #include "Light.h"
 #include "Disk.h"
 #include "TerrainLoader.h"
@@ -93,8 +90,6 @@ private:
 	SeasonManager seasonMan;
 	f64 dtMultiplier; // used to speed up/slow down, every frame dt = dt*dtMultiplier
 
-	// Camera
-	Camera2 cam;
 	float3 sceneRotationAxis;
 	f32 _cameraAngle, _cameraPosition, _cameraRotation;
 	bool AutoRotate;

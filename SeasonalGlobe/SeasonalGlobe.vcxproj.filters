@@ -150,16 +150,10 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files\World</Filter>
-    </ClCompile>
     <ClCompile Include="World.cpp">
       <Filter>Source Files\World</Filter>
     </ClCompile>
     <ClCompile Include="SeasonalWindow.cpp">
-      <Filter>Source Files\World</Filter>
-    </ClCompile>
-    <ClCompile Include="SphericalCamera.cpp">
       <Filter>Source Files\World</Filter>
     </ClCompile>
     <ClCompile Include="LSystem.cpp">
@@ -200,9 +194,6 @@
     </ClCompile>
     <ClCompile Include="FireParticleEmitter.cpp">
       <Filter>Source Files\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera2.cpp">
-      <Filter>Source Files\World</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsObject.cpp">
       <Filter>Source Files\Geometry</Filter>
@@ -287,12 +278,6 @@
     <ClInclude Include="World.h">
       <Filter>Header Files\World</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files\World</Filter>
-    </ClInclude>
-    <ClInclude Include="SphericalCamera.h">
-      <Filter>Header Files\World</Filter>
-    </ClInclude>
     <ClInclude Include="LSystem.h">
       <Filter>Header Files\LSystem</Filter>
     </ClInclude>
@@ -337,9 +322,6 @@
     </ClInclude>
     <ClInclude Include="FireParticleEmitter.h">
       <Filter>Header Files\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera2.h">
-      <Filter>Header Files\World</Filter>
     </ClInclude>
     <ClInclude Include="Light.h">
       <Filter>Header Files\Shading</Filter>
