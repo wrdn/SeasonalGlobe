@@ -106,6 +106,7 @@
     <ClCompile Include="FractalTree.cpp" />
     <ClCompile Include="GameTime.cpp" />
     <ClCompile Include="GraphicsObject.cpp" />
+    <ClCompile Include="graphics_utils.cpp" />
     <ClCompile Include="HemiSphericalParticleEmitter.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="LSystem.cpp" />
@@ -120,8 +121,10 @@
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PerfTimer.cpp" />
     <ClCompile Include="PointBasedParticleEmitter.cpp" />
+    <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="SeasonalWindow.cpp" />
     <ClCompile Include="SeasonManager.cpp" />
+    <ClCompile Include="SeasonSetup.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Sphere.cpp" />
@@ -133,6 +136,7 @@
     <ClCompile Include="TimeInfo.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="World.cpp" />
+    <ClCompile Include="World_Setup.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppConfig.h" />
@@ -150,6 +154,7 @@
     <ClInclude Include="FractalTree.h" />
     <ClInclude Include="GameTime.h" />
     <ClInclude Include="GraphicsObject.h" />
+    <ClInclude Include="graphics_utils.h" />
     <ClInclude Include="HemiSphericalParticleEmitter.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Line.h" />
@@ -165,6 +170,7 @@
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PerfTimer.h" />
     <ClInclude Include="PointBasedParticleEmitter.h" />
+    <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SeasonalWindow.h" />
     <ClInclude Include="SeasonManager.h" />

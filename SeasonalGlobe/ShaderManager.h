@@ -27,4 +27,6 @@ public:
 	Shader * const GetShader(u32 index) const;
 
 	void Clean();
+
+	bool LoadShader(u32 &out_id, const c8* vertexShaderFilename, const c8* fragmentShaderFilename);
 };

@@ -9,6 +9,22 @@
 #include "Shader.h"
 #include "FireParticleEmitter.h"
 
+struct TreeShaders // collects all the shaders for the tree (directional and spot lights)
+{
+public:
+	u32 FlatNonTextured_Directional_ShaderID,
+		FlatNonTextured_Spot_ShaderID,
+		Tree_Ambient_ShaderID,
+		SmoothShaded_Directional_ShaderID,
+		SmoothShaded_Spot_ShaderID;
+
+	TreeShaders()
+		: FlatNonTextured_Directional_ShaderID(0), FlatNonTextured_Spot_ShaderID(0),
+		Tree_Ambient_ShaderID(0), SmoothShaded_Directional_ShaderID(0), SmoothShaded_Spot_ShaderID(0)
+	{};
+	~TreeShaders() { };
+};
+
 enum TreeShadingMode
 {
 	NonTexturedNonLitWireframe,

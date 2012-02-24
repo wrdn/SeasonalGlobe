@@ -18,6 +18,7 @@
 #include "PointBasedParticleEmitter.h"
 #include "HemiSphericalParticleEmitter.h"
 #include "SeasonManager.h"
+#include "tutorialcodeheaders.h"
 
 enum LightingMode
 {
@@ -26,62 +27,14 @@ enum LightingMode
 	Spotlights,
 };
 
-struct TreeShaders // collects all the shaders for the tree (directional and spot lights)
-{
-public:
-	u32 FlatNonTextured_Directional_ShaderID,
-		FlatNonTextured_Spot_ShaderID,
-
-		// Can use the same ambient shader for smooth and flat as normal not considered
-		// Use the global ambient shader
-		Tree_Ambient_ShaderID;
-
-	// use a bool in the shader to determine if textures used or not
-	u32 SmoothShaded_Directional_ShaderID,
-		SmoothShaded_Spot_ShaderID;
-
-	TreeShaders() : FlatNonTextured_Directional_ShaderID(0), FlatNonTextured_Spot_ShaderID(0),
-		Tree_Ambient_ShaderID(0), SmoothShaded_Directional_ShaderID(0), SmoothShaded_Spot_ShaderID(0)
-	{};
-	~TreeShaders() { };
-};
-
-struct TerrainShaders
-{
-public:
-	u32 Terrain_Displacement_Ambient_ShaderID;
-	u32 Terrain_Displacement_Directional_ShaderID;
-	u32 Terrain_Displacement_Spotlights_ShaderID;
-
-	TerrainShaders() : Terrain_Displacement_Ambient_ShaderID(0), Terrain_Displacement_Directional_ShaderID(0),
-		Terrain_Displacement_Spotlights_ShaderID(0) {};
-	~TerrainShaders() {};
-};
-
-enum TerrainShiftDirection { NoShift=0, Up=1, Down=-1 };
-
-struct TerrainShift
-{
-public:
-	f32 maxDisplacementScaleFactor,
-		maxGeometryShiftFactor; // translation on Y axis to put terrain back in base
-	f32 timeToElevateFully;
-	f32 elevationRuntime; // updated by dt each frame
-	TerrainShiftDirection shiftDirection;
-
-	TerrainShift() : maxDisplacementScaleFactor(0), maxGeometryShiftFactor(0),
-		timeToElevateFully(0), elevationRuntime(0), shiftDirection(NoShift) {};
-	TerrainShift(f32 _maxDisplacementScaleFactor, f32 _maxGeometryShiftFactor, f32 _timeToEvalateFully)
-		: maxDisplacementScaleFactor(_maxDisplacementScaleFactor), maxGeometryShiftFactor(_maxGeometryShiftFactor),
-		timeToElevateFully(_timeToEvalateFully), elevationRuntime(0), shiftDirection(NoShift) {};
-	~TerrainShift() {};
-};
-
 class World
 {
 private:
 	// Application configuration
 	AppConfig conf;
+
+	Lights _light1, _light2, _light3, _light4, _light5;
+	Materials _material1, _material2, _material3;
 
 	// Managers
 	TextureManager texMan;
@@ -145,7 +98,6 @@ private:
 	// Load functions
 	bool LoadTextures();
 
-	bool LoadShader(u32 &id, const c8* fragmentShaderFilename, const c8* vertexShaderFilename);
 	bool LoadShaders();
 	bool LoadParticles();
 	bool LoadGeometry();
@@ -157,7 +109,6 @@ private:
 	World& operator= (World const& other);
 
 	void reflective_draw(const GameTime &gameTime);
-	void multi_texturing_test(/*const GameTime &gameTime*/);
 
 	void DrawTerrain(const GameTime &gameTime);
 
@@ -206,139 +157,13 @@ public:
 	void Draw(const GameTime &gameTime);
 
 	const LightingMode GetLightingMode() const { return lightMode; }
-	void SetLightingMode(LightingMode m) // need to switch shaders when we change how the scene is lit
-	{
-		lightMode = m;
-
-		if(lightMode == Ambient) // AMBIENT LIGHTS
-		{
-			Shader* ambientShader = shaderMan.GetShader(ambientLightShaderID);
-			houseModel->SetShader(shaderMan.GetShader(normalMap_Ambient_ShaderID));
-			baseModel->SetShader(ambientShader);
-			tree->SetShader(ambientShader);
-			terrain->SetShader(shaderMan.GetShader(terrainShaders.Terrain_Displacement_Ambient_ShaderID));
-		}
-		else if(lightMode == Directional) // DIRECTIONAL LIGHT
-		{
-			Shader* directionalLightShader = shaderMan.GetShader(directionalLightShaderID);
-			houseModel->SetShader(shaderMan.GetShader(normalMap_Directional_ShaderID));
-			baseModel->SetShader(directionalLightShader);
-			tree->SetShader(directionalLightShader);
-			terrain->SetShader(shaderMan.GetShader(terrainShaders.Terrain_Displacement_Directional_ShaderID));
-		}
-		else if(lightMode == Spotlights) // SPOT LIGHTS
-		{ 
-			Shader* spotShader = shaderMan.GetShader(spotlightShaderID);
-			houseModel->SetShader(shaderMan.GetShader(normalMap_Spotlights_ShaderID));
-			baseModel->SetShader(spotShader);
-			tree->SetShader(spotShader);
-			//terrain->SetShader(shaderMan.GetShader(terrainShaders.Terrain_Displacement_Spotlights_ShaderID));
-			 
-			Shader *spotlightTerrainShader = shaderMan.GetShader(terrainShaders.Terrain_Displacement_Spotlights_ShaderID);
-			terrain->SetShader(spotlightTerrainShader);
-		} 
-		 
-		SetTreeShadeMode(tree->GetTreeShadeMode());
-	}
+	void SetLightingMode(LightingMode m);
 
 	// Controls what is selected as the next mode for shading the tree
-	const TreeShadingMode GetNextTreeShadeMode() const
-	{
-		switch(tree->GetTreeShadeMode())
-		{
-		case NonTexturedNonLitWireframe:
-			return FlatNonTextured;
-		case FlatNonTextured:
-			return SmoothNonTextured;
-		case SmoothNonTextured:
-			return SmoothTextured;
-		case SmoothTextured:
-			return NormalMappedTextured;
-		case NormalMappedTextured:
-			return NonTexturedNonLitWireframe;
-		}
-
-		return SmoothTextured;
-	};
+	const TreeShadingMode GetNextTreeShadeMode() const;
 
 	// Used to move between all the tree shade modes
-	void SetTreeShadeMode(TreeShadingMode m)
-	{
-		// Non Textured non lit wireframe
-		if(m == NonTexturedNonLitWireframe)
-		{
-			tree->SetDrawMode(GL_LINE);
-			tree->SetTreeShadeMode(0, 0, NonTexturedNonLitWireframe);
-		}
-
-		// Flat non textured
-		else if(m == FlatNonTextured)
-		{
-			tree->SetDrawMode(GL_FILL);
-			if(lightMode == Ambient)
-			{
-				Shader *ambShader = shaderMan.GetShader(treeShaders.Tree_Ambient_ShaderID);
-				ambShader->Activate(); ambShader->SetUniform("useTextures", false); ambShader->Deactivate();
-				tree->SetTreeShadeMode(ambShader,0, FlatNonTextured);
-			}
-			else if(lightMode == Directional)
-				tree->SetTreeShadeMode(shaderMan.GetShader(treeShaders.FlatNonTextured_Directional_ShaderID),0, FlatNonTextured);
-			else if(lightMode == Spotlights)
-				tree->SetTreeShadeMode(shaderMan.GetShader(treeShaders.FlatNonTextured_Spot_ShaderID),0, FlatNonTextured);
-		}
-
-		// Smooth non textured
-		else if(m == SmoothNonTextured)
-		{
-			tree->SetDrawMode(GL_FILL);
-			if(lightMode == Ambient)
-			{
-				Shader *ambShader = shaderMan.GetShader(treeShaders.Tree_Ambient_ShaderID);
-				ambShader->Activate(); ambShader->SetUniform("useTextures", false); ambShader->Deactivate();
-				tree->SetTreeShadeMode(ambShader,0, SmoothNonTextured);
-			}
-			else if(lightMode == Directional)
-			{
-				Shader *directionalShader = shaderMan.GetShader(treeShaders.SmoothShaded_Directional_ShaderID);
-				directionalShader->Activate(); directionalShader->SetUniform("useTextures", false); directionalShader->Deactivate();
-				tree->SetTreeShadeMode(directionalShader,0, SmoothNonTextured);
-			}
-			else if(lightMode == Spotlights)
-			{
-				Shader *spotShader = shaderMan.GetShader(treeShaders.SmoothShaded_Spot_ShaderID);
-				spotShader->Activate(); spotShader->SetUniform("useTextures", false); spotShader->Deactivate();
-				tree->SetTreeShadeMode(spotShader,0, SmoothNonTextured);
-			}
-		}
-
-		// Smooth textured
-		else if(m == SmoothTextured)
-		{
-			tree->SetDrawMode(GL_FILL);
-			if(lightMode == Ambient)
-			{
-				Shader *ambShader = shaderMan.GetShader(treeShaders.Tree_Ambient_ShaderID);
-				ambShader->Activate(); ambShader->SetUniform("useTextures", true); ambShader->Deactivate();
-				tree->SetTreeShadeMode(ambShader,barkTexture, SmoothTextured);
-			}
-			else if(lightMode == Directional)
-			{
-				Shader *directionalShader = shaderMan.GetShader(treeShaders.SmoothShaded_Directional_ShaderID);
-				directionalShader->Activate(); directionalShader->SetUniform("useTextures", true); directionalShader->Deactivate();
-				tree->SetTreeShadeMode(directionalShader,barkTexture, SmoothTextured);
-			}
-			else if(lightMode == Spotlights)
-			{
-				Shader *spotShader = shaderMan.GetShader(treeShaders.SmoothShaded_Spot_ShaderID);
-				spotShader->Activate(); spotShader->SetUniform("useTextures", true); spotShader->Deactivate();
-				tree->SetTreeShadeMode(spotShader,barkTexture, SmoothTextured);
-			}
-		}
-		else if(m == NormalMappedTextured)
-		{
-			tree->SetTreeShadeMode(shaderMan.GetShader(normalMap_Directional_ShaderID), barkTexture, NormalMappedTextured);
-		}
-	};
+	void SetTreeShadeMode(TreeShadingMode m);
 
 	void ActivateSmokeParticleEffect() { particleSystem.GetEmitter<PointBasedParticleEmitter>(smokeEmitterID)->SetActive(true); }
 	void ActivateSnow() { particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID)->SetActive(true); }
@@ -374,19 +199,7 @@ public:
 
 	void ResetWorld();
 	
-	void UpdateSceneTimings()
-	{
-		tree->SetBuildTime(seasonMan.GetTimePerSeason() * 0.85f);
-		particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToFadeIn(seasonMan.GetTimePerSeason() * 0.25f);
-		particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.15f);
-		particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToFall(seasonMan.GetTimePerSeason() * 0.1f);
-		particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID)->SetTimeToChangeColor(seasonMan.GetTimePerSeason() * 0.2f);
-		fireParticleEmitter->SetIgnitionTime(seasonMan.GetTimePerSeason() * 0.45f);
-		fireParticleEmitter->SetDeathTime(seasonMan.GetTimePerSeason() * 0.75f);
-		particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID)->SetTimeToFall(seasonMan.GetTimePerSeason() * 0.1f);
-		timeToMergeTextures = seasonMan.GetTimePerSeason() * 0.25f;
-		terrainElevation.timeToElevateFully =  seasonMan.GetTimePerSeason() * 0.25f;
-	};
+	void UpdateSceneTimings();
 
 	void SetDtMultiplier(f64 multiplier) { dtMultiplier = max(0,multiplier); };
 	const f64 GetMultiplier() const { return dtMultiplier; };

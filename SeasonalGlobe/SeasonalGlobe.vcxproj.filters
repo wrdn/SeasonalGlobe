@@ -204,6 +204,18 @@
     <ClCompile Include="SeasonManager.cpp">
       <Filter>Source Files\World</Filter>
     </ClCompile>
+    <ClCompile Include="RenderTarget.cpp">
+      <Filter>Source Files\Shading</Filter>
+    </ClCompile>
+    <ClCompile Include="World_Setup.cpp">
+      <Filter>Source Files\World</Filter>
+    </ClCompile>
+    <ClCompile Include="SeasonSetup.cpp">
+      <Filter>Source Files\World</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics_utils.cpp">
+      <Filter>Source Files\World</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="float2.h">
@@ -339,6 +351,12 @@
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="SeasonManager.h">
+      <Filter>Header Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTarget.h">
+      <Filter>Header Files\Shading</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics_utils.h">
       <Filter>Header Files\World</Filter>
     </ClInclude>
   </ItemGroup>

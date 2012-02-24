@@ -49,3 +49,23 @@ void ShaderManager::Clean()
 	handles.clear();
 	shaders.clear();
 };
+
+bool ShaderManager::LoadShader(u32 &out_id, const c8* vertexShaderFilename, const c8* fragmentShaderFilename)
+{
+	u32 id = AddShader();
+	Shader *sh = GetShader(id);
+
+	if(!sh->LoadShader(fragmentShaderFilename, vertexShaderFilename))
+	{
+		sh->PrintShaderLog(GL_VERTEX_SHADER, std::cout);
+		sh->PrintShaderLog(GL_FRAGMENT_SHADER, std::cout);
+		sh->PrintProgramLog(std::cout);
+
+		RemoveShader(id);
+
+		return false;
+	}
+
+	out_id = id;
+	return true;
+};
