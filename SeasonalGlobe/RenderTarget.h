@@ -1,10 +1,9 @@
 #pragma once
 
-#include <GL/glew.h>
-#include <GL/freeglut.h>
-#include <GL/GL.h>
 #include <vector>
 #include "ctypes.h"
+#include "GameResource.h"
+#include <GXBase.h>
 using namespace std;
 
 struct FBOTexture
@@ -18,7 +17,7 @@ public:
 	GLenum attachPoint;
 };
 
-class RenderTarget
+class RenderTarget : public Resource, public glex
 {
 private:
 	GLuint fbo_id; // frame buffer object id
@@ -26,11 +25,32 @@ private:
 
 	vector<FBOTexture> textures;
 public:
+	
+	void Unload()
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glBindTexture(GL_TEXTURE_2D,0);
+
+		for(u32 i=0;i<textures.size();++i)
+		{
+			glDeleteTextures(1, &textures[i].texID);
+		}
+		textures.clear();
+
+		if(fbo_id)
+		{
+			glDeleteFramebuffers(1, &fbo_id);
+			fbo_id = 0;
+		}
+	};
+
 	RenderTarget()
 	{
 		width = 800;
 		height = 600;
 		glGenFramebuffers(1, &fbo_id);
+
+		glex::Load();
 	};
 
 	RenderTarget(unsigned int pwidth, unsigned int pheight)
@@ -38,10 +58,24 @@ public:
 		width = pwidth;
 		height = pheight;
 		glGenFramebuffers(1, &fbo_id);
+
+		glex::Load();
+	};
+	~RenderTarget()
+	{
+		Unload();
 	};
 
 	unsigned int GetWidth() const { return width; }
 	unsigned int GetHeight() const { return height; }
+
+	void SetDrawReadBufferState(GLenum gl_draw_buffer, GLenum gl_read_buffer)
+	{
+		Bind();
+		glDrawBuffer(gl_draw_buffer);
+		glReadBuffer(gl_read_buffer);
+		Unbind();
+	}
 
 	void SetWidth(unsigned int w) { width = w; RecreateTextures(); }
 	void SetHeight(unsigned int h) { height = h; RecreateTextures(); }
@@ -104,6 +138,11 @@ public:
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, magFilter);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapS);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT);
+		
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+		glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+
 		glTexImage2D(GL_TEXTURE_2D, 0, tex.internal_format, tex.width, tex.height, 0, tex.format, tex.type, 0);
 
 		if(genmipmaps)
@@ -133,8 +172,10 @@ public:
 		glBindFramebuffer(target, fbo_id);
 	}
 
-	static void Unbind()
+	void Unbind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 };
+
+typedef std::tr1::shared_ptr<RenderTarget> RenderTargetHandle;

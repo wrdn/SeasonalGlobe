@@ -152,6 +152,7 @@
     <ClInclude Include="float4.h" />
     <ClInclude Include="float4_sse.h" />
     <ClInclude Include="FractalTree.h" />
+    <ClInclude Include="GameResource.h" />
     <ClInclude Include="GameTime.h" />
     <ClInclude Include="GraphicsObject.h" />
     <ClInclude Include="graphics_utils.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MyApp.h" />
+    <ClInclude Include="Namable.h" />
     <ClInclude Include="OBJFile.h" />
     <ClInclude Include="ogl.h" />
     <ClInclude Include="Particle.h" />
@@ -174,6 +176,7 @@
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SeasonalWindow.h" />
     <ClInclude Include="SeasonManager.h" />
     <ClInclude Include="Shader.h" />

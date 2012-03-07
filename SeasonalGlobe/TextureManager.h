@@ -6,7 +6,7 @@
 class TextureManager
 {
 private:
-	std::map<u32, Texture> textures;
+	std::map<u32, Texture*> textures;
 public:
 	TextureManager(void);
 	~TextureManager(void);

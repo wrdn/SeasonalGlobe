@@ -16,28 +16,12 @@ void GraphicsObject::Draw()
 {
 	if(objectShader) { objectShader->Activate(); }
 
-	/*if(textureA)
-	{
-		ogl.glActiveTexture(textureA->GetTextureSlot());
-		textureA->Activate();
-	}
-	if(textureB)
-	{
-		ogl.glActiveTexture(textureB->GetTextureSlot());
-		textureB->Activate();
-	}
-	if(textureC)
-	{
-		ogl.glActiveTexture(textureC->GetTextureSlot());
-		textureC->Activate();
-	}*/
 	for(std::vector<Texture*>::iterator it = textures.begin(); it != textures.end(); ++it)
 	{
 		ogl.glActiveTexture((*it)->GetTextureSlot());
 		(*it)->Activate();
 	}
 	
-
 	mat.Activate(); // activate object material properties
 
 	glPushMatrix();
@@ -54,16 +38,14 @@ void GraphicsObject::Draw()
 
 	glPopMatrix();
 
-	ogl.glActiveTexture(GL_TEXTURE0);
-	if(objectShader) { objectShader->Deactivate(); }
-	
-	/*if(textureA){ textureA->Deactivate(); }
-	if(textureB){ textureB->Deactivate(); }
-	if(textureC){ textureC->Deactivate(); }*/
 	for(std::vector<Texture*>::iterator it = textures.begin(); it != textures.end(); ++it)
 	{
 		(*it)->Deactivate();
 	}
+	if(objectShader) { objectShader->Deactivate(); }
+
+	ogl.glActiveTexture(GL_TEXTURE0);
+	ogl.glBindTextureEXT(GL_TEXTURE_2D, 0);
 };
 
 void GraphicsObject::DrawSimple()

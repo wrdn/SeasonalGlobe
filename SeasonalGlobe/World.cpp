@@ -170,7 +170,7 @@ void World::Update(const GameTime &_gameTime)
 };
 
 void World::DrawTerrain(const GameTime &gameTime)
-{ 
+{
 	// Terrain (floor)
 	terrainElevation.elevationRuntime += gameTime.GetDeltaTime() * terrainElevation.shiftDirection;
 	if(terrainElevation.elevationRuntime <= 0 && terrainElevation.shiftDirection == Down) { terrainElevation.elevationRuntime=0; terrainElevation.shiftDirection = NoShift; }
@@ -218,6 +218,10 @@ void World::Draw(const GameTime &_gameTime)
 
 	if(lightMode == Spotlights)
 	{
+		glEnable(GL_TEXTURE_2D);
+		glColor3f(1,1,1);
+		glDisable(GL_LIGHTING);
+		
 		spotlights[0].Activate();
 		spotCone->SetXRotation(0);
 		spotCone->SetPosition(spotlights[0].GetPosition().ToFloat3());

@@ -9,7 +9,7 @@ Model* CreateBillboardModel();
 
 void cube();
 
-void texcube(const Texture &t);
+void texcube(Texture &t);
 
 void floor();
 

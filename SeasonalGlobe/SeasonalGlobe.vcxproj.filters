@@ -82,6 +82,12 @@
     <Filter Include="Resource Files\Data\Shaders\TreeShaders\SmoothShading">
       <UniqueIdentifier>{b4a706f1-8fb2-480b-98a0-1c55ebf9617f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Resource Management">
+      <UniqueIdentifier>{f6f02b56-df37-40dd-a8b1-f9ddce0f806a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Resource Management">
+      <UniqueIdentifier>{2c8fd650-9f08-4491-b1d6-52b25bc53a3e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="float2.cpp">
@@ -109,9 +115,6 @@
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="Color.cpp">
-      <Filter>Source Files\Shading</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
       <Filter>Source Files\Shading</Filter>
     </ClCompile>
     <ClCompile Include="TextureManager.cpp">
@@ -216,6 +219,9 @@
     <ClCompile Include="Quaternion.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\Resource Management</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="float2.h">
@@ -249,9 +255,6 @@
       <Filter>Header Files\Shading</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
-      <Filter>Header Files\Shading</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
       <Filter>Header Files\Shading</Filter>
     </ClInclude>
     <ClInclude Include="TextureManager.h">
@@ -293,9 +296,6 @@
     <ClInclude Include="LSystem.h">
       <Filter>Header Files\LSystem</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FractalTree.h">
       <Filter>Header Files\LSystem</Filter>
     </ClInclude>
@@ -304,9 +304,6 @@
     </ClInclude>
     <ClInclude Include="ShaderManager.h">
       <Filter>Header Files\Shading</Filter>
-    </ClInclude>
-    <ClInclude Include="tutorialcodeheaders.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CylindricalParticleEmitter.h">
       <Filter>Header Files\Particles</Filter>
@@ -364,6 +361,24 @@
     </ClInclude>
     <ClInclude Include="ogl.h">
       <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Namable.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Header Files\Resource Management</Filter>
+    </ClInclude>
+    <ClInclude Include="GameResource.h">
+      <Filter>Header Files\Resource Management</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorialcodeheaders.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\Resource Management</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

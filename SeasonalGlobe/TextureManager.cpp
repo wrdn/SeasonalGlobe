@@ -19,7 +19,7 @@ void TextureManager::Cleanup()
 {
 	// Generally the texture manager will be a singleton, and will exist throughout the entire application
 	// The texture manager will ensure that any textures are cleaned up (if not done elsewhere)
-	for (std::map<u32,Texture>::iterator it=textures.begin() ; it != textures.end(); it++ )
+	for (std::map<u32,Texture*>::iterator it=textures.begin() ; it != textures.end(); it++ )
 	{
 		glDeleteTextures(1, &it->first);
 	}
@@ -28,7 +28,18 @@ void TextureManager::Cleanup()
 
 Texture* TextureManager::LoadTextureFromFile(const c8* const _filename)
 {
-	Image tex;
+	Texture *t = new Texture();
+	if(t->Load(_filename))
+	{
+		textures[t->GetGLTextureID()] = t;
+		return textures[t->GetGLTextureID()];
+	}
+	else
+	{
+		delete t;
+		return 0;
+	}
+	/*Image tex;
 	bool loaded = tex.Load(_filename);
 	if(loaded)
 	{
@@ -39,8 +50,8 @@ Texture* TextureManager::LoadTextureFromFile(const c8* const _filename)
 			// Load texture, build mipmaps and unload
 			Texture textureObject(id);
 			
-			textureObject.SetWidth(tex.Width());
-			textureObject.SetHeight(tex.Height());
+			//textureObject.SetWidth(tex.Width());
+			//textureObject.SetHeight(tex.Height());
 
 			textureObject.Activate();
 
@@ -54,13 +65,15 @@ Texture* TextureManager::LoadTextureFromFile(const c8* const _filename)
 			return &textures[id];
 		}
 	}
-	return NULL;
+	return NULL;*/
 };
 
 Texture* TextureManager::LoadTextureFromMemory(const u32* const _mem, const u32 _width,
 	const u32 _height, const u32 format)
 {
-	if(_mem)
+	if(_mem||_width||_height||format){};
+	return 0;
+/*	if(_mem)
 	{
 		u32 id;
 		glGenTextures(1, &id);
@@ -78,14 +91,14 @@ Texture* TextureManager::LoadTextureFromMemory(const u32* const _mem, const u32 
 			return &textures[id];
 		}
 	}
-	return NULL;
+	return NULL;*/
 };
 
 const Texture* TextureManager::GetTexture(const u32 _id) const
 {
 	if(textures.count(_id) > 0)
 	{
-		return &textures.at(_id);
+		return textures.at(_id);
 	}
 	return NULL;
 };

@@ -109,7 +109,7 @@ void cube()
 	glEnd();
 };
 
-void texcube(const Texture &t)
+void texcube(Texture &t)
 {
 	glEnable(GL_TEXTURE_2D);
 	t.Activate();
