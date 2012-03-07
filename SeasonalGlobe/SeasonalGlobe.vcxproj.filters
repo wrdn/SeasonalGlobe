@@ -168,9 +168,6 @@
     <ClCompile Include="ShaderManager.cpp">
       <Filter>Source Files\Shading</Filter>
     </ClCompile>
-    <ClCompile Include="Disk.cpp">
-      <Filter>Source Files\Geometry</Filter>
-    </ClCompile>
     <ClCompile Include="CylindricalParticleEmitter.cpp">
       <Filter>Source Files\Particles</Filter>
     </ClCompile>
@@ -215,6 +212,9 @@
     </ClCompile>
     <ClCompile Include="graphics_utils.cpp">
       <Filter>Source Files\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Quaternion.cpp">
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -308,9 +308,6 @@
     <ClInclude Include="tutorialcodeheaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Disk.h">
-      <Filter>Header Files\Geometry</Filter>
-    </ClInclude>
     <ClInclude Include="CylindricalParticleEmitter.h">
       <Filter>Header Files\Particles</Filter>
     </ClInclude>
@@ -358,6 +355,15 @@
     </ClInclude>
     <ClInclude Include="graphics_utils.h">
       <Filter>Header Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="float4_sse.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Quaternion.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="ogl.h">
+      <Filter>Header Files\Misc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

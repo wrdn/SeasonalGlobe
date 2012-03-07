@@ -6,16 +6,6 @@
 #include <windows.h>
 #endif
 
-/*
-#define SEC_TO_MICROSEC(x) 1000000*x
-#define SEC_TO_MILLISEC(x) 1000*x
-#define SEC_TO_NANOSEC(x) 1000000000*x
-
-#define NANOSEC_TO_SEC(x) x/1000000000.0
-#define MILLISEC_TO_SEC(x) x/1000.0
-#define MICROSEC_TO_SEC(x) x/1000000.0
-*/
-
 class PerfTimer
 {
 private:

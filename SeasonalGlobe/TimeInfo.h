@@ -10,12 +10,6 @@ enum TIME_FORMAT
 	UTC,
 };
 
-/*
-#define SECONDS_IN_X_DAYS(X) ((60*60)*24)*X
-#define SECONDS_IN_X_HOURS(X) (60*60)*X
-#define SECONDS_IN_X_MINUTES(X) 60*X
-*/
-
 // Used so you can specify a custom time function.
 // Common functions are localtime(time_t*) and gmtime(time_t*)
 

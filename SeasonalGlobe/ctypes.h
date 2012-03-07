@@ -5,7 +5,6 @@
 
 typedef float f32; // float
 typedef double f64; // 64bit float
-//typedef __m128 float4; // SIMD type
 
 typedef char c8;
 typedef unsigned char uc8;

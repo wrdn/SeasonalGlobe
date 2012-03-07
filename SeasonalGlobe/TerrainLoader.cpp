@@ -114,7 +114,7 @@ bool TerrainLoader::Load(char *filename)
 	for(u32 i=0;i<vertexArraySize;++i) // normalize all the normals
 		verts[i].normal.normalize();
 
-	#pragma region Rectangular Terrain (Triangle Generation
+	#pragma region Rectangular Terrain Triangle Generation
 	// Calculate triangles (rectangular)
 	/*for(int j=0;j<height-1;++j)
 	{

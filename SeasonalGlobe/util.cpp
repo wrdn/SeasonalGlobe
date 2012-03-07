@@ -109,3 +109,19 @@ f32 randflt(f32 min, f32 max)
     f32 range = max - min;  
     return (random*range) + min;
 };
+
+f32 reciprocal_sqrt(f32 f)
+{
+	/*
+	// SSE Version (Fast):
+	f32 result; // reciprocal square root using SSE (accurate to ~11/12 mantissa bits)
+	_mm_store_ss(&result, _mm_rsqrt_ss( _mm_load_ss(&f) ));
+	return result;
+
+	// More accurate scalar version:
+	return 1.0f / sqrt(f);
+	*/
+	f32 result; // reciprocal square root using SSE (accurate to ~11/12 mantissa bits)
+	_mm_store_ss(&result, _mm_rsqrt_ss( _mm_load_ss(&f) ));
+	return result;
+};

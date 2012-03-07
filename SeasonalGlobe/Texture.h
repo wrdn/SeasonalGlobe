@@ -15,7 +15,7 @@ enum OpenGLTextureSlot
 	SLOT_GL_TEXTURE_7 = GL_TEXTURE7,
 };
 
-// Used to manage textures from OpenGL.
+// Used to manage textures from OpenGL
 class Texture
 {
 private:
@@ -34,7 +34,6 @@ public:
 	void Activate() const;
 	void Deactivate() const;
 
-	// http://www.opengl.org/sdk/docs/man/xhtml/glTexParameter.xml
 	void SetMinFilter(const u32 _minFilter);
 	void SetMagFilter(const u32 _magFilter);
 	void SetWrapS(const u32 wrapMode);

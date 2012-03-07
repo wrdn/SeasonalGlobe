@@ -1,4 +1,4 @@
-#ifndef __UTIL_H__
+#ifndef __UTIL_H__ // common utility functions (with no need to be in a class)
 #define __UTIL_H__
 
 #include "ctypes.h"
@@ -10,6 +10,7 @@
 
 const f32 EPSILON = 0.000001f; // rough epsilon
 const f32 PI = 3.1415926f;
+const f32 PIOVER180 = PI/180.0f;
 
 void SAFE_DELETE(const void *p);
 void SAFE_DELETE_ARRAY(const void *p);
@@ -39,5 +40,7 @@ f32 lerp(f32 min, f32 max, f32 t);
 const bool file_exists(const c8 *filename);
 
 f32 randflt(f32 min, f32 max);
+
+f32 reciprocal_sqrt(f32 f);
 
 #endif
