@@ -9,11 +9,6 @@
 #include <fstream>
 using namespace std;
 
-const GLvoid* BUFFER_OFFSET(const u32 i)
-{
-	return ((c8 *)NULL + (i));
-};
-
 Model::Model()
 	: vertexArray(0), vertexArraySize(0), indicesArray(0), indicesArraySize(0),
 	triangleDrawCount(0), drawMode(GL_FILL), triDrawMethod(DM_TRIANGLES)
@@ -84,9 +79,9 @@ void Model::Draw()
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	glVertexPointer(3, GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX::POS_BUFFER_OFFSET));
-	glNormalPointer(GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX::NORMAL_BUFFER_OFFSET));
-	glTexCoordPointer(2, GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX::UV_BUFFER_OFFSET));
+	glVertexPointer(3, GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX_POSITION_BUFFER_OFFSET));
+	glNormalPointer(GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX_NORMAL_BUFFER_OFFSET));
+	glTexCoordPointer(2, GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX_UV_BUFFER_OFFSET));
 
 	glDrawElements(triDrawMethod, indicesArraySize, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
 

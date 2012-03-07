@@ -112,6 +112,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mat44.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MyApp.cpp" />
     <ClCompile Include="OBJFile.cpp" />
@@ -122,6 +123,7 @@
     <ClCompile Include="PointBasedParticleEmitter.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SeasonalWindow.cpp" />
     <ClCompile Include="SeasonManager.cpp" />
     <ClCompile Include="SeasonSetup.cpp" />
@@ -163,6 +165,7 @@
     <ClInclude Include="LSystem.h" />
     <ClInclude Include="Mat44.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MyApp.h" />
     <ClInclude Include="Namable.h" />

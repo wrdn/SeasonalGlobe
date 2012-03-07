@@ -13,7 +13,6 @@
 #include "StaticParticleEmitter.h"
 #include "FireParticleEmitter.h"
 #include "Light.h"
-#include "Disk.h"
 #include "TerrainLoader.h"
 #include "PointBasedParticleEmitter.h"
 #include "HemiSphericalParticleEmitter.h"

@@ -7,7 +7,7 @@
 #include "float3.h"
 #include <GXBase.h>
 
-const GLvoid* BUFFER_OFFSET(const u32 i);
+#include "Mesh.h"
 
 //! Constructor will ensure both vboids are set to 0 originally
 struct ModelVBO // 8 bytes
@@ -18,33 +18,6 @@ public:
 
 	ModelVBO();
 	~ModelVBO();
-};
-
-// A vertex should be duplicated as many times as normal (etc) changes
-// 32 bytes
-struct VERTEX
-{
-public:
-	float3 pos, normal; // 12,12
-	float2 uvs; // 8
-	
-	// 12,12, used for normal mapping. Binormal = Tangent X Normal
-	float3 tangent, binormal;
-
-	f32 pada, padb; // 8 bytes padding to 64 bytes. use padding for whatever you want
-
-	// NOTE: Remember to change these if you change the size/order of this structure
-	// Values are in bytes and are used during VBO creation
-	static const u32 POS_BUFFER_OFFSET = 0;
-	static const u32 NORMAL_BUFFER_OFFSET = 12;
-	static const u32 UV_BUFFER_OFFSET = 24;
-
-	VERTEX() { };
-	VERTEX(const float3 &_pos, const float3 &_normal, const float2 &_uv)
-		: pos(_pos), normal(_normal), uvs(_uv)
-	{
-	};
-
 };
 
 enum TriangleDrawMethod

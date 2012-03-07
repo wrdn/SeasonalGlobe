@@ -33,11 +33,11 @@ bool TerrainLoader::Load(char *filename)
 		for(u32 i = 0; i <width; i++)
 		{
 			VERTEX v;
-			v.uvs.set ( (f32)i/(width-1), (f32)j/(height-1) );
+			v.uv.set ( (f32)i/(width-1), (f32)j/(height-1) );
 
-			v.pos.set(
-				(-2.0f + 4.0f* v.uvs.x()),
-				(-2.0f + 4.0f*v.uvs.y()),
+			v.position.set(
+				(-2.0f + 4.0f* v.uv.x()),
+				(-2.0f + 4.0f*v.uv.y()),
 				-((float)rowpointer[i*bitsperpixel]/255.0f));
 
 			verts[vertex_index] = v;
@@ -49,66 +49,66 @@ bool TerrainLoader::Load(char *filename)
 	// First row
 	vertex_index=0;
 	verts[0].normal.set ( // first pixel (row 0)
-		-verts[vertex_index].pos.z(),
-		-verts[vertex_index+width].pos.z(), 8.0f/(width-1) );
+		-verts[vertex_index].position.z(),
+		-verts[vertex_index+width].position.z(), 8.0f/(width-1) );
 	++vertex_index;
 	for(u32 i=1;i<width-1;++i)
 	{
 		verts[vertex_index].normal.set ( // mid pixels (row 0)
-			verts[vertex_index-1].pos.z() - verts[vertex_index+1].pos.z(),
-			-verts[vertex_index+width].pos.z(),
+			verts[vertex_index-1].position.z() - verts[vertex_index+1].position.z(),
+			-verts[vertex_index+width].position.z(),
 			8.0f/(width-1) );
 		++vertex_index;
 	}
-	verts[vertex_index].pos.set( // last pixel (row 0)
-		verts[vertex_index-1].pos.z(),
-		-verts[vertex_index+width].pos.z(), 8.0f / (width-1) );
+	verts[vertex_index].position.set( // last pixel (row 0)
+		verts[vertex_index-1].position.z(),
+		-verts[vertex_index+width].position.z(), 8.0f / (width-1) );
 	++vertex_index;
 
 	// "Middle" rows
 	for(u32 j=1;j<height-1;++j)
 	{
 		verts[vertex_index].normal.set( // First pixel on row j
-			-verts[vertex_index].pos.z(),
-			-verts[vertex_index+width].pos.z(),
+			-verts[vertex_index].position.z(),
+			-verts[vertex_index+width].position.z(),
 			8.0f / (width-1));
 		++vertex_index;
 
 		for(u32 i=1;i<width-1;++i) // "Middle" pixels on row j
 		{
 			verts[vertex_index].normal.set (
-				verts[vertex_index-1].pos.z() - verts[vertex_index+1].pos.z(),
-				verts[vertex_index-width].pos.z() - verts[vertex_index+width].pos.z(),
+				verts[vertex_index-1].position.z() - verts[vertex_index+1].position.z(),
+				verts[vertex_index-width].position.z() - verts[vertex_index+width].position.z(),
 				8.0f / (width-1));
 			++vertex_index;
 		}
 
 		verts[vertex_index].normal.set( // Last pixel on row j
-			verts[vertex_index-1].pos.z(),
-			-verts[vertex_index+width].pos.z(),
+			verts[vertex_index-1].position.z(),
+			-verts[vertex_index+width].position.z(),
 			8.0f / (width-1) );
 		++vertex_index;
 	}
 
 	// Last row
 	verts[vertex_index].normal.set( // First pixel on last row
-		-verts[vertex_index].pos.z(),
-		verts[vertex_index-width].pos.z(),
+		-verts[vertex_index].position.z(),
+		verts[vertex_index-width].position.z(),
 		8.0f / (width - 1) );
 	++vertex_index;
 
 	for(u32 i=1;i<width-1;++i) // "Middle" pixels on last row
 	{
 		verts[vertex_index].normal.set(
-			verts[vertex_index-1].pos.z() - verts[vertex_index+1].pos.z(),
-			verts[vertex_index-width].pos.z(),
+			verts[vertex_index-1].position.z() - verts[vertex_index+1].position.z(),
+			verts[vertex_index-width].position.z(),
 			8.0f / (width-1) );
 		++vertex_index;
 	}
 
 	verts[vertex_index].normal.set( // Last pixel on last row
-		verts[vertex_index-1].pos.z(),
-		-verts[vertex_index-width].pos.z(),
+		verts[vertex_index-1].position.z(),
+		-verts[vertex_index-width].position.z(),
 		8.0f / (width-1) );
 
 	for(u32 i=0;i<vertexArraySize;++i) // normalize all the normals

@@ -205,7 +205,7 @@ std::vector<GraphicsObject*> OBJFile::ParseFile(const std::vector<c8*> &objFile)
 					indices[0] -= 1; indices[1] -= 1;
 
 					// Copy data
-					vertexArray[vertexArrayInsertionPos].pos.set(&vertex_data[indices[0]*3]);
+					vertexArray[vertexArrayInsertionPos].position.set(&vertex_data[indices[0]*3]);
 					vertexArray[vertexArrayInsertionPos].normal.set(&vertex_data[indices[1]*3]);
 
 					hashMap[sh] = vertexArrayInsertionPos;
@@ -257,8 +257,8 @@ std::vector<GraphicsObject*> OBJFile::ParseFile(const std::vector<c8*> &objFile)
 					indices[0] -= 1; indices[1] -= 1; indices[2] -= 1;
 
 					// Copy data
-					vertexArray[vertexArrayInsertionPos].pos.set(&vertex_data[indices[0]*3]);
-					vertexArray[vertexArrayInsertionPos].uvs.set(&uv_data[indices[1]*2]);
+					vertexArray[vertexArrayInsertionPos].position.set(&vertex_data[indices[0]*3]);
+					vertexArray[vertexArrayInsertionPos].uv.set(&uv_data[indices[1]*2]);
 					vertexArray[vertexArrayInsertionPos].normal.set(&normal_data[indices[2]*3]);
 
 					hashMap[sh] = vertexArrayInsertionPos;

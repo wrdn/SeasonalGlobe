@@ -23,17 +23,17 @@ bool Sphere::Create(f32 _radius, u32 _slices, u32 _stacks)
 
 	// Top
 	VERTEX top;
-	top.pos = float3(0, radius, 0);
+	top.position = float3(0, radius, 0);
 	top.normal = float3(0, 1, 0);
-	top.uvs = float2(0, 1);
+	top.uv = float2(0, 1);
 	verts[vertexCount] = top;
 	++vertexCount;
 
 	// Bottom
 	VERTEX bottom;
-	bottom.pos = float3(0, -radius, 0);
+	bottom.position = float3(0, -radius, 0);
 	bottom.normal = float3(0, -1, 0);
-	bottom.uvs = float2::ZERO;
+	bottom.uv = float2::ZERO;
 	verts[vertexCount] = bottom;
 	++vertexCount;
 
@@ -58,7 +58,7 @@ bool Sphere::Create(f32 _radius, u32 _slices, u32 _stacks)
 			++vertexCount;
 		}
 		VERTEX lv = verts[temp_vcount];
-		lv.uvs.y(temp_tex);
+		lv.uv.y(temp_tex);
 		verts[vertexCount] = lv;
 		++vertexCount;
 	}
