@@ -4,6 +4,7 @@
 #include "float4.h"
 
 typedef float4 Color4f;
+typedef float4 color;
 
 // Static class to hold some colors (in Color4f r,g,b,a form)
 class Color

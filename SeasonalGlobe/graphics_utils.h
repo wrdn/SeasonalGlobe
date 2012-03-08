@@ -2,10 +2,11 @@
 
 #include "GraphicsObject.h"
 #include "World.h"
+#include "ResourceManager.h"
 
-Model* CreateImposterModel();
+MeshHandle CreateImposterModel();
 
-Model* CreateBillboardModel();
+MeshHandle CreateBillboardModel();
 
 void cube();
 

@@ -30,7 +30,9 @@ private:
 
 	// constructor and destructor private so only 1 instance can exist (resMan singleton)
 	ResourceManager() {};
-	~ResourceManager() {};
+	~ResourceManager()
+	{
+	};
 
 	void AddResource(i32 id, const char *name, Resource *r);
 
@@ -116,9 +118,11 @@ public:
 // CALL GetResource() OR PASS AROUND THE SHARED POINTER TO THE OBJECT
 #include "Texture.h"
 #include "Shader.h"
-//#include "ShaderObject.h"
+#include "ShaderObject.h"
 #include "RenderTarget.h"
+#include "Mesh.h"
 
 TextureHandle LoadTexture(const char *filename, const char *textureResourceName=0); // if not provided, the default resource name used is the filename
-//ShaderHandle LoadShader(const char *vertexShaderFilename, const char *fragmentShaderFilename, const char *shaderResourceName=0); // if not provided, there is no default shader resource name
+ShaderHandle LoadShader(const char *vertexShaderFilename, const char *fragmentShaderFilename, const char *shaderResourceName=0); // if not provided, there is no default shader resource name
 RenderTargetHandle CreateRenderTarget(int width, int height, const char *renderTargetResourceName=0); // if not provided, there is no default render target resource name
+MeshHandle CreateMesh(char *name);

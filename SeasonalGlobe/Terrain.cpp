@@ -1,16 +1,17 @@
-#include "TerrainLoader.h"
+#include "Terrain.h"
 #include "Collision.h"
+#include "ResourceManager.h"
 using namespace gxbase;
 
-TerrainLoader::TerrainLoader(void) : width(0), height(0)
+Terrain::Terrain(void) : width(0), height(0)
 {
 }
 
-TerrainLoader::~TerrainLoader(void)
+Terrain::~Terrain(void)
 {
 }
 
-bool TerrainLoader::Load(char *filename)
+bool Terrain::Load(char *filename)
 {
 	unsigned char *rowpointer;
 	i32 vertex_index;
@@ -156,8 +157,8 @@ bool TerrainLoader::Load(char *filename)
 		if(LineCircleCollision(ln, circ, cp))
 		{
 			ImageRowInfo irow;
-			irow.pixelStart = Vec2i( (i32)cp.p1.x(), i);
-			irow.pixelEnd = Vec2i( (i32)cp.p2.x(), i);
+			irow.pixelStart = vec2i( (i32)cp.p1.x(), i);
+			irow.pixelEnd = vec2i( (i32)cp.p2.x(), i);
 			irow.pixelCount = irow.pixelEnd.x - irow.pixelStart.x;
 			irow.firstVertexIndex = (width * i) + irow.pixelStart.x; // ?????
 			irow.lastVertexIndex = irow.firstVertexIndex + irow.pixelCount;
@@ -245,11 +246,18 @@ bool TerrainLoader::Load(char *filename)
 	}
 	#pragma endregion
 
-	u32 *indicesArray = new u32[indices.size()];
-	memcpy(indicesArray, &indices[0], sizeof(u32)*indices.size());
+	MeshHandle mh = CreateMesh("terrain");
+	bool ret = mh->BuildVBO(verts, vertexArraySize, &indices[0], indices.size());
+	delete [] verts;
 
-	::Model &m = ((::Model&)this->GetModel());
-	m.SetVertexArray(verts, vertexArraySize);
-	m.SetIndicesArray(indicesArray, indices.size());
-	return m.BuildVBO();
+	if(ret)
+	{
+		SetMesh(mh);
+	}
+	else
+	{
+		ResourceManager::get().RemoveResource(mh->GetResourceID());
+	}
+
+	return ret;
 };

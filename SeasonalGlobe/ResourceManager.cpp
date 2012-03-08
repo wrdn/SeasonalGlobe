@@ -26,7 +26,6 @@ TextureHandle LoadTexture(const char *filename, const char *textureResourceName)
 	return hnd;
 };
 
-/*
 ShaderHandle LoadShader(const char *vertexShaderFilename, const char *fragmentShaderFilename, const char *shaderResourceName) // if not provided, there is no default shader resource name
 {
 	if(!vertexShaderFilename || !fragmentShaderFilename) { return ShaderHandle((Shader*)0); };
@@ -78,7 +77,6 @@ ShaderHandle LoadShader(const char *vertexShaderFilename, const char *fragmentSh
 	
 	return sh;
 };
-*/
 
 RenderTargetHandle CreateRenderTarget(int width, int height, const char *renderTargetResourceName)
 {
@@ -86,4 +84,11 @@ RenderTargetHandle CreateRenderTarget(int width, int height, const char *renderT
 		: ResourceManager::get().CreateAndGetResource<RenderTarget>();
 	rth->SetWidthAndHeight(width, height);
 	return rth;
+};
+
+MeshHandle CreateMesh(char *name)
+{
+	MeshHandle mh = ResourceManager::get().CreateAndGetResource<Mesh>();
+	mh->SetName(name);
+	return mh;
 };

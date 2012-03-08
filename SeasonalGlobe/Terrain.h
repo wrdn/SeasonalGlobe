@@ -24,23 +24,23 @@ public:
 struct TerrainShaders
 {
 public:
-	u32 Terrain_Displacement_Ambient_ShaderID;
-	u32 Terrain_Displacement_Directional_ShaderID;
-	u32 Terrain_Displacement_Spotlights_ShaderID;
+	ShaderHandle Terrain_Displacement_Ambient_Shader;
+	ShaderHandle Terrain_Displacement_Directional_Shader;
+	ShaderHandle Terrain_Displacement_Spotlights_Shader;
 
-	TerrainShaders() : Terrain_Displacement_Ambient_ShaderID(0), Terrain_Displacement_Directional_ShaderID(0),
-		Terrain_Displacement_Spotlights_ShaderID(0) {};
+	TerrainShaders() : Terrain_Displacement_Ambient_Shader(0), Terrain_Displacement_Directional_Shader(0),
+		Terrain_Displacement_Spotlights_Shader(0) {};
 	~TerrainShaders() {};
 };
 
 struct ImageRowInfo
 {
-	Vec2i pixelStart, pixelEnd;
+	vec2i pixelStart, pixelEnd;
 	u32 pixelCount;
 	u32 firstVertexIndex, lastVertexIndex;
 };
 
-class TerrainLoader : public GraphicsObject
+class Terrain : public GraphicsObject
 {
 private:
 	u32 width, height;
@@ -49,8 +49,8 @@ private:
 	// terrain if neccessary
 	vector<ImageRowInfo> rows;
 public:
-	TerrainLoader(void);
-	~TerrainLoader(void);
+	Terrain(void);
+	~Terrain(void);
 	
 	bool Load(char *filename);
 

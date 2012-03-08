@@ -7,7 +7,8 @@ class float3;
 class float4
 {
 private:
-	__declspec(align(16)) f32 vec[4];
+	//__declspec(align(16)) f32 vec[4];
+	f32 vec[4];
 
 public:
 	f32 * GetVec() const { return (f32*)vec; };

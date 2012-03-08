@@ -105,19 +105,10 @@
     <ClCompile Include="Cylinder.cpp">
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source Files\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="OBJFile.cpp">
-      <Filter>Source Files\Geometry</Filter>
-    </ClCompile>
     <ClCompile Include="Sphere.cpp">
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="Color.cpp">
-      <Filter>Source Files\Shading</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureManager.cpp">
       <Filter>Source Files\Shading</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
@@ -168,9 +159,6 @@
     <ClCompile Include="AppConfig.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderManager.cpp">
-      <Filter>Source Files\Shading</Filter>
-    </ClCompile>
     <ClCompile Include="CylindricalParticleEmitter.cpp">
       <Filter>Source Files\Particles</Filter>
     </ClCompile>
@@ -196,9 +184,6 @@
       <Filter>Source Files\Particles</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsObject.cpp">
-      <Filter>Source Files\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="TerrainLoader.cpp">
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="SeasonManager.cpp">
@@ -228,6 +213,15 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="OBJLoader.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderObject.cpp">
+      <Filter>Source Files\Shading</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="float2.h">
@@ -248,12 +242,6 @@
     <ClInclude Include="Cylinder.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="OBJFile.h">
-      <Filter>Header Files\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Header Files\Geometry</Filter>
-    </ClInclude>
     <ClInclude Include="Color.h">
       <Filter>Header Files\Shading</Filter>
     </ClInclude>
@@ -261,9 +249,6 @@
       <Filter>Header Files\Shading</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
-      <Filter>Header Files\Shading</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureManager.h">
       <Filter>Header Files\Shading</Filter>
     </ClInclude>
     <ClInclude Include="Log.h">
@@ -308,9 +293,6 @@
     <ClInclude Include="AppConfig.h">
       <Filter>Header Files\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderManager.h">
-      <Filter>Header Files\Shading</Filter>
-    </ClInclude>
     <ClInclude Include="CylindricalParticleEmitter.h">
       <Filter>Header Files\Particles</Filter>
     </ClInclude>
@@ -347,9 +329,6 @@
     <ClInclude Include="Line.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
-    <ClInclude Include="TerrainLoader.h">
-      <Filter>Header Files\Geometry</Filter>
-    </ClInclude>
     <ClInclude Include="SeasonManager.h">
       <Filter>Header Files\World</Filter>
     </ClInclude>
@@ -383,11 +362,20 @@
     <ClInclude Include="tutorialcodeheaders.h">
       <Filter>Header Files\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header Files\Resource Management</Filter>
-    </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="OBJLoader.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderObject.h">
+      <Filter>Header Files\Shading</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\Shading</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

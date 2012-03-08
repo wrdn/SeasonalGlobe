@@ -1,5 +1,6 @@
 #include "FireParticleEmitter.h"
 #include "FractalTree.h"
+#include "util.h"
 
 #include <fstream>
 using namespace std;

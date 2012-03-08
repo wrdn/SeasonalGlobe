@@ -19,7 +19,7 @@ private:
 	std::vector<ParticleEmitter*> emitterSet;
 	std::vector<EmitterHandle> handles;
 
-	Model *defaultModel;
+	MeshHandle defaultModel;
 public:
 
 	ParticleSystem();
@@ -47,8 +47,8 @@ public:
 		return 0;
 	};
 
-	void SetDefaultModel(Model * m) { defaultModel = m; };
-	Model* GetDefaultModel() const { return defaultModel; };
+	void SetDefaultModel(MeshHandle m) { defaultModel = m; };
+	MeshHandle GetDefaultModel() const { return defaultModel; };
 
 	// Remove all the emitters (doesn't alter defaultModel)
 	void Clean();

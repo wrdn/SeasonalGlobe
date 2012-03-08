@@ -210,6 +210,7 @@ c8 *read_src_raw(const c8 *file)
 // single read, before appending NULL to terminate string
 c8 *read_src_fast(const c8 *file)
 {
+	if(!file) { return 0; }
 	ifstream fs(file, ios::binary);
 	if(!fs.is_open()) return 0;
 
@@ -228,8 +229,12 @@ c8 *read_src_fast(const c8 *file)
 
 void cleanup_str_vec(std::vector<c8*> &v)
 {
+	//for(size_t i=0;i<v.size();++i)
+	//	SAFE_DELETE_ARRAY(v[i]);
 	for(size_t i=0;i<v.size();++i)
-		SAFE_DELETE_ARRAY(v[i]);
+	{
+		delete [] v[i];
+	}
 	v.clear();
 };
 
@@ -278,4 +283,35 @@ void TrimTrailingWhitespace(std::string &s)
 	u32 tmp = s.size()-1;
 	while(s[tmp] == ' ') --tmp;
 	s.erase(s.begin()+tmp+1, s.end());
+};
+
+u32 CountCharacterOccurrence(const c8* str, const c8 delim)
+{
+	u32 count=0;
+	while(c8 c = *str++)
+	{
+		if(c == delim) { ++count; }
+	}
+	return count;
+};
+
+std::string strtolower(const std::string &sp)
+{
+	string s = sp;
+	for(u32 i=0;i<s.size();++i)
+		s[i] = (c8)tolower(s[i]);
+	return s;
+};
+
+std::string strtoupper(const std::string &sp)
+{
+	string s = sp;
+	for(u32 i=0;i<s.size();++i)
+		s[i] = (c8)toupper(s[i]);
+	return s;
+};
+
+bool stringtobool(const std::string &s)
+{
+	return strtolower(s) == "true" ? true : false;
 };

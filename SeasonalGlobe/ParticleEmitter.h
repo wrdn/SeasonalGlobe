@@ -2,7 +2,7 @@
 
 #include "GameTime.h"
 #include "Particle.h"
-#include "Model.h"
+#include "Mesh.h"
 #include "Shader.h"
 #include <vector>
 
@@ -19,7 +19,7 @@ private:
 
 	// usually we will only have 1 model
 	// Set the default in particle system and it will be propogated to new emitters
-	Model *model;
+	MeshHandle model;
 
 	// Emitter data
 	float3 emitterOrigin;
@@ -46,9 +46,9 @@ private:
 	std::vector<float3> forceVectors;
 
 	// Drawing data
-	Shader *emitterShader;
-	Texture alphaMap; // at a minumum, particles should have a alpha texture
-	Texture *colorMap;
+	ShaderHandle emitterShader;
+	TextureHandle alphaMap; // at a minumum, particles should have a alpha texture
+	TextureHandle colorMap;
 
 	GLenum sourceAlphaBlendFunction; // e.g. GL_ONE, GL_ONE_MINUS_SRC_ALPHA
 
@@ -93,8 +93,8 @@ public:
 
 	#pragma region Accessors and Mutators
 	void SetBillboardType(const BillboardType btype);
-	void SetModel(const Model *m);
-	const Model* GetModel() const { return model; };
+	void SetModel(MeshHandle m);
+	MeshHandle GetModel() const { return model; };
 
 	void SetEmitterOrigin(const float3& f);
 	const float3& GetEmitterOrigin() const;
@@ -127,14 +127,14 @@ public:
 	void AddForce(const float3 &f);
 	const std::vector<float3>& GetForces() const;
 
-	void SetShader(const Shader *shader);
-	const Shader* GetShader() const;
+	void SetShader(const ShaderHandle shader);
+	ShaderHandle GetShader() const;
 
-	void SetAlphaMap(const Texture &t);
-	const Texture& GetAlphaMap() const;
+	void SetAlphaMap(const TextureHandle t);
+	TextureHandle GetAlphaMap() const;
 
-	void SetColorMap(Texture *t) { colorMap = t; }
-	const Texture* GetColorMap() const { return colorMap; };
+	void SetColorMap(TextureHandle t) { colorMap = t; }
+	TextureHandle GetColorMap() const { return colorMap; };
 
 	void SetSourceAlphaBlendFunction(const GLenum blendfunc);
 	const GLenum GetSourceAlphaBlendFunction() const;

@@ -1,68 +1,67 @@
 #pragma once
 
-#include "ctypes.h"
-#include "Color.h"
-#include <GXBase.h>
+#include "color.h"
+#include <vector>
+#include "Texture.h"
+#include "Shader.h"
 
-struct Material
-{
-public:
-	float4 ambient, diffuse, specular;
-	f32 shininess; // used in Phong shading
-
-	Material() : ambient(float4(0.5f,0.5f,0.5f,1)), diffuse(float4(1,1,1,1)), specular(float4(1,1,1,1)), shininess(20)
-	{};
-	Material(const float4 &amb, const float4 &diff, const float4 &spec)
-		: ambient(amb), diffuse(diff), specular(spec), shininess(20) { };
-	Material(const float4 &amb, const float4 &diff, const float4 &spec, const f32 _shininess)
-		: ambient(amb), diffuse(diff), specular(spec), shininess(_shininess) { };
-	~Material() { };
-
-	// Set public variables to only change the object (and nothing else). Use the Set functions below to change
-	// the object and the OpenGL state
-	void SetAmbient(const float4 &v) { ambient = v; glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient.GetVec()); }
-	void SetDiffuse(const float4 &v) { diffuse = v; glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse.GetVec()); }
-	void SetSpecular(const float4 &v) { specular = v; glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular.GetVec()); }
-	void SetShininess(const f32 v) { shininess = v; glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess); }
-
-	void Activate() const
-	{
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient.GetVec());
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse.GetVec());
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular.GetVec());
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
-	};
-};
-
-/*
 class Material
 {
 private:
-	u32 ka, kd, ks, ke;
-	
+	color ka, kd, ks, ke;
+	f32 shininess;
+
+	std::vector<TextureHandle> textures;
+	ShaderHandle activeShader;
+
 public:
-	Material() : ka(0), kd(0), ks(0), ke(0) { };
-	~Material() { };
+	Material() : ka(0.1f), kd(1.0f), ks(0.15f), ke(0.0f), shininess(10) {};
+	Material(const color &_ka, const color &_kd, const color &_ks, const f32 _shininess)
+		: ka(_ka), kd(_kd), ks(_ks), shininess(_shininess) {};
 
-	const u32 GetAmbientInteger() const;
-	const u32 GetDiffuseInteger() const;
-	const u32 GetSpecularInteger() const;
-	const u32 GetEmissiveInteger() const;
+	color GetAmbient() const { return ka; };
+	color GetDiffuse() const { return kd; };
+	color GetSpecular() const { return ks; };
+	color GetEmissive() const { return ke; };
+	f32 GetShininess() const { return shininess; };
 
-	const Color4f GetAmbientColor() const;
-	const Color4f GetDiffuseColor() const;
-	const Color4f GetSpecularColor() const;
-	const Color4f GetEmissiveColor() const;
+	void SetAmbient(const color &col) { ka = col; };
+	void SetDiffuse(const color &col) { kd = col; };
+	void SetSpecular(const color &col) { ks = col; };
+	void SetEmissive(const color &col) { ke = col; };
+	void SetShininess(const f32 shine) { shininess = shine; };
+	
+	void SetAmbientDiffuseSpecularEmissive(const color &ambient, const color &diffuse, const color &specular, const color &emissive=color(0.0f))
+	{
+		SetAmbient(ambient);
+		SetDiffuse(diffuse);
+		SetSpecular(specular);
+		SetEmissive(emissive);
+	}
 
-	void SetAmbient(const u32 ka);
-	void SetAmbient(const Color4f &c);
+	std::vector<TextureHandle> &GetTextures() { return textures; };
 
-	void SetDiffuse(const u32 kd);
-	void SetDiffuse(const Color4f &c);
+	void ClearTextures() { textures.clear(); };
 
-	void SetSpecular(const u32 ks);
-	void SetSpecular(const Color4f &c);
+	int AddTexture(TextureHandle t)
+	{
+		textures.push_back(t);
+		return textures.size()-1;
+	};
 
-	void SetEmissive(const u32 ke);
-	void SetEmissive(const Color4f &c);
-};*/
+	void SetShader(ShaderHandle active_shader)
+	{
+		activeShader = active_shader;
+	};
+
+	ShaderHandle GetShader() { return activeShader; };
+
+	void Activate()
+	{
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ka.GetVec());
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, kd.GetVec());
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, ks.GetVec());
+		glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, ke.GetVec());
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+	};
+};

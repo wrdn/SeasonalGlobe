@@ -1,63 +1,86 @@
 #pragma once
 
-#include "Model.h"
-#include "Material.h"
-#include "Shader.h"
 #include "float3.h"
-#include "Texture.h"
+#include "Quaternion.h"
+#include "Material.h"
+#include "Mesh.h"
 
 class GraphicsObject
 {
 private:
-	Model gmodel; // the model associated with the graphics object
 
-	float3 position, scale;
-	Material mat;
-	f32 xrotation, yrotation, zrotation;
+	// globally disable use of shaders and textures (allows easy overriding without modifying objects)
+	// these do not effect local state when changed, so if GLOBAL_USE_TEXTURES=true, but local_use_textures=false,
+	// the object will not use textures. Both initially true
+	static bool GLOBAL_USE_SHADERS;
+	static bool GLOBAL_USE_TEXTURES;
 
-	// these should be pointers to data managed by the shader/texture manager
-	//Texture *textureA, *textureB, *textureC;
-	
-	Shader *objectShader;
-	glex ogl;
+	// scale is non-uniform, orientation is amount of rotation (in degrees) around cardinal XYZ axis
+	float3 position, scale, orientation;
+	MeshHandle mesh; // shared_ptr to mesh (which should be managed in ResourceManager)
 
-	std::vector<Texture*> textures;
+	Material objectMaterial;
+
+	GLenum polygonFillMode; // GL_POINT, GL_LINE, GL_FILL
+
+	bool local_use_textures;
+	bool local_use_shaders;
 
 public:
-	GraphicsObject(void);
-	virtual ~GraphicsObject(void);
+	GraphicsObject() : scale(1.0f), polygonFillMode(GL_FILL), local_use_textures(true), local_use_shaders(true) {};
 
+	// MATERIAL
+	Material &GetMaterial() { return objectMaterial; };
+	
+	//void SetMaterial(const Material &mat)
+	//{
+	//	objectMaterial = mat;
+	//};
+
+	// POLYGON FILL MODE
+	GLenum GetPolygonFillMode() const { return polygonFillMode; }
+	void SetPolygonFillMode(const GLenum fillMode) { polygonFillMode = fillMode; };
+
+	// USE TEXTURES AND USE SHADERS
+	void SetUsingTextures(const bool useTextures) { local_use_textures = useTextures; };
+	void SetUsingShaders(const bool useShaders) { local_use_shaders = useShaders; };
+	bool UsingTextures() const { return local_use_textures; };
+	bool UsingShaders() const { return local_use_shaders; };
+
+	// MESH
+	const MeshHandle GetMesh() const { return mesh; };
+	void SetMesh(const MeshHandle m) { mesh = m; };
+
+	// POSITION
 	const float3& GetPosition()const { return position; };
-
-	const f32 GetXRotation() const { return xrotation; };
-	const f32 GetYRotation() const { return yrotation; };
-	const f32 GetZRotation() const { return zrotation; };
-	
-	const float3& GetScale() const { return scale; }
-	const Material& GetMaterial() const { return mat; }
-	
-	const Texture* GetTexture(u32 index) { return textures[index]; };
-	
-	Shader* GetShader() const { return objectShader; }
-
-	 const Model& GetModel() const { return gmodel; };
-
-	void SetModel(Model &m);
-	void SetShader(Shader *s) { objectShader = s; };
-	
-	void AddTexture(Texture *t) { textures.push_back(t); };
-	
 	void SetPosition(const float3 &pos) { position = pos; };
-	
-	void SetXRotation(f32 rot) { xrotation = rot; };
-	void SetYRotation(f32 rot) { yrotation = rot; };
-	void SetZRotation(f32 rot) { zrotation = rot; };
 
+	// SCALE
+	const float3& GetScale() const { return scale; }
 	void SetScale(const float3 &sc) { scale = sc; };
-	void SetMaterial(const Material &_mat) { mat = _mat; }
 
-	void SetDrawMode(GLenum dmode) { gmodel.SetDrawMode(dmode); };
+	// ORIENTATION
+	const float3 &GetOrientation() const { return orientation; };
+	void SetOrientation(const float3 &_orientation) { orientation = _orientation; };
+	f32 GetXRotation() const { return orientation.x(); };
+	f32 GetYRotation() const { return orientation.y(); };
+	f32 GetZRotation() const { return orientation.z(); };
+	void SetXRotation(f32 rot) { orientation.x(rot); };
+	void SetYRotation(f32 rot) { orientation.y(rot); };
+	void SetZRotation(f32 rot) { orientation.z(rot); };
 
-	void Draw(); // activates textures, shaders, performs transformations and draws the model
-	void DrawSimple(); // no activations, just draws the model (useful if transformations done outside GraphicsObject, e.g. tree)
+	// COMMON MATERIAL OPERATIONS (REPEATED FOR EASY ACCESS)
+	void ClearTextures() { objectMaterial.ClearTextures(); };
+	int AddTexture(TextureHandle t) { return objectMaterial.AddTexture(t); };
+	void SetShader(ShaderHandle active_shader) { objectMaterial.SetShader(active_shader); };
+
+	ShaderHandle GetShader() { return objectMaterial.GetShader(); };
+
+	// DRAWING FUNCTIONS
+	void Draw();
+	void DrawSimple()
+	{
+		if(!mesh) return;
+		mesh->Draw();
+	};
 };

@@ -61,7 +61,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>.\..\Libraries\GXBase\lib\Debug;G:\globeacw\Libraries\VisualLeakDetector\lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\..\Libraries\GXBase\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>gxbasemd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -113,9 +113,8 @@
     <ClCompile Include="Mat44.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Model.cpp" />
     <ClCompile Include="MyApp.cpp" />
-    <ClCompile Include="OBJFile.cpp" />
+    <ClCompile Include="OBJLoader.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ParticleEmitter.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
@@ -128,13 +127,12 @@
     <ClCompile Include="SeasonManager.cpp" />
     <ClCompile Include="SeasonSetup.cpp" />
     <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="ShaderManager.cpp" />
+    <ClCompile Include="ShaderObject.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="StaticParticleEmitter.cpp" />
     <ClCompile Include="strutils.cpp" />
-    <ClCompile Include="TerrainLoader.cpp" />
+    <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="TimeInfo.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="World.cpp" />
@@ -166,10 +164,9 @@
     <ClInclude Include="Mat44.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Model.h" />
     <ClInclude Include="MyApp.h" />
     <ClInclude Include="Namable.h" />
-    <ClInclude Include="OBJFile.h" />
+    <ClInclude Include="OBJLoader.h" />
     <ClInclude Include="ogl.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ParticleEmitter.h" />
@@ -183,13 +180,12 @@
     <ClInclude Include="SeasonalWindow.h" />
     <ClInclude Include="SeasonManager.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="ShaderObject.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="StaticParticleEmitter.h" />
     <ClInclude Include="strutils.h" />
-    <ClInclude Include="TerrainLoader.h" />
+    <ClInclude Include="Terrain.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="TextureManager.h" />
     <ClInclude Include="TimeInfo.h" />
     <ClInclude Include="tutorialcodeheaders.h" />
     <ClInclude Include="util.h" />

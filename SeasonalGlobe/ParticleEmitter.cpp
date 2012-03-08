@@ -24,22 +24,28 @@ void ParticleEmitter::Draw()
 {
 	if(!isActive || !emitterShader || !emitterShader->Valid()) { return; }
 
+	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GetSourceAlphaBlendFunction());
 
 	glPushMatrix();
 
-	ActivateShader();
-	
-	glTranslatef(emitterOrigin.x(), emitterOrigin.y(), emitterOrigin.z());
+	if(emitterShader)
+	{
+		emitterShader->Activate();
+	}
 
-	glActiveTexture(GL_TEXTURE0);
-	alphaMap.Activate();
-
+	if(alphaMap)
+	{
+		glActiveTexture(alphaMap->GetTextureSlot());
+		alphaMap->Activate();
+	}
 	if(colorMap)
 	{
-		glActiveTexture(GL_TEXTURE1);
+		glActiveTexture(colorMap->GetTextureSlot());
 		colorMap->Activate();
 	}
+
+	glTranslatef(emitterOrigin.x(), emitterOrigin.y(), emitterOrigin.z());
 
 	if(billboardType == Spherical) // only need 1 check, so duplicate most of the drawing code
 	{
@@ -90,16 +96,12 @@ void ParticleEmitter::Draw()
 		}
 	}
 
-	DeactivateShader();
-
-	glActiveTexture(GL_TEXTURE0);
-
-	alphaMap.Deactivate();
-	if(colorMap) { colorMap->Deactivate(); }
-
 	glPopMatrix();
+	glDisable(GL_BLEND);
 
-	glColor4f(1,1,1,1);
+	glUseProgram(0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 };
 
 void ParticleEmitter::Update(const GameTime &gameTime)
@@ -143,16 +145,15 @@ void ParticleEmitter::Update(const GameTime &gameTime)
 
 void ParticleEmitter::ActivateShader(/*const GameTime &gameTime*/)
 {
-	emitterShader->Activate();
 	glActiveTexture(GL_TEXTURE0);
 	emitterShader->SetUniform("AlphaMap", alphaMap);
 	emitterShader->SetUniform("SphericalBillboarding", billboardType);
-	alphaMap.Activate();
+	alphaMap->Activate();
 };
 
 void ParticleEmitter::DeactivateShader()
 {
-	alphaMap.Deactivate();
+	alphaMap->Deactivate();
 	emitterShader->Deactivate();
 	glActiveTexture(GL_TEXTURE0);
 };
@@ -182,7 +183,7 @@ void ParticleEmitter::SphericalBillboardAdjust() const
 
 #pragma region Accessors and Mutators
 void ParticleEmitter::SetBillboardType(const BillboardType btype) { billboardType = btype; };
-void ParticleEmitter::SetModel(const Model *m) { model = (Model*)m; };
+void ParticleEmitter::SetModel(MeshHandle m) { model = m; };
 
 void ParticleEmitter::SetEmitterOrigin(const float3& f) { emitterOrigin = f; };
 const float3& ParticleEmitter::GetEmitterOrigin() const { return emitterOrigin; };
@@ -215,15 +216,15 @@ void ParticleEmitter::ClearForces() { forceVectors.clear(); };
 void ParticleEmitter::AddForce(const float3 &f) { forceVectors.push_back(f); };
 const std::vector<float3>& ParticleEmitter::GetForces() const { return forceVectors; };
 
-void ParticleEmitter::SetShader(const Shader *shader) { emitterShader = (Shader*)shader; };
-const Shader* ParticleEmitter::GetShader() const { return emitterShader; };
+void ParticleEmitter::SetShader(const ShaderHandle shader) { emitterShader = shader; };
+ShaderHandle ParticleEmitter::GetShader() const { return emitterShader; };
 
-void ParticleEmitter::SetAlphaMap(const Texture &t)
+void ParticleEmitter::SetAlphaMap(TextureHandle t)
 {
 	alphaMap = t;
-	alphaMap.SetTextureSlot(SLOT_GL_TEXTURE_0);
+	alphaMap->SetTextureSlot(SLOT_GL_TEXTURE_0);
 };
-const Texture& ParticleEmitter::GetAlphaMap() const { return alphaMap; };
+TextureHandle ParticleEmitter::GetAlphaMap() const { return alphaMap; };
 
 void ParticleEmitter::SetSourceAlphaBlendFunction(const GLenum blendfunc) { sourceAlphaBlendFunction = blendfunc; };
 const GLenum ParticleEmitter::GetSourceAlphaBlendFunction() const { return sourceAlphaBlendFunction; };

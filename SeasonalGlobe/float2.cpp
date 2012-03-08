@@ -115,3 +115,19 @@ std::ostream& operator<<(std::ostream &out, float2 &m)
 	out << m.x() << ", " << m.y() << std::endl;
 	return out;
 };
+
+std::istream& operator>>(std::istream &in, float2& out)
+{
+	f32 x,y;
+	in >> x >> y;
+	out.set(x,y);
+	return in;
+};
+
+std::istream& operator>>(std::istream &in, vec2i& out)
+{
+	i32 x,y;
+	in >> x >> y;
+	out.set(x,y);
+	return in;
+};

@@ -1,4 +1,6 @@
 #include "FractalTree.h"
+#include "ResourceManager.h"
+#include "util.h"
 #include <stack>
 #include <fstream>
 #include <iostream>
@@ -7,7 +9,7 @@ using namespace std;
 FractalTree::FractalTree() : branchRadius(GetDefaultBranchRadius()), branchRadiusReduction(GetDefaultBranchRadiusReduction()),
 	branchLength(GetDefaultBranchLength()), transformationMatricesArraySize(0), transformationMatrices(0),
 	leafMatrixCount(0), leafMatrices(0), loop_growth(false),
-	runtime(0), buildTime(15), tex(0), normalMap(0), treeShader(0), treeShadeMode(SmoothTextured), alpha(1),
+	runtime(0), buildTime(15), diffuseTexture(0), normalMap(0), treeShader(0), treeShadeMode(SmoothTextured), alpha(1),
 	deathDepth(0), treeDieing(false), isActive(true)
 {
 	rotationAngles[0] = rotationAngles[1] = rotationAngles[2] = DefaultAngle;
@@ -54,7 +56,7 @@ void FractalTree::DeepCopy(const FractalTree *dstp) const
 	dst.leafMatrixCount = leafMatrixCount;
 	dst.runtime = runtime;
 	dst.buildTime = buildTime;
-	dst.tex = tex;
+	dst.diffuseTexture = diffuseTexture;
 	dst.normalMap = normalMap;
 	dst.deathDepth = deathDepth;
 	dst.treeDieing = treeDieing;
@@ -178,7 +180,7 @@ void FractalTree::CalculateTreeDepth()
 
 void FractalTree::BuildTree()
 {
-	if(!gbranch.GetModel().Valid())
+	if(!gbranch.GetMesh())
 	{
 		gbranch.Create(0.05f, 0.05f, branchLength, 7,7);
 	}
@@ -371,7 +373,7 @@ void FractalTree::Draw(f32 dt)
 		
 		if(treeShader) { treeShader->Activate(); }
 		ogl.glActiveTexture(GL_TEXTURE0);
-		if(tex) { tex->Activate(); }
+		if(diffuseTexture) { diffuseTexture->Activate(); }
 		ogl.glActiveTexture(GL_TEXTURE1);
 		if(normalMap) { normalMap->Activate(); }
 
@@ -415,7 +417,7 @@ void FractalTree::Draw(f32 dt)
 
 	if(treeShader) { treeShader->Activate(); }
 	ogl.glActiveTexture(GL_TEXTURE0);
-	if(tex) { tex->Activate(); }
+	if(diffuseTexture) { diffuseTexture->Activate(); }
 	ogl.glActiveTexture(GL_TEXTURE1);
 	if(normalMap) { normalMap->Activate(); }
 
@@ -428,7 +430,7 @@ void FractalTree::Draw(f32 dt)
 
 		glDisable(GL_BLEND);
 		if(treeShader) { treeShader->Deactivate(); }
-		if(tex) { tex->Deactivate(); }
+		if(diffuseTexture) { diffuseTexture->Deactivate(); }
 		if(normalMap) { normalMap->Deactivate(); }
 		ogl.glActiveTexture(GL_TEXTURE0);
 		return;
@@ -444,7 +446,7 @@ void FractalTree::Draw(f32 dt)
 
 		glDisable(GL_BLEND);
 		if(treeShader) { treeShader->Deactivate(); }
-		if(tex) { tex->Deactivate(); }
+		if(diffuseTexture) { diffuseTexture->Deactivate(); }
 		if(normalMap) { normalMap->Deactivate(); }
 		ogl.glActiveTexture(GL_TEXTURE0);
 		return;
@@ -487,7 +489,7 @@ void FractalTree::Draw(f32 dt)
 
 	glPopMatrix();
 	if(treeShader) { treeShader->Deactivate(); }
-	if(tex) { tex->Deactivate(); }
+	if(diffuseTexture) { diffuseTexture->Deactivate(); }
 	if(normalMap) { normalMap->Deactivate(); }
 	ogl.glActiveTexture(GL_TEXTURE0);
 	return;

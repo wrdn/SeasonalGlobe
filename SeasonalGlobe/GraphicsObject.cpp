@@ -1,54 +1,54 @@
 #include "GraphicsObject.h"
-
-
-GraphicsObject::GraphicsObject(void)
-	: position(), scale(1), mat(), xrotation(0), yrotation(0), zrotation(0), objectShader(0)
-{
-	ogl.Load();
-}
-
-
-GraphicsObject::~GraphicsObject(void)
-{
-}
+bool GraphicsObject::GLOBAL_USE_SHADERS = true;
+bool GraphicsObject::GLOBAL_USE_TEXTURES = true;
 
 void GraphicsObject::Draw()
 {
-	if(objectShader) { objectShader->Activate(); }
+	if(!mesh) return;
 
-	for(std::vector<Texture*>::iterator it = textures.begin(); it != textures.end(); ++it)
+	// Activate shader
+	if(GLOBAL_USE_SHADERS && local_use_shaders && objectMaterial.GetShader())
 	{
-		ogl.glActiveTexture((*it)->GetTextureSlot());
-		(*it)->Activate();
+		objectMaterial.GetShader()->Activate();
+	};
+
+	// Activate textures
+	if(GLOBAL_USE_TEXTURES && local_use_textures)
+	{
+		for(u32 i=0;i<objectMaterial.GetTextures().size();++i)
+		{
+			TextureHandle t = objectMaterial.GetTextures()[i];
+			mesh->glActiveTexture(t->GetTextureSlot());
+			t->Activate();
+		}
 	}
-	
-	mat.Activate(); // activate object material properties
+
+	objectMaterial.Activate();
 
 	glPushMatrix();
 
+	// Transform model
 	glTranslatef(position.x(), position.y(), position.z());
-
-	glRotatef(xrotation, 1,0,0);
-	glRotatef(yrotation, 0,1,0);
-	glRotatef(zrotation, 0,0,1);
-
+	glRotatef(orientation.x(), 1,0,0);
+	glRotatef(orientation.y(), 0,1,0);
+	glRotatef(orientation.z(), 0,0,1);
 	glScalef(scale.x(), scale.y(), scale.z());
 
-	gmodel.Draw();
+	// Draw model
+	glColor3f(1,1,1); // this is used so even if OpenGL lighting disabled (or no shaders), the object will still appear
+	glPolygonMode(GL_FRONT_AND_BACK, polygonFillMode);
+	mesh->Draw();
 
 	glPopMatrix();
 
-	for(std::vector<Texture*>::iterator it = textures.begin(); it != textures.end(); ++it)
+	// Deactivate shader and textures
+	mesh->glUseProgram(0);
+	for(u32 i=0;i<objectMaterial.GetTextures().size();++i)
 	{
-		(*it)->Deactivate();
+		TextureHandle t = objectMaterial.GetTextures()[i];
+		mesh->glActiveTexture(t->GetTextureSlot());
+		t->Deactivate();
 	}
-	if(objectShader) { objectShader->Deactivate(); }
-
-	ogl.glActiveTexture(GL_TEXTURE0);
-	ogl.glBindTextureEXT(GL_TEXTURE_2D, 0);
-};
-
-void GraphicsObject::DrawSimple()
-{
-	gmodel.Draw();
+	mesh->glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 };

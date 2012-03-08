@@ -1,4 +1,5 @@
 #include "CylindricalParticleEmitter.h"
+#include "util.h"
 
 CylindricalParticleEmitter::CylindricalParticleEmitter()
 	: startPos(), endPos(), direction(), startColor(1,0,0,1), endColor(1, 0.28f, 0, 0.8f)

@@ -1,9 +1,11 @@
 #include "graphics_utils.h"
 
-Model* CreateImposterModel()
+MeshHandle CreateImposterModel()
 {
-	Model *imposterModel = new Model();
-	VERTEX *imposterVerts = new VERTEX[8];
+	MeshHandle mh = CreateMesh("imposterMesh");
+
+	//VERTEX *imposterVerts = new VERTEX[8];
+	VERTEX imposterVerts[8];
 	const f32 moduvtop = 0.95f;
 
 	// first quad
@@ -18,9 +20,10 @@ Model* CreateImposterModel()
 	imposterVerts[6] = VERTEX(float3(0,-1,1),  float3(1,0,0), float2(1,0));
 	imposterVerts[7] = VERTEX(float3(0,-1,-1), float3(1,0,0), float2(0,0));
 	
-	imposterModel->SetVertexArray(imposterVerts, 8);
+	//imposterModel->SetVertexArray(imposterVerts, 8);
 	
-	u32 *imposterIndices = new u32[16];
+	//u32 *imposterIndices = new u32[16];
+	u32 imposterIndices[16];
 	imposterIndices[0] = 1; imposterIndices[1] = 0;
 	imposterIndices[2] = 3; imposterIndices[3] = 1;
 	imposterIndices[4] = 3; imposterIndices[5] = 2;
@@ -28,33 +31,36 @@ Model* CreateImposterModel()
 	imposterIndices[8] = 7; imposterIndices[9] = 5;
 	imposterIndices[10] = 7; imposterIndices[11] = 6;
 
-	imposterModel->SetIndicesArray(imposterIndices, 16);
+	//imposterModel->SetIndicesArray(imposterIndices, 16);
+	//imposterModel->BuildVBO();
 
-	imposterModel->BuildVBO();
-	return imposterModel;
+	mh->BuildVBO(imposterVerts, 8, imposterIndices, 16);
+	return mh;
 };
 
-Model* CreateBillboardModel()
+MeshHandle CreateBillboardModel()
 {
 	// Billboard model (textured quad)
-	Model *billboardModel = new Model();
-	VERTEX *billboardVertices = new VERTEX[4];
+	MeshHandle mh = CreateMesh("billboardMesh");
+
+	VERTEX billboardVertices[4];
 	billboardVertices[0] = VERTEX(float3(-0.5f,1,0), float3(0,0,1), float2(0,1));
 	billboardVertices[1] = VERTEX(float3(0.5,1,0),   float3(0,0,1), float2(1,1));
 	billboardVertices[2] = VERTEX(float3(-0.5f,0,0), float3(0,0,1), float2(0,0));
 	billboardVertices[3] = VERTEX(float3(0.5f,0,0),  float3(0,0,1), float2(1,0));
-	billboardModel->SetVertexArray(billboardVertices, 4);
+	//billboardModel->SetVertexArray(billboardVertices, 4);
 
-	u32 *billboardIndices = new u32[6];
+	u32 billboardIndices[6];
 	billboardIndices[0] = 0;
 	billboardIndices[1] = 2;
 	billboardIndices[2] = 3;
 	billboardIndices[3] = 0;
 	billboardIndices[4] = 3;
 	billboardIndices[5] = 1;
-	billboardModel->SetIndicesArray(billboardIndices, 6);
-	billboardModel->BuildVBO();
-	return billboardModel;
+
+	//billboardModel->SetIndicesArray(billboardIndices, 6);
+	mh->BuildVBO(billboardVertices, 4, billboardIndices, 6);
+	return mh;
 };
 
 void cube()

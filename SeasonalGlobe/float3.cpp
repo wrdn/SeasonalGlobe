@@ -171,3 +171,11 @@ std::ostream& operator<<(std::ostream &out, const float3 &m)
 	std::cout << "{" << vec[0] << "," << vec[1] << "," << vec[2] << "}";
 	return out;
 };
+
+std::istream& operator>>(std::istream &in, float3& out)
+{
+	f32 x=0, y=0, z=0;
+	in >> x >> y >> z;
+	out.set(x, y, z);
+	return in;
+};

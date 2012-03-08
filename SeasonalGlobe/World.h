@@ -1,11 +1,9 @@
 #pragma once
 
-#include "OBJFile.h"
+#include "OBJLoader.h"
 #include "GameTime.h"
-#include "TextureManager.h"
 #include "Sphere.h"
 #include "Cylinder.h"
-#include "ShaderManager.h"
 #include "FractalTree.h"
 #include "AppConfig.h"
 #include "ParticleSystem.h"
@@ -13,11 +11,13 @@
 #include "StaticParticleEmitter.h"
 #include "FireParticleEmitter.h"
 #include "Light.h"
-#include "TerrainLoader.h"
+#include "Terrain.h"
 #include "PointBasedParticleEmitter.h"
 #include "HemiSphericalParticleEmitter.h"
 #include "SeasonManager.h"
 #include "tutorialcodeheaders.h"
+#include "ResourceManager.h"
+#include "Mesh.h"
 
 enum LightingMode
 {
@@ -36,8 +36,6 @@ private:
 	Materials _material1, _material2, _material3;
 
 	// Managers
-	TextureManager texMan;
-	ShaderManager shaderMan;
 	ParticleSystem particleSystem;
 	SeasonManager seasonMan;
 	f64 dtMultiplier; // used to speed up/slow down, every frame dt = dt*dtMultiplier
@@ -48,23 +46,29 @@ private:
 	bool snowSlowing; // used to reduce rate of emission to snow slow down towards the end
 
 	// Geometry
-	TerrainLoader *terrain; TerrainShift terrainElevation;
+	Terrain terrain;
+	TerrainShift terrainElevation;
+	
 	FractalTree *tree;
-	Sphere *globeSphere;
-	GraphicsObject *houseModel, *baseModel, *boltModel;
-	Model *defaultBillboardModel;
-	Model *imposterModel;
+	
+	//Sphere *globeSphere;
+	//GraphicsObject *houseModel, *baseModel, *boltModel;
+	GraphicsObject houseModel, baseModel, boltModel;
+	Sphere globeSphere;
+
+	MeshHandle defaultBillboardModel;
+	MeshHandle imposterModel;
+
 	GLenum polygonMode;
-	Sphere *lightSphere;
-	Cylinder *spotCone;
+	Sphere lightSphere;
+	Cylinder spotCone;
 	bool drawLightning;
 	
 	// Shaders
-	u32 phongShaderID, particleSystemBaseShaderID, texturedParticleShaderID,
-		globeShaderID, directionalLightShaderID,
-		multiTexturingSampleShaderID, spotlightShaderID,
-		ambientLightShaderID,
-		normalMap_Ambient_ShaderID, normalMap_Directional_ShaderID, normalMap_Spotlights_ShaderID;
+	ShaderHandle phongShader, particleSystemBaseShader, texturedParticleShader, globeShader, directionalLightShader,
+		multiTexturingSampleShader, spotlightShader, ambientLightShader,
+		normalMap_AmbientShader, normalMap_DirectionalShader, normalMap_SpotlightsShader;
+
 	TreeShaders treeShaders;
 	TerrainShaders terrainShaders;
 
@@ -75,12 +79,10 @@ private:
 	i32 mergeDirection; // should be 1 or -1
 
 	// Textures
-	Texture *grassTexture, *houseTexture, *barkTexture, *particleTexture,
-		*leafTexture, *baseTexture, *displacementTexture, *barkNormalMap,
-		*snowTexture, *terrainNormalMapFull,
-		*grassParticleTexture, // alpha map
-		*grassParticleColorMap,
-		*houseNormalMap;
+	TextureHandle grassTexture, houseTexture, barkTexture, particleTexture,
+		leafTexture, baseTexture, displacementTexture, barkNormalMap,
+		snowTexture, terrainNormalMapFull, grassParticleTexture, grassParticleColorMap,
+		houseNormalMap;
 
 	// Particle emitters
 	u32 leafParticleEmitterID;
@@ -125,11 +127,11 @@ public:
 	{
 		polygonMode = polyMode;
 
-		houseModel->SetDrawMode(polyMode);
-		globeSphere->SetDrawMode(polyMode);
-		terrain->SetDrawMode(polyMode);
-		baseModel->SetDrawMode(polyMode);
-		tree->SetDrawMode(polyMode);
+		houseModel.SetPolygonFillMode(polyMode);
+		globeSphere.SetPolygonFillMode(polyMode);
+		terrain.SetPolygonFillMode(polyMode);
+		baseModel.SetPolygonFillMode(polyMode);
+		tree->SetPolygonFillMode(polyMode);
 	};
 	GLenum GetNextPolygonMode(const GLenum polyMode)
 	{

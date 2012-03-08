@@ -13,19 +13,18 @@
 World::World(void)
 	: conf(), // Application configuration
 
-	texMan(), shaderMan(), particleSystem(), seasonMan(), // Managers
+	particleSystem(), seasonMan(), // Managers
 	dtMultiplier(1),
 
 	sceneRotationAxis(0,1,0), _cameraAngle(30.0f), _cameraPosition(-30.0f), // Camera
 	_cameraRotation(-357.0f), AutoRotate(false), snowSlowing(false),
 
-	terrain(0), terrainElevation(0.45f, 0.13f, 3.0f), tree(0), globeSphere(0), houseModel(0), // Geometry
-	baseModel(0), boltModel(0), defaultBillboardModel(0), imposterModel(0), polygonMode(GL_FILL),lightSphere(0), spotCone(0),
-	drawLightning(false),
+	// geometry
+	terrainElevation(0.45f, 0.13f, 3.0f), tree(0), defaultBillboardModel(0), imposterModel(0), polygonMode(GL_FILL), drawLightning(false),
 
-	phongShaderID(0), particleSystemBaseShaderID(0), texturedParticleShaderID(0), globeShaderID(0), directionalLightShaderID(0), // Shaders
-	multiTexturingSampleShaderID(0), spotlightShaderID(0), ambientLightShaderID(0), 
-	normalMap_Ambient_ShaderID(0), normalMap_Directional_ShaderID(0), normalMap_Spotlights_ShaderID(0),
+	phongShader(0), particleSystemBaseShader(0), texturedParticleShader(0), globeShader(0), directionalLightShader(0), // Shaders
+	multiTexturingSampleShader(0), spotlightShader(0), ambientLightShader(0), 
+	normalMap_AmbientShader(0), normalMap_DirectionalShader(0), normalMap_SpotlightsShader(0),
 	treeShaders(), terrainShaders(), terrainTextureMergeFactor(0), mergingTerrainTextured(false),
 	timeToMergeTextures(8), terrainTextureMergeRuntime(0), mergeDirection(1),
 
@@ -100,6 +99,7 @@ void World::reflective_draw(const GameTime &gameTime)
 
 	glDisable(GL_STENCIL_TEST);
 
+	fireParticleEmitter->glUseProgram(0);
 	glEnable(GL_LIGHTING);
 
 	glColor4f(1,1,1,1);
@@ -107,10 +107,10 @@ void World::reflective_draw(const GameTime &gameTime)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
-	//Material mat(float4(0.2,0.2,0.2,1), float4(0.4,0.6,0.4,1), float4(0.0f));
-	//mat.Activate();
-	_material2.apply();
+	//Material mat(float4(0.2f,0.2f,0.2f,1.0f), float4(0.4,0.6,0.4,1), float4(0.0f));
+	//_material2.apply();
+	Material mat(color(0.0f,0.0f,0.0f,1.0f), color(0.4,0.4,0.4,0.6), color(0.0f), 0);
+	mat.Activate();
 
 	glPushMatrix();
 	DrawFloor(floorPos, floorScale);
@@ -182,17 +182,17 @@ void World::DrawTerrain(const GameTime &gameTime)
 	f32 CurrentShift = lerp(0, terrainElevation.maxGeometryShiftFactor, N);
 
 	glDisable(GL_CULL_FACE); 
-	terrain->SetPosition(float3(0, terrain->GetPosition().y()-CurrentShift,0));
-	terrain->GetShader()->Activate();
-	terrain->GetShader()->SetUniform("t", terrainTextureMergeFactor);
-	terrain->GetShader()->SetUniform("normalLerpFactor", N);
-	terrain->GetShader()->SetUniform("vposmult", vpos);
-	terrain->GetShader()->Deactivate();
-	terrain->SetXRotation(-90); 
-	terrain->SetYRotation(0);
-	terrain->SetZRotation(-90); 
-	terrain->Draw(); 
-	terrain->SetPosition(float3(0, terrain->GetPosition().y()+CurrentShift,0));
+	terrain.SetPosition(float3(0, terrain.GetPosition().y()-CurrentShift,0));
+	terrain.GetShader()->Activate();
+	terrain.GetShader()->SetUniform("t", terrainTextureMergeFactor);
+	terrain.GetShader()->SetUniform("normalLerpFactor", N);
+	terrain.GetShader()->SetUniform("vposmult", vpos);
+	terrain.GetShader()->Deactivate();
+	terrain.SetXRotation(-90); 
+	terrain.SetYRotation(0);
+	terrain.SetZRotation(-90); 
+	terrain.Draw(); 
+	terrain.SetPosition(float3(0, terrain.GetPosition().y()+CurrentShift,0));
 	glEnable(GL_CULL_FACE);
 	glDisable(GL_NORMALIZE);
 };
@@ -223,24 +223,24 @@ void World::Draw(const GameTime &_gameTime)
 		glDisable(GL_LIGHTING);
 		
 		spotlights[0].Activate();
-		spotCone->SetXRotation(0);
-		spotCone->SetPosition(spotlights[0].GetPosition().ToFloat3());
-		spotCone->Draw();
+		spotCone.SetXRotation(0);
+		spotCone.SetPosition(spotlights[0].GetPosition().ToFloat3());
+		spotCone.Draw();
 
 		spotlights[1].Activate();
-		spotCone->SetXRotation(90);
-		spotCone->SetPosition(spotlights[1].GetPosition().ToFloat3());
-		spotCone->Draw();
+		spotCone.SetXRotation(90);
+		spotCone.SetPosition(spotlights[1].GetPosition().ToFloat3());
+		spotCone.Draw();
 
 		spotlights[2].Activate();
-		spotCone->SetPosition(spotlights[2].GetPosition().ToFloat3());
-		spotCone->Draw();
+		spotCone.SetPosition(spotlights[2].GetPosition().ToFloat3());
+		spotCone.Draw();
 
 		spotlights[3].Activate(); 
-		spotCone->SetPosition(spotlights[3].GetPosition().ToFloat3());
-		spotCone->SetZRotation(180);
-		spotCone->Draw();
-		spotCone->SetZRotation(0);
+		spotCone.SetPosition(spotlights[3].GetPosition().ToFloat3());
+		spotCone.SetZRotation(180);
+		spotCone.Draw();
+		spotCone.SetZRotation(0);
 	}
 	else if(lightMode == Directional)
 	{
@@ -248,11 +248,11 @@ void World::Draw(const GameTime &_gameTime)
 		directionalLight.Activate();
 		f32 radius = 13; float3 pos(0,0,0);
 		float3 newPos(pos.x()+radius*sin(directionalLightRotation), pos.y()+radius*cos(directionalLightRotation), pos.z());
-		lightSphere->SetPosition(newPos);
-		float4 lightSpherePos = lightSphere->GetPosition().ToFloat4();
+		lightSphere.SetPosition(newPos);
+		float4 lightSpherePos = lightSphere.GetPosition().ToFloat4();
 		directionalLight.SetPositionAndUpdateOpenGL(lightSpherePos);
 		directionalLightRotation += directionalLightSpeed * gameTime.GetDeltaTime();
-		lightSphere->Draw();
+		lightSphere.Draw();
 	}
 
 	if(drawLightning)
@@ -263,7 +263,7 @@ void World::Draw(const GameTime &_gameTime)
 		glTranslatef(-0.25,5,0);
 		glScalef(2,2,2);
 		glColor4f(0.9451f, 0.9178f, 0,1);
-		boltModel->Draw();
+		boltModel.Draw();
 		glPopMatrix();
 		glEnable(GL_LIGHTING);
 		glColor4f(1,1,1,1);
@@ -276,10 +276,10 @@ void World::Draw(const GameTime &_gameTime)
 	glPopMatrix();
 
 	// House
-	houseModel->Draw();
+	houseModel.Draw();
 
 	// Base
-	baseModel->Draw();
+	baseModel.Draw();
 
 	tree->Draw(gameTime.GetDeltaTime());
 
@@ -294,7 +294,7 @@ void World::Draw(const GameTime &_gameTime)
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE);
 	//glPushMatrix();
 	//glTranslatef(0.3f,0,0);
-	globeSphere->Draw();
+	globeSphere.Draw();
 	//glPopMatrix();
 	glDisable(GL_BLEND);
 	glDisable(GL_CLIP_PLANE0);
@@ -369,30 +369,24 @@ void World::SetLightingMode(LightingMode m) // need to switch shaders when we ch
 
 	if(lightMode == Ambient) // AMBIENT LIGHTS
 	{
-		Shader* ambientShader = shaderMan.GetShader(ambientLightShaderID);
-		houseModel->SetShader(shaderMan.GetShader(normalMap_Ambient_ShaderID));
-		baseModel->SetShader(ambientShader);
-		tree->SetShader(ambientShader);
-		terrain->SetShader(shaderMan.GetShader(terrainShaders.Terrain_Displacement_Ambient_ShaderID));
+		houseModel.SetShader(normalMap_AmbientShader);
+		baseModel.SetShader(ambientLightShader);
+		tree->SetShader(ambientLightShader);
+		terrain.SetShader(terrainShaders.Terrain_Displacement_Ambient_Shader);
 	}
 	else if(lightMode == Directional) // DIRECTIONAL LIGHT
 	{
-		Shader* directionalLightShader = shaderMan.GetShader(directionalLightShaderID);
-		houseModel->SetShader(shaderMan.GetShader(normalMap_Directional_ShaderID));
-		baseModel->SetShader(directionalLightShader);
+		houseModel.SetShader(normalMap_DirectionalShader);
+		baseModel.SetShader(directionalLightShader);
 		tree->SetShader(directionalLightShader);
-		terrain->SetShader(shaderMan.GetShader(terrainShaders.Terrain_Displacement_Directional_ShaderID));
+		terrain.SetShader(terrainShaders.Terrain_Displacement_Directional_Shader);
 	}
 	else if(lightMode == Spotlights) // SPOT LIGHTS
 	{ 
-		Shader* spotShader = shaderMan.GetShader(spotlightShaderID);
-		houseModel->SetShader(shaderMan.GetShader(normalMap_Spotlights_ShaderID));
-		baseModel->SetShader(spotShader);
-		tree->SetShader(spotShader);
-		//terrain->SetShader(shaderMan.GetShader(terrainShaders.Terrain_Displacement_Spotlights_ShaderID));
-
-		Shader *spotlightTerrainShader = shaderMan.GetShader(terrainShaders.Terrain_Displacement_Spotlights_ShaderID);
-		terrain->SetShader(spotlightTerrainShader);
+		houseModel.SetShader(normalMap_SpotlightsShader);
+		baseModel.SetShader(spotlightShader);
+		tree->SetShader(spotlightShader);
+		terrain.SetShader(terrainShaders.Terrain_Displacement_Spotlights_Shader);
 	} 
 
 	SetTreeShadeMode(tree->GetTreeShadeMode());
@@ -422,75 +416,73 @@ void World::SetTreeShadeMode(TreeShadingMode m)
 		// Non Textured non lit wireframe
 		if(m == NonTexturedNonLitWireframe)
 		{
-			tree->SetDrawMode(GL_LINE);
+			tree->SetPolygonFillMode(GL_LINE);
 			tree->SetTreeShadeMode(0, 0, NonTexturedNonLitWireframe);
 		}
 
 		// Flat non textured
 		else if(m == FlatNonTextured)
 		{
-			tree->SetDrawMode(GL_FILL);
+			tree->SetPolygonFillMode(GL_FILL);
 			if(lightMode == Ambient)
 			{
-				Shader *ambShader = shaderMan.GetShader(treeShaders.Tree_Ambient_ShaderID);
-				ambShader->Activate(); ambShader->SetUniform("useTextures", false); ambShader->Deactivate();
-				tree->SetTreeShadeMode(ambShader,0, FlatNonTextured);
+				treeShaders.Tree_Ambient_Shader->SetUniform("useTextures", false);
+				tree->SetTreeShadeMode(treeShaders.Tree_Ambient_Shader, 0, FlatNonTextured);
 			}
 			else if(lightMode == Directional)
-				tree->SetTreeShadeMode(shaderMan.GetShader(treeShaders.FlatNonTextured_Directional_ShaderID),0, FlatNonTextured);
+			{
+				tree->SetTreeShadeMode(treeShaders.FlatNonTextured_Directional_Shader, 0, FlatNonTextured);
+			}
 			else if(lightMode == Spotlights)
-				tree->SetTreeShadeMode(shaderMan.GetShader(treeShaders.FlatNonTextured_Spot_ShaderID),0, FlatNonTextured);
+			{
+				tree->SetTreeShadeMode(treeShaders.FlatNonTextured_Spot_Shader, 0, FlatNonTextured);
+			}
 		}
 
 		// Smooth non textured
 		else if(m == SmoothNonTextured)
 		{
-			tree->SetDrawMode(GL_FILL);
+			tree->SetPolygonFillMode(GL_FILL);
 			if(lightMode == Ambient)
 			{
-				Shader *ambShader = shaderMan.GetShader(treeShaders.Tree_Ambient_ShaderID);
-				ambShader->Activate(); ambShader->SetUniform("useTextures", false); ambShader->Deactivate();
-				tree->SetTreeShadeMode(ambShader,0, SmoothNonTextured);
+				treeShaders.Tree_Ambient_Shader->SetUniform("useTextures", false);
+				tree->SetTreeShadeMode(treeShaders.Tree_Ambient_Shader, 0, SmoothNonTextured);
 			}
 			else if(lightMode == Directional)
 			{
-				Shader *directionalShader = shaderMan.GetShader(treeShaders.SmoothShaded_Directional_ShaderID);
-				directionalShader->Activate(); directionalShader->SetUniform("useTextures", false); directionalShader->Deactivate();
-				tree->SetTreeShadeMode(directionalShader,0, SmoothNonTextured);
+				treeShaders.SmoothShaded_Directional_Shader->SetUniform("useTextures", false);
+				tree->SetTreeShadeMode(treeShaders.SmoothShaded_Directional_Shader, 0, SmoothNonTextured);
 			}
 			else if(lightMode == Spotlights)
 			{
-				Shader *spotShader = shaderMan.GetShader(treeShaders.SmoothShaded_Spot_ShaderID);
-				spotShader->Activate(); spotShader->SetUniform("useTextures", false); spotShader->Deactivate();
-				tree->SetTreeShadeMode(spotShader,0, SmoothNonTextured);
+				treeShaders.SmoothShaded_Spot_Shader->SetUniform("useTextures", false);
+				tree->SetTreeShadeMode(treeShaders.SmoothShaded_Spot_Shader, 0, SmoothNonTextured);
 			}
 		}
 
 		// Smooth textured
 		else if(m == SmoothTextured)
 		{
-			tree->SetDrawMode(GL_FILL);
+			tree->SetPolygonFillMode(GL_FILL);
 			if(lightMode == Ambient)
 			{
-				Shader *ambShader = shaderMan.GetShader(treeShaders.Tree_Ambient_ShaderID);
-				ambShader->Activate(); ambShader->SetUniform("useTextures", true); ambShader->Deactivate();
-				tree->SetTreeShadeMode(ambShader,barkTexture, SmoothTextured);
+				treeShaders.Tree_Ambient_Shader->SetUniform("useTextures", true);
+				tree->SetTreeShadeMode(treeShaders.Tree_Ambient_Shader, barkTexture, SmoothTextured);
 			}
 			else if(lightMode == Directional)
 			{
-				Shader *directionalShader = shaderMan.GetShader(treeShaders.SmoothShaded_Directional_ShaderID);
-				directionalShader->Activate(); directionalShader->SetUniform("useTextures", true); directionalShader->Deactivate();
-				tree->SetTreeShadeMode(directionalShader,barkTexture, SmoothTextured);
+				treeShaders.SmoothShaded_Directional_Shader->SetUniform("useTextures", true);
+				tree->SetTreeShadeMode(treeShaders.SmoothShaded_Directional_Shader, barkTexture, SmoothTextured);
 			}
 			else if(lightMode == Spotlights)
 			{
-				Shader *spotShader = shaderMan.GetShader(treeShaders.SmoothShaded_Spot_ShaderID);
-				spotShader->Activate(); spotShader->SetUniform("useTextures", true); spotShader->Deactivate();
-				tree->SetTreeShadeMode(spotShader,barkTexture, SmoothTextured);
+				treeShaders.SmoothShaded_Spot_Shader->SetUniform("useTextures", true);
+				tree->SetTreeShadeMode(treeShaders.SmoothShaded_Spot_Shader, barkTexture, SmoothTextured);
 			}
 		}
 		else if(m == NormalMappedTextured)
 		{
-			tree->SetTreeShadeMode(shaderMan.GetShader(normalMap_Directional_ShaderID), barkTexture, NormalMappedTextured);
+			
+			tree->SetTreeShadeMode(normalMap_DirectionalShader, barkTexture, NormalMappedTextured);
 		}
 	};

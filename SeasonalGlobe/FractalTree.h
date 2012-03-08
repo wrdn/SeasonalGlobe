@@ -12,15 +12,15 @@
 struct TreeShaders // collects all the shaders for the tree (directional and spot lights)
 {
 public:
-	u32 FlatNonTextured_Directional_ShaderID,
-		FlatNonTextured_Spot_ShaderID,
-		Tree_Ambient_ShaderID,
-		SmoothShaded_Directional_ShaderID,
-		SmoothShaded_Spot_ShaderID;
+	ShaderHandle FlatNonTextured_Directional_Shader,
+		FlatNonTextured_Spot_Shader,
+		Tree_Ambient_Shader,
+		SmoothShaded_Directional_Shader,
+		SmoothShaded_Spot_Shader;
 
 	TreeShaders()
-		: FlatNonTextured_Directional_ShaderID(0), FlatNonTextured_Spot_ShaderID(0),
-		Tree_Ambient_ShaderID(0), SmoothShaded_Directional_ShaderID(0), SmoothShaded_Spot_ShaderID(0)
+		: FlatNonTextured_Directional_Shader(0), FlatNonTextured_Spot_Shader(0),
+		Tree_Ambient_Shader(0), SmoothShaded_Directional_Shader(0), SmoothShaded_Spot_Shader(0)
 	{};
 	~TreeShaders() { };
 };
@@ -124,11 +124,11 @@ private:
 	Cylinder gbranch;
 	float3 treePos;
 	
-	Texture *tex, *normalMap;
+	TextureHandle diffuseTexture, normalMap;
 	glex ogl;
 
 	Material mat;
-	Shader *treeShader;
+	ShaderHandle treeShader;
 
 	TreeShadingMode treeShadeMode;
 	
@@ -253,27 +253,27 @@ public:
 	// INHERITS GRAPHICS OBJECT
 	void SetPosition(const float3& f) { treePos = f; };
 	const float3& GetPosition() const { return treePos; }
-	void SetTexture(Texture *t) { tex = t; };
-	Texture* GetTexture() const { return tex; };
-	void SetDrawMode(GLenum dmode) { gbranch.SetDrawMode(dmode); };
+	void SetTexture(TextureHandle t) { diffuseTexture = t; };
+	TextureHandle GetTexture() const { return diffuseTexture; };
+	void SetPolygonFillMode(GLenum dmode) { gbranch.SetPolygonFillMode(dmode); };
 
-	const Texture* GetNormalMap() const { return normalMap; }
-	void SetNormalMap(Texture *t) { normalMap = t; }
+	TextureHandle GetNormalMap() const { return normalMap; };
+	void SetNormalMap(TextureHandle t) { normalMap = t; };
 
 	const Material& GetTreeMaterial() const { return mat; }
 	void SetMaterial(const Material &m) { mat = m; }
 
-	Shader* GetTreeShader() const { return treeShader; }
-	void SetShader(Shader *s) { treeShader = s; }
+	ShaderHandle GetTreeShader() const { return treeShader; };
+	void SetShader(ShaderHandle s) { treeShader = s; }
 
 	const TreeShadingMode GetTreeShadeMode() const
 	{
 		return treeShadeMode;
 	};
-	void SetTreeShadeMode(Shader *s, Texture *t, TreeShadingMode m)
+	void SetTreeShadeMode(ShaderHandle s, TextureHandle _diffuseTexture, TreeShadingMode m)
 	{
 		treeShader = s;
-		tex = t;
+		diffuseTexture = _diffuseTexture;
 		treeShadeMode = m;
 	};
 

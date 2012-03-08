@@ -3,12 +3,14 @@
 #include "ctypes.h"
 #include <iosfwd>
 
-struct Vec2i
+struct vec2i
 {
 public:
 	i32 x,y;
-	Vec2i() : x(0), y(0) { };
-	Vec2i(i32 _x, i32 _y): x(_x), y(_y) { };
+	vec2i() : x(0), y(0) { };
+	vec2i(i32 _x, i32 _y): x(_x), y(_y) { };
+
+	void set(i32 _x, i32 _y) { x = _x; y = _y; }
 };
 
 class float2
@@ -90,3 +92,4 @@ inline float2 operator*(const f32 a, const float2 &b) { return float2(a)+=b; };
 inline float2 operator/(const f32 a, const float2 &b) { return float2(a)+=b; };
 
 std::ostream& operator<<(std::ostream &out, float2 &m);
+std::istream& operator>>(std::istream &in, float2& out);

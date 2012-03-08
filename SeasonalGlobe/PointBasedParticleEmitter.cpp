@@ -1,4 +1,5 @@
 #include "PointBasedParticleEmitter.h"
+#include "util.h"
 
 PointBasedParticleEmitter::PointBasedParticleEmitter() : particleSpread(1.5)
 {

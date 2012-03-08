@@ -104,3 +104,4 @@ inline float3 operator/(const f32 a, const float3 &b) { return float3(a)/=b; }
 inline float3 operator^(const float3 &a, const float3 &b) { return float3(a)^=b; }
 
 std::ostream& operator<<(std::ostream &out, const float3 &m);
+std::istream& operator>>(std::istream &in, float3& out);

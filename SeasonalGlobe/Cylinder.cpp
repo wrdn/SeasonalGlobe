@@ -1,4 +1,5 @@
 #include "Cylinder.h"
+#include "ResourceManager.h"
 #include <vector>
 using namespace std;
 
@@ -151,8 +152,20 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 		vertexIndex += 2; // move over the replicated vertex
 	}
 
-	Model &m = ((Model&)this->GetModel());
-	m.SetVertexArray(vertexArray, VertexArraySize);
-	m.SetIndicesArray(indexArray, indexArraySize);
-	return m.BuildVBO();
+	MeshHandle mh = CreateMesh("cylinder");
+	bool ret = mh->BuildVBO(vertexArray, VertexArraySize, indexArray, indexArraySize);
+	
+	delete [] vertexArray;
+	delete [] indexArray;
+
+	if(ret)
+	{
+		SetMesh(mh);
+	}
+	else
+	{
+		ResourceManager::get().RemoveResource(mh->GetResourceID());
+	}
+
+	return ret;
 };

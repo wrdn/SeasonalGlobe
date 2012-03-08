@@ -1,4 +1,5 @@
 #include "StaticParticleEmitter.h"
+#include "util.h"
 
 StaticParticleEmitter::StaticParticleEmitter() : particlesStatic(true), currentParticleIndex(0), updateColor(false),
 	startColor(1), endColor(1), particlesFalling(false), particlesDieing(false), particlesFadingIn(false), timeToChangeColor(5), timeToFadeOut(3), timeToFadeIn(3),
