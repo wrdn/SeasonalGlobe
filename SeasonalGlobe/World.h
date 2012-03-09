@@ -15,7 +15,6 @@
 #include "PointBasedParticleEmitter.h"
 #include "HemiSphericalParticleEmitter.h"
 #include "SeasonManager.h"
-#include "tutorialcodeheaders.h"
 #include "ResourceManager.h"
 #include "Mesh.h"
 
@@ -32,9 +31,6 @@ private:
 	// Application configuration
 	AppConfig conf;
 
-	Lights _light1, _light2, _light3, _light4, _light5;
-	Materials _material1, _material2, _material3;
-
 	// Managers
 	ParticleSystem particleSystem;
 	SeasonManager seasonMan;
@@ -49,19 +45,17 @@ private:
 	Terrain terrain;
 	TerrainShift terrainElevation;
 	
-	FractalTree *tree;
-	
-	//Sphere *globeSphere;
-	//GraphicsObject *houseModel, *baseModel, *boltModel;
 	GraphicsObject houseModel, baseModel, boltModel;
 	Sphere globeSphere;
+	Sphere lightSphere;
+	Cylinder spotCone;
 
 	MeshHandle defaultBillboardModel;
 	MeshHandle imposterModel;
 
+	FractalTree *tree;
+
 	GLenum polygonMode;
-	Sphere lightSphere;
-	Cylinder spotCone;
 	bool drawLightning;
 	
 	// Shaders
@@ -205,5 +199,5 @@ public:
 	void SetDtMultiplier(f64 multiplier) { dtMultiplier = max(0,multiplier); };
 	const f64 GetMultiplier() const { return dtMultiplier; };
 
-	void SetSnowSlowing(bool _slowing) { snowSlowing = _slowing; }
+	void SetSnowSlowing(bool _slowing) { snowSlowing = _slowing; };
 };

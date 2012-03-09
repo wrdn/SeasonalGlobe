@@ -1,7 +1,6 @@
 #pragma once
 
 #include "World.h"
-#include "tutorialcodeheaders.h"
 #include "graphics_utils.h"
 
 bool World::Load()
@@ -17,27 +16,8 @@ bool World::Load()
 	LoadParticles();
 	
 	SetupSeasons();
-
-	// Load materials
-	_material1.create(ColorT::black(), ColorT(0.9f,0.9f,0.9f,1.0f));
-	//_material2.create(ColorT::black(), ColorT(0.7f,0.7f,0.7f,0.5f));
-	_material2.create(ColorT::black(), ColorT(0.24f,0.24f,1.0f,0.8f));
-	_material3.create(ColorT::black(), ColorT::black(), ColorT::yellow());
-
-	_light1.create(0, ColorT::black(), ColorT(0.5f,0.5f,0.5f,1.0f)); 
-	_light2.create(1, ColorT::black(), ColorT(0.5f,0.5f,0.5f,1.0f)); 
-	_light3.create(2, ColorT::black(), ColorT(0.5f,0.5f,0.0f,1.0f));
-	_light4.create(3, ColorT::black(), ColorT(0.5f,0.5f,0.5f,1.0f)); 
-	_light5.create(4, ColorT::black(), ColorT(0.5f,0.5f,0.5f,1.0f));
 	
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ColorT::black().GetVec());
-
-	_light3.setPosition(Vector4f(0.0,5.0,-3.0,1.0));
-	_light1.apply();
-	_light2.apply();
-	_light3.apply();
-	_light4.apply();
-	_light5.apply();
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Color::BLACK.GetVec());
 
 	SetLightingMode(Spotlights);
 

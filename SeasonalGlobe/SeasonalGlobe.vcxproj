@@ -187,7 +187,6 @@
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TimeInfo.h" />
-    <ClInclude Include="tutorialcodeheaders.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>

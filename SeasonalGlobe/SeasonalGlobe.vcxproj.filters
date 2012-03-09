@@ -359,9 +359,6 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="tutorialcodeheaders.h">
-      <Filter>Header Files\Misc</Filter>
-    </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>

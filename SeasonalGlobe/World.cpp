@@ -6,45 +6,24 @@
 #include "HemiSphericalParticleEmitter.h"
 #include "StaticParticleEmitter.h"
 #include "CylindricalParticleEmitter.h"
-#include "tutorialcodeheaders.h"
 #include "SeasonManager.h"
 #include "graphics_utils.h"
 
 World::World(void)
-	: conf(), // Application configuration
-
-	particleSystem(), seasonMan(), // Managers
-	dtMultiplier(1),
-
+	: dtMultiplier(1),
 	sceneRotationAxis(0,1,0), _cameraAngle(30.0f), _cameraPosition(-30.0f), // Camera
 	_cameraRotation(-357.0f), AutoRotate(false), snowSlowing(false),
-
-	// geometry
-	terrainElevation(0.45f, 0.13f, 3.0f), tree(0), defaultBillboardModel(0), imposterModel(0), polygonMode(GL_FILL), drawLightning(false),
-
-	phongShader(0), particleSystemBaseShader(0), texturedParticleShader(0), globeShader(0), directionalLightShader(0), // Shaders
-	multiTexturingSampleShader(0), spotlightShader(0), ambientLightShader(0), 
-	normalMap_AmbientShader(0), normalMap_DirectionalShader(0), normalMap_SpotlightsShader(0),
-	treeShaders(), terrainShaders(), terrainTextureMergeFactor(0), mergingTerrainTextured(false),
+	terrainElevation(0.45f, 0.13f, 3.0f), tree(0), polygonMode(GL_FILL), drawLightning(false),
+	terrainTextureMergeFactor(0), mergingTerrainTextured(false),
 	timeToMergeTextures(8), terrainTextureMergeRuntime(0), mergeDirection(1),
-
-	grassTexture(0), houseTexture(0), barkTexture(0), particleTexture(0), leafTexture(0), baseTexture(0), // Textures
-	displacementTexture(0), barkNormalMap(0), snowTexture(0), terrainNormalMapFull(0), grassParticleTexture(0),
-	grassParticleColorMap(0), houseNormalMap(0),
-
 	leafParticleEmitterID(0), snowEmitterID(0), smokeEmitterID(0), grassStaticEmitterID(0) , fireParticleEmitter(0), // Particle Emitters
-
-	directionalLight(), directionalLightRotation(0), directionalLightSpeed(0.5f), lightMode(Directional) // Lights
+	directionalLightRotation(0), directionalLightSpeed(0.5f), lightMode(Directional) // Lights
 {
 }
 
 World::~World(void)
 {
-	try
-	{
-		Shutdown();
-	}
-	catch(...) { };
+	Shutdown();
 }
 
 f32 angle=0; const f32 rotationSpeed = 50.0f;
@@ -109,7 +88,7 @@ void World::reflective_draw(const GameTime &gameTime)
 
 	//Material mat(float4(0.2f,0.2f,0.2f,1.0f), float4(0.4,0.6,0.4,1), float4(0.0f));
 	//_material2.apply();
-	Material mat(color(0.0f,0.0f,0.0f,1.0f), color(0.4,0.4,0.4,0.6), color(0.0f), 0);
+	Material mat(color(0.0f,0.0f,0.0f,1.0f), color(0.4f,0.4f,0.4f,0.6f), color(0.0f), 0);
 	mat.Activate();
 
 	glPushMatrix();
