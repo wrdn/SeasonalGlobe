@@ -66,7 +66,7 @@ private:
 	// called before drawing particles
 	// if needed, you should set the uniform variables here
 	// defaults to activating the shader and setting a uniform called "AlphaMap"
-	virtual void ActivateShader(/*const GameTime &gameTime*/);
+	virtual void ActivateShader();
 
 	// Do any post-draw deactivations. By default, the alpha map is deactivated
 	// the shader is deactivated and the active texture is set to GL_TEXTURE0
@@ -87,7 +87,7 @@ public:
 
 	// Activates the shader, then drawing each particle in turn (up to localParticleMaximum)
 	// If emitterShader is NULL, it will set the colour using fixed function functions and draw particles
-	void Draw(/*const GameTime &gameTime*/);
+	void Draw();
 
 	void Update(const GameTime &gameTime); // Defaults to applying forces (or just adding velocity is applyForces=false)
 

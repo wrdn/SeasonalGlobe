@@ -70,7 +70,7 @@ private:
 	FractalTree *tree;
 
 	void Emit(Particle &p);
-	void UpdateParticleProperties(Particle &p/*, const GameTime &gameTime*/);
+	void UpdateParticleProperties(Particle &p);
 
 public:
 	

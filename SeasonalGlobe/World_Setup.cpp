@@ -7,8 +7,6 @@ bool World::Load()
 {
 	conf.ParseConfigFile("Data/ConfigFile.txt"); // load configuration file
 	
-	//cam.Init(float3(0,6,25), float3(0,6,25), float3(0,1,0));
-
 	LoadLights();
 	LoadTextures();
 	LoadShaders();
@@ -157,8 +155,6 @@ bool World::LoadParticles()
 
 	ShaderHandle psysbase = particleSystemBaseShader;
 
-	//const u32 LEAF_PARTICLES_PER_LEAF_MATRIX = 3;
-
 	u32 LEAF_PARTICLES_PER_LEAF_MATRIX = 3;
 	conf.GetInt("LeavesPerLeafMatrix", (i32&)LEAF_PARTICLES_PER_LEAF_MATRIX);
 
@@ -192,13 +188,9 @@ bool World::LoadParticles()
 	leafEmitter->SetParticlesStaticState(true);
 	leafEmitter->SetStartColor(Color4f(1,1,1,0));
 	leafEmitter->SetEndColor(Color4f(1,1,1,1));
-	//leafEmitter->SetStartColor(Color4f(1));
-	//leafEmitter->SetEndColor(Color4f(0.8f, 0.35f, 0.35f, 1));
 	leafEmitter->DoColorUpdate(true);
 	leafEmitter->SetActive(false);
-	//leafEmitter->InitiateParticleFade();
-	//leafEmitter->SetBillboardType(NoBillboarding);*/
-
+	
 	smokeEmitterID = particleSystem.AddEmitter<PointBasedParticleEmitter>();
 	PointBasedParticleEmitter *smokeParticleEmitter = particleSystem.GetEmitter<PointBasedParticleEmitter>(smokeEmitterID);
 	smokeParticleEmitter->SetParticleSpread(0.35f);
@@ -392,8 +384,7 @@ void World::LoadLights()
 	
 	float4 spotDir;
 	float4 spotDiff(1,0.66666f,0.19607f,1);
-	//float4 spotSpec(0.3f,0.3f,0.3f,1);
-
+	
 	float4 spotAmb = Color::WHITE * 0.2f;
 	float4 spotSpec = Color::WHITE * 0.2f; 
 

@@ -7,8 +7,11 @@
 
 #include <GXBase.h>
 
+//! Calculate buffer offset to be used in gl*Pointer call (e.g. glVertexPointer)
 const GLvoid* BUFFER_OFFSET(const u32 i);
 
+//! Structure containing the mesh (vertex) and index data VBO indices required
+//! to draw a mesh
 struct MeshVBO
 {
 public:
@@ -22,6 +25,7 @@ const u32 VERTEX_POSITION_BUFFER_OFFSET = 0; // at start of struct
 const u32 VERTEX_NORMAL_BUFFER_OFFSET = 12; // 0 + sizeof(float3) == 0+position
 const u32 VERTEX_UV_BUFFER_OFFSET = 24; // 0 + sizeof(float3) + sizeof(float3) == 0+position+normal
 
+//! VERTEX structure, containing position, normal and uv
 struct VERTEX // 32 bytes
 {
 public:
@@ -33,6 +37,8 @@ public:
 		: position(_position), normal(_normal), uv(_uv) {}; 
 };
 
+//! Mesh class manages geometry, and allows VBOs to be built from vertex and index data
+//! No data other than the VBO IDs is stored internally
 class Mesh : public Resource, public glex
 {
 private:
@@ -57,7 +63,11 @@ public:
 	bool Valid() const { return meshvbo.meshData > 0 && meshvbo.indexData > 0; };
 	
 	void Unload();
+
+	//! Build the VBO and set IDs in meshvbo if successful
 	bool BuildVBO(const VERTEX *vertexData, const u32 vertexArraySz, const u32 *indexData, const u32 indexArraySz);
+
+	//! Draw the VBO
 	void Draw();
 };
 

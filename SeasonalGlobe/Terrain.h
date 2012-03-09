@@ -4,6 +4,10 @@
 using namespace std;
 
 enum TerrainShiftDirection { NoShift=0, Up=1, Down=-1 };
+
+//! Used during winter season when terrain mesh is displaced using displacement map
+//! used to ensure the mesh stays in the same location at all times, seated in the
+//! globe base
 struct TerrainShift
 {
 public:
@@ -21,6 +25,7 @@ public:
 	~TerrainShift() {};
 };
 
+//! Displacement/Lighting shaders for the terrain
 struct TerrainShaders
 {
 public:
@@ -40,18 +45,21 @@ struct ImageRowInfo
 	u32 firstVertexIndex, lastVertexIndex;
 };
 
+//! Class to load terrain from a heightmap
 class Terrain : public GraphicsObject
 {
 private:
 	u32 width, height;
 
-	// storing these allows us to rebuild the
-	// terrain if neccessary
+	//! storing these allows us to rebuild the
+	//! terrain if neccessary
 	vector<ImageRowInfo> rows;
 public:
 	Terrain(void);
 	~Terrain(void);
 	
+	//! Load terrain from heightmap and create mesh
+	//! By default, we build a circular mesh from the heightmap
 	bool Load(char *filename);
 
 	const u32 GetHeightmapWidth() const { return width; }

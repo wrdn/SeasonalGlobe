@@ -54,5 +54,5 @@ public:
 	void Clean();
 
 	void Update(const GameTime &gameTime);
-	void Draw(/*const GameTime &gameTime*/);
+	void Draw();
 };

@@ -18,9 +18,9 @@ public:
 	OBJMaterial() : hashedName(0) {};
 };
 
-// notes: uses the streaming operators in float2 and float3 to read in data
-// The fail bit is then read (stream.fail()) to ensure the data was read correctly
-// before it can be used
+//! notes: uses the streaming operators in float2 and float3 to read in data
+//! The fail bit is then read (stream.fail()) to ensure the data was read correctly
+//! before it can be used
 class OBJLoader
 {
 private:
@@ -49,14 +49,16 @@ private:
 		Mat_Ks, // Ks
 	};
 
+	//! Returns string representation of values in OBJLineType
 	static const char* LineTypeAsString(OBJLineType t);
 
-	// returns the line type, or IgnoredLine 0. if(ValidLineStart(s)) is true if result !=IgnoredLine
+	//! Returns the line type, or IgnoredLine 0. if(ValidLineStart(s)) is true if result !=IgnoredLine
 	static OBJLineType ValidateLineStart(const string &lineStart);
 
+	//! Used when parsing obj material file (mtl), to find the type of node the line represents (e.g. diffuse texture)
 	static OBJMaterialNodeType ValidateOBJMaterialLineStart(const string &str);
 
-	// any line that does not start with a string found here ignored
+	//! Any line that does not start with a string found here ignored
 	static const c8* ValidLineInitiators[];
 	static const OBJLineType AssociatedLineTypes[];
 
@@ -66,8 +68,11 @@ private:
 	OBJLoader();
 	~OBJLoader();
 
+	//! Parses obj material (mtl) file, setting materials in outputMap
 	static bool ParseMaterialFile(const c8* mtl_filename, std::map<u32, OBJMaterial> &outputMap);
 
 public:
+
+	//! Parses obj file
 	static bool LoadOBJFile(const string& filename, vector<GraphicsObject> &output_vec);
 };

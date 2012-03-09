@@ -18,7 +18,7 @@ class StaticParticleEmitter : public ParticleEmitter
 {
 private:
 	void Emit(Particle &p);
-	void UpdateParticleProperties(Particle &p/*, const GameTime &gameTime*/);
+	void UpdateParticleProperties(Particle &p);
 
 	bool particlesStatic; // are the particles actually static?
 

@@ -135,58 +135,6 @@ void FireParticleEmitter::UpdateFireParticleEmitter(const GameTime &gameTime)
 		burnLevel = (i32)lerp(0, (f32)tree->GetDepth(), k) - 1;
 		tree->SetTreeDeathDepth(max(0, burnLevel));
 	}
-
-	/*if(burnState != Igniting) { return; }
-	runtime += gameTime.GetDeltaTime();
-	ignitionRuntime += gameTime.GetDeltaTime();
-	f32 timePerDepthToIgnite = ignitionTime / tree->GetDepth();
-	if(ignitionRuntime > timePerDepthToIgnite) { ignitionRuntime = 0; }
-	f32 k = (1.0f / ignitionTime) * runtime;
-	burnLevel = (i32)lerp(0, (f32)tree->GetDepth(), k) - 1;
-	tree->SetTreeDeathDepth(max(0, burnLevel));
-	if(runtime >= deathTime) { runtime = 0; }*/
-
-	/*if(!IsActive() && burnState!=Dead) return;
-
-	if(burnState == Dieing)
-	{
-	if(runtime >= deathTime)
-	{
-	burnState = Dead;
-	SetActive(false);
-	return;
-	}
-	}
-	else if(burnState == Igniting)
-	{
-	if(runtime >= ignitionTime)
-	{
-	runtime = 0;
-	SetBurningState(Burning);
-	}
-	}
-
-	runtime += gameTime.GetDeltaTime();
-
-	u32 depth=0; f32 K=0;
-	if(burnState == Dieing)
-	{
-	depth = tree->GetDepth();
-	K = (1.0f / deathTime) * runtime;
-	burnLevel = depth - (i32)lerp(0, (f32)depth,K) - 1;
-
-	tree->SetTreeDeathDepth(max(0, burnLevel));
-
-	f32 DeathTimePerDepth = deathTime/depth;
-	f32 P = fmod(runtime,DeathTimePerDepth);
-	tree->SetAlpha(1.0f - ((1.0f/DeathTimePerDepth)*P));
-	}
-	else
-	{
-	depth = tree->GetDepth();
-	K = (1.0f / ignitionTime) * runtime;
-	burnLevel = (i32)lerp(0, (f32)depth,K);
-	}*/
 };
 
 void FireParticleEmitter::InitDeath()

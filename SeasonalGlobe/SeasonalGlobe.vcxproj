@@ -121,7 +121,6 @@
     <ClCompile Include="PerfTimer.cpp" />
     <ClCompile Include="PointBasedParticleEmitter.cpp" />
     <ClCompile Include="Quaternion.cpp" />
-    <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SeasonalWindow.cpp" />
     <ClCompile Include="SeasonManager.cpp" />
@@ -167,7 +166,6 @@
     <ClInclude Include="MyApp.h" />
     <ClInclude Include="Namable.h" />
     <ClInclude Include="OBJLoader.h" />
-    <ClInclude Include="ogl.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ParticleEmitter.h" />
     <ClInclude Include="ParticleSystem.h" />

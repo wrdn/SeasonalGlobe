@@ -4,8 +4,6 @@ PerfTimer::PerfTimer(void)
 {
 #ifdef _WIN32
 	QueryPerformanceFrequency(&frequency);
-	//QueryPerformanceCounter(&_start);
-	//QueryPerformanceCounter(&_end);
 	_start.HighPart=0; _start.LowPart=0; _start.QuadPart=0; _start.u.HighPart=0; _start.u.LowPart=0;
 	_end.HighPart=0; _end.LowPart=0; _end.QuadPart=0; _end.u.HighPart=0; _end.u.LowPart=0;
 #endif

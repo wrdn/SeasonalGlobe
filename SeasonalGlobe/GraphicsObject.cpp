@@ -23,6 +23,7 @@ void GraphicsObject::Draw()
 		}
 	}
 
+	// Activate material properties (ka, kd, ks, ke, shininess)
 	objectMaterial.Activate();
 
 	glPushMatrix();

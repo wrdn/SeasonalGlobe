@@ -86,8 +86,6 @@ void World::reflective_draw(const GameTime &gameTime)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	//Material mat(float4(0.2f,0.2f,0.2f,1.0f), float4(0.4,0.6,0.4,1), float4(0.0f));
-	//_material2.apply();
 	Material mat(color(0.0f,0.0f,0.0f,1.0f), color(0.4f,0.4f,0.4f,0.6f), color(0.0f), 0);
 	mat.Activate();
 
@@ -248,8 +246,6 @@ void World::Draw(const GameTime &_gameTime)
 		glColor4f(1,1,1,1);
 	}
 
-	//movableSphere->Draw();
-
 	glPushMatrix();
 	reflective_draw(gameTime);
 	glPopMatrix();
@@ -271,13 +267,9 @@ void World::Draw(const GameTime &_gameTime)
 	glClipPlane(GL_CLIP_PLANE0, eq);
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE);
-	//glPushMatrix();
-	//glTranslatef(0.3f,0,0);
 	globeSphere.Draw();
-	//glPopMatrix();
 	glDisable(GL_BLEND);
 	glDisable(GL_CLIP_PLANE0);
-	//globeShader->Deactivate();
 
 	glPopMatrix();
 
@@ -461,7 +453,6 @@ void World::SetTreeShadeMode(TreeShadingMode m)
 		}
 		else if(m == NormalMappedTextured)
 		{
-			
 			tree->SetTreeShadeMode(normalMap_DirectionalShader, barkTexture, NormalMappedTextured);
 		}
 	};

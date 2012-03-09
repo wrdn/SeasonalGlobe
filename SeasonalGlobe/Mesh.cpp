@@ -7,6 +7,7 @@ const GLvoid* BUFFER_OFFSET(const u32 i)
 
 void Mesh::Unload()
 {
+	// Delete VBO buffers
 	if(meshvbo.meshData) { glDeleteBuffers(1, &meshvbo.meshData); }
 	if(meshvbo.indexData) { glDeleteBuffers(1, &meshvbo.indexData); }
 	meshvbo.meshData = meshvbo.indexData = dbg_vertex_array_sz = dbg_index_array_sz = 0;
@@ -42,23 +43,29 @@ bool Mesh::BuildVBO(const VERTEX *vertexData, const u32 vertexArraySz, const u32
 
 void Mesh::Draw()
 {
+	// bind VBO buffers
 	glBindBuffer(GL_ARRAY_BUFFER, meshvbo.meshData);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshvbo.indexData);
 
+	// enable vertex, normal and uv array
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
+	// set data pointers
 	glVertexPointer(3, GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX_POSITION_BUFFER_OFFSET));
 	glNormalPointer(GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX_NORMAL_BUFFER_OFFSET));
 	glTexCoordPointer(2, GL_FLOAT, sizeof(VERTEX), BUFFER_OFFSET(VERTEX_UV_BUFFER_OFFSET));
 
+	// draw mesh
 	glDrawElements(geometryDataFormat, dbg_index_array_sz, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
 
+	// disable vertex, normal and uv array
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
+	// unbind VBO buffers
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 };

@@ -63,10 +63,7 @@ bool Sphere::Create(f32 _radius, u32 _slices, u32 _stacks)
 		verts[vertexCount] = lv;
 		++vertexCount;
 	}
-
-
-	//((Model&)this->GetModel()).SetVertexArray(verts, vertexCount);
-
+	
 	indexCount = 0;
 	vertexCount = 2;
 	
@@ -110,20 +107,14 @@ bool Sphere::Create(f32 _radius, u32 _slices, u32 _stacks)
 		indicesArray[index++] = vertexCount+slices-j-1;
 	}
 
+	// create mesh
 	MeshHandle mh = CreateMesh("sphere");
 	bool ret = mh->BuildVBO(verts, vertexCount,  indicesArray, indicesArraySz);
-
 	delete [] verts;
 	delete [] indicesArray;
 
-	if(ret)
-	{
-		SetMesh(mh);
-	}
-	else
-	{
-		ResourceManager::get().RemoveResource(mh->GetResourceID());
-	}
+	if(ret) { SetMesh(mh); }
+	else { ResourceManager::get().RemoveResource(mh->GetResourceID()); }
 
 	return ret;
 };

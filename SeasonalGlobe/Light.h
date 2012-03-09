@@ -80,9 +80,6 @@ public:
 
 	void Activate() const
 	{
-		//glEnable(GL_LIGHTING);
-		//glEnable(lightID);
-
 		glLightfv(lightID, GL_POSITION, position.GetVec());
 		glLightfv(lightID, GL_SPOT_DIRECTION, spotlightDirection.GetVec());
 		glLightf(lightID, GL_SPOT_CUTOFF, cutoff);

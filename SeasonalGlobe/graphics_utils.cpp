@@ -4,7 +4,6 @@ MeshHandle CreateImposterModel()
 {
 	MeshHandle mh = CreateMesh("imposterMesh");
 
-	//VERTEX *imposterVerts = new VERTEX[8];
 	VERTEX imposterVerts[8];
 	const f32 moduvtop = 0.95f;
 
@@ -20,9 +19,6 @@ MeshHandle CreateImposterModel()
 	imposterVerts[6] = VERTEX(float3(0,-1,1),  float3(1,0,0), float2(1,0));
 	imposterVerts[7] = VERTEX(float3(0,-1,-1), float3(1,0,0), float2(0,0));
 	
-	//imposterModel->SetVertexArray(imposterVerts, 8);
-	
-	//u32 *imposterIndices = new u32[16];
 	u32 imposterIndices[16];
 	imposterIndices[0] = 1; imposterIndices[1] = 0;
 	imposterIndices[2] = 3; imposterIndices[3] = 1;
@@ -30,9 +26,6 @@ MeshHandle CreateImposterModel()
 	imposterIndices[6] = 5; imposterIndices[7] = 4;
 	imposterIndices[8] = 7; imposterIndices[9] = 5;
 	imposterIndices[10] = 7; imposterIndices[11] = 6;
-
-	//imposterModel->SetIndicesArray(imposterIndices, 16);
-	//imposterModel->BuildVBO();
 
 	mh->BuildVBO(imposterVerts, 8, imposterIndices, 16);
 	return mh;
@@ -48,8 +41,7 @@ MeshHandle CreateBillboardModel()
 	billboardVertices[1] = VERTEX(float3(0.5,1,0),   float3(0,0,1), float2(1,1));
 	billboardVertices[2] = VERTEX(float3(-0.5f,0,0), float3(0,0,1), float2(0,0));
 	billboardVertices[3] = VERTEX(float3(0.5f,0,0),  float3(0,0,1), float2(1,0));
-	//billboardModel->SetVertexArray(billboardVertices, 4);
-
+	
 	u32 billboardIndices[6];
 	billboardIndices[0] = 0;
 	billboardIndices[1] = 2;
@@ -58,7 +50,6 @@ MeshHandle CreateBillboardModel()
 	billboardIndices[4] = 3;
 	billboardIndices[5] = 1;
 
-	//billboardModel->SetIndicesArray(billboardIndices, 6);
 	mh->BuildVBO(billboardVertices, 4, billboardIndices, 6);
 	return mh;
 };
@@ -127,8 +118,7 @@ void texcube(Texture &t)
 void floor()
 {
 	glPushMatrix();
-	//glScalef(0.5,0.5,0.5);
-
+	
 	glBegin(GL_QUADS);
 	glNormal3f(0.0f, 1.0f, 0.0f);
 
@@ -154,6 +144,6 @@ void DrawFloor(const float3 &floorPos, const float3 &floorScale)
 	glDisable(GL_TEXTURE_2D);
 	glTranslatef(floorPos.x(), floorPos.y(), floorPos.z());
 	glScalef(floorScale.x(), floorScale.y(), floorScale.z());
-	floor(); // draw floor into stencil
+	floor();
 	glEnable(GL_TEXTURE_2D);
 };

@@ -152,20 +152,13 @@ bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slice
 		vertexIndex += 2; // move over the replicated vertex
 	}
 
+	// Create the mesh and build the VBO
 	MeshHandle mh = CreateMesh("cylinder");
 	bool ret = mh->BuildVBO(vertexArray, VertexArraySize, indexArray, indexArraySize);
-	
 	delete [] vertexArray;
 	delete [] indexArray;
-
-	if(ret)
-	{
-		SetMesh(mh);
-	}
-	else
-	{
-		ResourceManager::get().RemoveResource(mh->GetResourceID());
-	}
+	if(ret) { SetMesh(mh); }
+	else { ResourceManager::get().RemoveResource(mh->GetResourceID()); }
 
 	return ret;
 };

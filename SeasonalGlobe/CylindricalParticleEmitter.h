@@ -13,7 +13,7 @@ private:
 	Color4f startColor, endColor;
 
 	void Emit(Particle &p);
-	void UpdateParticleProperties(Particle &p/*, const GameTime &gameTime*/);
+	void UpdateParticleProperties(Particle &p);
 public:
 	CylindricalParticleEmitter();
 	~CylindricalParticleEmitter();

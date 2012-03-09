@@ -10,16 +10,9 @@ void GameTime::Update()
 	deltaTime = temp_time - currentTime;
 	if(deltaTime >= 1) deltaTime=0;
 
-	//FrameRate = 1.0f / deltaTime;
 	currentTime = temp_time;
 
 	runningTime += deltaTime;
-
-
-	/*currentTime = (f32)gxbase::App::GetTime();
-	deltaTime = currentTime - oldTime;
-	FrameRate = 1.0f / deltaTime;
-	oldTime = currentTime;*/
 };
 
-void GameTime::Init() { currentTime = (f32)gxbase::App::GetTime(); oldTime = currentTime; runningTime = 0; deltaTime=0; };
+void GameTime::Init() { currentTime = (f32)gxbase::App::GetTime(); runningTime = 0; deltaTime=0; };

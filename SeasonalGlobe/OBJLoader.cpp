@@ -165,9 +165,9 @@ bool OBJLoader::LoadOBJFile(const string& filename, vector<GraphicsObject> &outp
 		{
 		case IgnoredLine: continue;
 		case USEMTLLine:
-		{
-		  // TODO: WRITE THIS
-		} break;
+			{
+				// TODO: WRITE THIS
+			} break;
 		case MTLLIBLine:
 			{
 				// note: material files are specified relative to the OBJ file, so we need to build the
@@ -270,8 +270,8 @@ bool OBJLoader::LoadOBJFile(const string& filename, vector<GraphicsObject> &outp
 								i32 vertexIndex=-1, otherIndex=-1; // other index is vt or vn
 								stringstream buff(vs[0]); buff >> vertexIndex; --vertexIndex;
 								if(vertexIndex < 0 || (u32)vertexIndex >= vertices.size()) { break; } // can't survive an invalid vertex index
-								
-                                                                stringstream buff2(vs[1]);
+
+								stringstream buff2(vs[1]);
 								buff2 >> otherIndex; --otherIndex;
 
 								float3 vert(vertices[vertexIndex]), normal; float2 uv;
@@ -305,14 +305,10 @@ bool OBJLoader::LoadOBJFile(const string& filename, vector<GraphicsObject> &outp
 					indexSet.clear();
 					hashMap.clear(); // dont reuse the indices of faces for new objects
 				}
-
-				//vertices = std::vector<float3>();
-				//normals = std::vector<float3>();
-				//uvs = std::vector<float2>();
 			} break;
 
-		} // switch(p)
-	} // while(!fileStream.eof())
+		}
+	}
 
 	// Reached end of file, try to create a model using data
 	if(faceVertices.size() && indexSet.size())

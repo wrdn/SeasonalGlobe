@@ -143,7 +143,7 @@ void ParticleEmitter::Update(const GameTime &gameTime)
 	}
 };
 
-void ParticleEmitter::ActivateShader(/*const GameTime &gameTime*/)
+void ParticleEmitter::ActivateShader()
 {
 	glActiveTexture(GL_TEXTURE0);
 	emitterShader->SetUniform("AlphaMap", alphaMap);

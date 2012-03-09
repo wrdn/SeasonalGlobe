@@ -31,7 +31,6 @@ public:
 		Unload();
 	};
 
-	//bool CreateProgram(VertexShaderObject* vs_handle, FragmentShaderObject* fs_handle);
 	bool CreateProgram(VertexShaderHandle vs_handle, FragmentShaderHandle fs_handle);
 
 	VertexShaderHandle GetVS() const { return vs; };

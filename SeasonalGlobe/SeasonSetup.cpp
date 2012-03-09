@@ -67,8 +67,6 @@ void World::SetupSeasons()
 	seasonMan.SetTimePerSeason((f32)timePerSeasons); // 8 seconds per season, 32 seconds per cycle
 	seasonMan.SetWorldPointer(this);
 
-	//seasonMan.AddEvent(Spring, SeasonalEvent(0.2f, InitiateTreeIgnitionFire));
-
 	// Spring: Tree grows
 	seasonMan.AddEvent(Spring, SeasonalEvent(0.1f, StartTreeGrowth)); // tree grows at start of spring
 

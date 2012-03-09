@@ -410,8 +410,6 @@ void FractalTree::Draw(f32 dt)
 		return;
 	}
 	
-	//mat.SetAmbient(float4(1,1,1,0));
-	//mat.SetSpecular(float4(1,1,1,1));
 	mat.Activate();
 	mat.SetDiffuse(float4(1,1,1,alpha));
 

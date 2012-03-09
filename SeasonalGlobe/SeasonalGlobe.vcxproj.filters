@@ -189,9 +189,6 @@
     <ClCompile Include="SeasonManager.cpp">
       <Filter>Source Files\World</Filter>
     </ClCompile>
-    <ClCompile Include="RenderTarget.cpp">
-      <Filter>Source Files\Shading</Filter>
-    </ClCompile>
     <ClCompile Include="World_Setup.cpp">
       <Filter>Source Files\World</Filter>
     </ClCompile>
@@ -203,9 +200,6 @@
     </ClCompile>
     <ClCompile Include="Quaternion.cpp">
       <Filter>Source Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files\Resource Management</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Source Files\Resource Management</Filter>
@@ -220,6 +214,9 @@
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="ShaderObject.cpp">
+      <Filter>Source Files\Shading</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
       <Filter>Source Files\Shading</Filter>
     </ClCompile>
   </ItemGroup>
@@ -343,9 +340,6 @@
     </ClInclude>
     <ClInclude Include="Quaternion.h">
       <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="ogl.h">
-      <Filter>Header Files\Misc</Filter>
     </ClInclude>
     <ClInclude Include="Namable.h">
       <Filter>Header Files\Misc</Filter>

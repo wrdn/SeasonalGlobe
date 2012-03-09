@@ -92,7 +92,7 @@ void StaticParticleEmitter::InitiateMainColorChange()
 	}
 };
 
-void StaticParticleEmitter::UpdateParticleProperties(Particle &p/*, const GameTime &gameTime*/)
+void StaticParticleEmitter::UpdateParticleProperties(Particle &p)
 {
 	if(particlesDieing)
 	{

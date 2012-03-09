@@ -140,11 +140,9 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		} break;
 	case 187: //+
 		scn.SetDtMultiplier(scn.GetMultiplier() + 0.1);
-		//scn.GetSeasonManager()->SetTimePerSeason( scn.GetSeasonManager()->GetTimePerSeason() + 0.1f );
 		break;
 	case 189: //-
 		scn.SetDtMultiplier(scn.GetMultiplier() - 0.1);
-		//scn.GetSeasonManager()->SetTimePerSeason( scn.GetSeasonManager()->GetTimePerSeason() - 0.1f );
 		break;
 	case 'p':
 		{
@@ -194,40 +192,6 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 			scn.SetPolygonMode(scn.GetNextPolygonMode(scn.GetPolygonMode()));
 		};
 	}
-
-
-
-
-
-	/*else if(key == VK_RETURN && !down)
-	{
-		if(glIsEnabled(GL_CULL_FACE))
-		{
-			glDisable(GL_CULL_FACE);
-		}
-		else
-		{
-			glEnable(GL_CULL_FACE);
-		}
-	}
-	else if(key == VK_LEFT && !down)
-	{
-		GLint params[2];
-		glGetIntegerv(GL_POLYGON_MODE, params);
-
-		if(params[0] == GL_LINE)
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-		}
-		else if(params[0] == GL_POINT)
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		}
-		else
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		}
-	}*/
 };
 
 void SeasonalWindow::OnMouseButton(MouseButton button, bool down)
@@ -260,53 +224,13 @@ void SeasonalWindow::OnMouseButton(MouseButton button, bool down)
 void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 {
 	static i32 temp_x, temp_y;
-	if(_leftDown) {
-
-		/*Camera2 &cam = scn.GetCamera();
-		f32 ychange = (f32)y-(f32)temp_y;
-
-		Mat44 rotationMatrix = Mat44::BuildRotationMatrix(ychange, cam.right.x(), cam.right.y(), cam.right.z());
-		cam.dir = rotationMatrix.Mult(cam.dir.ToFloat4()).ToFloat3();
-		cam.up = rotationMatrix.Mult(cam.up.ToFloat4()).ToFloat3();
-		*/
-		//Mat44 m = Mat44::BuildRotationMatrix( changeInY, 0, 1, 0);
-		//cam.dir = m.Mult(cam.dir.ToFloat4()).ToFloat3();
-		//cam.up = m.Mult(cam.up.ToFloat4()).ToFloat3();
-
-
+	if(_leftDown)
+	{
 		scn.SetCameraPosition(scn.GetCameraPosition() + (y-temp_y)*0.05f);
-
-		//scn.GetCamera().Translate( scn.GetCamera().GetDirection() * ((f32)y-(f32)temp_y)*gameTime.GetDeltaTime() );
-		//const f32 speed = 0.1f;
-		//const f32 d = ((f32)y-(f32)temp_y);
-		//scn.GetCamera().SetRadius ( max(0.1, scn.GetCamera().GetRadius() + d*speed) );
-		//scn.GetCamera().SetRadius( scn.GetCamera().GetRadius() * ((f32)y-(f32)temp_y)*gameTime.GetDeltaTime() );
-		//scn.GetCamera().Translate( scn.GetCamera().GetDirection() * ((f32)y-(f32)temp_y)*0.05f );
-		/*float3 currentPos = scn.GetCamera().GetPosition();
-		currentPos.z( scn.GetCamera().GetDirection().z() * currentPos.z() +  (y-temp_y)*0.05f );
-		scn.SetCameraPosition(scn.GetCameraPosition() + (y-temp_y)*0.05f);*/
-		//scn.GetCamera().SetPosition(currentPos);
-		//scn._cameraPosition += (y-temp_y)*0.05f;
-
-
 	}
-	if(_rightDown) {
-
-		//Camera2 &cam = scn.GetCamera();
-
-
+	if(_rightDown)
+	{
 		scn.SetCameraRotation(scn.GetCameraRotation()+(x-temp_x)*0.5f);
-
-		//const f32 d = ((f32)x - (f32)temp_x);
-		//scn.GetCamera().SetTheta ( scn.GetCamera().GetTheta() + d*0.1f );
-		//scn.GetCamera().Rotate( Mat44::BuildRotationMatrix( (x-temp_x)*0.5f, 0,1,0 ) );
-		//float3 currentPos = scn.GetCamera().GetDirection();
-		//currentPos.z( currentPos.z() +  +(x-temp_x)*0.5f );
-		//scn.GetCamera().SetPosition(currentPos);
-		//scn.GetCamera().Rotate( Mat44::BuildRotationMatrix( (x-temp_x)*0.5f, 0,1,0));
-		//scn._cameraRotation += (x-temp_x)*0.5f;
-
-
 	}
 	temp_x = x;
 	temp_y = y;
@@ -340,6 +264,4 @@ void SeasonalWindow::OnCreate()
 	gameTime.Init();
 };
 
-void SeasonalWindow::OnDestroy()
-{
-};
+void SeasonalWindow::OnDestroy() {};
