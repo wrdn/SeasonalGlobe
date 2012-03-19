@@ -1,6 +1,9 @@
 #include "util.h"
 #include <math.h>
 #include <sys/stat.h>
+#include <pmmintrin.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 void set_bit(u32 &opt, const u32 bit)
 {
