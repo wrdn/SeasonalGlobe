@@ -172,8 +172,7 @@ bool World::LoadParticles()
 
 	ShaderHandle psysbase = particleSystemBaseShader;
 
-	u32 LEAF_PARTICLES_PER_LEAF_MATRIX = 3;
-	conf.GetInt("LeavesPerLeafMatrix", (i32&)LEAF_PARTICLES_PER_LEAF_MATRIX);
+	u32 LEAF_PARTICLES_PER_LEAF_MATRIX = conf.Read("LeavesPerLeafMatrix", 3U);
 
 	// Leaves
 	leafParticleEmitterID = particleSystem.AddEmitter<StaticParticleEmitter>();
@@ -213,10 +212,10 @@ bool World::LoadParticles()
 	smokeEmitterID = particleSystem.AddEmitter<PointBasedParticleEmitter>();
 	PointBasedParticleEmitter *smokeParticleEmitter = particleSystem.GetEmitter<PointBasedParticleEmitter>(smokeEmitterID);
 	smokeParticleEmitter->SetParticleSpread(0.35f);
-	i32 smokeRateOfEmission = 250; conf.GetInt("SmokeRateOfEmission", smokeRateOfEmission);
+	i32 smokeRateOfEmission = conf.Read("SmokeRateOfEmission", 250);
 	smokeParticleEmitter->SetRateOfEmission(smokeRateOfEmission);
 	smokeParticleEmitter->SetAlphaMap(particleTexture);
-	i32 maxsmokeparticles=80; conf.GetInt("MaxSmokeParticles", maxsmokeparticles);
+	i32 maxsmokeparticles = conf.Read("MaxSmokeParticles", 80);
 	smokeParticleEmitter->SetLocalParticleMaximum(abs(maxsmokeparticles));
 	smokeParticleEmitter->SetStartingColor(Color4f(0.2f, 0.2f, 0.2f, 0.75f));
 	smokeParticleEmitter->SetEndingColor(Color4f(0.2f, 0.2f, 0.2f, 0.1f));
@@ -231,7 +230,7 @@ bool World::LoadParticles()
 	snowEmitterID = particleSystem.AddEmitter<HemiSphericalParticleEmitter>();
 	HemiSphericalParticleEmitter *snowEmitter = particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID);
 	snowEmitter->SetAlphaMap(particleTexture);
-	i32 maxsnowparticles=150; conf.GetInt("MaxSnowParticles", maxsnowparticles);
+	i32 maxsnowparticles = conf.Read("MaxSnowParticles", 150);
 	snowEmitter->SetLocalParticleMaximum(abs(maxsnowparticles));
 	snowEmitter->SetHemiSphereRadius(globeSphere.GetRadius() - (globeSphere.GetRadius() * 0.048f));
 	snowEmitter->SetEmitterOrigin(float3(0.2f,0,0));
@@ -265,8 +264,7 @@ bool World::LoadParticles()
 	grassStaticEmitterID = particleSystem.AddEmitter<StaticParticleEmitter>();
 	StaticParticleEmitter *grassParticles = particleSystem.GetEmitter<StaticParticleEmitter>(grassStaticEmitterID);
 
-	i32 grassLocalParticleMax = 150;
-	conf.GetInt("GrassParticleCount", grassLocalParticleMax);
+	i32 grassLocalParticleMax = conf.Read("GrassParticleCount", 150);
 	grassParticles->SetLocalParticleMaximum(grassLocalParticleMax);
 
 	grassParticles->SetModel(CreateImposterModel());
@@ -281,8 +279,7 @@ bool World::LoadParticles()
 
 	f32 radius = globeSphere.GetRadius()-0.95f;
 
-	i32 grass_particles_count=150;
-	conf.GetInt("GrassParticleCount", grass_particles_count);
+	i32 grass_particles_count = conf.Read("GrassParticleCount", 150);
 	if(grass_particles_count < 0) { grass_particles_count = 150; }
 
 	const float X_FUDGE = 0.35f;
@@ -347,7 +344,7 @@ bool World::LoadGeometry()
 	}
 
 	// Load globe
-	f32 radius=11.3f; conf.GetFloat("GlobeRadius",radius);
+	f32 radius = conf.Read("GlobeRadius", 11.3f);
 	globeSphere.Create(radius, 40, 40);
 	globeSphere.SetPosition(float3(0.3f,0,0));
 
@@ -375,7 +372,7 @@ bool World::LoadGeometry()
 	tree->SetInitialString("A");
 	tree->AddProductionRule('A', "F[^B][^^^^^^^B]");
 	tree->AddProductionRule('B', "F^[L-BL]^B");
-	i32 gen = 8; conf.GetInt("LSystemGenerations", gen);
+	i32 gen = conf.Read("LSystemGenerations", 8);
 	tree->SetGenerations(gen);
 	tree->BuildTree();
 	tree->SetActive(false);

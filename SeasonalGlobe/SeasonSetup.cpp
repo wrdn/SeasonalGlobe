@@ -72,8 +72,7 @@ void ActivateSnowSlowing(const World *w) { ((World*)w)->SetSnowSlowing(true); }
 // setup world seasons
 void World::SetupSeasons()
 {
-	i32 timePerSeasons = 16;
-	conf.GetInt("TimePerSeason", timePerSeasons);
+	i32 timePerSeasons = conf.Read("TimePerSeason", 16);
 
 	seasonMan.SetTimePerSeason((f32)timePerSeasons); // 8 seconds per season, 32 seconds per cycle
 	seasonMan.SetWorldPointer(this);
