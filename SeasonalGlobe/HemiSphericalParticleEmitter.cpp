@@ -12,10 +12,13 @@ HemiSphericalParticleEmitter::~HemiSphericalParticleEmitter()
 
 void HemiSphericalParticleEmitter::Emit(Particle &p)
 {
+	// emit particles over hemisphere
+
 	f32 ZAxis = randflt(-hemisphere_radius, hemisphere_radius);
 	f32 phi = randflt(0,PI);
 	f32 theta = asin(ZAxis/hemisphere_radius);
 	
+	// get x,y,z position
 	f32 xpos = hemisphere_radius * cos(theta) * cos(phi);
 	f32 ypos = hemisphere_radius * cos(theta) * sin(phi);
 	f32 zpos = hemisphere_radius * sin(theta);
@@ -24,6 +27,7 @@ void HemiSphericalParticleEmitter::Emit(Particle &p)
 	p.oldPos = p.pos;
 	p.rotation_x = 0;
 
+	// randomise velocity
 	p.velocity.x( randflt(-0.4f,0.4f));
 	p.velocity.y( -(hemisphere_radius/timeToFall) );
 	p.velocity.z( randflt(-0.4f, 0.4f));
@@ -56,18 +60,21 @@ void HemiSphericalParticleEmitter::UpdateParticleProperties(Particle &p)
 
 	if(p.pos.y() > EPSILON && p.rotation_x < 1)
 	{
+		// stop particles on the roof
 		p.energy = randflt(3,4);
 		p.pada = p.energy;
 		p.rotation_x = 0;
 	}
 	else if(p.pos.y() < EPSILON)
 	{
+		// lerp color over particle lifetime
 		p.velocity.zero();
 		p.color = startColor.vec_lerp(endColor, 1-(1.0f/p.pada)*p.energy);
 	}
 
 	if(p.rotation_x > 1)
 	{
+		// lerp color over particle lifetime
 		p.color = startColor.vec_lerp(endColor, 1-(1.0f/p.pada)*p.energy);
 	}
 };

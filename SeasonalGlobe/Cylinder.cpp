@@ -3,9 +3,12 @@
 #include <vector>
 using namespace std;
 
+// Constructor sets all cylinder variables to 0
 Cylinder::Cylinder(void)  : topRadius(0), bottomRadius(0), height(0), slices(0), stacks(0) { };
+
 Cylinder::~Cylinder(void) { };
 
+// Create cylinder (and its mesh)
 bool Cylinder::Create(f32 _topRadius, f32 _bottomRadius, f32 _height, u32 _slices, u32 _stacks)
 {
 	topRadius = _topRadius;

@@ -5,24 +5,16 @@
 #include <vector>
 
 // pass source and a null char pointer (memory allocated in func)
-// The _unsafe versions of the copystr() functions do no checks (i.e. dont check src != NULL and dont check strlen(src)>0, or
-// the passed len variable > 0). The _unsafe functions should only ever be used when you know src!=NULL and the string has length>0
 c8* copystr(const c8 *src);
 c8* copystr(const c8 *src, const i32 len);
-c8* copystr_unsafe(const c8 *src);
-c8* copystr_unsafe(const c8 *src, const i32 len);
 
 // returns substring in src between start and end
 c8* substr(const c8*src, u32 start, u32 end);
 
-bool compare_str_lim(const c8 *src, const c8 *targ, u32 start, u32 end);
-
-bool compare_str_lim(const c8 *src, const c8 *targ, u32 src_start, u32 src_end,
-	u32 targ_start, u32 targ_end);
-
 // splits string s using delimiter, returning split strings in vector v
 void split(const std::string &s, c8 delim, std::vector<std::string> &v);
 
+// useful as you can call these functions from a debugger console window to print the arrays
 void printf_array(f32 *arr, u32 sz); // print float array
 void printi_array(u32 *arr, u32 sz); // print integer array
 

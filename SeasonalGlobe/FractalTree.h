@@ -168,8 +168,8 @@ private:
 	// Builds each of the 6 matrices required for applying rotations
 	void BuildRotationMatrices();
 
-	// Calculate the tree depth, create transformationMatrices array
-	// and levels vector
+	// Precalculate the depth of the tree and the number of matrices at each depth (so we can allocate memory
+	// once only). The transformation matrices array and levels vector is created
 	void CalculateTreeDepth();
 
 	// Draw branch cylinder given a 4x4 transformation matrix (and optional scale matrix)

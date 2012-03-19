@@ -15,6 +15,7 @@ FireParticleEmitter::~FireParticleEmitter()
 {
 };
 
+// randomise attributes of the fire particle, including position over line, velocity and time to live (energy)
 void randomise_fire_particle_attr(Particle &p, ParticleLine &pline, f32 t0, f32 t1, Color4f &color)
 {
 	f32 t = randflt(t0, t1);
@@ -27,6 +28,8 @@ void randomise_fire_particle_attr(Particle &p, ParticleLine &pline, f32 t0, f32 
 	p.energy = randflt(0, 0.85f);
 };
 
+// if the burn level is less than that of the particle (fire initiation), draw the particle
+// if greater and tree dieing, dont draw the particle
 void FireParticleEmitter::Emit(Particle &p)
 {
 	p.InvalidateParticle(); // reset particle

@@ -1,5 +1,6 @@
 #include "graphics_utils.h"
 
+// create imposter (2 quads) and return mesh handle
 MeshHandle CreateImposterModel()
 {
 	MeshHandle mh = CreateMesh("imposterMesh");
@@ -27,10 +28,14 @@ MeshHandle CreateImposterModel()
 	imposterIndices[8] = 7; imposterIndices[9] = 5;
 	imposterIndices[10] = 7; imposterIndices[11] = 6;
 
+	// build vbo
 	mh->BuildVBO(imposterVerts, 8, imposterIndices, 16);
+
+	// return mesh handle
 	return mh;
 };
 
+// create billboard (1 quad) and return mesh handle
 MeshHandle CreateBillboardModel()
 {
 	// Billboard model (textured quad)
@@ -50,10 +55,14 @@ MeshHandle CreateBillboardModel()
 	billboardIndices[4] = 3;
 	billboardIndices[5] = 1;
 
+	// build vbo
 	mh->BuildVBO(billboardVertices, 4, billboardIndices, 6);
+
+	// return mesh handle
 	return mh;
 };
 
+// draw cube (immediate mode)
 void cube()
 {
 	// Front Face
@@ -106,6 +115,7 @@ void cube()
 	glEnd();
 };
 
+// draw textured cube using Texture t (immediate mode)
 void texcube(Texture &t)
 {
 	glEnable(GL_TEXTURE_2D);
@@ -115,6 +125,7 @@ void texcube(Texture &t)
 	glDisable(GL_TEXTURE_2D);
 }
 
+// draw floor plane
 void floor()
 {
 	glPushMatrix();
@@ -138,6 +149,7 @@ void floor()
 	glPopMatrix();
 }
 
+// draw floor plane with translation and scale
 void DrawFloor(const float3 &floorPos, const float3 &floorScale)
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

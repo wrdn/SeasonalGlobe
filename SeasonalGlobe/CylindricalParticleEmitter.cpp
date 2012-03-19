@@ -18,6 +18,7 @@ void CylindricalParticleEmitter::Emit(Particle &p)
 
 	p.pos = this->startPos + (t * this->direction);
 
+	// random velocity between random float between 0 and 1 along y
 	p.velocity = float3(0.2f, randflt(0, 1), 0.2f);
 	p.velocity.normalize();
 
@@ -30,5 +31,6 @@ void CylindricalParticleEmitter::Emit(Particle &p)
 
 void CylindricalParticleEmitter::UpdateParticleProperties(Particle &p)
 {
+	// lerp between start and end color
 	p.color = startColor.vec_lerp(endColor, 1.0f / p.energy);
 };

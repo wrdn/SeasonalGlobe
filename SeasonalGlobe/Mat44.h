@@ -67,7 +67,10 @@ public:
 
 	static const Mat44 IDENTITY;
 
+	// returns the matrix array (so it can be passed directly to OpenGL functions requiring an array of floats)
 	const f32* GetMatrix() const;
+
+	// sets matrix using first 16 elements in _mat float array
 	void SetMatrix(const f32* _mat) const;
 
 	void SetMatrix(const f32 m11, const f32 m12, const f32 m13, const f32 m14,
@@ -88,6 +91,9 @@ public:
 	float4 Mult(const float4 &m) const; // matrix-vector multiplication
 
 	// Used to multiply a batch of vectors by the same matrix
+	// Faster than multiply when you have to mutiply many vectors by the same matrix
+	// Using this function, we can efficiently prefetch data, and only have to
+	// transpose the matrix once
 	void BatchMult(const float4 * const in, float4 *out, u32 len) const;
 
 	// Does inverse according to Cramers Rule
@@ -96,7 +102,7 @@ public:
 
 	f32 Determinant() const; // get matrix determinant
 
-	Mat44 Transpose() const; // matrix transpose
+	Mat44 Transpose() const; // matrix transpose (rows become columns and vice versa)
 
 	void write(std::ostream &out);
 
@@ -106,6 +112,7 @@ public:
 	// modifies only the elements for the scale matrix (assumes rest is identity)
 	static void BuildScaleMatrix(f32 xscale, f32 yscale, f32 zscale, Mat44 &out);
 
+	// Grab translation from matrix
 	const float3 GetTranslationFromMatrix() const;
 };
 

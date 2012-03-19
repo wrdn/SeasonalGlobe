@@ -5,6 +5,7 @@
 #include "ResourceManager.h"
 using namespace std;
 
+// valid material line starts
 const c8* OBJLoader::OBJMaterialValidLineInitiators[] =
 {
 	"newmtl",
@@ -16,6 +17,8 @@ const c8* OBJLoader::OBJMaterialValidLineInitiators[] =
 	"Kd",
 	"Ks"
 };
+
+// valid material line types
 const OBJLoader::OBJMaterialNodeType OBJLoader::OBJMaterialAssociatedNodeTypes[] =
 {
 	Mat_NewMaterial,
@@ -27,6 +30,8 @@ const OBJLoader::OBJMaterialNodeType OBJLoader::OBJMaterialAssociatedNodeTypes[]
 	Mat_Kd,
 	Mat_Ks,
 };
+
+// valid starts of lines
 const c8* OBJLoader::ValidLineInitiators[] =
 {
 	"v",
@@ -64,6 +69,7 @@ const c8* OBJLoader::LineTypeAsString(OBJLineType t)
 	return "";
 };
 
+// returns the node type of a material line start
 OBJLoader::OBJMaterialNodeType OBJLoader::ValidateOBJMaterialLineStart(const string &str)
 {
 	for(u32 i=0;i<sizeof(OBJMaterialValidLineInitiators)/sizeof(const c8*);++i)
@@ -72,6 +78,7 @@ OBJLoader::OBJMaterialNodeType OBJLoader::ValidateOBJMaterialLineStart(const str
 	return IgnoredNode;
 };
 
+// returns the line type of an obj file mesh line (e.g. vertex line, normal line etc)
 OBJLoader::OBJLineType OBJLoader::ValidateLineStart(const string &lineStart)
 {
 	for(u32 i=0;i< sizeof(ValidLineInitiators)/sizeof(const c8*); ++i)
@@ -80,14 +87,14 @@ OBJLoader::OBJLineType OBJLoader::ValidateLineStart(const string &lineStart)
 	return IgnoredLine;
 };
 
+// Parses the obj material file (not used by globe, exists for completeness)
+// Uses stream operators to read data in
 bool OBJLoader::ParseMaterialFile(const c8* mtl_filename, std::map<u32, OBJMaterial> &outputMap)
 {
 	ifstream mtlFile((const char*)mtl_filename);
-	if(mtlFile.fail()) return false;
+	if(mtlFile.fail()) return false; // no material file?
 
 	u32 activeNode = 0;
-
-	vector<OBJMaterial> dbg_materials;
 
 	while(!mtlFile.eof())
 	{
@@ -96,38 +103,40 @@ bool OBJLoader::ParseMaterialFile(const c8* mtl_filename, std::map<u32, OBJMater
 		stringstream line(buff);
 		line >> tmp;
 
-		OBJMaterialNodeType matNode = ValidateOBJMaterialLineStart(tmp);
+		OBJMaterialNodeType matNode = ValidateOBJMaterialLineStart(tmp); // get line type
+
 		if(!matNode || (matNode != Mat_NewMaterial && activeNode == 0)) { continue; } // check we have a material
 
+		// parse the line based on its type
 		switch(matNode)
 		{
 		case IgnoredLine: break;
-		case Mat_NewMaterial:
+		case Mat_NewMaterial: // make a new material
 			{
 				string materialName; line >> materialName;
 				activeNode = hash_djb2((const uc8*)materialName.c_str());
 				outputMap[activeNode].hashedName = activeNode;
 			}
 			break;
-		case Mat_MapKd:
+		case Mat_MapKd: // diffuse texture
 			line >> outputMap[activeNode].map_Kd_filename;
 			break;
-		case Mat_MapKs:
+		case Mat_MapKs: // specular texture
 			line >> outputMap[activeNode].map_Ks_filename;
 			break;
-		case Mat_MapBump:
+		case Mat_MapBump: // normal/bump map
 			line >> outputMap[activeNode].map_Bump_filename;
 			break;
-		case Mat_MapD:
+		case Mat_MapD: // alpha map
 			line >> outputMap[activeNode].map_d_filename;
 			break;
-		case Mat_Ka:
+		case Mat_Ka: // ambient color
 			line >> outputMap[activeNode].ka;
 			break;
-		case Mat_Kd:
+		case Mat_Kd: // diffuse color
 			line >> outputMap[activeNode].kd;
 			break;
-		case Mat_Ks:
+		case Mat_Ks: // specular color
 			line >> outputMap[activeNode].ks;
 			break;
 		}
@@ -166,9 +175,9 @@ bool OBJLoader::LoadOBJFile(const string& filename, vector<GraphicsObject> &outp
 		case IgnoredLine: continue;
 		case USEMTLLine:
 			{
-				// TODO: WRITE THIS
+				// TODO: WRITE THIS SECTION, OBJ MATERIAL FILES ARE NOT USED HENCE IT IS NOT CURRENTLY PARSED
 			} break;
-		case MTLLIBLine:
+		case MTLLIBLine: // material library line, parse library file
 			{
 				// note: material files are specified relative to the OBJ file, so we need to build the
 				// material file name out of the OBJ filename (extract directory and add material filename)
@@ -184,7 +193,7 @@ bool OBJLoader::LoadOBJFile(const string& filename, vector<GraphicsObject> &outp
 				ParseMaterialFile(tmpFilename.c_str(), materials);
 			} break;
 
-		case VertexLine:
+		case VertexLine: // make a 3D vertex
 			{
 				float3 _vertex;
 				line >> _vertex;
@@ -192,14 +201,14 @@ bool OBJLoader::LoadOBJFile(const string& filename, vector<GraphicsObject> &outp
 			} break;
 
 
-		case TextureCoordinateLine:
+		case TextureCoordinateLine: // make a 2D uv
 			{
 				float2 _uv; line >> _uv;
 				if(!line.fail()) { uvs.push_back(_uv); }
 			} break;
 
 
-		case NormalLine:
+		case NormalLine: // make a 3D normal
 			{
 				float3 _normal; line >> _normal;
 				if(!line.fail()) { normals.push_back(_normal); }

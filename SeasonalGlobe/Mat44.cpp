@@ -54,21 +54,25 @@ Mat44::~Mat44(void)
 {
 }
 
+// returns the matrix array (so it can be passed directly to OpenGL functions requiring an array of floats)
 const f32* Mat44::GetMatrix() const
 {
 	return mat;
 };
 
+// set matrix using first 16 elements in _mat array
 void Mat44::SetMatrix(const f32* _mat) const
 {
 	memcpy((f32*)mat, _mat, sizeof(f32) * Mat44::MATRIX_ELEMENT_COUNT);
 };
 
+// set to identity matrix
 void Mat44::Identity() const
 {
 	SetMatrix(IDENTITY_MAT44_DATA);
 };
 
+// Add matrix m to "this"
 Mat44 Mat44::Add(const Mat44 &m) const
 {
 	__m128 mat1rows[] = { _mm_load_ps(mat), _mm_load_ps(mat+4), _mm_load_ps(mat+8), _mm_load_ps(mat+12) };
@@ -82,6 +86,7 @@ Mat44 Mat44::Add(const Mat44 &m) const
 	return res;
 };
 
+// Add v to "this"
 Mat44 Mat44::Add(const f32 v) const
 {
 	__m128 mat1rows[] = { _mm_load_ps(mat), _mm_load_ps(mat+4), _mm_load_ps(mat+8), _mm_load_ps(mat+12) };
@@ -95,6 +100,7 @@ Mat44 Mat44::Add(const f32 v) const
 	return res;
 };
 
+// Subtract matrix m from another "this"
 Mat44 Mat44::Sub(const Mat44 &m) const
 {
 	__m128 mat1rows[] = { _mm_load_ps(mat), _mm_load_ps(mat+4), _mm_load_ps(mat+8), _mm_load_ps(mat+12) };
@@ -108,6 +114,7 @@ Mat44 Mat44::Sub(const Mat44 &m) const
 	return res;
 };
 
+// Subtract v from matrix
 Mat44 Mat44::Sub(const f32 v) const
 {
 	__m128 mat1rows[] = { _mm_load_ps(mat), _mm_load_ps(mat+4), _mm_load_ps(mat+8), _mm_load_ps(mat+12) };
@@ -121,6 +128,7 @@ Mat44 Mat44::Sub(const f32 v) const
 	return res;
 };
 
+// Multiply matrix by scaling factor
 Mat44 Mat44::Mult(const f32 scale) const
 {
 	__m128 mat1rows[] = { _mm_load_ps(mat), _mm_load_ps(mat+4), _mm_load_ps(mat+8), _mm_load_ps(mat+12) };
@@ -134,6 +142,7 @@ Mat44 Mat44::Mult(const f32 scale) const
 	return res;
 };
 
+// Component wise multiplication - here for completeness (never used)
 Mat44 Mat44::Mult_ComponentWise(const Mat44 &m) const
 {
 	__m128 mat1rows[] = { _mm_load_ps(mat), _mm_load_ps(mat+4), _mm_load_ps(mat+8), _mm_load_ps(mat+12) };
@@ -147,6 +156,7 @@ Mat44 Mat44::Mult_ComponentWise(const Mat44 &m) const
 	return res;
 };
 
+// Multiply 2 matrices together
 Mat44 Mat44::Mult(const Mat44 &m) const
 {
 	Mat44 a = Transpose();
@@ -182,6 +192,7 @@ Mat44 Mat44::Mult(const Mat44 &m) const
 	return out.Transpose();
 };
 
+// Multiply matrix and 4D vector together
 float4 Mat44::Mult(const float4 &m) const
 {
 	Mat44 tr = Transpose();
@@ -215,6 +226,9 @@ float4 Mat44::Mult(const float4 &m) const
 	return returnVec;
 };
 
+// Faster than multiply when you have to mutiply many vectors by the same matrix
+// Using this function, we can efficiently prefetch data, and only have to
+// transpose the matrix once
 void Mat44::BatchMult(const float4 * const in, float4 *out, u32 len) const
 {
 	Mat44 tr = Transpose();
@@ -251,6 +265,8 @@ void Mat44::BatchMult(const float4 * const in, float4 *out, u32 len) const
 	}
 };
 
+// Does inverse according to Cramers Rule, in scalar fashion
+// See ftp://download.intel.com/design/PentiumIII/sml/24504301.pdf
 void Mat44::Cramers_Inverse(const Mat44 *out, f32 &det) const
 {
 	f32 tmp[12]; /* temp array for pairs                      */
@@ -344,6 +360,8 @@ void Mat44::Cramers_Inverse(const Mat44 *out, f32 &det) const
 		dst[j] *= det;
 };
 
+// Does inverse according to Cramers Rule
+// See ftp://download.intel.com/design/PentiumIII/sml/24504301.pdf
 void Mat44::Cramers_Inverse_SSE(const Mat44 *out, f32 &detv) const
 {
 	f32 *src = (f32*)&mat;
@@ -493,6 +511,7 @@ std::ostream& operator<<(std::ostream &out, Mat44 &m)
 	return out;
 };
 
+// Build rotation matrix angle_in_degrees about x,y,z specified axis e.g. 90 degrees about x axis is BuildRotationMatrix(90, 1,0,0)
 Mat44 Mat44::BuildRotationMatrix(f32 angle_in_degrees, f32 x, f32 y, f32 z)
 {
 	float3 fv(x,y,z);
@@ -528,6 +547,7 @@ Mat44 Mat44::BuildRotationMatrix(f32 angle_in_degrees, f32 x, f32 y, f32 z)
 		);
 };
 
+// Build scaling matrix
 Mat44 Mat44::BuildScaleMatrix(f32 xscale, f32 yscale, f32 zscale)
 {
 	return Mat44(
@@ -544,6 +564,7 @@ void Mat44::BuildScaleMatrix(f32 xscale, f32 yscale, f32 zscale, Mat44 &out)
 	out.mat[m33] = zscale;
 };
 
+// Grab translation from matrix
 const float3 Mat44::GetTranslationFromMatrix() const
 {
 	return float3( mat[12], mat[13], mat[14] );

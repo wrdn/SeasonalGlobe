@@ -103,6 +103,7 @@ float2 float2::negate() const
 		-vec[1]);
 };
 
+// linearly interpolate between "this" and target
 float2 float2::vec_lerp(const float2 &target, f32 lerpFactor)
 {
 	return float2(
@@ -112,7 +113,7 @@ float2 float2::vec_lerp(const float2 &target, f32 lerpFactor)
 
 std::ostream& operator<<(std::ostream &out, float2 &m)
 {
-	out << m.x() << ", " << m.y() << std::endl;
+	out << m.x() << " " << m.y() << std::endl;
 	return out;
 };
 
@@ -124,6 +125,7 @@ std::istream& operator>>(std::istream &in, float2& out)
 	return in;
 };
 
+// 2D integer vector stream in operator
 std::istream& operator>>(std::istream &in, vec2i& out)
 {
 	i32 x,y;

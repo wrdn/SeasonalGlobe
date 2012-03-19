@@ -6,9 +6,10 @@ const f32 GameTime::GetDeltaTime() const { return deltaTime; };
 
 void GameTime::Update()
 {
+	// get time and subtract currentTime (the time when Update() was last called)
 	f32 temp_time = (f32)gxbase::App::GetTime();
 	deltaTime = temp_time - currentTime;
-	if(deltaTime >= 1) deltaTime=0;
+	if(deltaTime >= 1) deltaTime=0; // fixes issue where delta time very high on the first few frames
 
 	currentTime = temp_time;
 

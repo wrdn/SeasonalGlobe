@@ -114,9 +114,6 @@
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files\Shading</Filter>
     </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Source Files\Shading</Filter>
-    </ClCompile>
     <ClCompile Include="util.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>

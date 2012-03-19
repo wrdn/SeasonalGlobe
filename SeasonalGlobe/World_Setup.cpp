@@ -3,10 +3,14 @@
 #include "World.h"
 #include "graphics_utils.h"
 
+// This file contains all the world load functions (save for SetupSeasons in SeasonSetup.cpp)
+
 bool World::Load()
 {
 	conf.ParseConfigFile("Data/ConfigFile.txt"); // load configuration file
 	
+	// Order of loading: Lights -> Textures -> Shaders -> Geometry -> Particles -> Seasons
+
 	LoadLights();
 	LoadTextures();
 	LoadShaders();
@@ -24,6 +28,7 @@ bool World::Load()
 
 bool World::LoadTextures()
 {
+	// grass texture
 	grassTexture = LoadTexture("Data/Textures/Grass2.jpg");
 	grassTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR );
 	grassTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR );
@@ -31,14 +36,17 @@ bool World::LoadTextures()
 	grassTexture->SetWrapT(GL_REPEAT);
 	grassTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
 
+	// grass particle texture
 	grassParticleTexture = LoadTexture("Data/Textures/grass2.tga");
 	grassParticleTexture->SetWrapS(GL_CLAMP);
 	grassParticleTexture->SetWrapT(GL_CLAMP);
 	grassParticleTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
 
+	// grass particle color map
 	grassParticleColorMap = LoadTexture("Data/Textures/grassParticleTexture.bmp");
 	grassParticleColorMap->SetTextureSlot(SLOT_GL_TEXTURE_1);
 
+	// snow texture
 	snowTexture = LoadTexture("Data/Textures/snowTexture.jpg");
 	snowTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR );
 	snowTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR );
@@ -46,51 +54,60 @@ bool World::LoadTextures()
 	snowTexture->SetWrapT(GL_REPEAT);
 	snowTexture->SetTextureSlot(SLOT_GL_TEXTURE_1);
 
+	// terrain normal map
 	terrainNormalMapFull = LoadTexture("Data/Textures/TerrainDisplacementNormalMap_Full.bmp");
 	terrainNormalMapFull->SetTextureSlot(SLOT_GL_TEXTURE_2);
 
+	// house normal map
 	houseNormalMap = LoadTexture("Data/House/Haus_020_unwrap_NRM.jpg");
 	houseNormalMap->SetTextureSlot(SLOT_GL_TEXTURE_1);
 
+	// house texture
+	houseTexture = LoadTexture("Data/House/Haus_020_unwrap.jpg");
+
+	// displacement map for terrain
 	displacementTexture = LoadTexture("Data/Textures/TerrainDisplacementMap.bmp");
 	displacementTexture->SetTextureSlot(SLOT_GL_TEXTURE_3);
 
+	// bark texture
 	barkTexture = LoadTexture("Data/Textures/bark.jpg");
 	barkTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
 
+	// bark normal map
 	barkNormalMap = LoadTexture("Data/Textures/barkNormalMap2.jpg");
 	barkNormalMap->SetTextureSlot(SLOT_GL_TEXTURE_1);
 
+	// particle texture (alpha map)
 	particleTexture = LoadTexture("Data/Textures/particleTexture.tga");
 	particleTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	particleTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR);
 	particleTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
 
+	// leaf texture
 	leafTexture = LoadTexture("Data/Textures/leaf.tga");
 	leafTexture->SetMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	leafTexture->SetMagFilter(GL_LINEAR_MIPMAP_LINEAR);
 	leafTexture->SetTextureSlot(SLOT_GL_TEXTURE_0);
 
+	// globe base texture
 	baseTexture = LoadTexture("Data/Textures/wood.jpg");
-
-	houseTexture = LoadTexture("Data/House/Haus_020_unwrap.jpg");
 
 	return grassTexture && barkTexture && particleTexture && leafTexture && baseTexture && houseTexture && displacementTexture;
 };
 
 bool World::LoadShaders()
 {
-	multiTexturingSampleShader = LoadShader("Data/Shaders/multitex.vert", "Data/Shaders/multitex.frag");
-	particleSystemBaseShader = LoadShader("Data/Shaders/particlesystembase.vert", "Data/Shaders/particlesystembase.frag");
+	multiTexturingSampleShader = LoadShader("Data/Shaders/multitex.vert", "Data/Shaders/multitex.frag"); // multitexturing test shader
+	particleSystemBaseShader = LoadShader("Data/Shaders/particlesystembase.vert", "Data/Shaders/particlesystembase.frag"); // particle system base shader
 
-	texturedParticleShader = LoadShader("Data/Shaders/texturedParticle.vert", "Data/Shaders/texturedParticle.frag");
+	texturedParticleShader = LoadShader("Data/Shaders/texturedParticle.vert", "Data/Shaders/texturedParticle.frag"); // texture particle shader
 	if(texturedParticleShader)
 	{
 		texturedParticleShader->SetUniform("AlphaMap",0);
 		texturedParticleShader->SetUniform("ColorMap",1);
 	}
 
-	phongShader = LoadShader("Data/Shaders/phong.vert", "Data/Shaders/phong.frag");
+	phongShader = LoadShader("Data/Shaders/phong.vert", "Data/Shaders/phong.frag"); // phong test shader
 	if(phongShader)
 	{
 		phongShader->SetUniform("lightPosition", float3(0,10,0));
@@ -101,7 +118,7 @@ bool World::LoadShaders()
 	}
 	
 	// Globe shader
-	globeShader = LoadShader("Data/Shaders/globe.vert", "Data/Shaders/globe.frag");
+	globeShader = LoadShader("Data/Shaders/globe.vert", "Data/Shaders/globe.frag"); // globe shader
 
 	// Lighting shaders
 	directionalLightShader = LoadShader("Data/Shaders/directionalLight.vert", "Data/Shaders/directionalLight.frag");
@@ -158,6 +175,7 @@ bool World::LoadParticles()
 	u32 LEAF_PARTICLES_PER_LEAF_MATRIX = 3;
 	conf.GetInt("LeavesPerLeafMatrix", (i32&)LEAF_PARTICLES_PER_LEAF_MATRIX);
 
+	// Leaves
 	leafParticleEmitterID = particleSystem.AddEmitter<StaticParticleEmitter>();
 	StaticParticleEmitter *leafEmitter = particleSystem.GetEmitter<StaticParticleEmitter>(leafParticleEmitterID);
 	leafEmitter->SetLocalParticleMaximum(tree->GetLeafCount() * LEAF_PARTICLES_PER_LEAF_MATRIX);
@@ -191,6 +209,7 @@ bool World::LoadParticles()
 	leafEmitter->DoColorUpdate(true);
 	leafEmitter->SetActive(false);
 	
+	// Smoke
 	smokeEmitterID = particleSystem.AddEmitter<PointBasedParticleEmitter>();
 	PointBasedParticleEmitter *smokeParticleEmitter = particleSystem.GetEmitter<PointBasedParticleEmitter>(smokeEmitterID);
 	smokeParticleEmitter->SetParticleSpread(0.35f);
@@ -208,6 +227,7 @@ bool World::LoadParticles()
 	smokeParticleEmitter->AddForce(float3(-1.0f,0.2f,0.43f));
 	smokeParticleEmitter->SetActive(false);
 
+	// Snow
 	snowEmitterID = particleSystem.AddEmitter<HemiSphericalParticleEmitter>();
 	HemiSphericalParticleEmitter *snowEmitter = particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID);
 	snowEmitter->SetAlphaMap(particleTexture);
@@ -220,6 +240,7 @@ bool World::LoadParticles()
 	snowEmitter->SetActive(false);
 	snowEmitter->SetRateOfEmission(500);
 
+	// Fire
 	u32 fireParticleEmitterID = particleSystem.AddEmitter<FireParticleEmitter>();
 	fireParticleEmitter = particleSystem.GetEmitter<FireParticleEmitter>(fireParticleEmitterID);
 	fireParticleEmitter->SetLocalParticleMaximum(30000);
@@ -239,13 +260,15 @@ bool World::LoadParticles()
 	fireParticleEmitter->SetActive(false);
 	fireParticleEmitter->SetRateOfEmission(-1);
 
+	// Grass particles
+
 	grassStaticEmitterID = particleSystem.AddEmitter<StaticParticleEmitter>();
 	StaticParticleEmitter *grassParticles = particleSystem.GetEmitter<StaticParticleEmitter>(grassStaticEmitterID);
 
 	i32 grassLocalParticleMax = 150;
 	conf.GetInt("GrassParticleCount", grassLocalParticleMax);
 	grassParticles->SetLocalParticleMaximum(grassLocalParticleMax);
-	
+
 	grassParticles->SetModel(CreateImposterModel());
 	imposterModel = grassParticles->GetModel();
 	grassParticles->SetAlphaMap(grassParticleTexture);
@@ -361,9 +384,11 @@ bool World::LoadGeometry()
 
 	globeSphere.SetShader(globeShader);
 
+	// light sphere
 	lightSphere.Create(0.5,20,20);
 	lightSphere.AddTexture(barkTexture);
 
+	// spotlight cone (cylinder)
 	spotCone.Create(0.1f, 0.3f, 0.45f, 10, 10);
 	spotCone.AddTexture(baseTexture);
 	spotCone.SetPosition(spotlights[0].GetPosition().ToFloat3());

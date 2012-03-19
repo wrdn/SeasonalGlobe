@@ -23,9 +23,11 @@ const bool StaticParticleEmitter::GetParticlesStaticState() const
 
 void StaticParticleEmitter::Emit(Particle &p)
 {
+	// create particle with no velocity so it cannot move
 	p.color = this->startColor;
 	p.velocity = float3();
 	
+	// if particles dieing, set time to live to time to fade out, else set it to the time to change color (leaf changes from green to brown)
 	if(particlesDieing)
 		p.energy = timeToFadeOut;
 	else
@@ -34,6 +36,7 @@ void StaticParticleEmitter::Emit(Particle &p)
 	p.pada = p.energy; // NEED TO STORE ORIGINAL ENERGY TO LERP PROPERLY, t = 1-(1/original energy)*current energy
 };
 
+// initialise falling of the particles
 void StaticParticleEmitter::InitiateParticleFall()
 {
 	particlesFalling=true;
@@ -41,12 +44,14 @@ void StaticParticleEmitter::InitiateParticleFall()
 	{
 		Particle &p = GetParticles()[i];
 
+		// randomise velocity slightly
 		p.velocity.x( randflt(-0.3f, 0.3f));
 		p.velocity.y( -(maxYHeight/timeToFall) );
 		p.velocity.z( randflt(-0.3f,0.3f));
 	}
 };
 
+// initialise fade out of particles (when leaves hit ground)
 void StaticParticleEmitter::InitiateParticleFadeOut()
 {
 	particlesDieing = true;
@@ -61,6 +66,7 @@ void StaticParticleEmitter::InitiateParticleFadeOut()
 	}
 };
 
+// fade in particles on tree
 void StaticParticleEmitter::InitiateParticleFadeIn()
 {
 	updateColor = true;
@@ -76,6 +82,7 @@ void StaticParticleEmitter::InitiateParticleFadeIn()
 	}
 };
 
+// start changing the color of the particles
 void StaticParticleEmitter::InitiateMainColorChange()
 {
 	updateColor = true;
@@ -158,6 +165,7 @@ void StaticParticleEmitter::UpdateParticleProperties(Particle &p)
 	}
 };
 
+// add particle to emitter - function required so we can easily add individual leaves to the emitter
 const bool StaticParticleEmitter::AddParticle(const Particle &p)
 {
 	if(currentParticleIndex <= GetLocalParticleMaximum())

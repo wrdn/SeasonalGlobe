@@ -2,6 +2,7 @@
 #include "strutils.h"
 #include <iostream>
 
+// delete and invalidate shader
 void ShaderObject::Unload()
 {
 	if(shaderID)
@@ -11,6 +12,7 @@ void ShaderObject::Unload()
 	};
 };
 
+// returns true if shader compiled OK
 bool ShaderObject::HasCompiled()
 {
 	if(!Valid()) { return false; }
@@ -19,6 +21,7 @@ bool ShaderObject::HasCompiled()
 	return shaderOK == GL_TRUE;
 };
 
+// print shader compilation log
 void ShaderObject::PrintShaderLog(std::ostream &out)
 {
 	const int LOG_SZ = 4096;
@@ -27,6 +30,7 @@ void ShaderObject::PrintShaderLog(std::ostream &out)
 	out << log << std::endl;
 };
 
+// compile shader from source, returns true if compiled successfully
 bool ShaderObject::Compile(const c8 *src)
 {
 	if(!src) { return false; }
@@ -38,6 +42,7 @@ bool ShaderObject::Compile(const c8 *src)
 	return HasCompiled();
 };
 
+// compiles from file (use this if loading from file, as less error prone, fast and ensures no accidental memory leaks)
 bool ShaderObject::CompileFromFile(const char *filename)
 {
 	c8* shader_src = read_src_fast(filename);

@@ -11,6 +11,7 @@ Terrain::~Terrain(void)
 {
 }
 
+// Load the terrain from a heightmap, in the shape of a disc
 bool Terrain::Load(char *filename)
 {
 	unsigned char *rowpointer;
@@ -246,6 +247,7 @@ bool Terrain::Load(char *filename)
 	}
 	#pragma endregion
 
+	// Create mesh for terrain and build VBO
 	MeshHandle mh = CreateMesh("terrain");
 	bool ret = mh->BuildVBO(verts, vertexArraySize, &indices[0], indices.size());
 	delete [] verts;

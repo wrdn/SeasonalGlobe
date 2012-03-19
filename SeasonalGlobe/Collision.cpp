@@ -15,7 +15,7 @@ bool LineCircleCollision(const Line2D &line, const Circle &c, CollisionPoint2D &
 	if(det < 0 || A < 0.0001f) { return false; }
 	else if(det < 0)
 	{
-		// 1 solution
+		// 1 solution (1 collision points)
 		cp.t1 = -B / (2 * A);
 		cp.t2 = -1;
 		cp.p1.x(line.start.x() + cp.t1 * lineDir.x());
@@ -24,7 +24,7 @@ bool LineCircleCollision(const Line2D &line, const Circle &c, CollisionPoint2D &
 	}
 	else
 	{
-		// 2 solutions
+		// 2 solutions (2 collision points)
 		cp.t1 = (-B + sqrtf(det)) / (2*A);
 		cp.t2 = (-B - sqrtf(det)) / (2*A);
 		if(cp.t1 > cp.t2)

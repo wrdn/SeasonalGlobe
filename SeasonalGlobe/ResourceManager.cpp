@@ -2,6 +2,7 @@
 ResourceManager* ResourceManager::resMan = 0;
 i32 ResourceManager::idProvider = 0;
 
+// returns resource manager singleton (new'ing it if neccessary)
 ResourceManager& ResourceManager::get() // returns reference to help avoid mucking with pointers
 {
 	if(!ResourceManager::resMan)
@@ -11,6 +12,9 @@ ResourceManager& ResourceManager::get() // returns reference to help avoid mucki
 	return *ResourceManager::resMan;
 };
 
+// Adds resource using id, name and resource pointer. By using a pointer,
+// we can add anything that inherits resource safely. This is a private function used internally
+// by the resource manager
 void ResourceManager::AddResource(i32 id, const char *name, Resource *r)
 {
 	r->SetResourceID(id);
@@ -18,6 +22,7 @@ void ResourceManager::AddResource(i32 id, const char *name, Resource *r)
 	resourceMap[id] = std::tr1::shared_ptr<Resource>(r);
 };
 
+// Create texture handle then load the texture. If texture already loaded, returns current texture
 TextureHandle LoadTexture(const char *filename, const char *textureResourceName) // if not provided, the default resource name used is the filename
 {
 	TextureHandle hnd = textureResourceName ? ResourceManager::get().CreateAndGetResource<Texture>(textureResourceName) : ResourceManager::get().CreateAndGetResource<Texture>(filename);
@@ -26,6 +31,8 @@ TextureHandle LoadTexture(const char *filename, const char *textureResourceName)
 	return hnd;
 };
 
+// Creates shader object (compiled and linked) from vertex and fragment shader. Unless already compiled, the vertex and fragment
+// shaders will be compiled. If compilation/linking fails, any logs will be printed to console
 ShaderHandle LoadShader(const char *vertexShaderFilename, const char *fragmentShaderFilename, const char *shaderResourceName) // if not provided, there is no default shader resource name
 {
 	if(!vertexShaderFilename || !fragmentShaderFilename) { return ShaderHandle((Shader*)0); };
@@ -66,6 +73,7 @@ ShaderHandle LoadShader(const char *vertexShaderFilename, const char *fragmentSh
 		}
 	};
 
+	// create and link shader program
 	if(!sh->CreateProgram(vsh, fsh))
 	{
 		sh->PrintProgramLog(std::cout);
@@ -78,6 +86,7 @@ ShaderHandle LoadShader(const char *vertexShaderFilename, const char *fragmentSh
 	return sh;
 };
 
+// Creates render target to specified width and height
 RenderTargetHandle CreateRenderTarget(int width, int height, const char *renderTargetResourceName)
 {
 	RenderTargetHandle rth = renderTargetResourceName ? ResourceManager::get().CreateAndGetResource<RenderTarget>(renderTargetResourceName)
@@ -86,6 +95,7 @@ RenderTargetHandle CreateRenderTarget(int width, int height, const char *renderT
 	return rth;
 };
 
+// Create mesh, with unique ID and specified name
 MeshHandle CreateMesh(char *name)
 {
 	MeshHandle mh = ResourceManager::get().CreateAndGetResource<Mesh>();

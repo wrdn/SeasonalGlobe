@@ -29,11 +29,13 @@ World::~World(void)
 f32 angle=0; const f32 rotationSpeed = 50.0f;
 f32 inc=0;
 
+// Draw the reflective pond
 void World::reflective_draw(const GameTime &gameTime)
 {
 	float3 floorScale(0.3f, 0.3f, 0.3f);
 	float3 floorPos(2.5f, -0.45f, 3.2f);
 
+	// Disable depth testing, color, OpenGL lighting and texturing. Enable stencil test.
 	glDisable(GL_DEPTH_TEST);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glDisable(GL_LIGHTING);
@@ -43,25 +45,30 @@ void World::reflective_draw(const GameTime &gameTime)
 	glStencilFunc(GL_ALWAYS, 1, 1);
 	glStencilOp(GL_REPLACE,GL_REPLACE,GL_REPLACE);
 
+	// Draw floor into stencil
 	glPushMatrix();
 	DrawFloor(floorPos, floorScale);
 	glPopMatrix();
 
+	// Re-enable color and depth
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glEnable(GL_DEPTH_TEST);
 
 	glStencilFunc(GL_EQUAL, 1, 1);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
+	// Reflect everything in Y axis (scale by -1 on Y)
 	glPushMatrix();
 	glScalef(1,-1,1);
 
 	glCullFace(GL_FRONT);
 	glEnable(GL_NORMALIZE);
 
+	// Draw tree reflected
 	glDisable(GL_LIGHTING);
 	tree->Draw(gameTime.GetDeltaTime());
 
+	// Draw fire particles and leaf particles reflected
 	glDisable(GL_CULL_FACE);
 	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
@@ -89,6 +96,8 @@ void World::reflective_draw(const GameTime &gameTime)
 	Material mat(color(0.0f,0.0f,0.0f,1.0f), color(0.4f,0.4f,0.4f,0.6f), color(0.0f), 0);
 	mat.Activate();
 
+	// Draw floor normally
+
 	glPushMatrix();
 	DrawFloor(floorPos, floorScale);
 	glPopMatrix();
@@ -104,19 +113,24 @@ void World::reflective_draw(const GameTime &gameTime)
 
 	glDisable(GL_LIGHTING);
 
+	// Draw terrain normally
 	DrawTerrain(gameTime);
 };
 
 void World::Update(const GameTime &_gameTime)
 {
 	GameTime gameTime = _gameTime;
+
+	// multiply game time by dtMultipler (to speed up/slow down time)
 	gameTime.SetDeltaTime(gameTime.GetDeltaTime() * (f32)dtMultiplier);
 
+	// update timings of seasonal events
 	UpdateSceneTimings();
 
+	// merging terrain textures?
 	if(mergingTerrainTextured)
 	{
-		terrainTextureMergeRuntime += gameTime.GetDeltaTime() * mergeDirection;
+		terrainTextureMergeRuntime += gameTime.GetDeltaTime() * mergeDirection; // update merge runtime
 		if(terrainTextureMergeRuntime > timeToMergeTextures)
 		{
 			terrainTextureMergeRuntime = timeToMergeTextures - EPSILON;
@@ -126,9 +140,10 @@ void World::Update(const GameTime &_gameTime)
 			terrainTextureMergeRuntime = 0;
 		}
 		terrainTextureMergeRuntime = fmod(terrainTextureMergeRuntime, timeToMergeTextures);
-		terrainTextureMergeFactor = (1.0f / timeToMergeTextures) * terrainTextureMergeRuntime;
+		terrainTextureMergeFactor = (1.0f / timeToMergeTextures) * terrainTextureMergeRuntime; // texture mix factor between 0 and 1
 	}
 
+	// update snow if active
 	HemiSphericalParticleEmitter *snowEmitter = particleSystem.GetEmitter<HemiSphericalParticleEmitter>(snowEmitterID);
 	if(snowEmitter->IsActive())
 	{
@@ -142,7 +157,10 @@ void World::Update(const GameTime &_gameTime)
 		}
 	}
 
+	// update rest of particles
 	particleSystem.Update(gameTime);
+
+	// update fire particle emitter
 	fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
 };
 
@@ -158,6 +176,7 @@ void World::DrawTerrain(const GameTime &gameTime)
 	f32 vpos = lerp(0, terrainElevation.maxDisplacementScaleFactor, N);
 	f32 CurrentShift = lerp(0, terrainElevation.maxGeometryShiftFactor, N);
 
+	// set shader uniforms (inc lerp factor and terrain shift)
 	glDisable(GL_CULL_FACE); 
 	terrain.SetPosition(float3(0, terrain.GetPosition().y()-CurrentShift,0));
 	terrain.GetShader()->Activate();
@@ -168,7 +187,7 @@ void World::DrawTerrain(const GameTime &gameTime)
 	terrain.SetXRotation(-90); 
 	terrain.SetYRotation(0);
 	terrain.SetZRotation(-90); 
-	terrain.Draw(); 
+	terrain.Draw();  // draw terrain
 	terrain.SetPosition(float3(0, terrain.GetPosition().y()+CurrentShift,0));
 	glEnable(GL_CULL_FACE);
 	glDisable(GL_NORMALIZE);
@@ -193,6 +212,7 @@ void World::Draw(const GameTime &_gameTime)
 
 	glRotatef(angle, 0, 1, 0);
 
+	// enable spotlights if applicable
 	if(lightMode == Spotlights)
 	{
 		glEnable(GL_TEXTURE_2D);
@@ -219,7 +239,7 @@ void World::Draw(const GameTime &_gameTime)
 		spotCone.Draw();
 		spotCone.SetZRotation(0);
 	}
-	else if(lightMode == Directional)
+	else if(lightMode == Directional) // enable directional light if applicable
 	{
 		// Directional Light
 		directionalLight.Activate();
@@ -232,7 +252,7 @@ void World::Draw(const GameTime &_gameTime)
 		lightSphere.Draw();
 	}
 
-	if(drawLightning)
+	if(drawLightning) // draw lightning
 	{
 		glDisable(GL_LIGHTING);
 		glPushMatrix();
@@ -246,6 +266,7 @@ void World::Draw(const GameTime &_gameTime)
 		glColor4f(1,1,1,1);
 	}
 
+	// Draw pond and terrain
 	glPushMatrix();
 	reflective_draw(gameTime);
 	glPopMatrix();
@@ -256,6 +277,7 @@ void World::Draw(const GameTime &_gameTime)
 	// Base
 	baseModel.Draw();
 
+	// Draw tree normally
 	tree->Draw(gameTime.GetDeltaTime());
 
 	// Particle system

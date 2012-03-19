@@ -2,6 +2,7 @@
 
 Color::Color() { };
 
+// Constant colors that can be used throughout the application
 const Color4f Color::BLACK  = Color4f();
 const Color4f Color::WHITE  = Color4f(1.0f);
 const Color4f Color::GREY   = Color4f(0.5f);
@@ -11,6 +12,7 @@ const Color4f Color::BLUE   = Color4f(0,0,1.0f,1);
 const Color4f Color::YELLOW = Color4f(1.0f,1.0f,0,1);
 const Color4f Color::PINK   = Color4f(1.0f,0.75f,0.79f,1);
 
+// Extract r,g,b and a floating point values from int
 Color4f Color::FromInt(const u32 i)
 {
 	return Color4f
@@ -22,11 +24,13 @@ Color4f Color::FromInt(const u32 i)
 		);
 };
 
+// Convert r,g,b,a to int
 u32 Color::ToInt(f32 _r, const f32 _g, const f32 _b, const f32 _a)
 {
 	return ((u32)_r << 24 | (u32)_g << 16 | (u32)_b << 8 | (u32)_a);
 };
 
+// Convert r,g,b,a to int
 u32 Color::ToInt(const Color4f &c)
 {
 	return ToInt(c.r(), c.g(), c.b(), c.a());
@@ -46,6 +50,7 @@ const u32 ColorU32::GetColor() const
 	return color;
 };
 
+// Normalize color values in range 0 to 255, to range 0 to 1
 Color4f Color::Normalize(const Color4f &c)
 {
 	const f32 mul = 1.0f / 255.0f;

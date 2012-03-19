@@ -74,10 +74,14 @@ private:
 	~OBJLoader();
 
 	//! Parses obj material (mtl) file, setting materials in outputMap
+	//! Not used by globe, exists for completeness, uses stream operators to read data in
 	static bool ParseMaterialFile(const c8* mtl_filename, std::map<u32, OBJMaterial> &outputMap);
 
 public:
 
 	//! Parses obj file - parses geometry, builds VBO meshes and creates (and returns) the GraphicsObjects
+	//! If the file does not exist, it returns false
+	//! Outputs to a vector of GraphicsObjects passed to the loader - this means
+	//! we can load from multiple obj files, appending to the same vector
 	static bool LoadOBJFile(const string& filename, vector<GraphicsObject> &output_vec);
 };

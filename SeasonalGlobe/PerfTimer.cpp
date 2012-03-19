@@ -3,9 +3,7 @@
 PerfTimer::PerfTimer(void)
 {
 #ifdef _WIN32
-	QueryPerformanceFrequency(&frequency);
-	_start.HighPart=0; _start.LowPart=0; _start.QuadPart=0; _start.u.HighPart=0; _start.u.LowPart=0;
-	_end.HighPart=0; _end.LowPart=0; _end.QuadPart=0; _end.u.HighPart=0; _end.u.LowPart=0;
+	QueryPerformanceFrequency(&frequency); // get performance frequency
 #endif
 }
 
@@ -14,7 +12,7 @@ PerfTimer::~PerfTimer(void) { }
 void PerfTimer::start()
 {
 #ifdef _WIN32
-	QueryPerformanceCounter(&_start);
+	QueryPerformanceCounter(&_start); // get performance counter at start of timer
 #else
 	clock_gettime(CLOCK_REALTIME,&tstart);
 #endif
@@ -23,7 +21,7 @@ void PerfTimer::start()
 void PerfTimer::end()
 {
 #ifdef _WIN32
-	QueryPerformanceCounter(&_end);
+	QueryPerformanceCounter(&_end); // get performance counter at end of timer
 #else
 	clock_gettime(CLOCK_REALTIME,&tend);
 #endif

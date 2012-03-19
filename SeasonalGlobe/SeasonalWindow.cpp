@@ -11,7 +11,7 @@ SeasonalWindow::SeasonalWindow() : _leftDown(false), _rightDown(false), displayH
 
 	SetSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	SetDepthBits(24);
-	SetStencilBits(1);
+	SetStencilBits(1); // Required to be 1 bit only
 	SetTitle(DEFAULT_WINDOW_TITLE);
 };
 
@@ -28,6 +28,7 @@ void SeasonalWindow::SetWindowResolution(const u32 width, const u32 height)
 	ResetPerspective();
 };
 
+// reset projection matrix (using gluPerspective)
 void SeasonalWindow::ResetPerspective() const
 {
 	glViewport(0,0,windowRes[0],windowRes[1]);
@@ -38,6 +39,7 @@ void SeasonalWindow::ResetPerspective() const
 	glMatrixMode(GL_MODELVIEW);
 };
 
+// Display scene
 void SeasonalWindow::OnDisplay()
 {
 	gameTime.Update();
@@ -49,6 +51,7 @@ void SeasonalWindow::OnDisplay()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glClearColor(0,0,0,1);
 
+	// draw world
 	scn.Draw(gameTime);
 
 	glDisable(GL_DEPTH_TEST);
@@ -60,12 +63,15 @@ void SeasonalWindow::OnDisplay()
 	glPushMatrix();
 	glLoadIdentity();
 
+	// draw current season
 	glRasterPos2f(0.5f, 0.9f);
 	Printf("Current Season: %s", scn.GetCurrentSeasonString());
 	
+	// draw current time multiplier
 	glRasterPos2f(-0.96f, 0.9f);
 	Printf("Current Time Multiplier: %f", scn.GetMultiplier());
 
+	// display help menu if required
 	if(displayHelpMenu)
 	{
 		glRasterPos2f(-0.96f, 0.80f); Printf("Press p to pause time");
@@ -97,6 +103,7 @@ void SeasonalWindow::OnDisplay()
 	SwapBuffers();
 };
 
+// request redraw on idle
 void SeasonalWindow::OnIdle()
 {
 	scn.Update(gameTime);
@@ -110,7 +117,7 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		Close();
 	}
 	
-	if(down) return;
+	if(down) return; // key must be up
 
 	switch(tolower(key))
 	{
@@ -201,6 +208,7 @@ void SeasonalWindow::OnMouseButton(MouseButton button, bool down)
 	}
 };
 
+// rotate camera when left/right mouse button down and moving mouse
 void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 {
 	static i32 temp_x, temp_y;
@@ -216,10 +224,11 @@ void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 	temp_y = y;
 };
 
+// load stuff on window creation
 void SeasonalWindow::OnCreate()
 {
 	GLWindowEx::OnCreate();
-	SetCursor(CRNone);
+	SetCursor(CRNone); // hide cursor when loading
 
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	SetTitle(DEFAULT_WINDOW_TITLE);
@@ -234,12 +243,15 @@ void SeasonalWindow::OnCreate()
 	Printf("Loading . . .");
 	SwapBuffers();
 
+	// load scene
 	scn.Load();
 
+	// redisplay cursor
 	SetCursor(CRArrow);
 	glMatrixMode(GL_PROJECTION); glPopMatrix();   
 	glMatrixMode(GL_MODELVIEW); glPopMatrix();
 	glEnable(GL_DEPTH_TEST);
 
+	// initialise game time
 	gameTime.Init();
 };

@@ -7,6 +7,7 @@
 #include <string.h>
 using namespace std;
 
+// safely copy a null terminated string
 c8* copystr(const c8 *src)
 {
 	if(!src) return 0;
@@ -18,32 +19,19 @@ c8* copystr(const c8 *src)
 	dst[len] = '\0';
 	return dst;
 };
+
+// safely copy a null terminated string up to len characters
 c8* copystr(const c8 *src, const i32 len)
 {
 	if(!len) return 0;
 	c8* dst = new c8[len+1];
+	if(!dst) return 0;
 	strncpy(dst,src,len);
 	dst[len] = '\0';
 	return dst;
 };
 
-c8* copystr_unsafe(const c8 *src)
-{
-	u32 len = strlen(src);
-	c8* dst = new c8[len+1];
-	strncpy(dst,src,len);
-	dst[len] = '\0';
-	return dst;
-};
-
-c8* copystr_unsafe(const c8 *src, const i32 len)
-{
-	c8* dst = new c8[len+1];
-	strncpy(dst,src,len);
-	dst[len] = '\0';
-	return dst;
-};
-
+// substring of src between start and end index
 c8* substr(const c8*src, u32 start, u32 end)
 {
 	if(!src) return 0;
@@ -61,28 +49,7 @@ c8* substr(const c8*src, u32 start, u32 end)
 	return newstr;
 }
 
-bool compare_str_lim(const c8 *src, const c8 *targ, u32 start, u32 end)
-{
-	u32 totA = 0, totB = 0;
-	for(u32 i=start;i<end;++i)
-	{
-		totA += (u32)src[i];
-		totB += (u32)targ[i];
-	}
-	return (totA == totB);
-}
-
-bool compare_str_lim(const c8 *src, const c8 *targ, u32 src_start, u32 src_end,
-	u32 targ_start, u32 targ_end)
-{
-	u32 tota=0, totb=0;
-	for(u32 i=src_start;i<src_end;++i)
-		tota += src[i];
-	for(u32 i=targ_start;i<targ_end;++i)
-		totb += targ[i];
-	return (tota == totb);
-}
-
+// split string using delimiter delim into vector v 
 void split(const string &s, c8 delim, vector<string> &v)
 {
 	string::size_type i = 0;
@@ -98,6 +65,7 @@ void split(const string &s, c8 delim, vector<string> &v)
 	}
 }
 
+// print float array to console
 void printf_array(f32 *arr, u32 sz)
 {
 	for(u32 i=0;i<sz;++i)
@@ -106,6 +74,7 @@ void printf_array(f32 *arr, u32 sz)
 	}
 }
 
+// print int array to console
 void printi_array(u32 *arr, u32 sz)
 {
 	for(u32 i=0;i<sz;++i)
@@ -114,16 +83,19 @@ void printi_array(u32 *arr, u32 sz)
 	}
 }
 
+// reads file into vector (one entry per line), adding blank lines back when reading
 std::vector<c8*> read_src_to_vec(const c8* file)
 {
 	return read_src_to_vec(file,true,100);
 };
 
+// reads file into vector (one entry per line), with optional blank lines
 std::vector<c8*> read_src_to_vec(const c8* file, bool incBlankLines)
 {
 	return read_src_to_vec(file, incBlankLines,100);
 };
 
+// base function to read file to vector, with optional blank lines and a set original char* vector size
 std::vector<c8*> read_src_to_vec(const c8* file, bool incBlankLines, const u32 originalVecSize)
 {
 	vector<c8*> vec;
@@ -143,7 +115,7 @@ std::vector<c8*> read_src_to_vec(const c8* file, bool incBlankLines, const u32 o
 			u32 len = tmp.length();
 			if(tmp.length() > 0)
 			{
-				vec.push_back(copystr_unsafe(tmp.c_str(),len));
+				vec.push_back(copystr(tmp.c_str(),len));
 			}
 		}
 	}
@@ -161,7 +133,7 @@ std::vector<c8*> read_src_to_vec(const c8* file, bool incBlankLines, const u32 o
 	return vec;
 };
 
-
+// read source into character array, adding newline characters back
 c8 *read_src(const c8 *file)
 {
 	std::ifstream istream(file);
@@ -229,8 +201,6 @@ c8 *read_src_fast(const c8 *file)
 
 void cleanup_str_vec(std::vector<c8*> &v)
 {
-	//for(size_t i=0;i<v.size();++i)
-	//	SAFE_DELETE_ARRAY(v[i]);
 	for(size_t i=0;i<v.size();++i)
 	{
 		delete [] v[i];

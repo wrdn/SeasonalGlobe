@@ -110,7 +110,6 @@
     <ClCompile Include="LSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mat44.cpp" />
-    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MyApp.cpp" />
     <ClCompile Include="OBJLoader.cpp" />

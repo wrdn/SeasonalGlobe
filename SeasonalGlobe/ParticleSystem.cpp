@@ -36,6 +36,7 @@ ParticleSystem::~ParticleSystem()
 	catch(...) { }
 };
 
+// Update all emitters
 void ParticleSystem::Update(const GameTime &gameTime)
 {
 	for(std::vector<ParticleEmitter*>::const_iterator it = emitterSet.begin(); it != emitterSet.end(); ++it)
@@ -44,6 +45,7 @@ void ParticleSystem::Update(const GameTime &gameTime)
 	}
 };
 
+// Draw all emitters
 void ParticleSystem::Draw()
 {
 	glDisable(GL_CULL_FACE);

@@ -169,7 +169,7 @@ float4 float4::normalize() const
 {
 	f32 lsqr = LengthSquared();
 	if(NearZero(lsqr)) { return ZERO; };
-	f32 recip = InvSqrt(lsqr);
+	f32 recip = InvSqrt(lsqr); // inverse sqrt faster than sqrt and only slightly less accurate
 	
 	return float4(vec[0]*recip, vec[1]*recip, vec[2]*recip, vec[3]*recip);
 };
@@ -178,7 +178,7 @@ void float4::normalize()
 {
 	f32 lsqr = LengthSquared();
 	if(NearZero(lsqr)) { *this = ZERO; };
-	f32 recip = InvSqrt(lsqr);
+	f32 recip = InvSqrt(lsqr); // inverse sqrt faster than sqrt and only slightly less accurate
 	vec[0] *= recip;
 	vec[1] *= recip;
 	vec[2] *= recip;
@@ -210,8 +210,7 @@ float4 float4::vec_lerp(const float4 &target, f32 lerpFactor)
 
 std::ostream& operator<<(std::ostream &out, const float4 &m)
 {
-	f32 * vec = m.GetVec();
-	std::cout << "{" << vec[0] << "," << vec[1] << "," << vec[2] << "," << vec[3] << "}";
+	std::cout << m.x() << " " << m.y() << " " << m.z() << " " << m.w();
 	return out;
 };
 

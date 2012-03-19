@@ -20,6 +20,7 @@ ParticleEmitter::~ParticleEmitter()
 	emitterShader = 0;
 };
 
+// Enable textures and shader, and draw all the particles
 void ParticleEmitter::Draw()
 {
 	if(!isActive || !emitterShader || !emitterShader->Valid()) { return; }
@@ -29,11 +30,13 @@ void ParticleEmitter::Draw()
 
 	glPushMatrix();
 
+	// enable shader
 	if(emitterShader)
 	{
 		emitterShader->Activate();
 	}
 
+	// enable textures
 	if(alphaMap)
 	{
 		glActiveTexture(alphaMap->GetTextureSlot());
@@ -47,7 +50,7 @@ void ParticleEmitter::Draw()
 
 	glTranslatef(emitterOrigin.x(), emitterOrigin.y(), emitterOrigin.z());
 
-	if(billboardType == Spherical) // only need 1 check, so duplicate most of the drawing code
+	if(billboardType == Spherical) // Spherical Billboarding
 	{
 		for(u32 i=0;i<GetLocalParticleMaximum();++i)
 		{
@@ -63,7 +66,7 @@ void ParticleEmitter::Draw()
 			glPopMatrix();
 		}
 	}
-	else if(billboardType == Cylindrical)
+	else if(billboardType == Cylindrical) // Cylindrical Billboarding
 	{
 		for(u32 i=0;i<GetLocalParticleMaximum();++i)
 		{
@@ -79,7 +82,7 @@ void ParticleEmitter::Draw()
 			glPopMatrix();
 		}
 	}
-	else // no billboarding (no adjustment)
+	else // no billboarding (no rotation adjustment)
 	{
 		for(u32 i=0;i<GetLocalParticleMaximum();++i)
 		{
@@ -97,13 +100,15 @@ void ParticleEmitter::Draw()
 	}
 
 	glPopMatrix();
-	glDisable(GL_BLEND);
+	glDisable(GL_BLEND); // disable blending
 
 	glUseProgram(0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 };
 
+// Update active particle properties, including position, energy, and apply forces.
+// Emit new particles as neccessary
 void ParticleEmitter::Update(const GameTime &gameTime)
 {
 	if(!isActive) { return; }
@@ -143,6 +148,7 @@ void ParticleEmitter::Update(const GameTime &gameTime)
 	}
 };
 
+// Activate shader with alpha map
 void ParticleEmitter::ActivateShader()
 {
 	glActiveTexture(GL_TEXTURE0);
@@ -151,6 +157,7 @@ void ParticleEmitter::ActivateShader()
 	alphaMap->Activate();
 };
 
+// Deactivate shader and alpha map
 void ParticleEmitter::DeactivateShader()
 {
 	alphaMap->Deactivate();
@@ -158,7 +165,7 @@ void ParticleEmitter::DeactivateShader()
 	glActiveTexture(GL_TEXTURE0);
 };
 
-// Matrix billboard adjustments (These should be done in the shader)
+// Matrix billboard adjustments for cylindrical particle
 void ParticleEmitter::CylindricalBillboardAdjust() const
 {
 	f32 mat[16];
@@ -170,6 +177,7 @@ void ParticleEmitter::CylindricalBillboardAdjust() const
 	glLoadMatrixf(mat);
 };
 
+// Matrix billboard adjustments for spherical particle
 void ParticleEmitter::SphericalBillboardAdjust() const
 {
 	f32 mat[16];
@@ -181,7 +189,8 @@ void ParticleEmitter::SphericalBillboardAdjust() const
 	glLoadMatrixf(mat);
 };
 
-#pragma region Accessors and Mutators
+// ACCESSORS AND MUTATORS
+
 void ParticleEmitter::SetBillboardType(const BillboardType btype) { billboardType = btype; };
 void ParticleEmitter::SetModel(MeshHandle m) { model = m; };
 
@@ -237,4 +246,3 @@ void ParticleEmitter::ResetParticleEmitter()
 		particles[i].energy = -1;
 	}
 };
-#pragma endregion

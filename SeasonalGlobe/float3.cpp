@@ -101,27 +101,29 @@ float3 float3::cross(const float3 &v) const
 		(vec[0] * v.vec[1]) - (vec[1] * v.vec[0]));
 };
 
-void float3::cross(const float3 &v, f32 * const output3d) const
+void float3::cross(const float3 &v, f32 * const output3d) const // cross products "this" and "v", and puts output vector in output3d
 {
 	output3d[0] = (vec[1] * v.vec[2]) - (vec[2] * v.vec[1]);
 	output3d[1] = (vec[2] * v.vec[0]) - (vec[0] * v.vec[2]);
 	output3d[2] = (vec[0] * v.vec[1]) - (vec[1] * v.vec[0]);
 };
 
+// normalize vector
 float3 float3::normalize() const
 {
 	f32 lsqr = LengthSquared();
 	if(NearZero(lsqr)) { return ZERO; };
-	f32 recip = InvSqrt(lsqr);
+	f32 recip = InvSqrt(lsqr); // inverse sqrt cheaper than sqrt, and only slightly less accurate
 	
 	return float3(vec[0]*recip, vec[1]*recip, vec[2]*recip);
 };
 
+// normalize self
 void float3::normalize()
 {
 	f32 lsqr = LengthSquared();
 	if(NearZero(lsqr)) { *this = ZERO; };
-	f32 recip = InvSqrt(lsqr);
+	f32 recip = InvSqrt(lsqr); // inverse sqrt cheaper than sqrt, and only slightly less accurate
 	vec[0] *= recip;
 	vec[1] *= recip;
 	vec[2] *= recip;
@@ -167,8 +169,7 @@ float3 float3::vec_lerp(const float3 &target, f32 lerpFactor)
 
 std::ostream& operator<<(std::ostream &out, const float3 &m)
 {
-	f32 * vec = m.GetVec();
-	std::cout << "{" << vec[0] << "," << vec[1] << "," << vec[2] << "}";
+	std::cout << m.x() << " " << m.y() << " " << m.z();
 	return out;
 };
 

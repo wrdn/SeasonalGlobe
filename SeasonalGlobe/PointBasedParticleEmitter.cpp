@@ -11,6 +11,7 @@ PointBasedParticleEmitter::~PointBasedParticleEmitter()
 
 void PointBasedParticleEmitter::Emit(Particle &p)
 {
+	// generate particle in random direction (velocity) from emitter origin, with randomised time to live between min and max time
 	p.pos = GetEmitterOrigin();
 	
 	p.color = startColor;
@@ -27,5 +28,6 @@ void PointBasedParticleEmitter::Emit(Particle &p)
 
 void PointBasedParticleEmitter::UpdateParticleProperties(Particle &p)
 {
+	// lerp color over particle lifetime
 	p.color = startColor.vec_lerp(endColor, 1-(1.0f/p.pada)*p.energy);
 };

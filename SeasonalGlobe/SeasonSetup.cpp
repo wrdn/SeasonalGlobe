@@ -1,30 +1,32 @@
 #include "World.h"
 
-void StartTreeGrowth(const World *w)
+// This file contains global functions used for seasonal events
+
+void StartTreeGrowth(const World *w) // start tree growing
 {
 	World *wt = (World*)w;
 	wt->GetTree()->SetActive(true);
 	wt->GetTree()->InitGrow();
 };
-void InitiateLeafGrowth(const World *w)
+void InitiateLeafGrowth(const World *w) // make leaves appear
 {
 	World *wt = (World*)w; 
 	wt->GetLeafParticleEmitter()->SetActive(true);
 	wt->GetLeafParticleEmitter()->SetStartColor(Color4f(1,1,1,1));
 	wt->GetLeafParticleEmitter()->InitiateParticleFadeIn();
 };
-void InitiateLeafColorChange(const World *w)
+void InitiateLeafColorChange(const World *w) // make leaves change color
 {
 	World *wt = (World*)w;
 	wt->GetLeafParticleEmitter()->SetEndColor(Color4f(0.8f, 0.35f, 0.35f, 1));
 	wt->GetLeafParticleEmitter()->InitiateMainColorChange();
 };
-void InitiateLeafFall(const World *w)
+void InitiateLeafFall(const World *w) // make leaves fall
 {
 	World *wt = (World*)w;
 	wt->GetLeafParticleEmitter()->InitiateParticleFall();
 };
-void InitiateTreeIgnitionFire(const World *w)
+void InitiateTreeIgnitionFire(const World *w) // make tree catch fire
 {
 	FireParticleEmitter *fp = (FireParticleEmitter*)w->GetFireParticleEmitter();
 	fp->SetRuntime(0);
@@ -32,33 +34,42 @@ void InitiateTreeIgnitionFire(const World *w)
 	fp->SetBurningState(Igniting);
 	fp->SetActive(true);
 };
-void InitiateTreeDeath(const World *w)
+void InitiateTreeDeath(const World *w) // make tree die
 {
 	FireParticleEmitter *fp = (FireParticleEmitter*)w->GetFireParticleEmitter();
 	fp->InitDeath();
 };
-void InitiateLeafVanish(const World *w)
+void InitiateLeafVanish(const World *w) // makes leaves vanish
 {
 	World *wt = (World*)w;
 	wt->GetLeafParticleEmitter()->InitiateParticleFadeOut();
 }
-void InitialiseHouseSmoke(const World *w)
+void InitialiseHouseSmoke(const World *w) // start smoke
 {
 	((World*)w)->ActivateSmokeParticleEffect();
 };
-void InitialiseSnow(const World *w)
+void InitialiseSnow(const World *w) // start snow
 {
 	((World*)w)->ActivateSnow();
 };
+
+// start terrain elevation, and texture merge
 void InitialiseTerrainElevation(const World *w) { ((World*)w)->ActivateTerrainElevation(Up); }
 void InitialiseTerrainMelt(const World *w) { ((World*)w)->ActivateTerrainElevation(Down); }
 void InitialiseTerrainTextureMergeToSnow(const World *w) { ((World*)w)->ActiveTerrainTextureMerge(1); }
 void InitialiseTerrainTextureMergeToGrass(const World *w) { ((World*)w)->ActiveTerrainTextureMerge(-1); }
+
+// show/hide lightning
 void InitLightningAppear(const World *w) { ((World*)w)->SetLightningActive(true); }
 void InitLightningVanish(const World *w) { ((World*)w)->SetLightningActive(false); }
+
+// deactivate snow
 void DeactivateWorldSnow(const World *w) { ((World*)w)->DeactivateSnow(); };
+
+// start slowing snow
 void ActivateSnowSlowing(const World *w) { ((World*)w)->SetSnowSlowing(true); }
 
+// setup world seasons
 void World::SetupSeasons()
 {
 	i32 timePerSeasons = 16;
@@ -105,6 +116,7 @@ void World::SetupSeasons()
 	UpdateSceneTimings();
 };
 
+// update scene timings
 void World::UpdateSceneTimings()
 {
 	tree->SetBuildTime(seasonMan.GetTimePerSeason() * 0.85f);
