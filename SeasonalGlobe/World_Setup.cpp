@@ -346,8 +346,6 @@ bool World::LoadGeometry()
 	tree->SetPosition(float3(2.5f, 0, 0.2f));
 	tree->SetTexture(barkTexture);
 	tree->SetNormalMap(barkNormalMap);
-	tree->SetBranchRadius(1.0f);
-	tree->SetBranchRadiusReduction(0.1f);
 	tree->SetBranchLength(0.6f);
 	tree->SetBranchRotationAngles(30);
 	//tree->SetInitialString("FFF[A][^^^^^^A]");

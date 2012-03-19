@@ -2,6 +2,7 @@
 
 #include "float2.h"
 
+// Bounded 2D line with start and end position
 struct Line2D
 {
 public:

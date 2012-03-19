@@ -3,6 +3,7 @@
 #include "ctypes.h"
 #include <GXBase.h>
 
+// GameTime class used to manage application and delta time
 class GameTime
 {
 private:

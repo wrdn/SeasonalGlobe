@@ -6,6 +6,8 @@
 class float4;
 class float3;
 
+// indices into the matrix array, easier to read and understand than using the numbers directly
+// e.g. mat[m21] for row 2 column 1 is more understandable than mat[4]
 enum Mat44Index
 {
 	m11 = 0,
@@ -91,14 +93,15 @@ public:
 	// Does inverse according to Cramers Rule
 	// See ftp://download.intel.com/design/PentiumIII/sml/24504301.pdf
 	Mat44 Inverse() const;
-	f32 Determinant() const;
 
-	Mat44 Transpose() const;
+	f32 Determinant() const; // get matrix determinant
+
+	Mat44 Transpose() const; // matrix transpose
 
 	void write(std::ostream &out);
 
-	static Mat44 BuildRotationMatrix(f32 angle_in_degrees, f32 x, f32 y, f32 z);
-	static Mat44 BuildScaleMatrix(f32 xscale, f32 yscale, f32 zscale);
+	static Mat44 BuildRotationMatrix(f32 angle_in_degrees, f32 x, f32 y, f32 z); // build rotation matrix
+	static Mat44 BuildScaleMatrix(f32 xscale, f32 yscale, f32 zscale); // build scale matrix
 
 	// modifies only the elements for the scale matrix (assumes rest is identity)
 	static void BuildScaleMatrix(f32 xscale, f32 yscale, f32 zscale, Mat44 &out);

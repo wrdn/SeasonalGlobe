@@ -1,6 +1,10 @@
 #ifndef __C_TYPES_H__
 #define __C_TYPES_H__
 
+// Defined own types so we can very easily change underlying types if we want
+// E.g. if we only want to use doubles, not floats, we can change f32 to refer to a double
+// To use only floats, change f64 to refer to a float
+
 //#include <pmmintrin.h> // SSE3 header
 
 typedef float f32; // float

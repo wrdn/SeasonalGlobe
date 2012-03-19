@@ -38,6 +38,7 @@ public:
 	~TerrainShaders() {};
 };
 
+//! contains info to use when parsing heightmap
 struct ImageRowInfo
 {
 	vec2i pixelStart, pixelEnd;
@@ -45,15 +46,17 @@ struct ImageRowInfo
 	u32 firstVertexIndex, lastVertexIndex;
 };
 
-//! Class to load terrain from a heightmap
+//! Class to load terrain from a heightmap, inherits GraphicsObject for
+//! common operations (e.g. translation, rotation, scale, shaders, textures)
 class Terrain : public GraphicsObject
 {
 private:
-	u32 width, height;
+	u32 width, height; // width and height of heightmap
 
 	//! storing these allows us to rebuild the
 	//! terrain if neccessary
 	vector<ImageRowInfo> rows;
+
 public:
 	Terrain(void);
 	~Terrain(void);
@@ -62,6 +65,7 @@ public:
 	//! By default, we build a circular mesh from the heightmap
 	bool Load(char *filename);
 
+	// Accessors
 	const u32 GetHeightmapWidth() const { return width; }
 	const u32 GetHeightmapHeight() const { return height; }
 };

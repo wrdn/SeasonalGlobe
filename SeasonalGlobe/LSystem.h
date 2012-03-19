@@ -16,10 +16,20 @@
 // Generation 3: FFFFFFFF
 class LSystem {
 private:
+
+	// contains the single character axiom and string to be replaced e.g. 'A' to 'FFA'
+	// With this, everytime 'A' was found by the LSystem evaluator, it would be replaced by 'FFA'
     std::map<c8, std::string> productionRules;
+
+	// starting string for the LSystem - this should contain the axiom from at least 1 production rule, else
+	// we would get the same string back from evaluation. i.e. if the starting axiom is "P" and there is no
+	// production rule with axiom "P", the evaluated string would be "P"
     std::string startingAxiom;
 
+	// Evaluated string built in Evaluate(...)
     std::string evaluatedString;
+
+	// Number of generations the LSystem runs for (how many times the LSystem evaluates its string, recursively)
     u32 generations;
 
 	// speed up GetReplacementString by caching last result

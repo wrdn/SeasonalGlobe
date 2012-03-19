@@ -4,6 +4,7 @@
 #include <time.h>
 #include "ctypes.h"
 
+// UTC or Local time
 enum TIME_FORMAT
 {
 	LOCAL,
@@ -19,6 +20,7 @@ typedef struct tm *(__cdecl *fp)(const time_t *);
 typedef struct tm* (*fp)(const time_t *) __attribute__((cdecl)); // GCC
 #endif
 
+// Used to get a time in local, utc or another format (defined in tm above)
 class TimeInfo
 {
 private:

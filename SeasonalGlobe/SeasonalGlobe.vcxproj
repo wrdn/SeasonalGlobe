@@ -107,7 +107,6 @@
     <ClCompile Include="GraphicsObject.cpp" />
     <ClCompile Include="graphics_utils.cpp" />
     <ClCompile Include="HemiSphericalParticleEmitter.cpp" />
-    <ClCompile Include="Log.cpp" />
     <ClCompile Include="LSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mat44.cpp" />
@@ -158,7 +157,6 @@
     <ClInclude Include="HemiSphericalParticleEmitter.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Line.h" />
-    <ClInclude Include="Log.h" />
     <ClInclude Include="LSystem.h" />
     <ClInclude Include="Mat44.h" />
     <ClInclude Include="Material.h" />

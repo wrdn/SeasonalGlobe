@@ -6,8 +6,7 @@
 #include <iostream>
 using namespace std;
 
-FractalTree::FractalTree() : branchRadius(GetDefaultBranchRadius()), branchRadiusReduction(GetDefaultBranchRadiusReduction()),
-	branchLength(GetDefaultBranchLength()), transformationMatricesArraySize(0), transformationMatrices(0),
+FractalTree::FractalTree() : branchLength(GetDefaultBranchLength()), transformationMatricesArraySize(0), transformationMatrices(0),
 	leafMatrixCount(0), leafMatrices(0), loop_growth(false),
 	runtime(0), buildTime(15), diffuseTexture(0), normalMap(0), treeShader(0), treeShadeMode(SmoothTextured), alpha(1),
 	deathDepth(0), treeDieing(false), isActive(true)
@@ -45,8 +44,6 @@ void FractalTree::DeepCopy(const FractalTree *dstp) const
 	memcpy(dst.rotationMatrices, rotationMatrices, sizeof(Mat44) * 6);
 	memcpy(dst.rotationAngles, rotationAngles, sizeof(f32) * 3);
 
-	dst.branchRadius = branchRadius;
-	dst.branchRadiusReduction = branchRadiusReduction;
 	dst.branchLength = branchLength;
 	dst.gbranch = gbranch;
 	dst.levels = levels;
@@ -83,8 +80,6 @@ void FractalTree::Reset()
 	lsysTree.ClearProductionRules();
 	lsysTree.SetLSystemGenerations(0);
 
-	branchRadius = GetDefaultBranchRadius();
-	branchRadiusReduction = GetDefaultBranchRadiusReduction();
 	branchLength = GetDefaultBranchLength();
 
 	// default angle = 25 degrees

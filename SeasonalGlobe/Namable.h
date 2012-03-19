@@ -1,5 +1,6 @@
 #pragma once
 
+// Makes a class namable (especially useful when debugging so you can see what the class/instance refers to)
 class Namable
 {
 private:

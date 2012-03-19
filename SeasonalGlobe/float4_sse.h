@@ -5,7 +5,13 @@
 #include "ctypes.h"
 
 const __m128 FLOAT4SSE_SIGNMASK = _mm_castsi128_ps(_mm_set1_epi32(0x80000000));
-class float4_sse // note: all loads are aligned. Therefore if pointers to data are used, the data pointed to MUST be 16 byte aligned (see ALIGN() macro in util.h for compile time alignment)
+
+// note: all loads are aligned. Therefore if pointers to data are used, the data 
+// pointed to MUST be 16 byte aligned (see ALIGN() macro in util.h for compile time alignment)
+
+// An SSE supporting 4D vector is included - this is NEVER usually used, as STL vectors do not allow for
+// aligned data members (__m128 is 16 byte aligned)
+class float4_sse
 {
 public:
 	__m128 vec;

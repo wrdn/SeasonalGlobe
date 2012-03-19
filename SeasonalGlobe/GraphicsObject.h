@@ -20,6 +20,7 @@ private:
 	float3 position, scale, orientation;
 	MeshHandle mesh; // shared_ptr to mesh (which should be managed in ResourceManager)
 
+	//! Object material, containing shader and texture handles, ka, kd, ks and shininess
 	Material objectMaterial;
 
 	GLenum polygonFillMode; // GL_POINT, GL_LINE, GL_FILL
@@ -76,7 +77,7 @@ public:
 
 	//! DRAWING FUNCTIONS
 	void Draw();
-	void DrawSimple()
+	void DrawSimple() // draw mesh with NO transformations
 	{
 		if(!mesh) return;
 		mesh->Draw();

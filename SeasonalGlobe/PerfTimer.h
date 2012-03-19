@@ -6,6 +6,7 @@
 #include <windows.h>
 #endif
 
+// Performance timer, used to time code using QueryPerformanceFrequency() and QueryPerformanceCounter()
 class PerfTimer
 {
 private:
@@ -18,7 +19,7 @@ public:
 	PerfTimer(void);
 	~PerfTimer(void);
 
-	void start();
-	void end();
+	void start(); // call to start timer
+	void end(); // call to end timer
 	double time() const; // Time between start and end in seconds
 };

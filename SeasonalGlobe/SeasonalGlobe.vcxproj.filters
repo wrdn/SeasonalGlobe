@@ -132,9 +132,6 @@
     <ClCompile Include="MyApp.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="Log.cpp">
-      <Filter>Source Files\Misc</Filter>
-    </ClCompile>
     <ClCompile Include="Collision.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
@@ -247,9 +244,6 @@
     </ClInclude>
     <ClInclude Include="Shader.h">
       <Filter>Header Files\Shading</Filter>
-    </ClInclude>
-    <ClInclude Include="Log.h">
-      <Filter>Header Files\Misc</Filter>
     </ClInclude>
     <ClInclude Include="util.h">
       <Filter>Header Files\Misc</Filter>

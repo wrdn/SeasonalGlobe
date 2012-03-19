@@ -46,11 +46,6 @@ float4::float4(const f32 * v)
 	vec[3] = v[3];
 };
 
-float4 float4::FromXYZ(const f32 * v)
-{
-	return float4(v[0], v[1], v[2]);
-};
-
 void float4::setall(const f32 v)
 {
 	vec[0] = vec[1] = vec[2] = vec[3] = v;

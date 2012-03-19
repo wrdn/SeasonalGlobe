@@ -12,6 +12,7 @@ c8* copystr(const c8 *src, const i32 len);
 c8* copystr_unsafe(const c8 *src);
 c8* copystr_unsafe(const c8 *src, const i32 len);
 
+// returns substring in src between start and end
 c8* substr(const c8*src, u32 start, u32 end);
 
 bool compare_str_lim(const c8 *src, const c8 *targ, u32 start, u32 end);
@@ -19,9 +20,11 @@ bool compare_str_lim(const c8 *src, const c8 *targ, u32 start, u32 end);
 bool compare_str_lim(const c8 *src, const c8 *targ, u32 src_start, u32 src_end,
 	u32 targ_start, u32 targ_end);
 
+// splits string s using delimiter, returning split strings in vector v
 void split(const std::string &s, c8 delim, std::vector<std::string> &v);
-void printf_array(f32 *arr, u32 sz);
-void printi_array(u32 *arr, u32 sz);
+
+void printf_array(f32 *arr, u32 sz); // print float array
+void printi_array(u32 *arr, u32 sz); // print integer array
 
 c8 *read_src(const c8 *file); // adds newline characters back when reading
 c8 *read_src_raw(const c8 *file); // doesn't add newline characters back when reading
@@ -39,17 +42,22 @@ std::vector<c8*> read_src_to_vec(const c8* file, bool incBlankLines, const u32 o
 // Removes all the strings in the vector then clears it.
 void cleanup_str_vec(std::vector<c8*> &v);
 
+// returns "True" or "False" depending on state of bool b parameter
 const char* bstr(const bool b);
 
 bool fast_strcmp(c8 *a, c8 *b);
 bool fast_strcmp(c8 *a, c8 *b, u32 len);
 
+// trim whitespace from string
 void TrimLeadingWhitespace(std::string &s);
 void TrimTrailingWhitespace(std::string &s);
 
+// count occurence of delim in string str
 u32 CountCharacterOccurrence(const c8* str, const c8 delim);
 
+// convert string to upper/lower case
 std::string strtolower(const std::string &s);
 std::string strtoupper(const std::string &s);
 
+// returns true if s=="true" or false if s=="false". Check is case insensitive
 bool stringtobool(const std::string &s);

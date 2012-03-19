@@ -5,6 +5,7 @@
 using namespace std;
 #include "GraphicsObject.h"
 
+//! OBJ material, containing material name (hashed), ka, kd, ks and some texture filenames
 struct OBJMaterial
 {
 public:
@@ -24,6 +25,8 @@ public:
 class OBJLoader
 {
 private:
+
+	//! The type of object line we are currently parsing
 	enum OBJLineType
 	{
 		IgnoredLine=0, // Used if line not in ValidLineInitiators
@@ -36,6 +39,8 @@ private:
 		MTLLIBLine, // "mtllib" line (specifies material file to parse)
 		USEMTLLine, // "usemtl" line (specifies material from material library to use)
 	};
+
+	//! The type of material line we are currently parsing
 	enum OBJMaterialNodeType
 	{
 		IgnoredNode=0,
@@ -65,7 +70,7 @@ private:
 	static const c8* OBJMaterialValidLineInitiators[];
 	static const OBJMaterialNodeType OBJMaterialAssociatedNodeTypes[];
 
-	OBJLoader();
+	OBJLoader(); // private constructor and destructor so we can't instantiate the OBJLoader (static functions only)
 	~OBJLoader();
 
 	//! Parses obj material (mtl) file, setting materials in outputMap
@@ -73,6 +78,6 @@ private:
 
 public:
 
-	//! Parses obj file
+	//! Parses obj file - parses geometry, builds VBO meshes and creates (and returns) the GraphicsObjects
 	static bool LoadOBJFile(const string& filename, vector<GraphicsObject> &output_vec);
 };

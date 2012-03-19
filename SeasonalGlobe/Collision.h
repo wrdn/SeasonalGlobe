@@ -3,6 +3,7 @@
 #include "Line.h"
 #include "Circle.h"
 
+// Used by LineCircleCollision to represent the first and last point the line hit the circle
 struct CollisionPoint2D
 {
 public:
@@ -13,4 +14,5 @@ public:
 	~CollisionPoint2D() { };
 };
 
+// Test straight bounded line against circle
 bool LineCircleCollision(const Line2D &line, const Circle &c, CollisionPoint2D &cp);

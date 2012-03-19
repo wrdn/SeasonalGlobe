@@ -2,6 +2,7 @@
 
 #include "float2.h"
 
+// 2D circle with position and radius. Used with line circle collisions (in terrain loader)
 struct Circle
 {
 public:
