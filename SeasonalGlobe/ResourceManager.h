@@ -34,12 +34,16 @@ private:
 	{
 	};
 
+	// Private function to add resource given an id, resource name and resource itself
+	// The resource is added to the resource map under "id", and as resources are namable, the
+	// name is set to "name" (does NOT affect id)
 	void AddResource(i32 id, const char *name, Resource *r);
 
 public:
 	// get the resource manager singleton
 	static ResourceManager& get();
 
+	// Cleanup resource manager
 	static void Cleanup()
 	{
 		delete resMan;
@@ -49,6 +53,8 @@ public:
 	// gets resource ID using string hashing given name (str)
 	static i32 GetResourceID(const char *str) { return (i32)hash_djb2((const uc8*)str); };
 
+	// Create a resource of type T (e.g. Mesh) with a unique ID (created by incrementing a static number)
+	// Returns the resource ID
 	template<class T>
 	i32 CreateResource()
 	{
@@ -57,6 +63,9 @@ public:
 		return id;
 	};
 
+	// Create resource with a name. The resourceName is hashed to produce the resource ID, and the resource name (from Namable) is set to resourceName
+	// If a resource already exists with the current name, the existing resource hash will be returned
+	// Returns the resource ID
 	template<class T>
 	i32 CreateResource(const char *resourceName) // creates a new resource using hashed resourceName, or returns the ID of the resource if it already exists
 	{
@@ -67,6 +76,7 @@ public:
 		return resHash;
 	};
 
+	// Gets a resource given an ID (supplied by CreateResource and embedded into Resource objects)
 	template<class T>
 	std::tr1::shared_ptr<T> GetResource(i32 id)
 	{
@@ -77,19 +87,26 @@ public:
 		return std::tr1::shared_ptr<T>((T*)0);
 	};
 
+	// Get resource given a resource name (resourceName is hashed, then the associated resource
+	// is returned)
 	template<class T>
 	std::tr1::shared_ptr<T> GetResource(const char *resourceName)
 	{
 		return GetResource<T>(GetResourceID(resourceName));
 	};
 
-	// Preferred functions, built out of CreateResource() and GetResource()
+	// **** Preferred functions, built out of CreateResource() and GetResource() ****
+
+	// Creates resource with unique ID then returns the shared pointer handle to it. To get the resource ID,
+	// call ->GetResourceID() on the object returned
 	template<class T>
 	std::tr1::shared_ptr<T> CreateAndGetResource()
 	{
 		return GetResource<T>(CreateResource<T>());
 	};
 	
+	// Creates resource given a resource name then returns the shared pointer handle to it.
+	//To get the resource ID, call ->GetResourceID() on the object returned
 	template<class T>
 	std::tr1::shared_ptr<T> CreateAndGetResource(const char *resourceName)
 	{
@@ -106,6 +123,8 @@ public:
 			resourceMap.erase(id);
 		}
 	};
+
+	// Removes a resource given the resource name (by hashing the name then using that as the resource ID)
 	void RemoveResource(const char *resourceName) { return RemoveResource(GetResourceID(resourceName)); };
 };
 
@@ -114,8 +133,7 @@ public:
 #endif
 
 // UTILITY FUNCTIONS (USED TO MAKE IT EASIER TO LOAD SPECIFIC TYPES OF RESOURCE)
-// NOTE THESE Load FUNCTIONS WILL RELOAD DATA EVEN IF IT EXISTS, TO AVOID THIS
-// CALL GetResource() OR PASS AROUND THE SHARED POINTER TO THE OBJECT
+
 #include "Texture.h"
 #include "Shader.h"
 #include "ShaderObject.h"

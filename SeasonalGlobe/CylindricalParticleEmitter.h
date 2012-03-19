@@ -12,12 +12,18 @@ private:
 
 	Color4f startColor, endColor;
 
+	// overrided emit particle (from ParticleEmitter). Used to emit a new particle in the cylinder shape
 	void Emit(Particle &p);
+
+	// Update properties of particle per ParticleEmitter::Update() call.
+	// This is for non-common properties relating the particle to the particle emitter
+	// This sets cylindrical particle color
 	void UpdateParticleProperties(Particle &p);
 public:
 	CylindricalParticleEmitter();
 	~CylindricalParticleEmitter();
 
+	// Accessors and Mutators
 	void SetStartPosition(const float3 &f)
 	{
 		startPos = f;

@@ -4,6 +4,7 @@
 #include "ctypes.h"
 #include "GameResource.h"
 
+// Used instead of direct OpenGL texture IDs, for better type safety
 enum OpenGLTextureSlot
 {
 	SLOT_GL_TEXTURE_0 = GL_TEXTURE0,
@@ -16,13 +17,15 @@ enum OpenGLTextureSlot
 	SLOT_GL_TEXTURE_7 = GL_TEXTURE7,
 };
 
+// Texture object, containing the OpenGL texture ID, its texture slot (allowing multitexturing) and width and height
+// It inherits Resource so may be managed in the ResourceManager
 class Texture : public Resource
 {
 private:
-	u32 textureID;
+	u32 textureID; // OpenGL texture ID
 	u32 minFilter, magFilter, wrapS, wrapT; // common texture properties
-	u32 width, height;
-	OpenGLTextureSlot glTexSlot;
+	u32 width, height; // texture width and height
+	OpenGLTextureSlot glTexSlot; // texture slot SLOT_GL_TEXTURE_0 to SLOT_GL_TEXTURE_7
 
 public:
 	Texture() : textureID(0), minFilter(GL_LINEAR_MIPMAP_LINEAR), magFilter(GL_LINEAR_MIPMAP_LINEAR), wrapS(GL_REPEAT), wrapT(GL_REPEAT),
@@ -35,16 +38,23 @@ public:
 		Unload();
 	}; // REMEMBER: CAREFUL WITH TEXTURE ON STACK, TEXTURE IS DELETED IN DESTRUCTOR
 
+	// Load texture from file
 	bool Load(const char *filename);
 
+	// Deletes texture object
 	void Unload();
 
+	// Activates texture
 	void Activate();
+	
+	// Deactivate (unbinds) texture
 	void Deactivate() const;
 
+	// Sets paramter on texture
 	void SetParameteri(GLenum param, u32 v);
 	void SetParameterf(GLenum param, f32 v);
 
+	// Easily set common parameters
 	void SetWrapS(u32 wrap_s) { SetParameteri(GL_TEXTURE_WRAP_S, wrap_s); }
 	void SetWrapT(u32 wrap_t) { SetParameteri(GL_TEXTURE_WRAP_T, wrap_t); }
 	void SetMinFilter(u32 minFilter) { SetParameteri(GL_TEXTURE_MIN_FILTER, minFilter); }
@@ -56,4 +66,5 @@ public:
 	u32 GetTextureSlotIndex() const { return glTexSlot - SLOT_GL_TEXTURE_0; };
 };
 
+// shared pointer to texture
 typedef std::tr1::shared_ptr<Texture> TextureHandle;

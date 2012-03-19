@@ -6,7 +6,7 @@
 using namespace std;
 
 FireParticleEmitter::FireParticleEmitter() : currentParticleAdditionIndex(0), maxParticlesPerLine(25),
-	startColor(1,0.2f,0,1), endColor(1, 0.28f, 0, 0.8f), fade(0), ignitionTime(10), deathTime(10), runtime(0), burnState(Igniting),
+	startColor(1,0.2f,0,1), endColor(1, 0.28f, 0, 0.8f),ignitionTime(10), deathTime(10), runtime(0), burnState(Igniting),
 	burnLevel(0), tree(0), ignitionRuntime(0)
 {
 };

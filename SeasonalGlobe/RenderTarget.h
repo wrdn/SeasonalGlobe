@@ -6,6 +6,7 @@
 #include <GXBase.h>
 using namespace std;
 
+// Frame Buffer Object properties
 struct FBOTexture
 {
 public:
@@ -17,15 +18,21 @@ public:
 	GLenum attachPoint;
 };
 
+// RenderTarget is an offscreen buffer you can render to
+// Could be used, for example, for shadows by rendering depth to
+// a render target, then comparing against this depth when rendering
+// objects in the primary window render target
 class RenderTarget : public Resource, public glex
 {
 private:
 	GLuint fbo_id; // frame buffer object id
 	unsigned int width, height; // width and height of textures
 
+	// textures associated with the rendertarget (allows for multiple render targets)
 	vector<FBOTexture> textures;
 public:
 	
+	// Unloads and deletes the render target
 	void Unload()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -44,6 +51,7 @@ public:
 		}
 	};
 
+	// creates the render target OpenGL ID at 800x600
 	RenderTarget()
 	{
 		width = 800;
@@ -53,6 +61,7 @@ public:
 		glex::Load();
 	};
 
+	// creates the render target OpenGL ID at specified width and height
 	RenderTarget(unsigned int pwidth, unsigned int pheight)
 	{
 		width = pwidth;
@@ -61,14 +70,18 @@ public:
 
 		glex::Load();
 	};
+
+	// Unloads render target in destructor (for safety - but careful with objects on the stack and their scope)
 	~RenderTarget()
 	{
 		Unload();
 	};
 
+	// returns width and height of rendertarget
 	unsigned int GetWidth() const { return width; }
 	unsigned int GetHeight() const { return height; }
 
+	// Used to enable drawing and reading from the framebuffer
 	void SetDrawReadBufferState(GLenum gl_draw_buffer, GLenum gl_read_buffer)
 	{
 		Bind();
@@ -77,6 +90,8 @@ public:
 		Unbind();
 	}
 
+	// Width and height mutators. Use SetWidthAndHeight() if you want to set both, as whenever called
+	// they will recreate the fbo textures to the new size (expensive!)
 	void SetWidth(unsigned int w) { width = w; RecreateTextures(); }
 	void SetHeight(unsigned int h) { height = h; RecreateTextures(); }
 	void SetWidthAndHeight(unsigned int w, unsigned int h)
@@ -86,6 +101,7 @@ public:
 		RecreateTextures();
 	};
 
+	// recreate all the FBO textures at the new resolution
 	void RecreateTextures()
 	{
 		for(unsigned int i=0;i<textures.size();++i)
@@ -107,6 +123,7 @@ public:
 		Unbind();
 	};
 
+	// creates a depth texture at GL_DEPTH_ATTACHMENT
 	FBOTexture CreateDepthTexture()
 	{
 		return CreateAndAttachTexture(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, GL_DEPTH_ATTACHMENT, false, GL_NEAREST, GL_NEAREST, GL_CLAMP, GL_CLAMP);
@@ -119,6 +136,8 @@ public:
 		return CreateAndAttachTexture(GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, attachmentPoint,true);
 	};
 
+	// Create a texture and attach to the rendertarget. The only required arguments are internal_format, format, type and
+	// attachment point
 	FBOTexture CreateAndAttachTexture(GLint internal_format, GLenum format, GLenum type, GLenum attachmentPoint,
 		bool genmipmaps=true,
 		f32 minFilter = GL_LINEAR_MIPMAP_LINEAR, f32 magFilter = GL_LINEAR_MIPMAP_LINEAR,
@@ -160,6 +179,7 @@ public:
 		return textures.back();
 	};
 
+	// Bind render target
 	void Bind()
 	{
 		glBindTexture(GL_TEXTURE_2D,0);
@@ -172,10 +192,12 @@ public:
 		glBindFramebuffer(target, fbo_id);
 	}
 
+	// Unbind render target
 	void Unbind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 };
 
+// RenderTargetHandle, a nice name for a shared pointer to a render target
 typedef std::tr1::shared_ptr<RenderTarget> RenderTargetHandle;

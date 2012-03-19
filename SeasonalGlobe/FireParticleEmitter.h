@@ -4,7 +4,12 @@
 #include <vector>
 
 class FractalTree;
-class ParticleLine // line particles will be generated along
+
+// Represents a line that particles will be generated along on the fractal tree
+// contains start, end and direction, depth of the tree the line is at, which segment it is on, and
+// where in the segment (i.e. which matrix in that set of matrices) the line is at
+// This information helps when animating the fire
+class ParticleLine
 {
 private:
 	float3 startPos, endPos, direction;
@@ -22,6 +27,7 @@ public:
 		direction(endPos-startPos), lineDepth(0), segmentIndex(0), depthOfLineInSegment(0) { };
 	~ParticleLine() { };
 
+	// Accessors and Mutators
 	void SetSegmentIndex(const u32 index) { segmentIndex = index; }
 	const u32 GetSegmentIndex() const { return segmentIndex; }
 
@@ -45,6 +51,7 @@ public:
 	const float3& GetDirection() const { return direction; };
 };
 
+// What state is the tree burning in?
 enum BurningState
 {
 	Igniting,
@@ -53,30 +60,37 @@ enum BurningState
 	Dead,
 };
 
+// Fire Particle Emitter - used to emit fire particles along a set of particle lines (lines associated with branches on the tree)
 class FireParticleEmitter : public ParticleEmitter
 {
 private:
-	std::vector<ParticleLine> particleLines;
-	u32 currentParticleAdditionIndex;
+	std::vector<ParticleLine> particleLines; // branch particle lines
+	u32 currentParticleAdditionIndex; // the index of the last particle we added (in the particle array)
 	u32 maxParticlesPerLine; // 20-40 is a reasonable number
 
-	Color4f startColor, endColor;
-	f32 fade;
+	Color4f startColor, endColor; // start and end color of each particle
 
+	// ignition and death time of the tree
 	f32 ignitionTime , deathTime;
+	
+	// maintain the current time into the ignition/deathTime
 	f32 runtime, ignitionRuntime;
+
+	// state of the burning tree
 	BurningState burnState;
+
+	// depth we are currently burning (and animating) at
 	i32 burnLevel;
+	
+	// holds tree so we can get burn info
 	FractalTree *tree;
 
-	void Emit(Particle &p);
-	void UpdateParticleProperties(Particle &p);
+	void Emit(Particle &p); // emit fire particle
+
+	void UpdateParticleProperties(Particle &p); // lerps color or kills particle if burnState == Dead
 
 public:
 	
-	f32 LERP_FACTOR;
-
-
 	FireParticleEmitter();
 	~FireParticleEmitter();
 
@@ -89,6 +103,7 @@ public:
 	// set to the newly added line
 	void AddLine(const ParticleLine &line);
 
+	// Accessors and Mutators
 	void SetStartColor(const Color4f &startcol) { startColor = startcol; };
 	void SetEndColor(const Color4f &endcol) { endColor = endcol; };
 	const Color4f& GetStartColor() const { return startColor; };

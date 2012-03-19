@@ -4,7 +4,7 @@
 
 const c8* SeasonalWindow::DEFAULT_WINDOW_TITLE = "Seasonal Globe";
 
-SeasonalWindow::SeasonalWindow() : clearColor(Color::BLACK), _leftDown(false), _rightDown(false), displayHelpMenu(false)
+SeasonalWindow::SeasonalWindow() : _leftDown(false), _rightDown(false), displayHelpMenu(false)
 {
 	windowRes[0] = DEFAULT_WIDTH;
 	windowRes[1] = DEFAULT_HEIGHT;
@@ -13,16 +13,6 @@ SeasonalWindow::SeasonalWindow() : clearColor(Color::BLACK), _leftDown(false), _
 	SetDepthBits(24);
 	SetStencilBits(1);
 	SetTitle(DEFAULT_WINDOW_TITLE);
-};
-
-const Color4f& SeasonalWindow::GetClearColor() const
-{
-	return clearColor;
-};
-
-void SeasonalWindow::SetClearColor(const Color4f &c)
-{
-	clearColor = c;
 };
 
 const u32* const SeasonalWindow::GetWindowRes() const
@@ -46,16 +36,6 @@ void SeasonalWindow::ResetPerspective() const
 	glLoadIdentity();
 	gluPerspective(60, (double)windowRes[0] / (double)windowRes[1],0.3f,200.0);
 	glMatrixMode(GL_MODELVIEW);
-};
-
-void SeasonalWindow::SwitchFullscreen()
-{
-	SetFullscreen(!GetFullscreen());
-};
-
-const bool SeasonalWindow::IsFullScreen() const
-{
-	return GetFullscreen();
 };
 
 void SeasonalWindow::OnDisplay()
@@ -263,5 +243,3 @@ void SeasonalWindow::OnCreate()
 
 	gameTime.Init();
 };
-
-void SeasonalWindow::OnDestroy() {};

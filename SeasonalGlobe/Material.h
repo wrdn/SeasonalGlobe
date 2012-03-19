@@ -5,26 +5,31 @@
 #include "Texture.h"
 #include "Shader.h"
 
+// Class representing common material properties an object may have
+// including ambient, diffuse, specular and emissive colours (ka, kd, ks and ke respectively),
+// textures (as many as required) and the shader handle
 class Material
 {
 private:
-	color ka, kd, ks, ke;
-	f32 shininess;
+	color ka, kd, ks, ke; // ambient, diffuse, specular and emissive colours
+	f32 shininess; // object shininess (used in specular lighting)
 
-	std::vector<TextureHandle> textures;
-	ShaderHandle activeShader;
+	std::vector<TextureHandle> textures; // list of textures to activate for the object
+	ShaderHandle activeShader; // shader applied to object
 
 public:
 	Material() : ka(0.1f), kd(1.0f), ks(0.15f), ke(0.0f), shininess(10) {};
 	Material(const color &_ka, const color &_kd, const color &_ks, const f32 _shininess)
 		: ka(_ka), kd(_kd), ks(_ks), shininess(_shininess) {};
 
+	// Accessors
 	color GetAmbient() const { return ka; };
 	color GetDiffuse() const { return kd; };
 	color GetSpecular() const { return ks; };
 	color GetEmissive() const { return ke; };
 	f32 GetShininess() const { return shininess; };
 
+	// Mutators
 	void SetAmbient(const color &col) { ka = col; };
 	void SetDiffuse(const color &col) { kd = col; };
 	void SetSpecular(const color &col) { ks = col; };
@@ -56,6 +61,8 @@ public:
 
 	ShaderHandle GetShader() { return activeShader; };
 
+	// Activate material colour and shininess properties ONLY
+	// DOES NOT enable the textures or shader
 	void Activate()
 	{
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ka.GetVec());

@@ -4,8 +4,9 @@
 #include "float3.h"
 #include <GXBase.h>
 
-// To make life simpler, Light contains all possible light properties.
-// The required ones should then be read in a shader
+// To simplify coding, Light contains all possible light properties.
+// The required ones should then be read in a shader using the shader inbuilt light
+// variables: gl_LightSource[n].variable
 class Light
 {
 private:
@@ -17,6 +18,8 @@ private:
 	float4 ambient, diffuse, specular; // colour properties
 
 public:
+
+	// Accessors
 	const u32 GetLightID() const { return lightID; }
 	const float4& GetPosition() const { return position; }
 	const float4& GetSpotLightDirection() const { return spotlightDirection; }
@@ -26,9 +29,7 @@ public:
 	const f32 GetCutoffAngle() const { return cutoff; };
 
 
-	// If you just want to set variables without affecting OpenGL state, use the public
-	// variables above. If the light has been Activate()'d and you wish to change its variable
-	// in OpenGL, call the Set functions below
+	// Updates the variable AND updates the OpenGL state
 	void SetPositionAndUpdateOpenGL(const float4 &pos)
 	{
 		position = pos;
@@ -78,6 +79,7 @@ public:
 	// Destructor
 	~Light() { };
 
+	// Activates the light by setting all the OpenGL properties
 	void Activate() const
 	{
 		glLightfv(lightID, GL_POSITION, position.GetVec());

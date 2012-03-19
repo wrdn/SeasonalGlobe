@@ -1,6 +1,7 @@
 #pragma once
 #include "ParticleEmitter.h"
 
+// State of particle - specifically used for leaves
 enum ParticleState
 {
 	Static,
@@ -12,8 +13,7 @@ enum ParticleState
 // In this emitter, the emit function does nothing but set the velocity to (0,0,0)
 // UpdateParticleProperties will reset the particles energy each frame, ensuring they
 // will never die. This may be used for particles representing objects that will not die (e.g. leaves).
-// We could later add functionality to finally make the leaves fall (e.g. by setting a "static_emitter" flag
-// The user of the class must add each particle by hand, using the AddParticle(...) function
+// This class is also used for leaves, and thus contains related states, including "particlesFalling"
 class StaticParticleEmitter : public ParticleEmitter
 {
 private:
@@ -32,12 +32,12 @@ private:
 
 	bool particlesFalling; // leaves fall to ground
 	bool particlesDieing; // particles fading out
-	bool particlesFadingIn;
+	bool particlesFadingIn; // are the leaves fading in?
 
 	f32 timeToChangeColor; // time for change from green leaf to brown leaf (default: 5)
-	f32 timeToFadeOut, timeToFadeIn; // time 
+	f32 timeToFadeOut, timeToFadeIn;
 	
-	f32 timeToFall;
+	f32 timeToFall; // how long the leaves have to fall
 	f32 maxYHeight;
 
 public:
@@ -87,6 +87,7 @@ public:
 	void SetTimeToFadeIn(f32 t) { timeToFadeIn = t; }
 	void SetTimeToFall(f32 t) { timeToFall = t; }
 
+	// Useful functions to change the state of the leaf particles
 	void InitiateParticleFall();
 
 	void InitiateParticleFadeIn(); // fades from (startColor.rgb,0) to startColor

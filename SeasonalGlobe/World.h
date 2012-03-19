@@ -18,6 +18,7 @@
 #include "ResourceManager.h"
 #include "Mesh.h"
 
+// Current lighting mode: ambient, directional or spotlights
 enum LightingMode
 {
 	Ambient,
@@ -25,6 +26,8 @@ enum LightingMode
 	Spotlights,
 };
 
+// The World class contains the entire world state, including the season manager, models, particle systems, camera info,
+// shaders and textures, and the applications primary update and draw functions
 class World
 {
 private:
@@ -32,30 +35,36 @@ private:
 	AppConfig conf;
 
 	// Managers
-	ParticleSystem particleSystem;
-	SeasonManager seasonMan;
+	ParticleSystem particleSystem; // particle manager
+	SeasonManager seasonMan; // season manager
 	f64 dtMultiplier; // used to speed up/slow down, every frame dt = dt*dtMultiplier
 
-	float3 sceneRotationAxis;
-	f32 _cameraAngle, _cameraPosition, _cameraRotation;
-	bool AutoRotate;
+	float3 sceneRotationAxis; // axis about which the scene rotates
+	f32 _cameraAngle, _cameraPosition, _cameraRotation; // camera angle, position and rotation
+	bool AutoRotate; // autorotating?
 	bool snowSlowing; // used to reduce rate of emission to snow slow down towards the end
 
 	// Geometry
 	Terrain terrain;
 	TerrainShift terrainElevation;
 	
+	// Objects in the scene we will draw
 	GraphicsObject houseModel, baseModel, boltModel;
 	Sphere globeSphere;
 	Sphere lightSphere;
 	Cylinder spotCone;
 
+	// mesh handles for the billboard and imposter models (also stored in the particle system and particle emitters)
 	MeshHandle defaultBillboardModel;
 	MeshHandle imposterModel;
 
+	// Fractal L-System tree
 	FractalTree *tree;
 
+	// polygon mode
 	GLenum polygonMode;
+	
+	// should be draw the lightning now?
 	bool drawLightning;
 	
 	// Shaders
@@ -63,9 +72,14 @@ private:
 		multiTexturingSampleShader, spotlightShader, ambientLightShader,
 		normalMap_AmbientShader, normalMap_DirectionalShader, normalMap_SpotlightsShader;
 
+	// Tree shaders
 	TreeShaders treeShaders;
+
+	// Terrain shaders
 	TerrainShaders terrainShaders;
 
+	// These variables are used when merging textures (diffuse and normal map) on the terrain
+	// to create a better effect of snow drifts
 	f32 terrainTextureMergeFactor; // between 0 and 1, controls how much of grass/snow texture shown
 	bool mergingTerrainTextured; // merging snow to grass (or vice versa)
 	f32 timeToMergeTextures; // time in seconds to switch from grass to snow (and vice versa)
@@ -90,9 +104,8 @@ private:
 	Light spotlights[4];
 	LightingMode lightMode; // ACW-switch between Ambient, Directional and 4 spotlights
 	
-	// Load functions
+	// Load functions (see World_Setup.cpp)
 	bool LoadTextures();
-
 	bool LoadShaders();
 	bool LoadParticles();
 	bool LoadGeometry();
@@ -103,12 +116,17 @@ private:
 	World(World const& w);
 	World& operator= (World const& other);
 
+	// draw the reflective pond surface and reflect tree, leaves and fire in it)
 	void reflective_draw(const GameTime &gameTime);
 
+	// draw the terrain (and normal map/displace in winter)
 	void DrawTerrain(const GameTime &gameTime);
 
 public:
+	World(void);
+	~World(void);
 
+	// Accessors and Mutators
 	const bool GetAutoRotate() const { return AutoRotate; };
 	void SetAutoRotate(const bool b) { AutoRotate = b; };
 	
@@ -140,15 +158,16 @@ public:
 	void SetCameraPosition(f32 v) { _cameraPosition = v; };
 	void SetCameraRotation(f32 v) { _cameraRotation = v; };
 
-	//Camera2 &GetCamera() { return cam; };
-
-	World(void);
-	~World(void);
-
+	// Load world
 	bool Load();
+
+	// Shutdown world (unload)
 	void Shutdown();
 
+	// update world (note most updates are done in Draw)
 	void Update(const GameTime &gameTime);
+
+	// draw world (and update some stuff)
 	void Draw(const GameTime &gameTime);
 
 	const LightingMode GetLightingMode() const { return lightMode; }
@@ -194,6 +213,7 @@ public:
 
 	void ResetWorld();
 	
+	// used when we speed up/slow down the app (through dtMultiplier) 
 	void UpdateSceneTimings();
 
 	void SetDtMultiplier(f64 multiplier) { dtMultiplier = max(0,multiplier); };

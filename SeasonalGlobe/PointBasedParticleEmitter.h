@@ -2,14 +2,19 @@
 
 #include "ParticleEmitter.h"
 
+// Emit particles in given spread from a point (used for smoke)
 class PointBasedParticleEmitter : public ParticleEmitter
 {
 private:
-	f32 particleSpread;
+	f32 particleSpread; // spread (width) of particles
+
+	// color to lerp between over particle lifetime
 	Color4f startColor, endColor;
 
+	// emit particle from point in spread (e.g. from chimney for smoke)
 	void Emit(Particle &p);
 
+	// sets particle color
 	void UpdateParticleProperties(Particle &p);
 
 public:

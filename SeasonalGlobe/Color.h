@@ -7,6 +7,9 @@ typedef float4 Color4f;
 typedef float4 color;
 
 // Static class to hold some colors (in Color4f r,g,b,a form)
+// All colors have values in the range 0 to 1
+// You can convert a color in the range 0 to 255 into a color in
+// the range 0 to 1 by calling Normalize(const Color4f &c)
 class Color
 {
 private:
@@ -29,7 +32,8 @@ public:
 	static Color4f Normalize(const Color4f &c);
 };
 
-class ColorU32 // color represented as int
+// color represented as int
+class ColorU32
 {
 private:
 	u32 color;
