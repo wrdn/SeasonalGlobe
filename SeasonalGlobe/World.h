@@ -102,6 +102,7 @@ private:
 	// Lights
 	Light directionalLight; f32 directionalLightRotation; f32 directionalLightSpeed;
 	Light spotlights[4];
+	Light ambientLight;
 	LightingMode lightMode; // ACW-switch between Ambient, Directional and 4 spotlights
 	
 	// Load functions (see World_Setup.cpp)

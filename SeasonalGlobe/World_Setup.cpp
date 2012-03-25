@@ -402,6 +402,8 @@ void World::LoadLights()
 	directionalLight = Light(lightPosition,directionalLightAmb, directionLightDiffuse, directionalLightSpecular);
 	directionalLight.SetLightID(GL_LIGHT0);
 	
+	ambientLight = directionalLight;
+
 	float4 spotDir;
 	float4 spotDiff(1,0.66666f,0.19607f,1);
 	

@@ -6,6 +6,7 @@ void main()
 {
 	vec4 lightAmbient = gl_LightSource[0].ambient;
 	vec4 ka = gl_FrontMaterial.ambient;
+	ka = vec4(1,1,1,1);
 	
 	if(useTextures)
 	{

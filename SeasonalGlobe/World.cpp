@@ -252,6 +252,10 @@ void World::Draw(const GameTime &_gameTime)
 		directionalLightRotation += directionalLightSpeed * gameTime.GetDeltaTime();
 		lightSphere.Draw();
 	}
+	else if(lightMode == Ambient)
+	{
+		ambientLight.Activate();
+	}
 
 	if(drawLightning) // draw lightning
 	{
