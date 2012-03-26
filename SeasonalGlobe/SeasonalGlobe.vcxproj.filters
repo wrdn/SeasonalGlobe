@@ -94,6 +94,9 @@
     <Filter Include="Source Files\Sound">
       <UniqueIdentifier>{08867055-8723-4555-a65b-396b7e2bf81d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Data\Sounds">
+      <UniqueIdentifier>{7c2443a5-e0cd-4134-a7c0-ebf707a8e821}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="float2.cpp">
@@ -528,6 +531,21 @@
     </None>
     <None Include="Data\Shaders\TreeShaders\FlatShading\spotlight.vert">
       <Filter>Resource Files\Data\Shaders\TreeShaders\FlatShading</Filter>
+    </None>
+    <None Include="Data\Sounds\README.txt">
+      <Filter>Resource Files\Data\Sounds</Filter>
+    </None>
+    <None Include="Data\Sounds\fire.ogg">
+      <Filter>Resource Files\Data\Sounds</Filter>
+    </None>
+    <None Include="Data\Sounds\lightning.ogg">
+      <Filter>Resource Files\Data\Sounds</Filter>
+    </None>
+    <None Include="Data\Sounds\Morning.ogg">
+      <Filter>Resource Files\Data\Sounds</Filter>
+    </None>
+    <None Include="Data\Sounds\sleighbells.ogg">
+      <Filter>Resource Files\Data\Sounds</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

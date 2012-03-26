@@ -17,6 +17,7 @@
 #include "SeasonManager.h"
 #include "ResourceManager.h"
 #include "Mesh.h"
+#include "Sound.h"
 
 // Current lighting mode: ambient, directional or spotlights
 enum LightingMode
@@ -24,6 +25,23 @@ enum LightingMode
 	Ambient,
 	Directional,
 	Spotlights,
+};
+
+struct AppSounds
+{
+public:
+	SoundHandle springSummerSound;
+	SoundHandle lightningSound;
+	SoundHandle fireSound; // sound to play when tree burning
+	SoundHandle bellsSound; // sleigh bells in winter
+
+	void StopAll()
+	{
+		springSummerSound->Stop();
+		lightningSound->Stop();
+		fireSound->Stop();
+		bellsSound->Stop();
+	};
 };
 
 // The World class contains the entire world state, including the season manager, models, particle systems, camera info,
@@ -92,6 +110,9 @@ private:
 		snowTexture, terrainNormalMapFull, grassParticleTexture, grassParticleColorMap,
 		houseNormalMap;
 
+	// Sounds
+	AppSounds appSounds;
+
 	// Particle emitters
 	u32 leafParticleEmitterID;
 	u32 snowEmitterID;
@@ -107,6 +128,7 @@ private:
 	
 	// Load functions (see World_Setup.cpp)
 	bool LoadTextures();
+	bool LoadSounds();
 	bool LoadShaders();
 	bool LoadParticles();
 	bool LoadGeometry();
@@ -126,6 +148,8 @@ private:
 public:
 	World(void);
 	~World(void);
+
+	AppSounds& GetAppSounds() { return appSounds; };
 
 	// Accessors and Mutators
 	const bool GetAutoRotate() const { return AutoRotate; };

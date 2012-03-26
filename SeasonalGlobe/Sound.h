@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GameResource.h"
-
+#include <string>
 #include <alut.h> // ALUT (OpenAL Utility Toolkit)
 #include <al.h>   // OpenAL
 
@@ -9,11 +9,15 @@ class Sound : public Resource
 {
 private:
 	u32 bufferID, sourceID;
+
+	bool LoadWAV(const std::string &filename);
+	bool LoadOGG(const std::string &filename);
+
 public:
 	Sound(void);
 	~Sound(void);
 
-	bool Load(const c8* filename);
+	bool Load(const std::string &filename);
 
 	void Unload();
 
@@ -60,6 +64,8 @@ public:
 	void Pause() const;
 	void Resume() const;
 	void Stop() const;
+
+	bool Valid() const; // returns true if bufferID and sourceID != AL_NONE
 };
 
 typedef std::tr1::shared_ptr<Sound> SoundHandle;

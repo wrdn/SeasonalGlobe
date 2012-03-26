@@ -25,10 +25,34 @@ void ResourceManager::AddResource(i32 id, const char *name, Resource *r)
 // Create texture handle then load the texture. If texture already loaded, returns current texture
 TextureHandle LoadTexture(const char *filename, const char *textureResourceName) // if not provided, the default resource name used is the filename
 {
-	TextureHandle hnd = textureResourceName ? ResourceManager::get().CreateAndGetResource<Texture>(textureResourceName) : ResourceManager::get().CreateAndGetResource<Texture>(filename);
-	if(hnd->GetGLTextureID()) { return hnd; }; // return resource if already loaded
-	if(!hnd->Load(filename)) { ResourceManager::get().RemoveResource(hnd->GetResourceID()); }
+	TextureHandle hnd = textureResourceName ? ResourceManager::get().CreateAndGetResource<Texture>(textureResourceName) :
+		ResourceManager::get().CreateAndGetResource<Texture>(filename);
+
+	if(hnd->GetGLTextureID())
+	{
+		return hnd;
+	}; // return resource if already loaded
+	if(!hnd->Load(filename))
+	{
+		ResourceManager::get().RemoveResource(hnd->GetResourceID());
+		hnd = TextureHandle(0);
+	}
 	return hnd;
+};
+
+SoundHandle LoadSound(const char *filename, const char *soundResourceName)
+{
+	SoundHandle snd = soundResourceName ? ResourceManager::get().CreateAndGetResource<Sound>(soundResourceName) : ResourceManager::get().CreateAndGetResource<Sound>(filename);
+	if(snd->Valid())
+	{
+		return snd;
+	}
+	if(!snd->Load(filename))
+	{
+		ResourceManager::get().RemoveResource(snd->GetResourceID());
+		snd = SoundHandle(0);
+	}
+	return snd;
 };
 
 // Creates shader object (compiled and linked) from vertex and fragment shader. Unless already compiled, the vertex and fragment

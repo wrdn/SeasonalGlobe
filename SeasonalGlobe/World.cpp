@@ -93,8 +93,7 @@ void World::reflective_draw(const GameTime &gameTime)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Color::WHITE.GetVec());
-	Material mat(color(0.2,0.2,0.2,0.5), color(0.7,0.7,0.7,0.5), color(0.0f), 0);
+	Material mat(color(0.2f,0.2f,0.2f,0.5f), color(0.7f,0.7f,0.7f,0.5f), color(0.0f), 0);
 	mat.Activate();
 
 	// Draw floor normally
@@ -158,11 +157,14 @@ void World::Update(const GameTime &_gameTime)
 		}
 	}
 
-	// update rest of particles
-	particleSystem.Update(gameTime);
+	if(!NearZero(dtMultiplier))
+	{
+		// update rest of particles
+		particleSystem.Update(gameTime);
 
-	// update fire particle emitter
-	fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
+		// update fire particle emitter
+		fireParticleEmitter->UpdateFireParticleEmitter(gameTime);
+	}
 };
 
 void World::DrawTerrain(const GameTime &gameTime)
@@ -265,7 +267,15 @@ void World::Draw(const GameTime &_gameTime)
 		glTranslatef(-0.25,5,0);
 		glScalef(2,2,2);
 		glColor4f(0.9451f, 0.9178f, 0,1);
-		boltModel.Draw();
+		boltModel.GetMesh()->glUseProgram(0);
+		boltModel.GetMaterial().SetAmbient(color(0.4,0.4,0.4,1.0f));
+		boltModel.GetMaterial().SetDiffuse(color(0.4,0.4,0.4,1.0f));
+
+		Material mat(color(0.2f,0.2f,0.2f,0.5f), color(0.7f,0.7f,0.7f,0.5f), color(0.0f), 0);
+		mat.Activate();
+
+		boltModel.DrawSimple();
+		
 		glPopMatrix();
 		glEnable(GL_LIGHTING);
 		glColor4f(1,1,1,1);

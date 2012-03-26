@@ -139,8 +139,10 @@ public:
 #include "ShaderObject.h"
 #include "RenderTarget.h"
 #include "Mesh.h"
+#include "Sound.h"
 
 TextureHandle LoadTexture(const char *filename, const char *textureResourceName=0); // if not provided, the default resource name used is the filename
+SoundHandle LoadSound(const char *filename, const char *soundResourceName=0);
 ShaderHandle LoadShader(const char *vertexShaderFilename, const char *fragmentShaderFilename, const char *shaderResourceName=0); // if not provided, there is no default shader resource name
 RenderTargetHandle CreateRenderTarget(int width, int height, const char *renderTargetResourceName=0); // if not provided, there is no default render target resource name
 MeshHandle CreateMesh(char *name);

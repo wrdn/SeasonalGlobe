@@ -13,13 +13,15 @@ bool World::Load()
 
 	LoadLights();
 	LoadTextures();
+	LoadSounds();
 	LoadShaders();
 	LoadGeometry();
 	LoadParticles();
 	
 	SetupSeasons();
 	
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Color::BLACK.GetVec());
+	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Color::BLACK.GetVec());
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Color::WHITE.GetVec());
 
 	SetLightingMode(Spotlights);
 
@@ -93,6 +95,24 @@ bool World::LoadTextures()
 	baseTexture = LoadTexture("Data/Textures/wood.jpg");
 
 	return grassTexture && barkTexture && particleTexture && leafTexture && baseTexture && houseTexture && displacementTexture;
+};
+
+bool World::LoadSounds()
+{
+	appSounds.springSummerSound = LoadSound("Data/Sounds/Morning.ogg");
+	appSounds.springSummerSound->Play();
+
+	appSounds.lightningSound = LoadSound("Data/Sounds/lightning.ogg");
+
+	appSounds.fireSound = LoadSound("Data/Sounds/fire.ogg");
+
+	appSounds.bellsSound = LoadSound("Data/Sounds/sleighbells.ogg");
+
+	return
+		appSounds.springSummerSound &&
+		appSounds.lightningSound &&
+		appSounds.fireSound &&
+		appSounds.bellsSound; // !=NULL
 };
 
 bool World::LoadShaders()

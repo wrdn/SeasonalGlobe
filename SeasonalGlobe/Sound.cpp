@@ -1,6 +1,9 @@
 #include "Sound.h"
+#include "strutils.h"
 
-Sound::Sound(void)
+#include <vorbisfile.h>
+
+Sound::Sound(void) : bufferID(AL_NONE), sourceID(AL_NONE)
 {
 }
 
@@ -10,20 +13,121 @@ Sound::~Sound(void)
 	Unload();
 }
 
-bool Sound::Load(const c8* filename)
+bool Sound::LoadWAV(const std::string &filename)
 {
 	Unload();
 
-	bufferID = alutCreateBufferFromFile(filename);
-	if(bufferID == AL_NONE) return false;
+	bufferID = alutCreateBufferFromFile(filename.c_str());
+	if(bufferID == AL_NONE)
+	{
+		return false;
+	}
 
 	alGenSources(1, &sourceID);
-	if(sourceID == AL_NONE) return false;
+	if(sourceID == AL_NONE)
+	{
+		Unload();
+		return false;
+	}
 
 	SetParameteri(AL_BUFFER, bufferID);
 	SetParameterf(AL_GAIN, 1.0f);
 
 	return true;
+};
+
+bool Sound::LoadOGG(const std::string &filename)
+{
+	Unload();
+
+	alGenBuffers(1, &bufferID);
+	if(bufferID == AL_NONE) return false;
+    alGenSources(1, &sourceID);
+	if(sourceID == AL_NONE) return false;
+
+	const u32 BUFFER_SZ = 32768;
+
+	i32 endian = 0;
+	i32 bitStream;
+	long bytes;
+	c8 dataArray[BUFFER_SZ];
+
+	FILE *fh = fopen(filename.c_str(), "rb");
+	if(!fh) { return false; }
+
+	vorbis_info *pInfo;
+    OggVorbis_File oggFile;
+
+    // Try opening the given file
+	if (ov_open(fh, &oggFile, NULL, 0) != 0)
+	{
+		fclose(fh);
+		return false;
+	}
+
+	ALenum format = AL_FORMAT_STEREO16;
+	pInfo = ov_info(&oggFile, -1);
+	if (pInfo->channels == 1)
+        format = AL_FORMAT_MONO16;
+
+	ALsizei freq = pInfo->rate;
+
+	std::vector<c8> buff;
+
+	// Read in the OGG data
+	do
+	{
+		// Read up to a buffer's worth of decoded sound data
+		bytes = ov_read(&oggFile, dataArray, BUFFER_SZ, endian, 2, 1, &bitStream);
+
+		if (bytes < 0)
+		{
+			ov_clear(&oggFile);
+			fclose(fh);
+			return false;
+		}
+		// end if
+
+		// Append to end of buffer
+		buff.insert(buff.end(), dataArray, dataArray + bytes);
+	}
+	while (bytes > 0);
+	
+	fclose(fh);
+	
+	alBufferData(bufferID, format, &buff[0], static_cast<ALsizei>(buff.size()), freq);
+
+	SetParameteri(AL_BUFFER, bufferID);
+	SetParameterf(AL_GAIN, 1.0f);
+
+	return true;
+};
+
+bool Sound::Load(const std::string &filename)
+{
+	// valid filename needs .wav or .ogg extension
+	// 4 letter extension, plus a minimum of 1 letter filename
+	if(!filename.size() || filename.size()<5) return false;
+
+	size_t dotPos = filename.find_last_of('.');
+	if(dotPos == std::string::npos)
+	{
+		return false; // no extension
+	}
+
+	std::string extension = filename.substr(dotPos+1);
+	extension = strtoupper(extension);
+
+	if(extension == "OGG")
+	{
+		return LoadOGG(filename);
+	}
+	else if(extension == "WAV")
+	{
+		return LoadWAV(filename);
+	}
+	
+	return false; // unknown extension
 };
 
 void Sound::Unload()
@@ -135,4 +239,9 @@ void Sound::Stop() const
 {
 	if(GetSourceState() == AL_PLAYING)
 			alSourceStop(sourceID);
+};
+
+bool Sound::Valid() const
+{
+	return bufferID != AL_NONE && sourceID != AL_NONE;
 };

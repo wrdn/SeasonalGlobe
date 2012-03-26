@@ -228,6 +228,9 @@ void SeasonalWindow::OnMouseMove(i32 x, i32 y)
 void SeasonalWindow::OnCreate()
 {
 	GLWindowEx::OnCreate();
+
+	alutInit(0,0);
+
 	SetCursor(CRNone); // hide cursor when loading
 
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);

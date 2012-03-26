@@ -53,6 +53,46 @@ void InitialiseSnow(const World *w) // start snow
 	((World*)w)->ActivateSnow();
 };
 
+void PlaySpringSummerSound(const World *w)
+{
+	World *wr = (World*)w;
+	
+	// ensure every other sound has been stopped
+	wr->GetAppSounds().bellsSound->Stop();
+	wr->GetAppSounds().fireSound->Stop();
+	wr->GetAppSounds().lightningSound->Stop();
+
+	if(wr->GetAppSounds().springSummerSound->GetSourceState() != AL_PLAYING) // accounts for the sound being started during the loading screen
+	{
+		wr->GetAppSounds().springSummerSound->Play();
+	}
+};
+
+void PlayLightningSound(const World *w)
+{
+	World *wr = (World*)w;
+	
+	wr->GetAppSounds().lightningSound->Play();
+	wr->GetAppSounds().springSummerSound->Stop();
+};
+
+void PlayFireSound(const World *w)
+{
+	World *wr = (World*)w;
+	wr->GetAppSounds().fireSound->SetVolume(1.0f);
+	wr->GetAppSounds().fireSound->Play();
+};
+
+void PlayBellsSound(const World *w)
+{
+	World *wr = (World*)w;
+	
+	wr->GetAppSounds().fireSound->SetVolume(0.5f);
+	wr->GetAppSounds().lightningSound->Stop();
+
+	wr->GetAppSounds().bellsSound->Play();
+};
+
 // start terrain elevation, and texture merge
 void InitialiseTerrainElevation(const World *w) { ((World*)w)->ActivateTerrainElevation(Up); }
 void InitialiseTerrainMelt(const World *w) { ((World*)w)->ActivateTerrainElevation(Down); }
@@ -78,6 +118,8 @@ void World::SetupSeasons()
 	seasonMan.SetWorldPointer(this);
 
 	// Spring: Tree grows
+	seasonMan.AddEvent(Spring, SeasonalEvent(0.1f, PlaySpringSummerSound));
+
 	seasonMan.AddEvent(Spring, SeasonalEvent(0.1f, StartTreeGrowth)); // tree grows at start of spring
 
 	// Summer: Leaves appear on tree
@@ -90,16 +132,22 @@ void World::SetupSeasons()
 
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.3f, InitiateLeafVanish));
 
-	seasonMan.AddEvent(Autumn, SeasonalEvent(0.29f, InitLightningAppear));
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.24f, PlayLightningSound));
+
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.28f, InitLightningAppear));
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.3f, InitLightningVanish));
 
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.3f, InitiateTreeIgnitionFire));
+
+	seasonMan.AddEvent(Autumn, SeasonalEvent(0.32f, PlayFireSound));
 
 	seasonMan.AddEvent(Autumn, SeasonalEvent(0.78f, InitiateTreeDeath));
 
 	// Winter
 	seasonMan.AddEvent(Winter, SeasonalEvent(0, InitialiseSnow ));
 	seasonMan.AddEvent(Winter, SeasonalEvent(0.05f, InitialiseHouseSmoke));
+
+	seasonMan.AddEvent(Winter, SeasonalEvent(0.275f, PlayBellsSound));
 
 	seasonMan.AddEvent(Winter, SeasonalEvent(0.3f, InitialiseTerrainTextureMergeToSnow));
 

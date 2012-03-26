@@ -355,18 +355,40 @@ void FractalTree::DrawBranch(const Mat44 &transformationMatrix, const Mat44 &sca
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glMultMatrixf(scaleMatrix.Mult(transformationMatrix).GetMatrix());
-	//gbranch.Draw();
+
+	if(treeShadeMode == NonTexturedNonLitWireframe)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	else
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+
 	gbranch.DrawSimple();
 	glPopMatrix();
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 };
 void FractalTree::DrawBranch(const Mat44 &transformationMatrix)
 {
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glMultMatrixf(((Mat44&)transformationMatrix).GetMatrix());
-	//gbranch.Draw();
+
+	if(treeShadeMode == NonTexturedNonLitWireframe)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	else
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+
 	gbranch.DrawSimple();
 	glPopMatrix();
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 };
 
 // Draws the tree, animating its growth and death when required
