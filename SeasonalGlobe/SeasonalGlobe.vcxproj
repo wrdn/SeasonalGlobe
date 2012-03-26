@@ -61,7 +61,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>.\..\Libraries\GXBase\lib\Debug;.\..\Libraries\OpenAL\lib;.\..\Libraries\vorbis\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\..\Libraries\GXBase\lib\Debug;.\..\Libraries\OpenAL\lib;.\..\Libraries\vorbis\lib\DebugLibs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>gxbasemd.lib;alut.lib;OpenAL32.lib;libvorbisfile.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -85,7 +85,7 @@ copy $(ProjectDir)DLL\DebugLibs\*.dll $(OutDir)</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>.\..\Libraries\GXBase\lib\Release;.\..\Libraries\vorbis\lib\Release;.\..\Libraries\OpenAL\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\..\Libraries\GXBase\lib\Release;.\..\Libraries\vorbis\lib\ReleaseLibs;.\..\Libraries\OpenAL\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>gxbasem.lib;alut.lib;OpenAL32.lib;libvorbisfile.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>

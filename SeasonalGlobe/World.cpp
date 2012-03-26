@@ -157,7 +157,7 @@ void World::Update(const GameTime &_gameTime)
 		}
 	}
 
-	if(!NearZero(dtMultiplier))
+	if(!NearZero((f32)dtMultiplier))
 	{
 		// update rest of particles
 		particleSystem.Update(gameTime);
@@ -268,8 +268,8 @@ void World::Draw(const GameTime &_gameTime)
 		glScalef(2,2,2);
 		glColor4f(0.9451f, 0.9178f, 0,1);
 		boltModel.GetMesh()->glUseProgram(0);
-		boltModel.GetMaterial().SetAmbient(color(0.4,0.4,0.4,1.0f));
-		boltModel.GetMaterial().SetDiffuse(color(0.4,0.4,0.4,1.0f));
+		boltModel.GetMaterial().SetAmbient(color(0.4f,0.4f,0.4f,1.0f));
+		boltModel.GetMaterial().SetDiffuse(color(0.4f,0.4f,0.4f,1.0f));
 
 		Material mat(color(0.2f,0.2f,0.2f,0.5f), color(0.7f,0.7f,0.7f,0.5f), color(0.0f), 0);
 		mat.Activate();
