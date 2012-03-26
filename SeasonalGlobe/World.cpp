@@ -93,7 +93,7 @@ void World::reflective_draw(const GameTime &gameTime)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	Material mat(color(0.2f,0.2f,0.2f,0.5f), color(0.7f,0.7f,0.7f,0.5f), color(0.0f), 0);
+	Material mat(color(0.35f,0.35f,0.35f,0.6f), color(0.7f,0.7f,0.7f,0.5f), color(0.0f), 0);
 	mat.Activate();
 
 	// Draw floor normally

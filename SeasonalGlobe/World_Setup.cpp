@@ -431,27 +431,25 @@ void World::LoadLights()
 	float4 spotSpec = Color::WHITE * 0.2f; 
 
 	// Spotlight 1 (top) 
-	lightPosition = float4(0,5,0,1); spotDir = float4(0,-1,0,1);  
+	lightPosition = float4(0,8,0,1); spotDir = float4(0,-1,0,1);  
 	spotDiff = Color::GREY*0.55f;
 	spotlights[0] = Light(lightPosition, spotDir, 10, spotAmb, spotDiff, spotSpec);
 	spotlights[0].SetLightID(GL_LIGHT0); 
 	 
 	// Spotlight 2 (left)
-	lightPosition = float4(-5.3f, 0.6f, 9.6f,1);  spotDir = float4(0,-0.5f,-1,1);
-	spotDiff = float4(0.5f,0.6f,0.2f,1);
+	lightPosition = float4(-5.0f, 2.5f, 9.6f,1);  spotDir = float4(0,-0.5f,-1,1);
+	spotDiff = float4(0.64f,0.66666f,0.19607f,1); 
 	spotlights[1] = Light(lightPosition, spotDir, 32, spotAmb, spotDiff, spotSpec);
 	spotlights[1].SetLightID(GL_LIGHT1);
 	 
 	// Spotlight 3 (right)
-	lightPosition = float4(4.4f, 0.6f, 10, 1); spotDir = float4(0,-0.5,-1,1);
-	spotDiff = float4(0.8f,0.45f,0.3f,1);
+	lightPosition = float4(3.85f, 2.5f, 10, 1); spotDir = float4(0,-0.5,-1,1);
 	spotlights[2] = Light(lightPosition, spotDir, 32, spotAmb, spotDiff, spotSpec);
 	spotlights[2].SetLightID(GL_LIGHT2);
 	 
 	// Spotlight 4 (back) 
 	lightPosition = float4(0,0.6f,-11.2f,1); spotDir = float4(0,0,1,1);
 	spotAmb = float4(0.35f,0.35f,0.35f,1);
-	spotDiff = float4(1,0.66666f,0.19607f,1); 
 	spotlights[3] = Light(lightPosition, spotDir, 33, spotAmb, spotDiff, spotSpec);
 	spotlights[3].SetLightID(GL_LIGHT3);
 };
