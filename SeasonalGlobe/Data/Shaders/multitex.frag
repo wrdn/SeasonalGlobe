@@ -8,4 +8,4 @@ void main()
 	vec4 texbres = texture2D(TextureB, TexCoord);
 	
 	gl_FragColor = texares * texbres;
-};
+}

@@ -12,4 +12,4 @@ void main()
 	//vlightDirection = normalize(lightPosition);
 	//vlightDirection = lightPosition - objectPos.xyz;
 	vNormal = normalize(gl_NormalMatrix * gl_Normal);
-};
+}

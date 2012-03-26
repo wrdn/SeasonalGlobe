@@ -10,4 +10,4 @@ void main()
 	TexCoord = gl_MultiTexCoord0.xy;
 	
 	color = gl_Color;
-};
+}

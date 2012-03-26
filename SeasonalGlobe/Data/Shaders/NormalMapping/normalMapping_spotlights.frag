@@ -40,7 +40,7 @@ vec4 ApplySpotLight(int index, vec4 texCol, vec3 N, float ambientMultiplier, flo
 		finalColor += specularMultiplier * lightSpecular * ks * pow(max(dot(reflectionVector,eyeVector),0.0),shininess)*texCol; // Specular
 	}
 	return finalColor;
-};
+}
 
 void main(void)
 {

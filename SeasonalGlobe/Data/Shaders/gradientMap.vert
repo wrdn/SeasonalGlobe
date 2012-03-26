@@ -22,4 +22,4 @@ void main()
 	TexCoord = gl_Vertex.xy;
 	float t = fract(translatedPos.z + 0.4 * Time);
 	k = 1.0 - t;
-};
+}

@@ -24,7 +24,7 @@ vec4 ApplySpotLight(int index, vec3 N, float ambientMultiplier)
 		finalColor += gl_LightSource[index].diffuse * gl_FrontMaterial.diffuse * NdotL * spot;
 	}
 	return finalColor;
-};
+}
 
 void main()
 {

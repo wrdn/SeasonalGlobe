@@ -13,4 +13,4 @@ void main()
 	
 	//
 	//gl_FragColor = 1-fade * texture2D(GradientMap, vec2(k,0));
-};
+}

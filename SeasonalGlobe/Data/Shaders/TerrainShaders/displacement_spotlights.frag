@@ -38,7 +38,7 @@ vec4 ApplySpotLight(int index, vec4 texCol, vec3 _N, float ambientMultiplier, fl
 		fcol += gl_LightSource[index].specular * gl_FrontMaterial.specular * specular * spot;
 	}
 	return fcol;
-};
+}
 
 void main(void)
 {
