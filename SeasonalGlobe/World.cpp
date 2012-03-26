@@ -127,11 +127,11 @@ void World::Update(const GameTime &_gameTime)
 	// update timings of seasonal events
 	UpdateSceneTimings();
 
-	// merging terrain textures?
+	// merging terrain textures
 	if(mergingTerrainTextured)
 	{
 		terrainTextureMergeRuntime += gameTime.GetDeltaTime() * mergeDirection; // update merge runtime
-		if(terrainTextureMergeRuntime > timeToMergeTextures)
+		if(terrainTextureMergeRuntime >= timeToMergeTextures)
 		{
 			terrainTextureMergeRuntime = timeToMergeTextures - EPSILON;
 		}
@@ -139,7 +139,10 @@ void World::Update(const GameTime &_gameTime)
 		{
 			terrainTextureMergeRuntime = 0;
 		}
-		terrainTextureMergeRuntime = fmod(terrainTextureMergeRuntime, timeToMergeTextures);
+
+		// EPSILON factor required here, as otherwise if terrainTextureMergeRuntime was just over 1.0f (by some value <= EPSILON),
+		// then fmod would set it to 0 (hence, we would get a flickering between the snow and grass texture)
+		terrainTextureMergeRuntime = fmod(terrainTextureMergeRuntime-EPSILON, timeToMergeTextures);
 		terrainTextureMergeFactor = (1.0f / timeToMergeTextures) * terrainTextureMergeRuntime; // texture mix factor between 0 and 1
 	}
 
