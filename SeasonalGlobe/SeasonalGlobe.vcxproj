@@ -54,15 +54,15 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\..\Libraries\GXBase\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\..\Libraries\GXBase\include;.\..\Libraries\OpenAL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>
       </MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>.\..\Libraries\GXBase\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gxbasemd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\..\Libraries\GXBase\lib\Debug;.\..\Libraries\OpenAL\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>gxbasemd.lib;alut.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
@@ -125,6 +125,7 @@
     <ClCompile Include="SeasonSetup.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderObject.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="StaticParticleEmitter.cpp" />
     <ClCompile Include="strutils.cpp" />
@@ -176,6 +177,7 @@
     <ClInclude Include="SeasonManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderObject.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="StaticParticleEmitter.h" />
     <ClInclude Include="strutils.h" />

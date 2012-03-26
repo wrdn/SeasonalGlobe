@@ -88,6 +88,12 @@
     <Filter Include="Source Files\Resource Management">
       <UniqueIdentifier>{2c8fd650-9f08-4491-b1d6-52b25bc53a3e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Sound">
+      <UniqueIdentifier>{42cd9079-654b-444c-90a3-18c53bbe777f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sound">
+      <UniqueIdentifier>{08867055-8723-4555-a65b-396b7e2bf81d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="float2.cpp">
@@ -212,6 +218,9 @@
     </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files\Shading</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>Source Files\Sound</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -358,6 +367,9 @@
     </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Header Files\Shading</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound.h">
+      <Filter>Header Files\Sound</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
