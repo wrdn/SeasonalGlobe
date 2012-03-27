@@ -7,7 +7,7 @@ Sphere::Sphere() : radius(0), slices(0), stacks(0) { };
 
 Sphere::~Sphere() { };
 
-bool Sphere::Create(f32 _radius, u32 _slices, u32 _stacks)
+bool Sphere::Create(f32 _radius, u32 _slices, u32 _stacks, bool createHemisphere)
 {
 	if( ( _stacks < 2 ) && ( _slices < 2 ) ) return false;
 
@@ -15,104 +15,124 @@ bool Sphere::Create(f32 _radius, u32 _slices, u32 _stacks)
 	slices = _slices;
 	stacks = _stacks;
 
-	f32 stack_increment = 1.0f / (f32)stacks; // y
-	f32 slice_increment = PI*2.0f / (f32)slices; // x
-	f32 x,y,z;
-	u32 vertexCount=0; u32 indexCount=0;
-	u32 arraySize = (slices+1)*(stacks-1)+2;
-	VERTEX *verts = new VERTEX[arraySize];
+	std::vector<float> sinI, cosI, sinJ, cosJ;
 
-	// Top
-	VERTEX top;
-	top.position = float3(0, radius, 0);
-	top.normal = float3(0, 1, 0);
-	top.uv = float2(0, 1);
-	verts[vertexCount] = top;
-	++vertexCount;
-
-	// Bottom
-	VERTEX bottom;
-	bottom.position = float3(0, -radius, 0);
-	bottom.normal = float3(0, -1, 0);
-	bottom.uv = float2::ZERO;
-	verts[vertexCount] = bottom;
-	++vertexCount;
-
-	for( u32 i = 1; i < stacks; ++i )
+	for (u32 i = 0; i < slices; i++)
 	{
-		y = sin(PI*(1/2.0f - stack_increment * (f32)i));
-		f32 temp_radius = cos(PI*(1/2.0f - stack_increment * (f32)i));
-		f32 temp_tex = 1.0f - stack_increment * (f32)i;
-		u32 temp_vcount = vertexCount;
-
-		// Create vertices around the sphere (slices)
-		for( u32 j = 0; j < slices; ++j )
-		{
-			x = cos((f32)j * slice_increment);
-			z = -sin((f32)j*slice_increment);
-			
-			VERTEX v(
-				float3(radius*temp_radius*x, radius*y, radius*temp_radius*z),
-				float3(temp_radius*x, y, temp_radius*z),
-				float2((f32)j/(f32)slices, temp_tex));
-			verts[vertexCount] = v;
-			++vertexCount;
-		}
-		VERTEX lv = verts[temp_vcount];
-		lv.uv.y(temp_tex);
-		verts[vertexCount] = lv;
-		++vertexCount;
+		f32 inp = 2.0f * PI * (f32)i / (f32)slices;
+		sinI.push_back(sin(inp));
+		cosI.push_back(cos(inp));
 	}
-	
-	indexCount = 0;
-	vertexCount = 2;
-	
-	u32 indicesArraySz = ((2+(stacks-1)*(slices+1)*2) * 3) - 6;
-	u32 *indicesArray = new u32[indicesArraySz];
-	u32 index=0;
-
-	// Top
-	for(u32 j=0; j < slices; ++j)
+	for (u32 j = 0; j < stacks; j++)
 	{
-		indicesArray[index++] = 0;
-		indicesArray[index++] = vertexCount;
-		indicesArray[index++] = vertexCount+1;
-		++vertexCount;
+		f32 inp = PI * (f32)j / (f32)stacks;
+
+		sinJ.push_back(sin(inp));
+		cosJ.push_back(cos(inp));
 	}
 
-	vertexCount -= (slices);
+	std::vector<VERTEX> vertices;
 
-	// Middle (stacks)
-	for(u32 i=0;i<(stacks-2); ++i)
+	VERTEX topVertex;
+	topVertex.position.set(0,0,radius);
+	topVertex.uv.set(0,1);
+
+	//topVertex.position.set(0,radius,0);
+	vertices.push_back(topVertex);
+
+	for(u32 j=1;j<stacks;++j)
 	{
-		for(u32 j=0;j<=slices;++j)
+		for(u32 i=0;i<slices;++i)
 		{
-			indicesArray[index++] = vertexCount;
-			indicesArray[index++] = slices+vertexCount;
-			indicesArray[index++] = slices+vertexCount+1;
+			VERTEX v;
+			v.normal.set(
+				sinI[i] * sinJ[j],
+				cosI[i] * sinJ[j],
+				cosJ[j]
+			);
 
-			indicesArray[index++] = vertexCount;
-			indicesArray[index++] = slices+vertexCount+1;
-			indicesArray[index++] = vertexCount+1;
+			v.normal.normalize();
 
-			++vertexCount;
+			v.position.set(
+				v.normal.x() * radius,
+				v.normal.y() * radius,
+				v.normal.z() * radius);
+
+			v.uv.set((f32)i/(f32)slices, 1.0f - (PI/(f32)stacks) * (f32)j);
+
+			vertices.push_back(v);
 		}
 	}
 
-	// Bottom
-	for(u32 j=0; j <= slices; ++j)
+	VERTEX bottomVertex;
+	bottomVertex.position.set(0,0,-radius);
+	//bottomVertex.position.set(0,-radius,0);
+	vertices.push_back(bottomVertex);
+
+	int rowA = 0;
+	int rowB = 1;
+
+	std::vector<u32> indices;
+
+	u32 i=0;
+	for(i = 0; i < slices - 1; i++)
 	{
-		indicesArray[index++] = 1;
-		indicesArray[index++] = vertexCount+slices-j;
-		indicesArray[index++] = vertexCount+slices-j-1;
+		indices.push_back(rowA);
+		indices.push_back(rowB + i + 1);
+		indices.push_back(rowB + i);
 	}
 
-	// create mesh
+	indices.push_back(rowA);
+	indices.push_back(rowB);
+	indices.push_back(rowB+i);
+
+	i32 less = createHemisphere ? stacks/2-1 : 0;
+
+	// middle stacks
+	for (u32 j = 1; j < stacks - 1 - less; j++)
+	{
+		rowA = 1 + (j - 1) * slices;
+		rowB = rowA + slices;
+
+		for (i = 0; i < slices - 1; i++)
+		{
+			indices.push_back(rowA+i);
+			indices.push_back(rowA+i+1);
+			indices.push_back(rowB+i);
+
+			indices.push_back(rowA+i+1);
+			indices.push_back(rowB+i+1);
+			indices.push_back(rowB+i);
+		}
+
+		indices.push_back(rowA+i);
+		indices.push_back(rowA);
+		indices.push_back(rowB+i);
+
+		indices.push_back(rowA);
+		indices.push_back(rowB);
+		indices.push_back(rowB+i);
+	}
+
+	rowA = 1 + (stacks - 2) * slices;
+	rowB = rowA + slices;
+
+	if(!createHemisphere)
+	{
+		for (i = 0; i < slices - 1; i++)
+		{
+			indices.push_back(rowA+i);
+			indices.push_back(rowA+i+1);
+			indices.push_back(rowB);
+		}
+
+		indices.push_back(rowA+i);
+		indices.push_back(rowA);
+		indices.push_back(rowB);
+	}
+
 	MeshHandle mh = CreateMesh("sphere");
-	bool ret = mh->BuildVBO(verts, vertexCount,  indicesArray, indicesArraySz);
-	delete [] verts;
-	delete [] indicesArray;
-
+	bool ret = mh->BuildVBO(&vertices[0], vertices.size(),  &indices[0], indices.size());
 	if(ret) { SetMesh(mh); }
 	else { ResourceManager::get().RemoveResource(mh->GetResourceID()); }
 

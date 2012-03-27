@@ -302,14 +302,15 @@ void World::Draw(const GameTime &_gameTime)
 	particleSystem.Draw();
 
 	// Globe
-	glEnable(GL_CLIP_PLANE0); // use clip plane to cut bottom half
-	GLdouble eq[] = { 0, 1, 0, 0 };
-	glClipPlane(GL_CLIP_PLANE0, eq);
+
+	// The original code used OpenGL clip planes (now deprecated).
+	// However, while this works on ATI systems, it breaks on NVIDIA systems
+	// Therefore, the sphere generation code has been modified to allow a hemisphere
+	// to be created (thus negating the need for clipping planes)
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE);
 	globeSphere.Draw();
 	glDisable(GL_BLEND);
-	glDisable(GL_CLIP_PLANE0);
 
 	glPopMatrix();
 

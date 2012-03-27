@@ -365,7 +365,9 @@ bool World::LoadGeometry()
 
 	// Load globe
 	f32 radius = conf.Read("GlobeRadius", 11.3f);
-	globeSphere.Create(radius, 40, 40);
+	//globeSphere.Create(radius, 40, 40);
+	globeSphere.SetOrientation(float3(270,0,0));
+	globeSphere.Create(radius, 40, 40, true);
 	globeSphere.SetPosition(float3(0.3f,0,0));
 
 	// Load terrain

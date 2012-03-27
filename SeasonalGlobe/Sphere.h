@@ -19,5 +19,8 @@ public:
 	const u32 GetStacks() const { return stacks; };
 
 	//! Create sphere programmatically
-	bool Create(f32 _radius, u32 _slices, u32 _stacks);
+	//! Based on code at http://www.gamedev.net/topic/535449-programatically-create-sphere/
+	//! Functionality has been added to generate UVs, plus if createHemisphere (default false)
+	//! is true, it will only generate indices for half the sphere - this is useful for the globe
+	bool Create(f32 _radius, u32 _slices, u32 _stacks, bool createHemisphere=false);
 };
