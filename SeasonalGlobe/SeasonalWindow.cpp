@@ -118,8 +118,8 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 	
 	i32 _key = tolower(key);
 
-	double dt = gxbase::App::GetDeltaTime();
-	dt = min(dt, 0.02); // workaround to help remove any jitters when dt jumps
+	f32 dt = (f32)gxbase::App::GetDeltaTime();
+	dt = min(dt, 0.02f); // workaround to help remove any jitters when dt jumps
 
 	f32 cameraSpeed = 35;
 
