@@ -74,18 +74,17 @@ void SeasonalWindow::OnDisplay()
 	// display help menu if required
 	if(displayHelpMenu)
 	{
-		glRasterPos2f(-0.96f, 0.80f); Printf("Press p to pause time");
-		glRasterPos2f(-0.96f, 0.75f); Printf("Press r to set default time multiplier");
+		glRasterPos2f(-0.96f, 0.75f); Printf("Press p to pause/ unpause time");
 		glRasterPos2f(-0.96f, 0.7f);  Printf("Press +/- to increase/decrease time multiplier");
-		glRasterPos2f(-0.96f, 0.65f); Printf("Press s to switch lighting mode");
-		glRasterPos2f(-0.96f, 0.6f);  Printf("Press t to switch polygon mode (wireframe or fill)");
-		glRasterPos2f(-0.96f, 0.55f);  Printf("Press m to switch tree viewing mode");
+		glRasterPos2f(-0.96f, 0.6f); Printf("Press s to switch lighting mode");
+		glRasterPos2f(-0.96f, 0.55f);  Printf("Press t to switch polygon mode (wireframe or fill)");
+		glRasterPos2f(-0.96f, 0.5f);  Printf("Press m to switch tree viewing mode");
 
-		glRasterPos2f(-0.96f, 0.45f);  Printf("Press Left/Right or Up/Down arrows to rotate camera");
-		glRasterPos2f(-0.96f, 0.4f); Printf("Hold Left Mouse and move mouse to zoom");
-		glRasterPos2f(-0.96f, 0.35f);  Printf("Hold Right Mouse and move mouse to rotate");
+		glRasterPos2f(-0.96f, 0.4f);  Printf("Press Left/Right or Up/Down arrows to rotate camera");
+		glRasterPos2f(-0.96f, 0.35f); Printf("Hold Left Mouse and move mouse to zoom");
+		glRasterPos2f(-0.96f, 0.3f);  Printf("Hold Right Mouse and move mouse to rotate");
 
-		glRasterPos2f(-0.96f, 0.25f);  Printf("Press h to hide/display this help menu");
+		glRasterPos2f(-0.96f, 0.2f);  Printf("Press h to hide/display this help menu");
 	}
 	else
 	{
@@ -117,9 +116,45 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		Close();
 	}
 	
-	if(down) return; // key must be up
+	i32 _key = tolower(key);
 
-	switch(tolower(key))
+	double dt = gxbase::App::GetDeltaTime();
+	dt = min(dt, 0.02); // workaround to help remove any jitters when dt jumps
+
+	f32 cameraSpeed = 35;
+
+	// Up, down, left and right arrows can be held. We use dt
+	// to impact speed of rotations
+	switch(_key)
+	{
+		case 37: // left arrow
+		{
+			scn.SetCameraRotation(scn.GetCameraRotation() - dt * cameraSpeed);
+			break;
+		}
+	case 39: // right arrow
+		{
+			scn.SetCameraRotation(scn.GetCameraRotation() + dt * cameraSpeed);
+			break;
+		}
+	case 38: // up arrow
+		{
+			scn.SetCameraAngle(scn.GetCameraAngle() - dt * cameraSpeed);
+			break;
+		}
+	case 40: // down arrow
+		{
+			scn.SetCameraAngle(scn.GetCameraAngle() + dt * cameraSpeed);
+			break;
+		}
+	}
+
+	if(down) // all other keys must be released before they are registered
+	{
+		return;
+	}
+
+	switch(_key)
 	{
 	case 'h':
 		{
@@ -133,37 +168,23 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 		break;
 	case 'p':
 		{
-			scn.SetDtMultiplier(0);
+			// application class as paused when dt multiplier 0 (accounting for floating point errors)
+			// this is a better solution than an isPaused boolean variable, as the user can press + or -
+			// to unpause the application, incrementing/ decrementing the multiplier by 0.1
+			if(NearZero((f32)scn.GetMultiplier()))
+			{
+				scn.SetDtMultiplier(1);
+			}
+			else
+			{
+				scn.SetDtMultiplier(0);
+			}
 		} break;
-	case 'r':
-		{
-			scn.SetDtMultiplier(1);
-		} break;
-	case 37:
-		{
-			scn.SetCameraRotation(scn.GetCameraRotation() - 5);
-			break;
-		}
-	case 39:
-		{
-			scn.SetCameraRotation(scn.GetCameraRotation() + 5);
-			break;
-		}
-	case 38:
-		{
-			scn.SetCameraAngle(scn.GetCameraAngle() - 5);
-			break;
-		}
-	case 40:
-		{
-			scn.SetCameraAngle(scn.GetCameraAngle() + 5);
-			break;
-		}
-	case 109:
+	case 'm':
 		{
 			scn.SetTreeShadeMode(scn.GetNextTreeShadeMode());
 		} break;
-	case 115:
+	case 's':
 		{
 			// Order: Directional - Spotlight - Ambient - Directional
 			const LightingMode lm = scn.GetLightingMode();
@@ -181,27 +202,41 @@ void SeasonalWindow::OnKeyboard(i32 key, bool down)
 	}
 };
 
+// Boiler plate code to detect and set flags when left/right mouse button is up/down
 void SeasonalWindow::OnMouseButton(MouseButton button, bool down)
 {
-	if (down) {
-		switch(button) {
-		case MBLeft: 
-			_leftDown = true;
-			break;
+	if (down)
+	{
+		switch(button)
+		{
+		case MBLeft:
+			{
+				_leftDown = true;
+				break;
+			}
 		case MBRight:
-			_rightDown = true;
-			break;
+			{
+				_rightDown = true;
+				break;
+			}
 		default:
 			break;
 		}
-	} else {
-		switch(button) {
-		case MBLeft: 
-			_leftDown = false;
-			break;
+	}
+	else
+	{
+		switch(button)
+		{
+		case MBLeft:
+			{
+				_leftDown = false;
+				break;
+			}
 		case MBRight:
-			_rightDown = false;
-			break;
+			{
+				_rightDown = false;
+				break;
+			}
 		default:
 			break;
 		}
