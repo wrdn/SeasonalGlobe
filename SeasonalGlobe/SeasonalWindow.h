@@ -36,6 +36,8 @@ public:
 
 	void OnCreate(); // loads world
 
+	void OnResize(i32 w, i32 h);
+
 	void OnDisplay(); // displays world (calling World::Draw)
 	void OnIdle(); // requests redraw
 
